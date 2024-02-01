@@ -1,4 +1,4 @@
-package balancetalk.domain;
+package balancetalk.domain.post.enums;
 
 public enum PostCategory {
     CASUAL, DISCUSSION

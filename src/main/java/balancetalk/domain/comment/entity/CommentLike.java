@@ -1,5 +1,6 @@
-package balancetalk.domain;
+package balancetalk.domain.comment.entity;
 
+import balancetalk.domain.member.entity.Member;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;

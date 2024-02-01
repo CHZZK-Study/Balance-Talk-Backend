@@ -1,4 +1,4 @@
-package balancetalk.domain;
+package balancetalk.domain.report.enums;
 
 public enum ReportCategory {
 

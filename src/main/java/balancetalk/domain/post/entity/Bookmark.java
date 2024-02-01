@@ -1,5 +1,7 @@
-package balancetalk.domain;
+package balancetalk.domain.post.entity;
 
+import balancetalk.domain.member.entity.Member;
+import balancetalk.domain.post.entity.Post;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -12,18 +14,18 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class PostLike {
+public class Bookmark {
 
     @Id
     @GeneratedValue
-    @Column(name = "post_like_id")
+    @Column(name = "bookmark_id")
     private Long id;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id")
-    private Member member;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "post_id")
     private Post post;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "member_id")
+    private Member member;
 }

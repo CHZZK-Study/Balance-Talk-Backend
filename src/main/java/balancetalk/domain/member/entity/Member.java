@@ -1,8 +1,19 @@
-package balancetalk.domain;
+package balancetalk.domain.member.entity;
 
+import balancetalk.domain.post.entity.Bookmark;
+import balancetalk.domain.comment.entity.Comment;
+import balancetalk.domain.comment.entity.CommentLike;
+import balancetalk.domain.Notice;
+import balancetalk.domain.post.entity.Post;
+import balancetalk.domain.post.entity.PostLike;
+import balancetalk.domain.report.entity.Report;
+import balancetalk.domain.vote.entity.Vote;
+import balancetalk.domain.member.enums.Role;
 import balancetalk.global.common.BaseTimeEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
@@ -23,33 +34,33 @@ public class Member extends BaseTimeEntity {
     private String nickname;
     private String email;
     private String password;
+
+    @Enumerated(value = EnumType.STRING)
     private Role role;
+
     private String ip;
 
-    @OneToMany(mappedBy = "post")
+    @OneToMany(mappedBy = "member")
     private List<Post> posts = new ArrayList<>();
 
-    @OneToMany(mappedBy = "post_like")
+    @OneToMany(mappedBy = "member")
     private List<PostLike> postLikes = new ArrayList<>();
 
-    @OneToMany(mappedBy = "bookmark")
+    @OneToMany(mappedBy = "member")
     private List<Bookmark> bookmarks = new ArrayList<>();
 
-    @OneToMany(mappedBy = "comment")
+    @OneToMany(mappedBy = "member")
     private List<Comment> comments = new ArrayList<>();
 
-    @OneToMany(mappedBy = "comment_like")
+    @OneToMany(mappedBy = "member")
     private List<CommentLike> commentLikes = new ArrayList<>();
 
-    @OneToMany(mappedBy = "vote")
+    @OneToMany(mappedBy = "member")
     private List<Vote> votes = new ArrayList<>();
 
-    @OneToMany(mappedBy = "notice")
+    @OneToMany(mappedBy = "member")
     private List<Notice> notices = new ArrayList<>();
 
-    @OneToMany(mappedBy = "report")
+    @OneToMany(mappedBy = "reporter")
     private List<Report> reports = new ArrayList<>(); // 신고한 기록
-
-    @OneToMany(mappedBy = "report")
-    private List<Report> reported = new ArrayList<>(); // 신고 받은 기록
 }

@@ -1,5 +1,7 @@
 package balancetalk.domain;
 
+import balancetalk.domain.file.entity.File;
+import balancetalk.domain.member.entity.Member;
 import balancetalk.global.common.BaseTimeEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -30,6 +32,6 @@ public class Notice extends BaseTimeEntity {
     @JoinColumn(name = "member_id")
     private Member member;
 
-    @OneToMany(mappedBy = "file")
+    @OneToMany(mappedBy = "notice")
     private List<File> files = new ArrayList<>();
 }

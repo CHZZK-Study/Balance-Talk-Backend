@@ -1,5 +1,9 @@
-package balancetalk.domain;
+package balancetalk.domain.report.entity;
 
+import balancetalk.domain.report.enums.ReportCategory;
+import balancetalk.domain.comment.entity.Comment;
+import balancetalk.domain.member.entity.Member;
+import balancetalk.domain.post.entity.Post;
 import balancetalk.global.common.BaseTimeEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -27,10 +31,6 @@ public class Report extends BaseTimeEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member reporter; // 신고한 회원
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id")
-    private Member reported; // 신고 받은 회원
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "post_id")

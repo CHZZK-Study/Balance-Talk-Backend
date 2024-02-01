@@ -1,5 +1,9 @@
-package balancetalk.domain;
+package balancetalk.domain.comment.entity;
 
+import balancetalk.domain.report.entity.Report;
+import balancetalk.domain.ViewStatus;
+import balancetalk.domain.member.entity.Member;
+import balancetalk.domain.post.entity.Post;
 import balancetalk.global.common.BaseTimeEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -38,9 +42,9 @@ public class Comment extends BaseTimeEntity {
     @JoinColumn(name = "post_id")
     private Post post;
 
-    @OneToMany(mappedBy = "comment_like")
+    @OneToMany(mappedBy = "comment")
     private List<CommentLike> likes = new ArrayList<>();
 
-    @OneToMany(mappedBy = "report")
+    @OneToMany(mappedBy = "comment")
     private List<Report> reports = new ArrayList<>();
 }

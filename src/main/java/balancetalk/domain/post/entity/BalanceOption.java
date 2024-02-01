@@ -1,5 +1,7 @@
-package balancetalk.domain;
+package balancetalk.domain.post.entity;
 
+import balancetalk.domain.file.entity.File;
+import balancetalk.domain.vote.entity.Vote;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -34,6 +36,6 @@ public class BalanceOption {
     @JoinColumn(name = "post_id")
     private Post post;
 
-    @OneToMany(mappedBy = "vote")
+    @OneToMany(mappedBy = "balanceOption")
     private List<Vote> votes = new ArrayList<>();
 }
