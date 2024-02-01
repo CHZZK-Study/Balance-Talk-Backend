@@ -17,6 +17,9 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.List;
+
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
@@ -29,9 +32,12 @@ public class Comment extends BaseTimeEntity {
     @Column(name = "comment_id")
     private Long id;
 
+    @NotNull
+    @Max(100)
     private String content;
 
     @Enumerated(value = EnumType.STRING)
+    @NotNull
     private ViewStatus viewStatus;
 
     @ManyToOne(fetch = FetchType.LAZY)

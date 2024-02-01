@@ -13,6 +13,9 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import java.util.ArrayList;
 import java.util.List;
+
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
@@ -25,7 +28,12 @@ public class BalanceOption {
     @Column(name = "balance_option_id")
     private Long id;
 
+    @NotNull
+    @Max(50)
     private String title;
+
+    @NotNull
+    @Max(100)
     private String description;
 
     @OneToOne(fetch = FetchType.LAZY)

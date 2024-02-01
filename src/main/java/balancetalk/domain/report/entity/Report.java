@@ -14,6 +14,8 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
@@ -26,6 +28,8 @@ public class Report extends BaseTimeEntity {
     @Column(name = "report_id")
     private Long id;
 
+    @NotNull
+    @Max(300)
     private String content;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -41,5 +45,6 @@ public class Report extends BaseTimeEntity {
     private Comment comment;
 
     @Enumerated(value = EnumType.STRING)
+    @NotNull
     private ReportCategory category;
 }

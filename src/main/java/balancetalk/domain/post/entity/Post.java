@@ -19,6 +19,9 @@ import jakarta.persistence.OneToMany;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
@@ -31,14 +34,22 @@ public class Post extends BaseTimeEntity {
     @Column(name = "post_id")
     private Long id;
 
+    @NotNull
+    @Max(50)
     private String title;
+
+    @NotNull
     private LocalDateTime deadline;
+
+    @NotNull
     private Long views;
 
     @Enumerated(value = EnumType.STRING)
+    @NotNull
     private ViewStatus viewStatus;
 
     @Enumerated(value = EnumType.STRING)
+    @NotNull
     private PostCategory Category;
 
     @ManyToOne(fetch = FetchType.LAZY)
