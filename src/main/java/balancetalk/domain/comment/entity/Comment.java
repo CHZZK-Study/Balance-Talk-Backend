@@ -15,8 +15,13 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import java.util.ArrayList;
 import java.util.List;
+
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
@@ -29,9 +34,12 @@ public class Comment extends BaseTimeEntity {
     @Column(name = "comment_id")
     private Long id;
 
+    @NotBlank
+    @Size(max = 100)
     private String content;
 
     @Enumerated(value = EnumType.STRING)
+    @NotNull
     private ViewStatus viewStatus;
 
     @ManyToOne(fetch = FetchType.LAZY)

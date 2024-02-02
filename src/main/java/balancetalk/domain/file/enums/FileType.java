@@ -1,5 +1,4 @@
 package balancetalk.domain.file.enums;
-
 public enum FileType {
     JPEG("image/jpeg", "jpg"),
     PNG("image/png", "png"),

@@ -11,8 +11,13 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import java.util.ArrayList;
 import java.util.List;
+
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
@@ -25,7 +30,12 @@ public class Notice extends BaseTimeEntity {
     @Column(name = "notice_id")
     private Long id;
 
+    @NotBlank
+    @Size(max = 50)
     private String title;
+
+    @NotNull
+    @Size(max = 2000)
     private String content;
 
     @ManyToOne(fetch = FetchType.LAZY)

@@ -19,6 +19,8 @@ import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.List;
+
+import jakarta.validation.constraints.*;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
@@ -31,13 +33,25 @@ public class Member extends BaseTimeEntity {
     @Column(name = "member_id")
     private Long id;
 
+    @NotNull
+    @Size(min = 2, max = 10)
     private String nickname;
+
+    @NotNull
+    @Size(max = 30)
+    @Email(regexp = "^[a-zA-Z0-9._%+-]{1,20}@[a-zA-Z0-9.-]{1,10}\\.[a-zA-Z]{2,}$")
     private String email;
+
+    @NotNull
+    @Size(min = 10, max = 20)
+    @Pattern(regexp = "^(?=.*[0-9])(?=.*[a-zA-Z])$")
     private String password;
 
     @Enumerated(value = EnumType.STRING)
+    @NotNull
     private Role role;
 
+    @Size(min = 15)
     private String ip;
 
     @OneToMany(mappedBy = "member")
