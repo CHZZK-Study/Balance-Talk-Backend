@@ -28,10 +28,10 @@ public class File {
 
     @NotNull
     @Size(max = 50)
-    private String uploadFileName; // 사용자가 업로드한 파일명
+    private String uploadName; // 사용자가 업로드한 파일명
 
     @NotNull
-    private String storedFileName; // 서버 내부에서 관리하는 파일명
+    private String storedName; // 서버 내부에서 관리하는 파일명
 
     @NotNull
     @Size(max = 209)
@@ -42,7 +42,7 @@ public class File {
     private FileType type;
 
     @NotNull
-    private Long size; // 바이트 단위로 파일 크기 저
+    private Long size; // 바이트 단위로 파일 크기 저장
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "notice_id")
