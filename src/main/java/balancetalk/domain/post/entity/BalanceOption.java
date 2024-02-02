@@ -11,6 +11,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
+import jakarta.validation.constraints.Size;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,11 +30,11 @@ public class BalanceOption {
     private Long id;
 
     @NotNull
-    @Max(50)
+    @Size(max = 50)
     private String title;
 
     @NotNull
-    @Max(100)
+    @Size(max = 100)
     private String description;
 
     @OneToOne(fetch = FetchType.LAZY)

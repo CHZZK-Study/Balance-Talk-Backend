@@ -39,20 +39,19 @@ public class Member extends BaseTimeEntity {
 
     @NotNull
     @Size(max = 30)
-    @Email
-    // todo: email pattern
+    @Email(regexp = "^[a-zA-Z0-9._%+-]{1,20}@[a-zA-Z0-9.-]{1,10}\\.[a-zA-Z]{2,}$")
     private String email;
 
     @NotNull
-    @Size(max = 20)
-    // todo: password pattern
+    @Size(min = 10, max = 20)
+    @Pattern(regexp = "^(?=.*[0-9])(?=.*[a-zA-Z])$")
     private String password;
 
     @Enumerated(value = EnumType.STRING)
     @NotNull
     private Role role;
 
-    @Min(15)
+    @Size(min = 15)
     private String ip;
 
     @OneToMany(mappedBy = "member")

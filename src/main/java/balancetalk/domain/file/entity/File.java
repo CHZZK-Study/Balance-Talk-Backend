@@ -13,6 +13,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
@@ -26,11 +27,14 @@ public class File {
     private Long id;
 
     @NotNull
-    @Max(50)
-    private String name;
+    @Size(max = 50)
+    private String uploadFileName; // 사용자가 업로드한 파일명
 
     @NotNull
-    @Max(209)
+    private String storedFileName; // 서버 내부에서 관리하는 파일명
+
+    @NotNull
+    @Size(max = 209)
     private String path;
 
     @Enumerated(value = EnumType.STRING)
@@ -38,7 +42,7 @@ public class File {
     private FileType type;
 
     @NotNull
-    private Long size; // TODO 수정 필요
+    private Long size; // 바이트 단위로 파일 크기 저
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "notice_id")
