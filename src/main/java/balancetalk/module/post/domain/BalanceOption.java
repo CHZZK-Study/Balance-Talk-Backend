@@ -11,11 +11,10 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import java.util.ArrayList;
 import java.util.List;
-
-import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
@@ -28,12 +27,14 @@ public class BalanceOption {
     @Column(name = "balance_option_id")
     private Long id;
 
-    @NotNull
+    @NotBlank
     @Size(max = 50)
+    @Column(nullable = false, length = 50)
     private String title;
 
-    @NotNull
+    @NotBlank
     @Size(max = 100)
+    @Column(nullable = false, length = 100)
     private String description;
 
     @OneToOne(fetch = FetchType.LAZY)

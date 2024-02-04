@@ -15,8 +15,6 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import java.util.ArrayList;
 import java.util.List;
-
-import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
@@ -31,10 +29,12 @@ public class Notice extends BaseTimeEntity {
 
     @NotBlank
     @Size(max = 50)
+    @Column(nullable = false, length = 50)
     private String title;
 
-    @NotNull
+    @NotBlank
     @Size(max = 2000)
+    @Column(nullable = false, length = 2000)
     private String content;
 
     @ManyToOne(fetch = FetchType.LAZY)
