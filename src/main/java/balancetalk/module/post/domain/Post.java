@@ -69,15 +69,9 @@ public class Post extends BaseTimeEntity {
     @OneToMany(mappedBy = "post")
     private List<Comment> comments = new ArrayList<>();
 
-<<<<<<< HEAD
-    // TODO 개선 필요
-//    @ManyToMany(mappedBy = "tag")
-//    @JoinColumn(name = "tag_id")
-//    private List<Tag> tags = new ArrayList<>();
-=======
+
     @OneToMany(mappedBy = "post")
     private List<PostTag> postTags = new ArrayList<>();
->>>>>>> 547f39e6a5cb7e6f2afde22a7d454ef82dee714e
 
     @OneToMany(mappedBy = "post")
     private List<Bookmark> bookmarks = new ArrayList<>();
