@@ -25,9 +25,12 @@ import java.util.List;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
+@Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Post extends BaseTimeEntity {
 
@@ -78,4 +81,15 @@ public class Post extends BaseTimeEntity {
 
     @OneToMany(mappedBy = "post")
     private List<Report> reports = new ArrayList<>();
+
+
+    @Builder
+    public Post(String title, LocalDateTime deadline, Long views, PostCategory category, List<BalanceOption> options, List<PostTag> postTags) {
+        this.title = title;
+        this.deadline = deadline;
+        this.views = views;
+        Category = category;
+        this.options = options;
+        this.postTags = postTags;
+    }
 }
