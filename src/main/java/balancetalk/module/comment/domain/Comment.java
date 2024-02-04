@@ -19,7 +19,6 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import java.util.ArrayList;
 import java.util.List;
-
 import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -35,11 +34,13 @@ public class Comment extends BaseTimeEntity {
 
     @NotBlank
     @Size(max = 100)
+    @Column(nullable = false, length = 100)
     private String content;
 
-    @Enumerated(value = EnumType.STRING)
     @NotNull
-    private ViewStatus viewStatus;
+    @Enumerated(value = EnumType.STRING)
+    @Column(nullable = false)
+    private ViewStatus viewStatus = ViewStatus.NORMAL;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")

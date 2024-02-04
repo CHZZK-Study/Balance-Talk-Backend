@@ -32,23 +32,27 @@ public class Member extends BaseTimeEntity {
     @Column(name = "member_id")
     private Long id;
 
-    @NotNull
+    @NotBlank
     @Size(min = 2, max = 10)
+    @Column(nullable = false, length = 10, unique = true)
     private String nickname;
 
     @NotNull
     @Size(max = 30)
     @Email(regexp = "^[a-zA-Z0-9._%+-]{1,20}@[a-zA-Z0-9.-]{1,10}\\.[a-zA-Z]{2,}$")
+    @Column(nullable = false, length = 30, unique = true)
     private String email;
 
-    @NotNull
+    @NotBlank
     @Size(min = 10, max = 20)
-    @Pattern(regexp = "^(?=.*[0-9])(?=.*[a-zA-Z])$")
+    @Pattern(regexp = "^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d@$!%*#?&]{10,20}$")
+    @Column(nullable = false)
     private String password;
 
-    @Enumerated(value = EnumType.STRING)
     @NotNull
-    private Role role;
+    @Enumerated(value = EnumType.STRING)
+    @Column(nullable = false)
+    private Role role = Role.USER;
 
     @Size(min = 15)
     private String ip;

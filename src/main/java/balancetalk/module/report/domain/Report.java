@@ -28,8 +28,8 @@ public class Report extends BaseTimeEntity {
     @Column(name = "report_id")
     private Long id;
 
-    @NotBlank
     @Size(max = 300)
+    @Column(length = 300)
     private String content;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -44,7 +44,8 @@ public class Report extends BaseTimeEntity {
     @JoinColumn(name = "comment_id")
     private Comment comment;
 
-    @Enumerated(value = EnumType.STRING)
     @NotNull
+    @Enumerated(value = EnumType.STRING)
+    @Column(nullable = false)
     private ReportCategory category;
 }
