@@ -2,11 +2,8 @@ package balancetalk.module.post.dto;
 
 import balancetalk.module.post.domain.Post;
 import balancetalk.module.post.domain.PostCategory;
-import balancetalk.module.post.domain.PostTag;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
-import org.springframework.format.annotation.DateTimeFormat;
-
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;

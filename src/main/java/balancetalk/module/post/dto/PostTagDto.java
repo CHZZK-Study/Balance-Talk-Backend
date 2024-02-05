@@ -4,8 +4,6 @@ import balancetalk.module.post.domain.PostTag;
 import balancetalk.module.post.domain.Tag;
 import lombok.*;
 
-import java.util.List;
-
 @Data
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)

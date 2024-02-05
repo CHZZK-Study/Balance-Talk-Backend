@@ -3,7 +3,6 @@ package balancetalk.module.file.dto;
 import balancetalk.module.file.domain.File;
 import balancetalk.module.file.domain.FileType;
 import lombok.*;
-
 @Data
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)

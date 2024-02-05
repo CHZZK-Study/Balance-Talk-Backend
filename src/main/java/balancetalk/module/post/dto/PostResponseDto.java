@@ -6,11 +6,8 @@ import balancetalk.module.post.domain.Post;
 import balancetalk.module.post.domain.PostCategory;
 import balancetalk.module.post.domain.PostTag;
 import lombok.*;
-
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
-
 @Data
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
