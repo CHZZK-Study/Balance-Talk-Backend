@@ -75,7 +75,8 @@ public class Post extends BaseTimeEntity {
     private List<Report> reports = new ArrayList<>();
 
     @Builder
-    public Post(String title, LocalDateTime deadline, Long views, PostCategory category, List<BalanceOption> options, List<PostTag> postTags) {
+    public Post(Long id, String title, LocalDateTime deadline, Long views, PostCategory category, List<BalanceOption> options, List<PostTag> postTags) {
+        this.id = id;
         this.title = title;
         this.deadline = deadline;
         this.views = views;

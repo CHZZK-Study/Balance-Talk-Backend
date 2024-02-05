@@ -52,8 +52,9 @@ public class BalanceOption {
     private List<Vote> votes = new ArrayList<>();
 
     @Builder
-    public BalanceOption(String title, String description) {
+    public BalanceOption(String title, String description, File file) {
         this.title = title;
         this.description = description;
+        this.file = file;
     }
 }

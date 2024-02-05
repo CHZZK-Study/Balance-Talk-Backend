@@ -39,10 +39,11 @@ class PostServiceTest {
     }
 
     @Test
-    @DisplayName("글이 정상적으로 생성되는지 테스트")
+    @DisplayName("게시글 작성 - 성공")
     void test() {
         // given
         PostRequestDto postRequestDto = PostRequestDto.builder()
+                .id(1L)
                 .title("게시글_성공_테스트")
                 .deadline(LocalDateTime.parse("2024-12-15T10:00:00"))
                 .views(0L)
@@ -67,9 +68,8 @@ class PostServiceTest {
         postService.save(postRequestDto);
 
         // then
-        List<Post> posts = postRepository.findAll();
-        assertThat(posts.size()).isEqualTo(1);
-        Post savedPost = posts.get(0);
-
+        Post savedPost = postRepository.findById(postRequestDto.getId())
+                .orElseThrow(() -> new IllegalArgumentException("게시글이 존재하지 않습니다."));
+        assertEquals(postRequestDto.getId(), savedPost.getId());
     }
 }

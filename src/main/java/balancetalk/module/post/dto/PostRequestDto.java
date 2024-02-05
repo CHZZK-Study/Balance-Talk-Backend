@@ -17,6 +17,7 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class PostRequestDto {
 
+    private Long id;
     private String title;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss", timezone = "Asia/Seoul")
@@ -28,6 +29,7 @@ public class PostRequestDto {
 
     public Post toEntity() {
         return Post.builder()
+                .id(id)
                 .title(title)
                 .deadline(deadline)
                 .views(views)
