@@ -2,6 +2,7 @@ package balancetalk.module.post.domain;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.NoArgsConstructor;
 
 @Entity
@@ -20,4 +21,9 @@ public class PostTag {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "post_id")
     private Post post;
+
+    @Builder
+    public PostTag(Tag tag) {
+        this.tag = tag;
+    }
 }

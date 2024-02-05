@@ -1,20 +1,12 @@
 package balancetalk.module.post.domain;
 
 import balancetalk.module.comment.domain.Comment;
+import balancetalk.module.post.dto.BalanceOptionDto;
 import balancetalk.module.report.domain.Report;
 import balancetalk.module.ViewStatus;
 import balancetalk.module.member.domain.Member;
 import balancetalk.global.common.BaseTimeEntity;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -82,7 +74,6 @@ public class Post extends BaseTimeEntity {
     @OneToMany(mappedBy = "post")
     private List<Report> reports = new ArrayList<>();
 
-
     @Builder
     public Post(String title, LocalDateTime deadline, Long views, PostCategory category, List<BalanceOption> options, List<PostTag> postTags) {
         this.title = title;
@@ -92,4 +83,6 @@ public class Post extends BaseTimeEntity {
         this.options = options;
         this.postTags = postTags;
     }
+
+
 }
