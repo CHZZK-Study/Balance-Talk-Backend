@@ -18,11 +18,12 @@ import java.util.List;
 public class PostResponseDto {
     private Long id;
     private String title;
+
     private LocalDateTime deadline;
     private Long views;
     private ViewStatus viewStatus;
     private PostCategory category;
-    private List<BalanceOptionDto> balanceOptions;
+    private List<BalanceOption> balanceOptions;
     private List<PostTag> postTags;
 
     public static PostResponseDto fromEntity(Post post) {
@@ -33,7 +34,7 @@ public class PostResponseDto {
                 post.getViews(),
                 post.getViewStatus(),
                 post.getCategory(),
-                BalanceOptionDto.fromEntities(post.getOptions()),
+                post.getOptions(),
                 post.getPostTags()
         );
     }
