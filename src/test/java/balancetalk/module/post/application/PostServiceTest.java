@@ -1,5 +1,7 @@
 package balancetalk.module.post.application;
 
+import balancetalk.module.file.domain.FileType;
+import balancetalk.module.file.dto.FileDto;
 import balancetalk.module.post.domain.Post;
 import balancetalk.module.post.domain.PostCategory;
 import balancetalk.module.post.domain.PostRepository;
@@ -52,10 +54,22 @@ class PostServiceTest {
                         BalanceOptionDto.builder()
                                 .title("test1")
                                 .description("test1 description")
+                                .fileDto(FileDto.builder()
+                                        .uploadName("사진1")
+                                        .path("../")
+                                        .type(FileType.JPEG)
+                                        .size(236L)
+                                        .build())
                                 .build(),
                         BalanceOptionDto.builder()
                                 .title("test2")
                                 .description("test2 description")
+                                .fileDto(FileDto.builder()
+                                        .uploadName("사진2")
+                                        .path("../")
+                                        .type(FileType.JPEG)
+                                        .size(236L)
+                                        .build())
                                 .build()
                 ))
                 .tags(List.of(
