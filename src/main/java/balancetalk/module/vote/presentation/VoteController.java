@@ -15,7 +15,8 @@ public class VoteController {
     private final VoteService voteService;
 
     @PostMapping("/posts/{post-id}/vote")
-    public void vote(@PathVariable("post-id") Long postId, @RequestBody VoteRequest voteRequest) {
+    public String vote(@PathVariable("post-id") Long postId, @RequestBody VoteRequest voteRequest) {
         voteService.createVote(voteRequest);
+        return "투표가 정상적으로 처리되었습니다.";
     }
 }
