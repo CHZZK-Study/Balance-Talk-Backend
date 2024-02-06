@@ -48,4 +48,23 @@ public class VoteService {
 
         return responses;
     }
+
+    public Vote updateVote(Long postId, VoteRequest voteRequest) {
+        Post post = postRepository.findById(postId)
+                .orElseThrow();
+
+        if (post.isCasual()) {
+            throw new IllegalArgumentException(); // TODO 예외 처리
+        }
+
+        Member member = memberRepository.findById(voteRequest.getMemberId())
+                .orElseThrow();
+        BalanceOption newSelectedOption = balanceOptionRepository.findById(voteRequest.getSelectedOptionId())
+                .orElseThrow();
+        Vote findVote = member.getVotes().stream()
+                .filter(vote -> vote.getBalanceOption().getPost().equals(post))
+                .findFirst()
+                .orElseThrow();
+        return findVote.changeBalanceOption(newSelectedOption);
+    }
 }

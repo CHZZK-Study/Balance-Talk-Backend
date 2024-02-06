@@ -83,4 +83,8 @@ public class Post extends BaseTimeEntity {
 
     @OneToMany(mappedBy = "post")
     private List<Report> reports = new ArrayList<>();
+
+    public boolean isCasual() {
+        return this.Category == PostCategory.CASUAL;
+    }
 }

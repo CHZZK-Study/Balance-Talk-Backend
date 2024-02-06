@@ -31,4 +31,9 @@ public class Vote extends BaseTimeEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
+
+    public Vote changeBalanceOption(BalanceOption newSelectedOption) {
+        this.balanceOption = newSelectedOption;
+        return this;
+    }
 }
