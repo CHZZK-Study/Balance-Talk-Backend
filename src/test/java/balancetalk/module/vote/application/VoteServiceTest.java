@@ -1,54 +1,71 @@
 package balancetalk.module.vote.application;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
+
 import balancetalk.module.member.domain.Member;
+import balancetalk.module.member.domain.MemberRepository;
 import balancetalk.module.post.domain.BalanceOption;
+import balancetalk.module.post.domain.BalanceOptionRepository;
 import balancetalk.module.vote.domain.Vote;
+import balancetalk.module.vote.domain.VoteRepository;
 import balancetalk.module.vote.dto.VoteRequest;
-import jakarta.persistence.EntityManager;
+import java.util.Optional;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.transaction.annotation.Transactional;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
-@SpringBootTest
-@Transactional
+@ExtendWith(MockitoExtension.class)
 class VoteServiceTest {
 
-    @Autowired
-    EntityManager em;
-
-    @Autowired
+    @InjectMocks
     VoteService voteService;
+
+    @Mock
+    VoteRepository voteRepository;
+
+    @Mock
+    BalanceOptionRepository balanceOptionRepository;
+
+    @Mock
+    MemberRepository memberRepository;
 
     @Test
     @DisplayName("회원과 선택지 정보를 바탕으로 투표를 생성한다.")
     void createVote_Success() {
         // given
+        BalanceOption option = BalanceOption.builder()
+                .id(1L)
+                .title("A")
+                .description("aaa")
+                .build();
+
         Member member = Member.builder()
+                .id(1L)
                 .email("hhh2222@gmail.com")
                 .nickname("testMember")
                 .password("password123@")
                 .build();
-        em.persist(member);
 
-        BalanceOption optionA = BalanceOption.builder()
-                .title("A")
-                .description("aaa")
+        Vote vote = Vote.builder()
+                .id(1L)
+                .member(member)
+                .balanceOption(option)
                 .build();
-        BalanceOption optionB = BalanceOption.builder()
-                .title("B")
-                .description("bbb")
-                .build();
-        em.persist(optionA);
-        em.persist(optionB);
+
+        when(balanceOptionRepository.findById(any())).thenReturn(Optional.of(option));
+        when(memberRepository.findById(any())).thenReturn(Optional.of(member));
+        when(voteRepository.save(any())).thenReturn(vote);
 
         // when
-        Vote vote = voteService.createVote(new VoteRequest(member.getId(), optionA.getId()));
+        Vote createdVote = voteService.createVote(new VoteRequest(member.getId(), option.getId()));
 
         // then
-        Assertions.assertThat(vote.getMember()).isEqualTo(member);
-        Assertions.assertThat(vote.getBalanceOption()).isEqualTo(optionA);
+        Assertions.assertThat(createdVote.getMember()).isEqualTo(member);
+        Assertions.assertThat(createdVote.getBalanceOption()).isEqualTo(option);
     }
 }
