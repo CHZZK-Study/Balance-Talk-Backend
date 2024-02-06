@@ -60,7 +60,7 @@ public class Post extends BaseTimeEntity {
     @NotNull
     @Enumerated(value = EnumType.STRING)
     @Column(nullable = false)
-    private PostCategory Category;
+    private PostCategory category;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
@@ -85,6 +85,6 @@ public class Post extends BaseTimeEntity {
     private List<Report> reports = new ArrayList<>();
 
     public boolean isCasual() {
-        return this.Category == PostCategory.CASUAL;
+        return this.category == PostCategory.CASUAL;
     }
 }
