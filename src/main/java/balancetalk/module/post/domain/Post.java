@@ -1,7 +1,6 @@
 package balancetalk.module.post.domain;
 
 import balancetalk.module.comment.domain.Comment;
-import balancetalk.module.post.dto.BalanceOptionDto;
 import balancetalk.module.report.domain.Report;
 import balancetalk.module.ViewStatus;
 import balancetalk.module.member.domain.Member;
@@ -55,7 +54,7 @@ public class Post extends BaseTimeEntity {
     @JoinColumn(name = "member_id")
     private Member member;
 
-    @OneToMany(mappedBy = "post")
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
     private List<BalanceOption> options = new ArrayList<>();
 
     @OneToMany(mappedBy = "post")
