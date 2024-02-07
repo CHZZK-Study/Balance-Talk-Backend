@@ -1,8 +1,10 @@
 package balancetalk.module.post.application;
 
+import balancetalk.module.post.domain.BalanceOption;
 import balancetalk.module.post.domain.Post;
 import balancetalk.module.post.domain.PostRepository;
 import balancetalk.module.post.dto.PostRequestDto;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,6 +18,10 @@ public class PostService {
     @Transactional
     public void save(final PostRequestDto postRequestDto) {
         Post postEntity = postRequestDto.toEntity();
+        List<BalanceOption> options = postEntity.getOptions();
+        for (BalanceOption option : options) {
+            option.addPost(postEntity);
+        }
         postRepository.save(postEntity);
     }
 }

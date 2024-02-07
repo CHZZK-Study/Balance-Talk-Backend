@@ -2,6 +2,7 @@ package balancetalk.module.post.domain;
 
 import balancetalk.module.file.domain.File;
 import balancetalk.module.vote.domain.Vote;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -40,7 +41,7 @@ public class BalanceOption {
     @Column(nullable = false, length = 100)
     private String description;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "file_id")
     private File file;
 
@@ -56,5 +57,9 @@ public class BalanceOption {
         this.title = title;
         this.description = description;
         this.file = file;
+    }
+
+    public void addPost(Post post) {
+        this.post = post;
     }
 }
