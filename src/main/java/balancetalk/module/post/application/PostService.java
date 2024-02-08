@@ -1,5 +1,7 @@
 package balancetalk.module.post.application;
 
+import balancetalk.module.member.domain.Member;
+import balancetalk.module.member.presentation.MemberRepository;
 import balancetalk.module.post.domain.BalanceOption;
 import balancetalk.module.post.domain.Post;
 import balancetalk.module.post.domain.PostRepository;
@@ -18,10 +20,14 @@ import org.springframework.transaction.annotation.Transactional;
 public class PostService {
 
     private final PostRepository postRepository;
+    private final MemberRepository memberRepository;
 
     @Transactional
     public Post save(final PostRequestDto postRequestDto) {
-        Post postEntity = postRequestDto.toEntity();
+
+        Member member = memberRepository.findById(postRequestDto.getMemberId())
+                .orElseThrow();
+        Post postEntity = postRequestDto.toEntity(member);
         List<BalanceOption> options = postEntity.getOptions();
         for (BalanceOption option : options) {
             option.addPost(postEntity);
