@@ -55,11 +55,11 @@ public class Post extends BaseTimeEntity {
     private Long views;
 
     @Enumerated(value = EnumType.STRING)
-    @NotNull
+    // @NotNull
     private ViewStatus viewStatus;
 
     @Enumerated(value = EnumType.STRING)
-    @NotNull
+    // @NotNull
     private PostCategory Category;
 
     @ManyToOne(fetch = FetchType.LAZY)
