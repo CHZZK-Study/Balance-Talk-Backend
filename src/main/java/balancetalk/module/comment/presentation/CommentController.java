@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/comments")
+@RequestMapping("/posts/{postId}/comments")
 @RequiredArgsConstructor
 public class CommentController {
 
@@ -28,7 +28,7 @@ public class CommentController {
         }
     }
 
-    @GetMapping("/post/{postId}")
+    @GetMapping()
     public ResponseEntity<?> getCommentsByPostId(@PathVariable Long postId) {
         try {
             List<CommentResponse> comments = commentService.readCommentsByPostId(postId);
