@@ -47,4 +47,11 @@ public class PostService {
                 .orElseThrow(); // todo: 에러 추가
         return PostResponseDto.fromEntity(post);
     }
+
+    @Transactional
+    public void deleteById(Long postId) {
+        Post post = postRepository.findById(postId)
+                .orElseThrow(); // todo: 에러 추가
+        postRepository.deleteById(postId);
+    }
 }

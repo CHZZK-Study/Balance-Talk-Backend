@@ -35,4 +35,11 @@ public class PostController {
     public PostResponseDto findSinglePost(@PathVariable("postId") Long postId) {
         return postService.findById(postId);
     }
+
+    @ResponseStatus(HttpStatus.CREATED)
+    @DeleteMapping("/{postId}")
+    public String deletePost(@PathVariable("postId") Long postId) {
+        postService.deleteById(postId);
+        return "요청이 정상적으로 처리되었습니다.";
+    }
 }
