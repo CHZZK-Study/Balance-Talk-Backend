@@ -60,4 +60,8 @@ public class Comment extends BaseTimeEntity {
 
     @OneToMany(mappedBy = "comment")
     private List<Report> reports = new ArrayList<>();
+
+    public void updateContent(String content) {
+        this.content = content;
+    }
 }

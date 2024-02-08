@@ -28,13 +28,7 @@ public class CommentService {
     public Comment createComment(CommentCreateRequest request) {
         Member member = memberRepository.findById(request.getMemberId()).orElseThrow(() -> new RuntimeException("Member not found"));
         Post post = postRepository.findById(request.getPostId()).orElseThrow(() -> new RuntimeException("Post not found"));
-
-        Comment comment = Comment.builder()
-                .content(request.getContent())
-                .member(member)
-                .post(post)
-                .viewStatus(ViewStatus.NORMAL)
-                .build();
+        Comment comment = request.toEntity(member, post);
 
         return commentRepository.save(comment);
     }
@@ -42,31 +36,16 @@ public class CommentService {
     public List<CommentResponse> readCommentsByPostId(Long postId) {
         List<Comment> comments = commentRepository.findByPostId(postId);
         return comments.stream()
-                .map(comment -> new CommentResponse(
-                        comment.getId(),
-                        comment.getContent(),
-                        comment.getMember().getNickname(),
-                        comment.getPost().getId(),
-                        comment.getLikes().size()))
+                .map(CommentResponse::fromEntity)
                 .collect(Collectors.toList());
     }
 
     public Comment updateComment(Long commentId, String content) {
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new RuntimeException("Comment not found"));
+        comment.updateContent(content);
 
-        // 댓글 업데이트를 위한 새로운 메소드 사용
-        Comment updatedComment = Comment.builder()
-                .id(comment.getId())
-                .content(content)
-                .member(comment.getMember())
-                .post(comment.getPost())
-                .viewStatus(comment.getViewStatus())
-                .likes(comment.getLikes())
-                .reports(comment.getReports())
-                .build();
-
-        return commentRepository.save(updatedComment);
+        return comment;
     }
 
     public void deleteComment(Long commentId) {
