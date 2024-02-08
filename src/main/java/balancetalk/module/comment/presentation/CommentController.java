@@ -19,12 +19,12 @@ public class CommentController {
     private final CommentService commentService;
 
     @PostMapping
-    public ResponseEntity<?> createComment(@RequestBody CommentCreateRequest request) {
+    public ResponseEntity<?> createComment(@PathVariable Long postId, @RequestBody CommentCreateRequest request) {
         try {
-            Comment createdComment = commentService.createComment(request);
-            return new ResponseEntity<>(createdComment, HttpStatus.CREATED);
+            CommentResponse createdCommentResponse = commentService.createComment(request, postId);
+            return new ResponseEntity<>(createdCommentResponse, HttpStatus.CREATED);
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            return ResponseEntity.badRequest().body(e.getMessage()); //TODO : NULL 처리?
         }
     }
 
