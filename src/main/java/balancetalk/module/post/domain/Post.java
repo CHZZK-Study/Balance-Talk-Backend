@@ -10,14 +10,14 @@ import jakarta.validation.constraints.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+
+import lombok.*;
 
 @Entity
+@Builder
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 public class Post extends BaseTimeEntity {
 
     @Id
@@ -48,7 +48,7 @@ public class Post extends BaseTimeEntity {
     @NotNull
     @Enumerated(value = EnumType.STRING)
     @Column(nullable = false)
-    private PostCategory Category;
+    private PostCategory category;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
@@ -64,7 +64,7 @@ public class Post extends BaseTimeEntity {
     private List<Comment> comments = new ArrayList<>();
 
 
-    @OneToMany(mappedBy = "post")
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
     private List<PostTag> postTags = new ArrayList<>();
 
     @OneToMany(mappedBy = "post")
@@ -72,17 +72,5 @@ public class Post extends BaseTimeEntity {
 
     @OneToMany(mappedBy = "post")
     private List<Report> reports = new ArrayList<>();
-
-    @Builder
-    public Post(Long id, String title, LocalDateTime deadline, Long views, PostCategory category, List<BalanceOption> options, List<PostTag> postTags) {
-        this.id = id;
-        this.title = title;
-        this.deadline = deadline;
-        this.views = views;
-        Category = category;
-        this.options = options;
-        this.postTags = postTags;
-    }
-
 
 }

@@ -3,6 +3,7 @@ package balancetalk.module.post.application;
 import balancetalk.module.post.domain.BalanceOption;
 import balancetalk.module.post.domain.Post;
 import balancetalk.module.post.domain.PostRepository;
+import balancetalk.module.post.domain.PostTag;
 import balancetalk.module.post.dto.PostRequestDto;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -16,12 +17,17 @@ public class PostService {
     private final PostRepository postRepository;
 
     @Transactional
-    public void save(final PostRequestDto postRequestDto) {
+    public Post save(final PostRequestDto postRequestDto) {
         Post postEntity = postRequestDto.toEntity();
         List<BalanceOption> options = postEntity.getOptions();
         for (BalanceOption option : options) {
             option.addPost(postEntity);
         }
-        postRepository.save(postEntity);
+
+        List<PostTag> postTags = postEntity.getPostTags();
+        for (PostTag postTag : postTags) {
+            postTag.addPost(postEntity);
+        }
+        return postRepository.save(postEntity);
     }
 }

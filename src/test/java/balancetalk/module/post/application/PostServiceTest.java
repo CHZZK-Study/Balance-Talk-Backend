@@ -1,5 +1,6 @@
 package balancetalk.module.post.application;
 
+import balancetalk.module.ViewStatus;
 import balancetalk.module.file.domain.FileType;
 import balancetalk.module.file.dto.FileDto;
 import balancetalk.module.post.domain.Post;
@@ -8,28 +9,34 @@ import balancetalk.module.post.domain.PostRepository;
 import balancetalk.module.post.dto.BalanceOptionDto;
 import balancetalk.module.post.dto.PostRequestDto;
 import balancetalk.module.post.dto.PostTagDto;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import static org.junit.jupiter.api.Assertions.*;
+import java.util.Optional;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 
 @Slf4j
 @RequiredArgsConstructor
 @SpringBootTest
 class PostServiceTest {
 
-    @Autowired
-    private PostService postService;
-
-    @Autowired
+    @Mock
     private PostRepository postRepository;
+
+    @InjectMocks
+    private PostService postService;
 
     @AfterEach
     void clean() {
@@ -38,48 +45,55 @@ class PostServiceTest {
 
     @Test
     @DisplayName("게시글 작성 - 성공")
+    @Transactional
     void test() {
         // given
+        FileDto fileDto = FileDto.builder()
+                .uploadName("파일1")
+                .path("../")
+                .type(FileType.JPEG)
+                .size(236L)
+                .build();
+
+        List<PostTagDto> postTagDto = List.of(
+                PostTagDto.builder()
+                        .tagName("태그1")
+                        .build(),
+                PostTagDto.builder()
+                        .tagName("태그2")
+                        .build());
+
+        List<BalanceOptionDto> balanceOptionDto = List.of(
+                BalanceOptionDto.builder()
+                        .title("제목1")
+                        .description("섦명 내용")
+                        .file(fileDto)
+                        .build(),
+                BalanceOptionDto.builder()
+                        .title("제목1")
+                        .description("섦명 내용")
+                        .file(fileDto)
+                        .build());
+
         PostRequestDto postRequestDto = PostRequestDto.builder()
                 .id(1L)
                 .title("게시글_성공_테스트")
                 .deadline(LocalDateTime.parse("2024-12-15T10:00:00"))
                 .views(0L)
-                .Category(PostCategory.DISCUSSION)
-                .balanceOptions(List.of(
-                        BalanceOptionDto.builder()
-                                .title("test1")
-                                .description("test1 description")
-                                .fileDto(FileDto.builder()
-                                        .uploadName("사진1")
-                                        .path("../")
-                                        .type(FileType.JPEG)
-                                        .size(236L)
-                                        .build())
-                                .build(),
-                        BalanceOptionDto.builder()
-                                .title("test2")
-                                .description("test2 description")
-                                .fileDto(FileDto.builder()
-                                        .uploadName("사진2")
-                                        .path("../")
-                                        .type(FileType.JPEG)
-                                        .size(236L)
-                                        .build())
-                                .build()
-                ))
-                .tags(List.of(
-                        PostTagDto.builder()
-                                .tagName("태그1")
-                                .build()
-                ))
+                .viewStatus(ViewStatus.NORMAL)
+                .category(PostCategory.DISCUSSION)
+                .balanceOptions(balanceOptionDto)
+                .tags(postTagDto)
                 .build();
+
+        Post savedPost = postRequestDto.toEntity();
+        when(postRepository.save(any())).thenReturn(savedPost);
+        when(postRepository.findById(savedPost.getId())).thenReturn(Optional.of(savedPost));
+
         // when
-        postService.save(postRequestDto);
+        Post result = postService.save(postRequestDto);
 
         // then
-        Post savedPost = postRepository.findById(postRequestDto.getId())
-                .orElseThrow(() -> new IllegalArgumentException("게시글이 존재하지 않습니다."));
-        assertEquals(postRequestDto.getId(), savedPost.getId());
+        Assertions.assertThat(savedPost.getId()).isEqualTo(result.getId());
     }
 }

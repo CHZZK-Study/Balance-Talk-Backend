@@ -1,5 +1,6 @@
 package balancetalk.module.post.dto;
 
+import balancetalk.module.ViewStatus;
 import balancetalk.module.post.domain.Post;
 import balancetalk.module.post.domain.PostCategory;
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -20,7 +21,8 @@ public class PostRequestDto {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss", timezone = "Asia/Seoul")
     private LocalDateTime deadline;
     private Long views;
-    private PostCategory Category;
+    private ViewStatus viewStatus;
+    private PostCategory category;
     private List<BalanceOptionDto> balanceOptions;
     private List<PostTagDto> tags;
 
@@ -30,7 +32,8 @@ public class PostRequestDto {
                 .title(title)
                 .deadline(deadline)
                 .views(views)
-                .category(getCategory())
+                .viewStatus(ViewStatus.NORMAL)
+                .category(category)
                 .options(balanceOptions.stream().map(BalanceOptionDto::toEntity).collect(Collectors.toList()))
                 .postTags(tags.stream().map(PostTagDto::toEntity).collect(Collectors.toList()))
                 .build();

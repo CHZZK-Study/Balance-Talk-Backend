@@ -16,14 +16,14 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import java.util.ArrayList;
 import java.util.List;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+
+import lombok.*;
 
 @Entity
+@Builder
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 public class BalanceOption {
 
     @Id
@@ -51,13 +51,6 @@ public class BalanceOption {
 
     @OneToMany(mappedBy = "balanceOption")
     private List<Vote> votes = new ArrayList<>();
-
-    @Builder
-    public BalanceOption(String title, String description, File file) {
-        this.title = title;
-        this.description = description;
-        this.file = file;
-    }
 
     public void addPost(Post post) {
         this.post = post;
