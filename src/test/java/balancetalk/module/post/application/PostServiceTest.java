@@ -10,6 +10,7 @@ import balancetalk.module.post.dto.BalanceOptionDto;
 import balancetalk.module.post.dto.PostRequestDto;
 import balancetalk.module.post.dto.PostResponseDto;
 import balancetalk.module.post.dto.PostTagDto;
+import balancetalk.module.post.presentation.PostController;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,6 +22,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers;
@@ -40,7 +42,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @Slf4j
 @RequiredArgsConstructor
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
+//@WebMvcTest
+@SpringBootTest
 class PostServiceTest {
 
     @Mock
@@ -50,15 +53,13 @@ class PostServiceTest {
     private PostService postService;
 
     @Autowired
-    private WebApplicationContext wac;
+    private WebApplicationContext context;
+
     private MockMvc mockMvc;
 
     @BeforeEach
     public void setup() {
-        this.mockMvc = MockMvcBuilders.webAppContextSetup(wac)
-                .addFilter(new CharacterEncodingFilter("UTF-8", true))
-                .apply(SecurityMockMvcConfigurers.springSecurity())
-                .build();
+        mockMvc = MockMvcBuilders.webAppContextSetup(context).build();
     }
 
     @AfterEach
@@ -138,5 +139,12 @@ class PostServiceTest {
                 .perform(get("/posts"))
                 .andExpect(status().is4xxClientError())
                 .andDo(print());
+    }
+
+    @Test
+    @DisplayName("게시글 단건 조회 - 성공")
+    @WithMockUser
+    void readSinglePost_Success() throws Exception {
+        
     }
 }

@@ -41,4 +41,10 @@ public class PostService {
                 .map(PostResponseDto::fromEntity)
                 .collect(Collectors.toList());
     }
+
+    public PostResponseDto findById(Long postId) {
+        Post post = postRepository.findById(postId)
+                .orElseThrow(); // todo: 에러 추가
+        return PostResponseDto.fromEntity(post);
+    }
 }

@@ -16,4 +16,10 @@ public class PostTagDto {
                 .tag(new Tag(tagName))
                 .build();
     }
+
+    public static PostTagDto fromEntity(PostTag postTag) {
+        return PostTagDto.builder()
+                .tagName(postTag.getTag().getName())
+                .build();
+    }
 }

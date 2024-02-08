@@ -21,4 +21,13 @@ public class BalanceOptionDto {
                 .file(file.toEntity())
                 .build();
     }
+
+    public static BalanceOptionDto fromEntity(BalanceOption balanceOption) {
+        FileDto fileDto = FileDto.fromEntity(balanceOption.getFile());
+        return BalanceOptionDto.builder()
+                .title(balanceOption.getTitle())
+                .description(balanceOption.getDescription())
+                .file(fileDto)
+                .build();
+    }
 }
