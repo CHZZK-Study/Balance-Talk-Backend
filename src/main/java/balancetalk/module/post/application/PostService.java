@@ -6,6 +6,9 @@ import balancetalk.module.post.domain.PostRepository;
 import balancetalk.module.post.domain.PostTag;
 import balancetalk.module.post.dto.PostRequestDto;
 import java.util.List;
+import java.util.stream.Collectors;
+
+import balancetalk.module.post.dto.PostResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,5 +32,13 @@ public class PostService {
             postTag.addPost(postEntity);
         }
         return postRepository.save(postEntity);
+    }
+
+    public List<PostResponseDto> findAll() {
+        // todo: 검색, 정렬, 마감 기능 추가
+        List<Post> posts = postRepository.findAll();
+        return posts.stream()
+                .map(PostResponseDto::fromEntity)
+                .collect(Collectors.toList());
     }
 }

@@ -8,28 +8,39 @@ import balancetalk.module.post.domain.PostCategory;
 import balancetalk.module.post.domain.PostRepository;
 import balancetalk.module.post.dto.BalanceOptionDto;
 import balancetalk.module.post.dto.PostRequestDto;
+import balancetalk.module.post.dto.PostResponseDto;
 import balancetalk.module.post.dto.PostTagDto;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.filter.CharacterEncodingFilter;
 
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @Slf4j
 @RequiredArgsConstructor
-@SpringBootTest
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
 class PostServiceTest {
 
     @Mock
@@ -37,6 +48,18 @@ class PostServiceTest {
 
     @InjectMocks
     private PostService postService;
+
+    @Autowired
+    private WebApplicationContext wac;
+    private MockMvc mockMvc;
+
+    @BeforeEach
+    public void setup() {
+        this.mockMvc = MockMvcBuilders.webAppContextSetup(wac)
+                .addFilter(new CharacterEncodingFilter("UTF-8", true))
+                .apply(SecurityMockMvcConfigurers.springSecurity())
+                .build();
+    }
 
     @AfterEach
     void clean() {
@@ -46,7 +69,7 @@ class PostServiceTest {
     @Test
     @DisplayName("게시글 작성 - 성공")
     @Transactional
-    void test() {
+    void createPost_success() {
         // given
         FileDto fileDto = FileDto.builder()
                 .uploadName("파일1")
@@ -95,5 +118,25 @@ class PostServiceTest {
 
         // then
         Assertions.assertThat(savedPost.getId()).isEqualTo(result.getId());
+    }
+
+    @Test
+    @DisplayName("모든 게시글 조회 - 성공")
+    @WithMockUser
+    void readAllPosts_Success() throws Exception {
+        this.mockMvc
+                .perform(get("/posts"))
+                .andExpect(status().isOk())
+                .andDo(print());
+    }
+
+    @Test
+    @DisplayName("모든 게시글 조회 - 실패")
+    @WithMockUser
+    void readAllPosts_Fail() throws Exception {
+        this.mockMvc
+                .perform(get("/posts"))
+                .andExpect(status().is4xxClientError())
+                .andDo(print());
     }
 }
