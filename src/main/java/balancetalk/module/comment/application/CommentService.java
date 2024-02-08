@@ -6,6 +6,8 @@ import balancetalk.module.comment.dto.CommentCreateRequest;
 import balancetalk.module.comment.dto.CommentResponse;
 import balancetalk.module.member.domain.Member;
 import balancetalk.module.member.domain.MemberRepository;
+import balancetalk.module.post.domain.BalanceOption;
+import balancetalk.module.post.domain.BalanceOptionRepository;
 import balancetalk.module.post.domain.Post;
 import balancetalk.module.ViewStatus;
 import balancetalk.module.post.domain.PostRepository;
@@ -24,13 +26,20 @@ public class CommentService {
     private final CommentRepository commentRepository;
     private final MemberRepository memberRepository;
     private final PostRepository postRepository;
+    private final BalanceOptionRepository balanceOptionRepository;
 
-    public Comment createComment(CommentCreateRequest request) {
+    public CommentResponse createComment(CommentCreateRequest request, Long postId) {
         Member member = memberRepository.findById(request.getMemberId()).orElseThrow(() -> new RuntimeException("Member not found"));
         Post post = postRepository.findById(request.getPostId()).orElseThrow(() -> new RuntimeException("Post not found"));
-        Comment comment = request.toEntity(member, post);
+        BalanceOption balanceOption = post.getOptions().stream()
+                .filter(option -> option.getId().equals(request.getBalanceOptionId()))
+                .findFirst()
+                .orElseThrow(() -> new RuntimeException("BalanceOption not found"));
 
-        return commentRepository.save(comment);
+        Comment comment = request.toEntity(member, post);
+        comment = commentRepository.save(comment);
+
+        return CommentResponse.fromEntity(comment);
     }
 
     public List<CommentResponse> readCommentsByPostId(Long postId) {
