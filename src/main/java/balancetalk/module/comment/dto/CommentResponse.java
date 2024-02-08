@@ -21,7 +21,7 @@ public class CommentResponse {
                 .content(comment.getContent())
                 .memberName(comment.getMember().getNickname())
                 .postId(comment.getPost().getId())
-                .likeCount(comment.getLikes().size())
+                // .likeCount(comment.getLikes().size()) //TODO: likeCount가 NULL이라 Response 어려움
                 .build();
     }
 }
