@@ -2,7 +2,6 @@ package balancetalk.module.post.domain;
 
 import balancetalk.module.file.domain.File;
 import balancetalk.module.vote.domain.Vote;
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -16,14 +15,11 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import java.util.ArrayList;
 import java.util.List;
-
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 @Entity
-@Builder
-@Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor
 public class BalanceOption {
 
     @Id
@@ -41,7 +37,7 @@ public class BalanceOption {
     @Column(nullable = false, length = 100)
     private String description;
 
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "file_id")
     private File file;
 
@@ -51,8 +47,4 @@ public class BalanceOption {
 
     @OneToMany(mappedBy = "balanceOption")
     private List<Vote> votes = new ArrayList<>();
-
-    public void addPost(Post post) {
-        this.post = post;
-    }
 }

@@ -5,19 +5,25 @@ import balancetalk.module.report.domain.Report;
 import balancetalk.module.ViewStatus;
 import balancetalk.module.member.domain.Member;
 import balancetalk.global.common.BaseTimeEntity;
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.validation.constraints.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 @Entity
-@Builder
-@Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor
 public class Post extends BaseTimeEntity {
 
     @Id
@@ -48,13 +54,13 @@ public class Post extends BaseTimeEntity {
     @NotNull
     @Enumerated(value = EnumType.STRING)
     @Column(nullable = false)
-    private PostCategory category;
+    private PostCategory Category;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
 
-    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "post")
     private List<BalanceOption> options = new ArrayList<>();
 
     @OneToMany(mappedBy = "post")
@@ -63,8 +69,7 @@ public class Post extends BaseTimeEntity {
     @OneToMany(mappedBy = "post")
     private List<Comment> comments = new ArrayList<>();
 
-
-    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "post")
     private List<PostTag> postTags = new ArrayList<>();
 
     @OneToMany(mappedBy = "post")
@@ -72,5 +77,4 @@ public class Post extends BaseTimeEntity {
 
     @OneToMany(mappedBy = "post")
     private List<Report> reports = new ArrayList<>();
-
 }

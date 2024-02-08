@@ -15,7 +15,6 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
 import lombok.AccessLevel;
-import lombok.Builder;
 import lombok.NoArgsConstructor;
 
 @Entity
@@ -32,8 +31,9 @@ public class File {
     @Column(nullable = false, length = 50)
     private String uploadName; // 사용자가 업로드한 파일명
 
+    @NotBlank
     @Size(max = 50)
-    @Column(length = 50, unique = true)
+    @Column(nullable = false, length = 50, unique = true)
     private String storedName; // 서버 내부에서 관리하는 파일명
 
     @NotBlank
@@ -52,12 +52,4 @@ public class File {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "notice_id")
     private Notice notice;
-
-    @Builder
-    public File(String uploadName, String path, FileType type, Long size) {
-        this.uploadName = uploadName;
-        this.path = path;
-        this.type = type;
-        this.size = size;
-    }
 }
