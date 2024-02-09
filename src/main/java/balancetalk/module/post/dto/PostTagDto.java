@@ -6,14 +6,20 @@ import lombok.*;
 
 @Data
 @Builder
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor
 @AllArgsConstructor
 public class PostTagDto {
 
     private String tagName;
     public PostTag toEntity() {
         return PostTag.builder()
-                .tag(new Tag(tagName))
+                .tag(Tag.builder().name(tagName).build())
+                .build();
+    }
+
+    public static PostTagDto fromEntity(PostTag postTag) {
+        return PostTagDto.builder()
+                .tagName(postTag.getTag().getName())
                 .build();
     }
 }
