@@ -34,6 +34,7 @@ public class VoteService {
         return voteRepository.save(voteRequest.toEntity(balanceOption, member));
     }
 
+    @Transactional(readOnly = true)
     public List<VotingStatusResponse> readVotingStatus(Long postId) {
         Post post = postRepository.findById(postId)
                 .orElseThrow();
