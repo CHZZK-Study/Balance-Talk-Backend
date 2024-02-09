@@ -1,10 +1,7 @@
 package balancetalk.module.post.dto;
 
-import balancetalk.module.ViewStatus;
-import balancetalk.module.post.domain.BalanceOption;
 import balancetalk.module.post.domain.Post;
 import balancetalk.module.post.domain.PostCategory;
-import balancetalk.module.post.domain.PostTag;
 import lombok.*;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -12,7 +9,6 @@ import java.util.stream.Collectors;
 
 @Data
 @Builder
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 public class PostResponseDto {
     private Long id;

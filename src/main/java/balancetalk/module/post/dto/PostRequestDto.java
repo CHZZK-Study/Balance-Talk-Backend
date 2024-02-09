@@ -12,11 +12,10 @@ import java.util.stream.Collectors;
 
 @Data
 @Builder
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor
 @AllArgsConstructor
 public class PostRequestDto {
 
-    private Long id;
     private Long memberId;
     private String title;
 
@@ -30,7 +29,6 @@ public class PostRequestDto {
 
     public Post toEntity(Member member) {
         return Post.builder()
-                .id(id)
                 .member(member)
                 .title(title)
                 .deadline(deadline)
