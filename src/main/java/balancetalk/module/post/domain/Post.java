@@ -17,7 +17,7 @@ import lombok.*;
 @Builder
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class Post extends BaseTimeEntity {
 
     @Id

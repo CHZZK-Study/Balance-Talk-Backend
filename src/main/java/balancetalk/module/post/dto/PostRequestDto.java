@@ -1,6 +1,7 @@
 package balancetalk.module.post.dto;
 
 import balancetalk.module.ViewStatus;
+import balancetalk.module.member.domain.Member;
 import balancetalk.module.post.domain.Post;
 import balancetalk.module.post.domain.PostCategory;
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -11,11 +12,11 @@ import java.util.stream.Collectors;
 
 @Data
 @Builder
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor
 @AllArgsConstructor
 public class PostRequestDto {
 
-    private Long id;
+    private Long memberId;
     private String title;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss", timezone = "Asia/Seoul")
@@ -26,9 +27,9 @@ public class PostRequestDto {
     private List<BalanceOptionDto> balanceOptions;
     private List<PostTagDto> tags;
 
-    public Post toEntity() {
+    public Post toEntity(Member member) {
         return Post.builder()
-                .id(id)
+                .member(member)
                 .title(title)
                 .deadline(deadline)
                 .views(views)

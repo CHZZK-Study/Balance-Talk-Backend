@@ -20,7 +20,7 @@ import lombok.*;
 @Getter
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class File {
 
     @Id
@@ -34,7 +34,7 @@ public class File {
     private String uploadName; // 사용자가 업로드한 파일명
 
     @Size(max = 50)
-    @Column(length = 50, unique = true)
+    @Column(nullable = true, length = 50, unique = true)
     private String storedName; // 서버 내부에서 관리하는 파일명
 
     @NotBlank
