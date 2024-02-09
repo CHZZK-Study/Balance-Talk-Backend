@@ -14,8 +14,6 @@ import balancetalk.module.vote.dto.VotingStatusResponse;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -40,9 +38,6 @@ class VoteServiceTest {
 
     @Mock
     PostRepository postRepository;
-
-    @PersistenceContext
-    EntityManager em;
 
     @Test
     @DisplayName("회원과 선택지 정보를 바탕으로 투표를 생성한다.")
