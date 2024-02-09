@@ -34,7 +34,7 @@ public class File {
     private String uploadName; // 사용자가 업로드한 파일명
 
     @Size(max = 50)
-    @Column(nullable = true, length = 50, unique = true)
+    @Column(length = 50, unique = true)
     private String storedName; // 서버 내부에서 관리하는 파일명
 
     @NotBlank

@@ -10,10 +10,12 @@ import balancetalk.module.post.dto.PostRequestDto;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
+
 import balancetalk.module.post.dto.PostResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 @Service
 @RequiredArgsConstructor
 public class PostService {
@@ -28,6 +30,7 @@ public class PostService {
                 .orElseThrow();
 
         Post postEntity = postRequestDto.toEntity(member);
+
         List<BalanceOption> options = postEntity.getOptions();
         for (BalanceOption option : options) {
             option.addPost(postEntity);

@@ -21,6 +21,7 @@ public class PostRequestDto {
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss", timezone = "Asia/Seoul")
     private LocalDateTime deadline;
+
     private PostCategory category;
     private List<BalanceOptionDto> balanceOptions;
     private List<PostTagDto> tags;

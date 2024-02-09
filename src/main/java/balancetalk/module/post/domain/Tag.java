@@ -19,11 +19,13 @@ public class Tag {
     @Column(name = "tag_id")
     private Long id;
 
-    @NotBlank
-    @Size(max = 20)
-    @Column(nullable = false, length = 20, unique = true)
+    @NotNull
     private String name;
 
     @OneToMany(mappedBy = "tag")
     private List<PostTag> postTags = new ArrayList<>();
+
+    public Tag(String name){
+        this.name = name;
+    }
 }

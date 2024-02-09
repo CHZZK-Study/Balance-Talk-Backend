@@ -73,6 +73,7 @@ public class Post extends BaseTimeEntity {
 
     @OneToMany(mappedBy = "post")
     private List<Report> reports = new ArrayList<>();
+  
     @PrePersist
     public void init() {
         this.views = 0L;

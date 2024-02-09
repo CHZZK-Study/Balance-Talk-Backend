@@ -3,6 +3,7 @@ package balancetalk.module.post.dto;
 import balancetalk.module.file.dto.FileDto;
 import balancetalk.module.post.domain.BalanceOption;
 import lombok.*;
+
 @Data
 @Builder
 @NoArgsConstructor
