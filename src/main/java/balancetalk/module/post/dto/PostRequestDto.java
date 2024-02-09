@@ -21,8 +21,6 @@ public class PostRequestDto {
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss", timezone = "Asia/Seoul")
     private LocalDateTime deadline;
-    private Long views;
-    private ViewStatus viewStatus;
     private PostCategory category;
     private List<BalanceOptionDto> balanceOptions;
     private List<PostTagDto> tags;
@@ -32,8 +30,6 @@ public class PostRequestDto {
                 .member(member)
                 .title(title)
                 .deadline(deadline)
-                .views(views)
-                .viewStatus(ViewStatus.NORMAL)
                 .category(category)
                 .options(balanceOptions.stream().map(BalanceOptionDto::toEntity).collect(Collectors.toList()))
                 .postTags(tags.stream().map(PostTagDto::toEntity).collect(Collectors.toList()))

@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import lombok.*;
+import org.hibernate.annotations.ColumnDefault;
 
 @Entity
 @Builder
@@ -35,15 +36,15 @@ public class Post extends BaseTimeEntity {
     @Column(nullable = false)
     private LocalDateTime deadline;
 
-    @NotNull
     @PositiveOrZero
+    @ColumnDefault("0")
     @Column(nullable = false)
-    private Long views = 0L;
+    private Long views;
 
-    @NotNull
     @Enumerated(value = EnumType.STRING)
+    @ColumnDefault("'NORMAL'")
     @Column(nullable = false)
-    private ViewStatus viewStatus = ViewStatus.NORMAL;
+    private ViewStatus viewStatus;
 
     @NotNull
     @Enumerated(value = EnumType.STRING)
@@ -72,5 +73,9 @@ public class Post extends BaseTimeEntity {
 
     @OneToMany(mappedBy = "post")
     private List<Report> reports = new ArrayList<>();
-
+    @PrePersist
+    public void init() {
+        this.views = 0L;
+        this.viewStatus = ViewStatus.NORMAL;
+    }
 }
