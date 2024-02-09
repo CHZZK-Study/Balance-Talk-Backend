@@ -5,16 +5,7 @@ import balancetalk.module.report.domain.Report;
 import balancetalk.module.ViewStatus;
 import balancetalk.module.member.domain.Member;
 import balancetalk.global.common.BaseTimeEntity;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -24,6 +15,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.ColumnDefault;
 
 @Entity
 @Getter
@@ -47,15 +39,15 @@ public class Post extends BaseTimeEntity {
     @Column(nullable = false)
     private LocalDateTime deadline;
 
-    @NotNull
     @PositiveOrZero
     @Column(nullable = false)
-    private Long views = 0L;
+    @ColumnDefault("0")
+    private Long views;
 
-    @NotNull
     @Enumerated(value = EnumType.STRING)
     @Column(nullable = false)
-    private ViewStatus viewStatus = ViewStatus.NORMAL;
+    @ColumnDefault("'NORMAL'")
+    private ViewStatus viewStatus;
 
     @NotNull
     @Enumerated(value = EnumType.STRING)
@@ -86,5 +78,11 @@ public class Post extends BaseTimeEntity {
 
     public boolean isCasual() {
         return this.category == PostCategory.CASUAL;
+    }
+
+    @PrePersist
+    public void init() {
+        this.views = 0L;
+        this.viewStatus = ViewStatus.NORMAL;
     }
 }
