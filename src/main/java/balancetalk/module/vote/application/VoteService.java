@@ -42,8 +42,11 @@ public class VoteService {
         List<VotingStatusResponse> responses = new ArrayList<>();
 
         for (BalanceOption option : options) {
-            responses.add(
-                    new VotingStatusResponse(option.getTitle(), option.getVotes().size()));
+            VotingStatusResponse votingStatusResponse = VotingStatusResponse.builder()
+                    .optionTitle(option.getTitle())
+                    .voteCount(option.voteCount())
+                    .build();
+            responses.add(votingStatusResponse);
         }
 
         return responses;

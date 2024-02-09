@@ -49,4 +49,8 @@ public class BalanceOption {
 
     @OneToMany(mappedBy = "balanceOption")
     private List<Vote> votes = new ArrayList<>();
+
+    public int voteCount() {
+        return votes.size();
+    }
 }
