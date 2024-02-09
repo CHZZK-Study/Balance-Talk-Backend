@@ -3,13 +3,7 @@ package balancetalk.module.vote.domain;
 import balancetalk.module.member.domain.Member;
 import balancetalk.module.post.domain.BalanceOption;
 import balancetalk.global.common.BaseTimeEntity;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
