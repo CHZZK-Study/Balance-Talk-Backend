@@ -11,27 +11,27 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/posts/{post-id}/vote")
+@RequestMapping("/posts/{postId}/vote")
 public class VoteController {
 
     private final VoteService voteService;
 
     @ResponseStatus(CREATED)
     @PostMapping
-    public String vote(@PathVariable("post-id") Long postId, @RequestBody VoteRequest voteRequest) {
-        voteService.createVote(voteRequest);
+    public String vote(@PathVariable Long postId, @RequestBody VoteRequest voteRequest) {
+        voteService.createVote(postId, voteRequest);
         return "투표가 정상적으로 처리되었습니다.";
     }
 
     @ResponseStatus(OK)
     @GetMapping
-    public List<VotingStatusResponse> votingStatus(@PathVariable("post-id") Long postId) {
+    public List<VotingStatusResponse> votingStatus(@PathVariable Long postId) {
         return voteService.readVotingStatus(postId);
     }
 
     @ResponseStatus(OK)
     @PutMapping
-    public String updateVote(@PathVariable("post-id") Long postId, @RequestBody VoteRequest voteRequest) {
+    public String updateVote(@PathVariable Long postId, @RequestBody VoteRequest voteRequest) {
         voteService.updateVote(postId, voteRequest);
         return "투표가 정상적으로 변경되었습니다.";
     }

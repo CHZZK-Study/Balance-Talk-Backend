@@ -85,4 +85,8 @@ public class Post extends BaseTimeEntity {
         this.views = 0L;
         this.viewStatus = ViewStatus.NORMAL;
     }
+
+    public boolean notContainsBalanceOption(BalanceOption option) {
+        return !options.contains(option);
+    }
 }

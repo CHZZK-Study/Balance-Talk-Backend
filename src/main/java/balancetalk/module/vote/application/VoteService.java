@@ -26,11 +26,17 @@ public class VoteService {
     private final BalanceOptionRepository balanceOptionRepository;
     private final PostRepository postRepository;
 
-    public Vote createVote(VoteRequest voteRequest) {
+    public Vote createVote(Long postId, VoteRequest voteRequest) {
+        Post post = postRepository.findById(postId)
+                .orElseThrow();
         BalanceOption balanceOption = balanceOptionRepository.findById(voteRequest.getSelectedOptionId())
-                .orElseThrow(); // TODO 예외 처리
+                .orElseThrow();
+        if (post.notContainsBalanceOption(balanceOption)) {
+            throw new RuntimeException();
+        }
+
         Member member = memberRepository.findById(voteRequest.getMemberId())
-                .orElseThrow(); // TODO 예외 처리
+                .orElseThrow();
         return voteRepository.save(voteRequest.toEntity(balanceOption, member));
     }
 

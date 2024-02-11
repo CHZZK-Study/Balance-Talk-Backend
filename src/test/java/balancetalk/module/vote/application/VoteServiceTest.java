@@ -44,6 +44,10 @@ class VoteServiceTest {
     void createVote_Success() {
         // given
         BalanceOption option = createBalanceOption(1L, "A", List.of());
+        Post post = Post.builder()
+                .id(1L)
+                .options(List.of(option))
+                .build();
         Member member = createMember(1L);
         Vote vote = Vote.builder()
                 .id(1L)
@@ -51,6 +55,7 @@ class VoteServiceTest {
                 .balanceOption(option)
                 .build();
 
+        when(postRepository.findById(any())).thenReturn(Optional.of(post));
         when(balanceOptionRepository.findById(any())).thenReturn(Optional.of(option));
         when(memberRepository.findById(any())).thenReturn(Optional.of(member));
         when(voteRepository.save(any())).thenReturn(vote);
@@ -61,7 +66,7 @@ class VoteServiceTest {
                 .build();
 
         // when
-        Vote createdVote = voteService.createVote(voteRequest);
+        Vote createdVote = voteService.createVote(post.getId(), voteRequest);
 
         // then
         assertThat(createdVote.getMember()).isEqualTo(member);
