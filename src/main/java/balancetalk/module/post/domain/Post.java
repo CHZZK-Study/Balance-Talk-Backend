@@ -10,15 +10,14 @@ import jakarta.validation.constraints.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 
 @Entity
-@Builder
 @Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Builder
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Post extends BaseTimeEntity {
 
     @Id
@@ -73,10 +72,18 @@ public class Post extends BaseTimeEntity {
 
     @OneToMany(mappedBy = "post")
     private List<Report> reports = new ArrayList<>();
-  
+
+    public boolean isCasual() {
+        return this.category == PostCategory.CASUAL;
+    }
+    
     @PrePersist
     public void init() {
         this.views = 0L;
         this.viewStatus = ViewStatus.NORMAL;
+    }
+
+    public boolean notContainsBalanceOption(BalanceOption option) {
+        return !options.contains(option);
     }
 }

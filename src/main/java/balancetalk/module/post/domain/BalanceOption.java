@@ -16,14 +16,13 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import java.util.ArrayList;
 import java.util.List;
-
 import lombok.*;
 
 @Entity
-@Builder
 @Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Builder
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class BalanceOption {
 
     @Id
@@ -52,6 +51,9 @@ public class BalanceOption {
     @OneToMany(mappedBy = "balanceOption")
     private List<Vote> votes = new ArrayList<>();
 
+    public int voteCount() {
+        return votes.size();
+  
     public void addPost(Post post) {
         this.post = post;
     }
