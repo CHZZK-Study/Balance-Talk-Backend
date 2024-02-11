@@ -3,13 +3,15 @@ package balancetalk.module.post.domain;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import lombok.*;
+
 import java.util.ArrayList;
 import java.util.List;
-
 @Entity
+@Builder
+@Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class Tag {
 
     @Id
@@ -17,11 +19,13 @@ public class Tag {
     @Column(name = "tag_id")
     private Long id;
 
-    @NotBlank
-    @Size(max = 20)
-    @Column(nullable = false, length = 20, unique = true)
+    @NotNull
     private String name;
 
     @OneToMany(mappedBy = "tag")
     private List<PostTag> postTags = new ArrayList<>();
+
+    public Tag(String name){
+        this.name = name;
+    }
 }

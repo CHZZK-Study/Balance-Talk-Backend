@@ -10,11 +10,7 @@ import jakarta.validation.constraints.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 
 @Entity
@@ -40,13 +36,13 @@ public class Post extends BaseTimeEntity {
     private LocalDateTime deadline;
 
     @PositiveOrZero
-    @Column(nullable = false)
     @ColumnDefault("0")
+    @Column(nullable = false)
     private Long views;
 
     @Enumerated(value = EnumType.STRING)
-    @Column(nullable = false)
     @ColumnDefault("'NORMAL'")
+    @Column(nullable = false)
     private ViewStatus viewStatus;
 
     @NotNull
@@ -58,7 +54,7 @@ public class Post extends BaseTimeEntity {
     @JoinColumn(name = "member_id")
     private Member member;
 
-    @OneToMany(mappedBy = "post")
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
     private List<BalanceOption> options = new ArrayList<>();
 
     @OneToMany(mappedBy = "post")
@@ -67,7 +63,8 @@ public class Post extends BaseTimeEntity {
     @OneToMany(mappedBy = "post")
     private List<Comment> comments = new ArrayList<>();
 
-    @OneToMany(mappedBy = "post")
+
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
     private List<PostTag> postTags = new ArrayList<>();
 
     @OneToMany(mappedBy = "post")
@@ -79,7 +76,7 @@ public class Post extends BaseTimeEntity {
     public boolean isCasual() {
         return this.category == PostCategory.CASUAL;
     }
-
+    
     @PrePersist
     public void init() {
         this.views = 0L;
