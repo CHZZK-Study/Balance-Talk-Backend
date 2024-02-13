@@ -30,7 +30,7 @@ public class CommentService {
 
     public CommentResponse createComment(CommentCreateRequest request, Long postId) {
         Member member = memberRepository.findById(request.getMemberId()).orElseThrow(() -> new RuntimeException("Member not found"));
-        Post post = postRepository.findById(request.getPostId()).orElseThrow(() -> new RuntimeException("Post not found"));
+        Post post = postRepository.findById(postId).orElseThrow(() -> new RuntimeException("Post not found"));
         BalanceOption balanceOption = post.getOptions().stream()
                 .filter(option -> option.getId().equals(request.getBalanceOptionId()))
                 .findFirst()

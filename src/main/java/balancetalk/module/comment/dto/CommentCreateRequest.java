@@ -12,7 +12,6 @@ import lombok.Data;
 public class CommentCreateRequest {
     private String content;
     private Long memberId;
-    private Long postId;
     private Long balanceOptionId;
 
     public Comment toEntity(Member member, Post post) {
