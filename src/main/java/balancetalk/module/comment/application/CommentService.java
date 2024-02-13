@@ -16,7 +16,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@Transactional
 @RequiredArgsConstructor
 public class CommentService {
 
@@ -25,6 +24,7 @@ public class CommentService {
     private final PostRepository postRepository;
     private final BalanceOptionRepository balanceOptionRepository;
 
+    @Transactional
     public CommentResponse createComment(CommentCreateRequest request, Long postId) {
         Member member = memberRepository.findById(request.getMemberId()).orElseThrow(() -> new RuntimeException("Member not found"));
         Post post = postRepository.findById(postId).orElseThrow(() -> new RuntimeException("Post not found"));
@@ -41,6 +41,7 @@ public class CommentService {
         return CommentResponse.fromEntity(comment);
     }
 
+    @Transactional
     public List<CommentResponse> readCommentsByPostId(Long postId) {
         List<Comment> comments = commentRepository.findByPostId(postId);
         return comments.stream()
@@ -48,6 +49,7 @@ public class CommentService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional
     public Comment updateComment(Long commentId, String content) {
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new RuntimeException("Comment not found"));
@@ -56,6 +58,7 @@ public class CommentService {
         return commentRepository.save(comment);
     }
 
+    @Transactional
     public void deleteComment(Long commentId) {
         commentRepository.deleteById(commentId);
     }
