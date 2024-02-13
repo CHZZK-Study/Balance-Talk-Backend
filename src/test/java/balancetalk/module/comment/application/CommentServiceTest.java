@@ -1,8 +1,10 @@
 package balancetalk.module.comment.application;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import balancetalk.module.comment.domain.Comment;
 import balancetalk.module.comment.domain.CommentRepository;
@@ -10,8 +12,6 @@ import balancetalk.module.comment.dto.CommentCreateRequest;
 import balancetalk.module.comment.dto.CommentResponse;
 import balancetalk.module.member.domain.Member;
 import balancetalk.module.member.domain.MemberRepository;
-import balancetalk.module.post.domain.BalanceOption;
-import balancetalk.module.post.domain.BalanceOptionRepository;
 import balancetalk.module.post.domain.Post;
 import balancetalk.module.post.domain.PostRepository;
 import java.util.ArrayList;
@@ -23,7 +23,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.security.core.parameters.P;
 
 @ExtendWith(MockitoExtension.class)
 class CommentServiceTest {

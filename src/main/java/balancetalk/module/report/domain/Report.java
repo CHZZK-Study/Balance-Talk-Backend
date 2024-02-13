@@ -1,9 +1,9 @@
 package balancetalk.module.report.domain;
 
+import balancetalk.global.common.BaseTimeEntity;
 import balancetalk.module.comment.domain.Comment;
 import balancetalk.module.member.domain.Member;
 import balancetalk.module.post.domain.Post;
-import balancetalk.global.common.BaseTimeEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;

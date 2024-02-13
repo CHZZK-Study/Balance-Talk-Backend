@@ -1,14 +1,14 @@
 package balancetalk.module.member.domain;
 
-import balancetalk.module.post.domain.Bookmark;
+import balancetalk.global.common.BaseTimeEntity;
+import balancetalk.module.Notice;
 import balancetalk.module.comment.domain.Comment;
 import balancetalk.module.comment.domain.CommentLike;
-import balancetalk.module.Notice;
+import balancetalk.module.post.domain.Bookmark;
 import balancetalk.module.post.domain.Post;
 import balancetalk.module.post.domain.PostLike;
 import balancetalk.module.report.domain.Report;
 import balancetalk.module.vote.domain.Vote;
-import balancetalk.global.common.BaseTimeEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -16,10 +16,12 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 import java.util.ArrayList;
 import java.util.List;
-
-import jakarta.validation.constraints.*;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

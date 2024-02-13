@@ -1,8 +1,8 @@
 package balancetalk.module.vote.domain;
 
+import balancetalk.global.common.BaseTimeEntity;
 import balancetalk.module.member.domain.Member;
 import balancetalk.module.post.domain.BalanceOption;
-import balancetalk.global.common.BaseTimeEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;

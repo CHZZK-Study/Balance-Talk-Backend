@@ -6,17 +6,14 @@ import balancetalk.module.comment.dto.CommentCreateRequest;
 import balancetalk.module.comment.dto.CommentResponse;
 import balancetalk.module.member.domain.Member;
 import balancetalk.module.member.domain.MemberRepository;
-import balancetalk.module.post.domain.BalanceOption;
 import balancetalk.module.post.domain.BalanceOptionRepository;
 import balancetalk.module.post.domain.Post;
-import balancetalk.module.ViewStatus;
 import balancetalk.module.post.domain.PostRepository;
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @Transactional
