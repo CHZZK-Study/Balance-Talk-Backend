@@ -39,9 +39,9 @@ public class CommentController {
     }
 
     @PutMapping("/{commentId}")
-    public ResponseEntity<?> updateComment(@PathVariable Long commentId, @RequestBody String content) {
+    public ResponseEntity<?> updateComment(@PathVariable Long commentId, @RequestBody CommentCreateRequest request) {
         try {
-            Comment updatedComment = commentService.updateComment(commentId, content);
+            Comment updatedComment = commentService.updateComment(commentId, request.getContent());
             return ResponseEntity.ok(updatedComment);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
