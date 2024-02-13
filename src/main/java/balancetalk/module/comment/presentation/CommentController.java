@@ -42,7 +42,8 @@ public class CommentController {
     public ResponseEntity<?> updateComment(@PathVariable Long commentId, @RequestBody CommentCreateRequest request) {
         try {
             Comment updatedComment = commentService.updateComment(commentId, request.getContent());
-            return ResponseEntity.ok(updatedComment);
+            CommentResponse response = CommentResponse.fromEntity(updatedComment);
+            return ResponseEntity.ok(response);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
