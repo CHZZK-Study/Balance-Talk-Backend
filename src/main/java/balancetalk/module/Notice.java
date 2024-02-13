@@ -1,8 +1,8 @@
 package balancetalk.module;
 
-import balancetalk.global.common.BaseTimeEntity;
 import balancetalk.module.file.domain.File;
 import balancetalk.module.member.domain.Member;
+import balancetalk.global.common.BaseTimeEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -12,7 +12,6 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import java.util.ArrayList;
 import java.util.List;
@@ -30,10 +29,12 @@ public class Notice extends BaseTimeEntity {
 
     @NotBlank
     @Size(max = 50)
+    @Column(nullable = false, length = 50)
     private String title;
 
-    @NotNull
+    @NotBlank
     @Size(max = 2000)
+    @Column(nullable = false, length = 2000)
     private String content;
 
     @ManyToOne(fetch = FetchType.LAZY)

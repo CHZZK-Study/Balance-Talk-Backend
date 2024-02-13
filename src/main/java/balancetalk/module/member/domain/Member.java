@@ -1,14 +1,14 @@
 package balancetalk.module.member.domain;
 
-import balancetalk.global.common.BaseTimeEntity;
-import balancetalk.module.Notice;
+import balancetalk.module.post.domain.Bookmark;
 import balancetalk.module.comment.domain.Comment;
 import balancetalk.module.comment.domain.CommentLike;
-import balancetalk.module.post.domain.Bookmark;
+import balancetalk.module.Notice;
 import balancetalk.module.post.domain.Post;
 import balancetalk.module.post.domain.PostLike;
 import balancetalk.module.report.domain.Report;
 import balancetalk.module.vote.domain.Vote;
+import balancetalk.global.common.BaseTimeEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -16,21 +16,14 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
 import java.util.ArrayList;
 import java.util.List;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import jakarta.validation.constraints.*;
+import lombok.*;
 
 @Entity
-@Getter
 @Builder
+@Getter
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Member extends BaseTimeEntity {
@@ -40,23 +33,27 @@ public class Member extends BaseTimeEntity {
     @Column(name = "member_id")
     private Long id;
 
-    @NotNull
+    @NotBlank
     @Size(min = 2, max = 10)
+    @Column(nullable = false, length = 10, unique = true)
     private String nickname;
 
     @NotNull
     @Size(max = 30)
     @Email(regexp = "^[a-zA-Z0-9._%+-]{1,20}@[a-zA-Z0-9.-]{1,10}\\.[a-zA-Z]{2,}$")
+    @Column(nullable = false, length = 30, unique = true)
     private String email;
 
-    @NotNull
+    @NotBlank
     @Size(min = 10, max = 20)
-    @Pattern(regexp = "^(?=.*[0-9])(?=.*[a-zA-Z])$")
+    @Pattern(regexp = "^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d@$!%*#?&]{10,20}$")
+    @Column(nullable = false)
     private String password;
 
-    @Enumerated(value = EnumType.STRING)
     @NotNull
-    private Role role;
+    @Enumerated(value = EnumType.STRING)
+    @Column(nullable = false)
+    private Role role = Role.USER;
 
     @Size(min = 15)
     private String ip;
