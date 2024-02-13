@@ -31,10 +31,12 @@ public class CommentService {
     public CommentResponse createComment(CommentCreateRequest request, Long postId) {
         Member member = memberRepository.findById(request.getMemberId()).orElseThrow(() -> new RuntimeException("Member not found"));
         Post post = postRepository.findById(postId).orElseThrow(() -> new RuntimeException("Post not found"));
-        BalanceOption balanceOption = post.getOptions().stream()
+        /* BalanceOption balanceOption = post.getOptions().stream()
                 .filter(option -> option.getId().equals(request.getBalanceOptionId()))
                 .findFirst()
                 .orElseThrow(() -> new RuntimeException("BalanceOption not found"));
+                //TODO : 추후 밸런스 옵션 구현 시 사용할 기능
+         */
 
         Comment comment = request.toEntity(member, post);
         comment = commentRepository.save(comment);
@@ -54,7 +56,7 @@ public class CommentService {
                 .orElseThrow(() -> new RuntimeException("Comment not found"));
         comment.updateContent(content);
 
-        return comment;
+        return commentRepository.save(comment);
     }
 
     public void deleteComment(Long commentId) {
