@@ -1,7 +1,7 @@
 package balancetalk.module.post.application;
 
 import balancetalk.module.member.domain.Member;
-import balancetalk.module.member.presentation.MemberRepository;
+import balancetalk.module.member.domain.MemberRepository;
 import balancetalk.module.post.domain.BalanceOption;
 import balancetalk.module.post.domain.Post;
 import balancetalk.module.post.domain.PostRepository;
