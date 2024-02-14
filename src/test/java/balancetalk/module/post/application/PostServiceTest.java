@@ -4,7 +4,6 @@ import balancetalk.module.file.domain.File;
 import balancetalk.module.file.domain.FileType;
 import balancetalk.module.file.dto.FileDto;
 import balancetalk.module.member.domain.Member;
-import balancetalk.module.member.presentation.MemberRepository;
 import balancetalk.module.post.domain.BalanceOption;
 import balancetalk.module.post.domain.Post;
 import balancetalk.module.post.domain.PostRepository;
