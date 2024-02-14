@@ -15,6 +15,4 @@ public class ErrorResponse {
     public static ErrorResponse from(ErrorCode errorCode) {
         return new ErrorResponse(errorCode.getHttpStatus(), errorCode.getMessage());
     }
-
-    // 필요하다면 메시지도 함께 전달하는 생성자 추가 (네이밍은 상의)
 }

@@ -86,4 +86,8 @@ public class Post extends BaseTimeEntity {
     public boolean notContainsBalanceOption(BalanceOption option) {
         return !options.contains(option);
     }
+
+    public boolean hasDeadlineExpired() {
+        return deadline.isBefore(LocalDateTime.now());
+    }
 }

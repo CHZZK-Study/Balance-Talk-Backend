@@ -9,12 +9,10 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(BalanceTalkException.class) //
-    public ResponseEntity<ErrorResponse> handle___Exception(BalanceTalkException e) {
+    @ExceptionHandler(BalanceTalkException.class)
+    public ResponseEntity<ErrorResponse> handleBalanceTalkException(BalanceTalkException e) {
         ErrorResponse errorResponse = ErrorResponse.from(e.getErrorCode());
-        log.info("exception = {}", e.getMessage());
+        log.error("exception message = {}", e.getMessage());
         return ResponseEntity.status(errorResponse.getHttpStatus()).body(errorResponse);
     }
-
-    // ...
 }

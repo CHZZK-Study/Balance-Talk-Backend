@@ -115,4 +115,8 @@ public class Member extends BaseTimeEntity implements UserDetails {
     public boolean isEnabled() {
         return true;
     }
+    public boolean hasVoted(Post post) {
+        return votes.stream()
+                .anyMatch(vote -> vote.getBalanceOption().getPost().equals(post));
+    }
 }
