@@ -253,4 +253,26 @@ class PostServiceTest {
                 .isInstanceOf(BalanceTalkException.class)
                 .hasMessageContaining(NOT_FOUND_POST.getMessage());
     }
+
+    @Test
+    @DisplayName("게시글 중복 추천 시 예외 발생")
+    void createPostLike_Fail_ByAlreadyLikePost() {
+        // given
+        Post post = Post.builder()
+                .id(1L)
+                .build();
+        Member member = Member.builder()
+                .id(1L)
+                .build();
+
+        when(postRepository.findById(any())).thenReturn(Optional.of(post));
+        when(memberRepository.findById(any())).thenReturn(Optional.of(member));
+        when(postLikeRepository.existsByMemberAndPost(member, post))
+                .thenThrow(new BalanceTalkException(ALREADY_LIKE_POST));
+
+        // when, then
+        assertThatThrownBy(() -> postService.likePost(post.getId(), member.getId()))
+                .isInstanceOf(BalanceTalkException.class)
+                .hasMessageContaining(ALREADY_LIKE_POST.getMessage());
+    }
 }
