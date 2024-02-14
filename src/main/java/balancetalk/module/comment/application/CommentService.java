@@ -1,11 +1,19 @@
 package balancetalk.module.comment.application;
 
+import static balancetalk.global.exception.ErrorCode.NOT_FOUND_BALANCE_OPTION;
+import static balancetalk.global.exception.ErrorCode.NOT_FOUND_COMMENT;
+import static balancetalk.global.exception.ErrorCode.NOT_FOUND_MEMBER;
+import static balancetalk.global.exception.ErrorCode.NOT_FOUND_POST;
+
+import balancetalk.global.exception.BalanceTalkException;
+import balancetalk.global.exception.ErrorCode;
 import balancetalk.module.comment.domain.Comment;
 import balancetalk.module.comment.domain.CommentRepository;
 import balancetalk.module.comment.dto.CommentCreateRequest;
 import balancetalk.module.comment.dto.CommentResponse;
 import balancetalk.module.member.domain.Member;
 import balancetalk.module.member.domain.MemberRepository;
+import balancetalk.module.post.domain.BalanceOption;
 import balancetalk.module.post.domain.BalanceOptionRepository;
 import balancetalk.module.post.domain.Post;
 import balancetalk.module.post.domain.PostRepository;
@@ -22,27 +30,22 @@ public class CommentService {
     private final CommentRepository commentRepository;
     private final MemberRepository memberRepository;
     private final PostRepository postRepository;
-    private final BalanceOptionRepository balanceOptionRepository;
 
     @Transactional
     public CommentResponse createComment(CommentCreateRequest request, Long postId) {
-        Member member = memberRepository.findById(request.getMemberId()).orElseThrow(() -> new RuntimeException("Member not found"));
-        Post post = postRepository.findById(postId).orElseThrow(() -> new RuntimeException("Post not found"));
-        /* BalanceOption balanceOption = post.getOptions().stream()
-                .filter(option -> option.getId().equals(request.getBalanceOptionId()))
-                .findFirst()
-                .orElseThrow(() -> new RuntimeException("BalanceOption not found"));
-                //TODO : 추후 밸런스 옵션 구현 시 사용할 기능
-         */
+        Member member = validateMemberId(request);
+        Post post = validatePostId(postId);
+        validateBalanceOptionId(request, post);
 
         Comment comment = request.toEntity(member, post);
         comment = commentRepository.save(comment);
-
         return CommentResponse.fromEntity(comment);
     }
 
     @Transactional
     public List<CommentResponse> readCommentsByPostId(Long postId) {
+        validatePostId(postId);
+
         List<Comment> comments = commentRepository.findByPostId(postId);
         return comments.stream()
                 .map(CommentResponse::fromEntity)
@@ -51,15 +54,37 @@ public class CommentService {
 
     @Transactional
     public Comment updateComment(Long commentId, String content) {
-        Comment comment = commentRepository.findById(commentId)
-                .orElseThrow(() -> new RuntimeException("Comment not found"));
-        comment.updateContent(content);
+        Comment comment = validateCommentId(commentId);
 
+        comment.updateContent(content);
         return commentRepository.save(comment);
     }
 
     @Transactional
     public void deleteComment(Long commentId) {
+        validateCommentId(commentId);
         commentRepository.deleteById(commentId);
+    }
+
+    private Member validateMemberId(CommentCreateRequest request) {
+        return memberRepository.findById(request.getMemberId())
+                .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_MEMBER));
+    }
+
+    private Post validatePostId(Long postId) {
+        return postRepository.findById(postId)
+                .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_POST));
+    }
+
+    private BalanceOption validateBalanceOptionId(CommentCreateRequest request, Post post) {
+        return post.getOptions().stream()
+                .filter(option -> option.getId().equals(request.getBalanceOptionId()))
+                .findFirst()
+                .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_BALANCE_OPTION));
+    }
+
+    private Comment validateCommentId(Long commentId) {
+        return commentRepository.findById(commentId)
+                .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_COMMENT));
     }
 }
