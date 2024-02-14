@@ -53,7 +53,7 @@ public class VoteService {
     @Transactional(readOnly = true)
     public List<VotingStatusResponse> readVotingStatus(Long postId) {
         Post post = postRepository.findById(postId)
-                .orElseThrow();
+                .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_POST));
 
         List<BalanceOption> options = post.getOptions();
         List<VotingStatusResponse> responses = new ArrayList<>();
@@ -71,16 +71,16 @@ public class VoteService {
 
     public Vote updateVote(Long postId, VoteRequest voteRequest) {
         Post post = postRepository.findById(postId)
-                .orElseThrow();
+                .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_POST));
 
         if (post.isCasual()) {
             throw new IllegalArgumentException(); // TODO 예외 처리
         }
 
-        Member member = memberRepository.findById(voteRequest.getMemberId())
-                .orElseThrow();
         BalanceOption newSelectedOption = balanceOptionRepository.findById(voteRequest.getSelectedOptionId())
-                .orElseThrow();
+                .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_BALANCE_OPTION));
+        Member member = memberRepository.findById(voteRequest.getMemberId())
+                .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_MEMBER));
         Vote findVote = member.getVotes().stream()
                 .filter(vote -> vote.getBalanceOption().getPost().equals(post))
                 .findFirst()
