@@ -90,8 +90,4 @@ public class Post extends BaseTimeEntity {
     public boolean hasDeadlineExpired() {
         return deadline.isBefore(LocalDateTime.now());
     }
-
-    public void addLike(PostLike like) {
-        likes.add(like);
-    }
 }
