@@ -21,7 +21,8 @@ public enum ErrorCode {
     NOT_FOUND_VOTE(NOT_FOUND, "해당 게시글에서 투표한 기록이 존재하지 않습니다."),
 
     // 409
-    ALREADY_VOTE(CONFLICT, "투표는 한 번만 가능합니다.");
+    ALREADY_VOTE(CONFLICT, "투표는 한 번만 가능합니다."),
+    ALREADY_LIKE_COMMENT(CONFLICT, "이미 추천을 누른 댓글입니다.");
 
     private final HttpStatus httpStatus;
     private final String message;

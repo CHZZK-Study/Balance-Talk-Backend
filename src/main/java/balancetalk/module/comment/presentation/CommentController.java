@@ -64,4 +64,15 @@ public class CommentController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
     }
+
+    @PostMapping("/{commentId}/likes")
+    public ResponseEntity<String> likeComment(@PathVariable Long postId,
+                                              @PathVariable Long commentId,
+                                              @RequestBody Long memberId) {
+        Long likedCommentId = commentService.likeComment(postId, commentId, memberId);
+        String contentLocation = String.format("/posts/%d/comments/%d/likes", postId, likedCommentId);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .header("Content-Location", contentLocation)
+                .body("요청이 정상적으로 처리되었습니다.");
+    }
 }
