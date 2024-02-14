@@ -11,6 +11,7 @@ import balancetalk.module.vote.domain.Vote;
 import balancetalk.module.vote.domain.VoteRepository;
 import balancetalk.module.vote.dto.VoteRequest;
 import balancetalk.module.vote.dto.VotingStatusResponse;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -46,6 +47,7 @@ class VoteServiceTest {
         BalanceOption option = createBalanceOption(1L, "A", List.of());
         Post post = Post.builder()
                 .id(1L)
+                .deadline(LocalDateTime.now().plusDays(1))
                 .options(List.of(option))
                 .build();
         Member member = createMember(1L);
@@ -174,6 +176,7 @@ class VoteServiceTest {
     private Member createMember(Long id) {
         return Member.builder()
                 .id(id)
+                .votes(List.of())
                 .build();
     }
 }
