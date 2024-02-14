@@ -38,8 +38,14 @@ public class MemberController {
 
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/{memberId}")
-    public MemberResponseDto findMemberInformation(@PathVariable("memberId") Long memberId) {
+    public MemberResponseDto findMemberInfo(@PathVariable("memberId") Long memberId) {
         return memberService.findById(memberId);
+    }
+
+    @ResponseStatus(HttpStatus.OK)
+    @GetMapping
+    public List<MemberResponseDto> findAllMemberInfo() {
+        return memberService.findAll();
     }
 
 }

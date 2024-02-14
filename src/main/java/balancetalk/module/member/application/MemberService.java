@@ -11,6 +11,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 @RequiredArgsConstructor
 public class MemberService {
@@ -43,5 +46,13 @@ public class MemberService {
         Member member = memberRepository.findById(id)
                 .orElseThrow();
         return MemberResponseDto.fromEntity(member);
+    }
+
+    @Transactional(readOnly = true)
+    public List<MemberResponseDto> findAll() {
+        List<Member> members = memberRepository.findAll();
+        return members.stream()
+                .map(MemberResponseDto::fromEntity)
+                .collect(Collectors.toList());
     }
 }
