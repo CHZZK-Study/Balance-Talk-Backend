@@ -84,7 +84,7 @@ public class VoteService {
         Vote findVote = member.getVotes().stream()
                 .filter(vote -> vote.getBalanceOption().getPost().equals(post))
                 .findFirst()
-                .orElseThrow();
+                .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_VOTE));
         return findVote.changeBalanceOption(newSelectedOption);
     }
 }
