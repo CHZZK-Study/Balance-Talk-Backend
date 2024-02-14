@@ -41,6 +41,10 @@ public class VoteService {
         Member member = memberRepository.findById(voteRequest.getMemberId())
                 .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_MEMBER));
 
+        if (member.hasVoted(post)) {
+            throw new BalanceTalkException(ALREADY_VOTE);
+        }
+
         return voteRepository.save(voteRequest.toEntity(balanceOption, member));
     }
 
