@@ -6,6 +6,7 @@ import balancetalk.module.member.domain.MemberRepository;
 import balancetalk.module.member.dto.JoinDto;
 import balancetalk.module.member.dto.LoginDto;
 import balancetalk.module.member.dto.LoginSuccessDto;
+import balancetalk.module.member.dto.MemberResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,5 +36,12 @@ public class MemberService {
                 .role(member.getRole())
                 .token(token)
                 .build();
+    }
+
+    @Transactional(readOnly = true)
+    public MemberResponseDto findById(Long id) {
+        Member member = memberRepository.findById(id)
+                .orElseThrow();
+        return MemberResponseDto.fromEntity(member);
     }
 }
