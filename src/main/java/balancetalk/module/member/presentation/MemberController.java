@@ -2,6 +2,7 @@ package balancetalk.module.member.presentation;
 
 import balancetalk.module.member.application.MemberService;
 import balancetalk.module.member.dto.JoinDto;
+import balancetalk.module.member.dto.LoginDto;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -18,10 +19,16 @@ public class MemberController {
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/join")
-    public String joinMember(@Valid @RequestBody JoinDto joinDto, HttpServletRequest request) {
+    public String join(@Valid @RequestBody JoinDto joinDto, HttpServletRequest request) {
         String ipAddress = request.getRemoteAddr();
         joinDto.setIp(ipAddress);
         memberService.join(joinDto);
         return "회원가입이 정상적으로 처리되었습니다.";
+    }
+
+    @ResponseStatus(HttpStatus.OK)
+    @PostMapping("/login")
+    public String login(@Valid @RequestBody LoginDto loginDto) {
+        return memberService.login(loginDto);
     }
 }

@@ -1,5 +1,6 @@
 package balancetalk.global.jwt;
 
+import balancetalk.module.member.domain.Role;
 import io.jsonwebtoken.*;
 import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.HttpServletRequest;
@@ -18,18 +19,19 @@ import java.util.List;
 @RequiredArgsConstructor
 public class JwtTokenProvider {
 
-    private String secretKey = "webfirewood";
+    private String secretKey = "webfirewoodasdfadsfasdfasdfasdfasdfsadff3f23f2f23f32f233f";
     private Long tokenValidTime = 30 * 60 * 1000L; // 30분 유효 시간
     private final UserDetailsService userDetailsService;
+
 
     @PostConstruct
     protected void init() {
         secretKey = Base64.getEncoder().encodeToString(secretKey.getBytes()); // Base64로 인코딩
     }
 
-    public String createToken(String email, List<String> roles) {
+    public String createToken(String email, Role role) {
         Claims claims = Jwts.claims().setSubject(email); // JWT payload에 저장되는 정보 단위
-        claims.put("roles" , roles);
+        claims.put("role" , role);
         Date now = new Date();
         return Jwts.builder()
                 .setClaims(claims) // 정보 저장
