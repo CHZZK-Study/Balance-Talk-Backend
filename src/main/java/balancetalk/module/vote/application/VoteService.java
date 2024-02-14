@@ -34,17 +34,15 @@ public class VoteService {
                 .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_POST));
         BalanceOption balanceOption = balanceOptionRepository.findById(voteRequest.getSelectedOptionId())
                 .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_BALANCE_OPTION));
-        if (post.notContainsBalanceOption(balanceOption)) {
-            throw new BalanceTalkException(MISMATCHED_BALANCE_OPTION);
-        }
-
         Member member = memberRepository.findById(voteRequest.getMemberId())
                 .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_MEMBER));
 
+        if (post.notContainsBalanceOption(balanceOption)) {
+            throw new BalanceTalkException(MISMATCHED_BALANCE_OPTION);
+        }
         if (member.hasVoted(post)) {
             throw new BalanceTalkException(ALREADY_VOTE);
         }
-
         if (post.hasDeadlineExpired()) {
             throw new BalanceTalkException(EXPIRED_POST_DEADLINE);
         }
