@@ -34,7 +34,7 @@ public class SecurityConfig {
                 // 세션 사용 X (jwt 사용)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(request -> request
-                        .requestMatchers("/members/**", "/h2-console/**").permitAll()
+                        .requestMatchers("/posts/**", "/members/**", "/h2-console/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 // jwtFilter 먼저 적용
