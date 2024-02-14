@@ -1,5 +1,8 @@
 package balancetalk.module.vote.application;
 
+import static balancetalk.global.exception.ErrorCode.*;
+
+import balancetalk.global.exception.BalanceTalkException;
 import balancetalk.module.member.domain.Member;
 import balancetalk.module.member.domain.MemberRepository;
 import balancetalk.module.post.domain.BalanceOption;
@@ -28,15 +31,16 @@ public class VoteService {
 
     public Vote createVote(Long postId, VoteRequest voteRequest) {
         Post post = postRepository.findById(postId)
-                .orElseThrow();
+                .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_POST));
         BalanceOption balanceOption = balanceOptionRepository.findById(voteRequest.getSelectedOptionId())
-                .orElseThrow();
+                .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_BALANCE_OPTION));
         if (post.notContainsBalanceOption(balanceOption)) {
-            throw new RuntimeException();
+            throw new BalanceTalkException(MISMATCHED_BALANCE_OPTION);
         }
 
         Member member = memberRepository.findById(voteRequest.getMemberId())
-                .orElseThrow();
+                .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_MEMBER));
+
         return voteRepository.save(voteRequest.toEntity(balanceOption, member));
     }
 
