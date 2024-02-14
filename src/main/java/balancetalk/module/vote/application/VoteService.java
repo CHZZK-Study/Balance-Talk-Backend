@@ -45,6 +45,10 @@ public class VoteService {
             throw new BalanceTalkException(ALREADY_VOTE);
         }
 
+        if (post.hasDeadlineExpired()) {
+            throw new BalanceTalkException(EXPIRED_POST_DEADLINE);
+        }
+
         return voteRepository.save(voteRequest.toEntity(balanceOption, member));
     }
 
