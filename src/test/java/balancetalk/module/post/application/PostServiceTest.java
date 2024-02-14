@@ -1,5 +1,6 @@
 package balancetalk.module.post.application;
 
+import balancetalk.global.exception.BalanceTalkException;
 import balancetalk.module.file.domain.File;
 import balancetalk.module.file.domain.FileType;
 import balancetalk.module.file.dto.FileDto;
@@ -22,6 +23,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.*;
 
+import static balancetalk.global.exception.ErrorCode.*;
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -234,5 +236,21 @@ class PostServiceTest {
 
         // then
         assertThat(likedPostId).isEqualTo(post.getId());
+    }
+
+    @Test
+    @DisplayName("게시글 추천 시 해당 게시글이 존재하지 않는 경우 예외 발생")
+    void createPostLike_Fail_ByNotFoundPost() {
+        // given
+        Member member = Member.builder()
+                .id(1L)
+                .build();
+
+        when(postRepository.findById(any())).thenThrow(new BalanceTalkException(NOT_FOUND_POST));
+
+        // when, then
+        assertThatThrownBy(() -> postService.likePost(1L, member.getId()))
+                .isInstanceOf(BalanceTalkException.class)
+                .hasMessageContaining(NOT_FOUND_POST.getMessage());
     }
 }
