@@ -27,6 +27,8 @@ public class MemberResponseDto {
                 .nickname(member.getNickname())
                 //.profilePhoto(file.getPath())
                 .createdAt(member.getCreatedAt())
+                .postsCount(member.getPostCount())
+                .totalPostLike(member.getPostLikes())
                 .build();
     }
 }
