@@ -7,6 +7,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import balancetalk.module.comment.domain.Comment;
+import balancetalk.module.comment.domain.CommentLikeRepository;
 import balancetalk.module.comment.domain.CommentRepository;
 import balancetalk.module.comment.dto.CommentCreateRequest;
 import balancetalk.module.comment.dto.CommentResponse;
@@ -39,6 +40,8 @@ class CommentServiceTest {
     @Mock
     private PostRepository postRepository;
 
+    @Mock
+    private CommentLikeRepository commentLikeRepository;
 
     @Test
     @DisplayName("댓글 생성 성공")
@@ -122,5 +125,26 @@ class CommentServiceTest {
 
         // then
         verify(commentRepository).deleteById(commentId);
+    }
+
+    @Test
+    @DisplayName("사용자가 특정 댓글에 추천을 누르면 해당 댓글 id가 반환된다.")
+    void createCommentLike_Success() {
+        // given
+        Comment comment = Comment.builder()
+                .id(1L)
+                .build();
+        Member member = Member.builder()
+                .id(1L)
+                .build();
+
+        when(commentRepository.findById(any())).thenReturn(Optional.of(comment));
+        when(memberRepository.findById(any())).thenReturn(Optional.of(member));
+
+        // when
+        Long likedCommentId = commentService.likeComment(1L, comment.getId(), member.getId());
+
+        // then
+        assertThat(likedCommentId).isEqualTo(comment.getId());
     }
 }
