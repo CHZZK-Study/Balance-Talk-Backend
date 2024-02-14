@@ -3,12 +3,15 @@ package balancetalk.module.member.presentation;
 import balancetalk.module.member.application.MemberService;
 import balancetalk.module.member.dto.JoinDto;
 import balancetalk.module.member.dto.LoginDto;
+import balancetalk.module.member.dto.LoginSuccessDto;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -28,7 +31,7 @@ public class MemberController {
 
     @ResponseStatus(HttpStatus.OK)
     @PostMapping("/login")
-    public String login(@Valid @RequestBody LoginDto loginDto) {
+    public LoginSuccessDto login(@Valid @RequestBody LoginDto loginDto) {
         return memberService.login(loginDto);
     }
 }
