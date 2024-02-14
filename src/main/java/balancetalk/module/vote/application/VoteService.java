@@ -1,5 +1,8 @@
 package balancetalk.module.vote.application;
 
+import static balancetalk.global.exception.ErrorCode.*;
+
+import balancetalk.global.exception.BalanceTalkException;
 import balancetalk.module.member.domain.Member;
 import balancetalk.module.member.domain.MemberRepository;
 import balancetalk.module.post.domain.BalanceOption;
@@ -28,22 +31,29 @@ public class VoteService {
 
     public Vote createVote(Long postId, VoteRequest voteRequest) {
         Post post = postRepository.findById(postId)
-                .orElseThrow();
+                .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_POST));
         BalanceOption balanceOption = balanceOptionRepository.findById(voteRequest.getSelectedOptionId())
-                .orElseThrow();
+                .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_BALANCE_OPTION));
+        Member member = memberRepository.findById(voteRequest.getMemberId())
+                .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_MEMBER));
+
         if (post.notContainsBalanceOption(balanceOption)) {
-            throw new RuntimeException();
+            throw new BalanceTalkException(MISMATCHED_BALANCE_OPTION);
+        }
+        if (member.hasVoted(post)) {
+            throw new BalanceTalkException(ALREADY_VOTE);
+        }
+        if (post.hasDeadlineExpired()) {
+            throw new BalanceTalkException(EXPIRED_POST_DEADLINE);
         }
 
-        Member member = memberRepository.findById(voteRequest.getMemberId())
-                .orElseThrow();
         return voteRepository.save(voteRequest.toEntity(balanceOption, member));
     }
 
     @Transactional(readOnly = true)
     public List<VotingStatusResponse> readVotingStatus(Long postId) {
         Post post = postRepository.findById(postId)
-                .orElseThrow();
+                .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_POST));
 
         List<BalanceOption> options = post.getOptions();
         List<VotingStatusResponse> responses = new ArrayList<>();
@@ -61,20 +71,20 @@ public class VoteService {
 
     public Vote updateVote(Long postId, VoteRequest voteRequest) {
         Post post = postRepository.findById(postId)
-                .orElseThrow();
+                .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_POST));
 
         if (post.isCasual()) {
-            throw new IllegalArgumentException(); // TODO 예외 처리
+            throw new BalanceTalkException(UNMODIFIABLE_VOTE);
         }
 
-        Member member = memberRepository.findById(voteRequest.getMemberId())
-                .orElseThrow();
         BalanceOption newSelectedOption = balanceOptionRepository.findById(voteRequest.getSelectedOptionId())
-                .orElseThrow();
+                .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_BALANCE_OPTION));
+        Member member = memberRepository.findById(voteRequest.getMemberId())
+                .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_MEMBER));
         Vote findVote = member.getVotes().stream()
                 .filter(vote -> vote.getBalanceOption().getPost().equals(post))
                 .findFirst()
-                .orElseThrow();
+                .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_VOTE));
         return findVote.changeBalanceOption(newSelectedOption);
     }
 }

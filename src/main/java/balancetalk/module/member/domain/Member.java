@@ -81,4 +81,9 @@ public class Member extends BaseTimeEntity {
 
     @OneToMany(mappedBy = "reporter")
     private List<Report> reports = new ArrayList<>(); // 신고한 기록
+
+    public boolean hasVoted(Post post) {
+        return votes.stream()
+                .anyMatch(vote -> vote.getBalanceOption().getPost().equals(post));
+    }
 }
