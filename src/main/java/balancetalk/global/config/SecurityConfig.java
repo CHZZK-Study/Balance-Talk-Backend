@@ -1,5 +1,8 @@
 package balancetalk.global.config;
 
+import balancetalk.global.jwt.JwtAuthenticationFilter;
+import balancetalk.global.jwt.JwtTokenProvider;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -7,10 +10,14 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
+@RequiredArgsConstructor
 @EnableWebSecurity
 public class SecurityConfig {
+
+    private final JwtTokenProvider jwtTokenProvider;
 
     @Bean
     public BCryptPasswordEncoder passwordEncoder() {
@@ -27,10 +34,11 @@ public class SecurityConfig {
                 // 세션 사용 X (jwt 사용)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(request -> request
-                        .requestMatchers("/join" , "/login" , "/h2-console/**").permitAll()
+                        .requestMatchers("/join", "/login", "/h2-console/**").permitAll()
                         .anyRequest().authenticated()
-                );
-
+                )
+                // jwtFilter 먼저 적용
+                .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class)
         return http.build();
     }
 }

@@ -16,7 +16,7 @@ import java.util.List;
 
 @Component
 @RequiredArgsConstructor
-public class TokenProvider {
+public class JwtTokenProvider {
 
     private String secretKey = "webfirewood";
     private Long tokenValidTime = 30 * 60 * 1000L; // 30분 유효 시간
