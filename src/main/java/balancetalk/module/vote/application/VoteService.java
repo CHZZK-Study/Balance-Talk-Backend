@@ -74,7 +74,7 @@ public class VoteService {
                 .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_POST));
 
         if (post.isCasual()) {
-            throw new IllegalArgumentException(); // TODO 예외 처리
+            throw new BalanceTalkException(UNMODIFIABLE_VOTE);
         }
 
         BalanceOption newSelectedOption = balanceOptionRepository.findById(voteRequest.getSelectedOptionId())
