@@ -1,12 +1,16 @@
 package balancetalk.module.comment.application;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import balancetalk.global.exception.BalanceTalkException;
+import balancetalk.global.exception.ErrorCode;
 import balancetalk.module.comment.domain.Comment;
+import balancetalk.module.comment.domain.CommentLikeRepository;
 import balancetalk.module.comment.domain.CommentRepository;
 import balancetalk.module.comment.dto.CommentCreateRequest;
 import balancetalk.module.comment.dto.CommentResponse;
@@ -39,6 +43,8 @@ class CommentServiceTest {
     @Mock
     private PostRepository postRepository;
 
+    @Mock
+    private CommentLikeRepository commentLikeRepository;
 
     @Test
     @DisplayName("댓글 생성 성공")
@@ -122,5 +128,48 @@ class CommentServiceTest {
 
         // then
         verify(commentRepository).deleteById(commentId);
+    }
+
+    @Test
+    @DisplayName("사용자가 특정 댓글에 추천을 누르면 해당 댓글 id가 반환된다.")
+    void createCommentLike_Success() {
+        // given
+        Comment comment = Comment.builder()
+                .id(1L)
+                .build();
+        Member member = Member.builder()
+                .id(1L)
+                .build();
+
+        when(commentRepository.findById(any())).thenReturn(Optional.of(comment));
+        when(memberRepository.findById(any())).thenReturn(Optional.of(member));
+
+        // when
+        Long likedCommentId = commentService.likeComment(1L, comment.getId(), member.getId());
+
+        // then
+        assertThat(likedCommentId).isEqualTo(comment.getId());
+    }
+
+    @Test
+    @DisplayName("댓글 중복 추천 시 예외 발생")
+    void createCommentLike_Fail_ByAlreadyLikeComment() {
+        // given
+        Comment comment = Comment.builder()
+                .id(1L)
+                .build();
+        Member member = Member.builder()
+                .id(1L)
+                .build();
+
+        when(commentRepository.findById(any())).thenReturn(Optional.of(comment));
+        when(memberRepository.findById(any())).thenReturn(Optional.of(member));
+        when(commentLikeRepository.existsByMemberAndComment(member, comment))
+                .thenThrow(new BalanceTalkException(ErrorCode.ALREADY_LIKE_COMMENT));
+
+        // when, then
+        assertThatThrownBy(() -> commentService.likeComment(1L, comment.getId(), member.getId()))
+                .isInstanceOf(BalanceTalkException.class)
+                .hasMessageContaining(ErrorCode.ALREADY_LIKE_COMMENT.getMessage());
     }
 }
