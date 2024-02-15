@@ -34,11 +34,19 @@ public class BookmarkService {
         return bookmarkRepository.save(bookmark);
     }
 
-    @Transactional(readOnly = true)
-    public List<BookmarkResponseDto> findAll() {
-        List<Bookmark> bookmarks = bookmarkRepository.findAll();
+    @Transactional(readOnly = true) // TODO: Spring Security 도입 후 현재 인증된 사용자 정보 기반으로 조회하게 변경 필요
+    public List<BookmarkResponseDto> findAllByMember(Long memberId) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow();
+        List<Bookmark> bookmarks = bookmarkRepository.findByMember(member);
+
         return bookmarks.stream()
                 .map(BookmarkResponseDto::fromEntity)
                 .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public void deleteById(Long bookmarkId) {
+        bookmarkRepository.deleteById(bookmarkId);
     }
 }
