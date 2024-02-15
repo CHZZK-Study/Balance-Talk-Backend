@@ -19,6 +19,8 @@ import jakarta.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
+
 import jakarta.validation.constraints.*;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
@@ -117,11 +119,13 @@ public class Member extends BaseTimeEntity implements UserDetails {
     }
 
     public int getPostCount() {
-        return posts.size();
+        return Optional.ofNullable(posts)
+                .map(List::size).orElse(0);
     }
 
     public int getPostLikes() {
-        return postLikes.size();
+        return Optional.ofNullable(postLikes)
+                .map(List::size).orElse(0);
     }
 
     public boolean hasVoted(Post post) {
