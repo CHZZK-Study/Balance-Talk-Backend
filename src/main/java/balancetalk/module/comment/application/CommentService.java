@@ -43,7 +43,7 @@ public class CommentService {
     }
 
     @Transactional(readOnly = true)
-    public List<CommentResponse> findAll(Long postId) {
+    public List<CommentResponse> findAll(Long postId) { // TODO: 탈퇴한 회원의 정보는 어떻게 표시되는가?
         validatePostId(postId);
 
         List<Comment> comments = commentRepository.findByPostId(postId);

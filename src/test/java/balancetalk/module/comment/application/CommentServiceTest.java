@@ -1,11 +1,13 @@
 package balancetalk.module.comment.application;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import balancetalk.global.exception.BalanceTalkException;
 import balancetalk.module.comment.domain.Comment;
 import balancetalk.module.comment.domain.CommentRepository;
 import balancetalk.module.comment.dto.CommentCreateRequest;
@@ -78,7 +80,7 @@ class CommentServiceTest {
         when(commentRepository.findByPostId(postId)).thenReturn(comments);
 
         // when
-        List<CommentResponse> responses = commentService.readCommentsByPostId(postId);
+        List<CommentResponse> responses = commentService.findAll(postId);
 
         // then
         assertThat(responses).hasSize(comments.size());
@@ -122,5 +124,91 @@ class CommentServiceTest {
 
         // then
         verify(commentRepository).deleteById(commentId);
+    }
+
+    @Test
+    @DisplayName("댓글 생성 실패 - 회원을 찾을 수 없음")
+    void createComment_Fail_MemberNotFound() {
+        // given
+        Long memberId = 1L;
+        Long postId = 1L;
+        CommentCreateRequest request = new CommentCreateRequest("댓글 내용입니다.", memberId, null);
+
+        when(memberRepository.findById(memberId)).thenReturn(Optional.empty());
+
+        // when
+
+        // then
+        assertThatThrownBy(() -> commentService.createComment(request, postId))
+                .isInstanceOf(BalanceTalkException.class)
+                .hasMessageContaining("존재하지 않는 회원입니다.");
+    }
+
+    @Test
+    @DisplayName("댓글 생성 실패 - 게시글을 찾을 수 없음")
+    void createComment_Fail_PostNotFound() {
+        // given
+        Long memberId = 1L;
+        Long postId = 1L;
+        CommentCreateRequest request = new CommentCreateRequest("댓글 내용입니다.", memberId, null);
+
+        when(memberRepository.findById(memberId)).thenReturn(Optional.of(Member.builder().id(memberId).build()));
+        when(postRepository.findById(postId)).thenReturn(Optional.empty());
+
+        // when
+
+        // then
+        assertThatThrownBy(() -> commentService.createComment(request, postId))
+                .isInstanceOf(BalanceTalkException.class)
+                .hasMessageContaining("존재하지 않는 게시글입니다.");
+    }
+
+    @Test
+    @DisplayName("댓글 수정 실패 - 댓글을 찾을 수 없음")
+    void updateComment_Fail_CommentNotFound() {
+        // given
+        Long commentId = 1L;
+        String updatedContent = "업데이트된 댓글 내용";
+
+        when(commentRepository.findById(commentId)).thenReturn(Optional.empty());
+
+        // when
+
+        // then
+        assertThatThrownBy(() -> commentService.updateComment(commentId, updatedContent))
+                .isInstanceOf(BalanceTalkException.class)
+                .hasMessageContaining("존재하지 않는 댓글입니다.");
+    }
+
+    @Test
+    @DisplayName("댓글 삭제 실패 - 댓글을 찾을 수 없음")
+    void deleteComment_Fail_CommentNotFound() {
+        // given
+        Long commentId = 1L;
+
+        when(commentRepository.findById(commentId)).thenReturn(Optional.empty());
+
+        // when
+
+        // then
+        assertThatThrownBy(() -> commentService.deleteComment(commentId))
+                .isInstanceOf(BalanceTalkException.class)
+                .hasMessageContaining("존재하지 않는 댓글입니다.");
+    }
+
+    @Test
+    @DisplayName("게시글에 대한 댓글 조회 실패 - 게시글을 찾을 수 없음")
+void readCommentsByPostId_Fail_PostNotFound() {
+        // given
+        Long postId = 1L;
+
+        when(postRepository.findById(postId)).thenReturn(Optional.empty());
+
+        // when
+
+        // then
+        assertThatThrownBy(() -> commentService.findAll(postId))
+                .isInstanceOf(BalanceTalkException.class)
+                .hasMessageContaining("존재하지 않는 게시글입니다.");
     }
 }
