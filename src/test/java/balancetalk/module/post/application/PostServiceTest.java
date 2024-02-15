@@ -23,13 +23,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.*;
 
-<<<<<<< HEAD
-import static org.assertj.core.api.Assertions.*;
-import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
-=======
 import static balancetalk.global.exception.ErrorCode.*;
 import static org.assertj.core.api.Assertions.*;
->>>>>>> 3797b44 (게시글 추천 기능 구현 (#54))
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.BDDMockito.*;

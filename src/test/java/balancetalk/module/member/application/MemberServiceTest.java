@@ -4,10 +4,7 @@ import balancetalk.global.jwt.JwtTokenProvider;
 import balancetalk.module.member.domain.Member;
 import balancetalk.module.member.domain.MemberRepository;
 import balancetalk.module.member.domain.Role;
-import balancetalk.module.member.dto.JoinDto;
-import balancetalk.module.member.dto.LoginDto;
-import balancetalk.module.member.dto.LoginSuccessDto;
-import balancetalk.module.member.dto.MemberResponseDto;
+import balancetalk.module.member.dto.*;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -66,7 +63,7 @@ class MemberServiceTest {
         Member member = joinDto.toEntity();
         when(memberRepository.findByEmail(any())).thenReturn(Optional.of(member));
         when(jwtTokenProvider.createToken(member.getEmail(), member.getRole())).thenReturn(null);
-        // TODO: jwt 토큰 returns null
+        // TODO: jwt 토큰 null -> 인증 오류
 
         // when
         LoginSuccessDto result = memberService.login(loginDto);
@@ -113,5 +110,26 @@ class MemberServiceTest {
         assertThat(result).hasSize(2);
         assertThat(result.get(0).getNickname()).isEqualTo("닉네임1");
         assertThat(result.get(1).getNickname()).isEqualTo("닉네임2");
+    }
+
+    @Test
+    @DisplayName("회원 정보 수정 - 성공")
+    void Member_Update_Success() {
+        // given
+        Member member = joinDto.toEntity();
+        MemberUpdateDto memberUpdateDto = MemberUpdateDto.builder()
+                .nickname("새로운닉네임")
+                .password("Testcase1234!")
+                .build();
+        // when
+        when(memberRepository.findById(any())).thenReturn(Optional.of(member));
+        member.updateMember(memberUpdateDto.getNickname(), memberUpdateDto.getPassword());
+        when(memberRepository.save(any())).thenReturn(member);
+
+        memberService.update(member.getId(), memberUpdateDto);
+
+        // then
+        assertThat(member.getNickname()).isEqualTo(memberUpdateDto.getNickname());
+        assertThat(member.getPassword()).isEqualTo(memberUpdateDto.getPassword());
     }
 }
