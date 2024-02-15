@@ -1,7 +1,6 @@
 package balancetalk.module.comment.presentation;
 
 import balancetalk.module.comment.application.CommentService;
-import balancetalk.module.comment.domain.Comment;
 import balancetalk.module.comment.dto.CommentCreateRequest;
 import balancetalk.module.comment.dto.CommentResponse;
 import java.util.List;
@@ -53,5 +52,14 @@ public class CommentController {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .header("Content-Location", contentLocation)
                 .body("요청이 정상적으로 처리되었습니다.");
+    }
+
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @DeleteMapping("/{commentId}/likes")
+    public String cancelLikeComment(@PathVariable Long postId,
+                                    @PathVariable Long commentId,
+                                    @RequestBody Long memberId) {
+        commentService.cancelLikeComment(commentId, memberId);
+        return "요청이 정상적으로 처리되었습니다.";
     }
 }
