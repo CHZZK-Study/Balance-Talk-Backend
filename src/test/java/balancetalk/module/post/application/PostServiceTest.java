@@ -1,5 +1,6 @@
 package balancetalk.module.post.application;
 
+import balancetalk.global.exception.BalanceTalkException;
 import balancetalk.module.file.domain.File;
 import balancetalk.module.file.domain.FileType;
 import balancetalk.module.file.dto.FileDto;
@@ -7,10 +8,10 @@ import balancetalk.module.member.domain.Member;
 import balancetalk.module.member.domain.MemberRepository;
 import balancetalk.module.post.domain.BalanceOption;
 import balancetalk.module.post.domain.Post;
+import balancetalk.module.post.domain.PostLikeRepository;
 import balancetalk.module.post.domain.PostRepository;
 import balancetalk.module.post.domain.PostTag;
 import balancetalk.module.post.domain.Tag;
-
 import balancetalk.module.post.dto.BalanceOptionDto;
 import balancetalk.module.post.dto.PostRequestDto;
 import balancetalk.module.post.dto.PostResponseDto;
@@ -22,11 +23,17 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.*;
 
+<<<<<<< HEAD
 import static org.assertj.core.api.Assertions.*;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
+=======
+import static balancetalk.global.exception.ErrorCode.*;
+import static org.assertj.core.api.Assertions.*;
+>>>>>>> 3797b44 (게시글 추천 기능 구현 (#54))
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.BDDMockito.*;
+
 @ExtendWith(MockitoExtension.class)
 class PostServiceTest {
 
@@ -35,6 +42,9 @@ class PostServiceTest {
 
     @Mock
     PostRepository postRepository;
+
+    @Mock
+    PostLikeRepository postLikeRepository;
 
     @InjectMocks
     PostService postService;
@@ -210,5 +220,64 @@ class PostServiceTest {
                 .options(List.of(createBalanceOption()))
                 .postTags(List.of(createPostTag()))
                 .build();
+    }
+
+    @Test
+    @DisplayName("사용자가 특정 게시글에 추천을 누르면 해당 게시글 id가 반환된다.")
+    void createPostLike_Success() {
+        // given
+        Post post = Post.builder()
+                .id(1L)
+                .build();
+        Member member = Member.builder()
+                .id(1L)
+                .build();
+
+        when(postRepository.findById(any())).thenReturn(Optional.of(post));
+        when(memberRepository.findById(any())).thenReturn(Optional.of(member));
+
+        // when
+        Long likedPostId = postService.likePost(post.getId(), member.getId());
+
+        // then
+        assertThat(likedPostId).isEqualTo(post.getId());
+    }
+
+    @Test
+    @DisplayName("게시글 추천 시 해당 게시글이 존재하지 않는 경우 예외 발생")
+    void createPostLike_Fail_ByNotFoundPost() {
+        // given
+        Member member = Member.builder()
+                .id(1L)
+                .build();
+
+        when(postRepository.findById(any())).thenThrow(new BalanceTalkException(NOT_FOUND_POST));
+
+        // when, then
+        assertThatThrownBy(() -> postService.likePost(1L, member.getId()))
+                .isInstanceOf(BalanceTalkException.class)
+                .hasMessageContaining(NOT_FOUND_POST.getMessage());
+    }
+
+    @Test
+    @DisplayName("게시글 중복 추천 시 예외 발생")
+    void createPostLike_Fail_ByAlreadyLikePost() {
+        // given
+        Post post = Post.builder()
+                .id(1L)
+                .build();
+        Member member = Member.builder()
+                .id(1L)
+                .build();
+
+        when(postRepository.findById(any())).thenReturn(Optional.of(post));
+        when(memberRepository.findById(any())).thenReturn(Optional.of(member));
+        when(postLikeRepository.existsByMemberAndPost(member, post))
+                .thenThrow(new BalanceTalkException(ALREADY_LIKE_POST));
+
+        // when, then
+        assertThatThrownBy(() -> postService.likePost(post.getId(), member.getId()))
+                .isInstanceOf(BalanceTalkException.class)
+                .hasMessageContaining(ALREADY_LIKE_POST.getMessage());
     }
 }
