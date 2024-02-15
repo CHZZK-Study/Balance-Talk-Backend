@@ -7,9 +7,13 @@ import balancetalk.module.post.domain.BookmarkRepository;
 import balancetalk.module.post.domain.Post;
 import balancetalk.module.post.domain.PostRepository;
 import balancetalk.module.post.dto.BookmarkRequestDto;
-import jakarta.transaction.Transactional;
+import balancetalk.module.post.dto.BookmarkResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -28,5 +32,13 @@ public class BookmarkService {
         Bookmark bookmark = bookmarkRequestDto.toEntity(member, post);
 
         return bookmarkRepository.save(bookmark);
+    }
+
+    @Transactional(readOnly = true)
+    public List<BookmarkResponseDto> findAll() {
+        List<Bookmark> bookmarks = bookmarkRepository.findAll();
+        return bookmarks.stream()
+                .map(BookmarkResponseDto::fromEntity)
+                .collect(Collectors.toList());
     }
 }
