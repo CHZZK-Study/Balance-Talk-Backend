@@ -32,9 +32,9 @@ public class BookmarkController {
     }
 
     @ResponseStatus(HttpStatus.CREATED)
-    @DeleteMapping("/{bookmarkId}")
-    public String deleteBookmark(@PathVariable Long bookmarkId) {
-        bookmarkService.deleteById(bookmarkId);
+    @DeleteMapping("/members/{memberId}/{bookmarkId}")
+    public String deleteBookmark(@PathVariable Long bookmarkId, @PathVariable Long memberId) {
+        bookmarkService.deleteById(memberId, bookmarkId);
         return "북마크가 삭제되었습니다.";
     }
 }
