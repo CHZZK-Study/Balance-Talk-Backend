@@ -26,7 +26,9 @@ public enum ErrorCode {
     NOT_FOUND_COMMENT(NOT_FOUND, "존재하지 않는 댓글입니다."),
 
     // 409
-    ALREADY_VOTE(CONFLICT, "투표는 한 번만 가능합니다.");
+    ALREADY_VOTE(CONFLICT, "투표는 한 번만 가능합니다."),
+    ALREADY_LIKE_COMMENT(CONFLICT, "이미 추천을 누른 댓글입니다."),
+    ALREADY_LIKE_POST(CONFLICT, "이미 추천을 누른 게시글입니다.");
 
     private final HttpStatus httpStatus;
     private final String message;
