@@ -14,7 +14,6 @@ public enum ErrorCode {
     EXPIRED_POST_DEADLINE(BAD_REQUEST, "투표가 이미 종료된 게시글입니다."),
     UNMODIFIABLE_VOTE(BAD_REQUEST, "투표 수정이 불가능한 게시글입니다."),
     ALREADY_BOOKMARK(BAD_REQUEST, "이미 북마크한 게시글입니다."),
-    ALREADY_UNBOOKMARK(BAD_REQUEST, "이미 북마크를 취소한 게시글입니다."),
 
     // 404
     NOT_FOUND_POST(NOT_FOUND, "존재하지 않는 게시글입니다."),
