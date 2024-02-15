@@ -1,10 +1,7 @@
 package balancetalk.global.config;
 
-
-import balancetalk.module.member.domain.Member;
 import balancetalk.module.member.domain.MemberRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
