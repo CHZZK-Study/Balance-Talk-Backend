@@ -65,7 +65,6 @@ public class MemberService {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new BalanceTalkException(ErrorCode.NOT_FOUND_MEMBER));
         member.updateMember(memberUpdateDto.getNickname(), memberUpdateDto.getPassword());
-        memberRepository.save(member);
         return MemberResponseDto.fromEntity(member);
     }
 }
