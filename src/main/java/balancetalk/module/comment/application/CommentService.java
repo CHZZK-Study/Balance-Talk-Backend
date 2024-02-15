@@ -88,6 +88,7 @@ public class CommentService {
     private Comment validateCommentId(Long commentId) {
         return commentRepository.findById(commentId)
                 .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_COMMENT));
+    }
       
     public Long likeComment(Long postId, Long commentId, Long memberId) {
         Comment comment = commentRepository.findById(commentId)
