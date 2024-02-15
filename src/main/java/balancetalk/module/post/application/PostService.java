@@ -16,10 +16,7 @@ import balancetalk.module.post.dto.PostResponseDto;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
-<<<<<<< HEAD
-import balancetalk.module.post.dto.PostResponseDto;
-=======
->>>>>>> 3797b44 (게시글 추천 기능 구현 (#54))
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
