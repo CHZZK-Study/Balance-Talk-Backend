@@ -1,5 +1,7 @@
 package balancetalk.module.member.application;
 
+import balancetalk.global.exception.BalanceTalkException;
+import balancetalk.global.exception.ErrorCode;
 import balancetalk.global.jwt.JwtTokenProvider;
 import balancetalk.module.member.domain.Member;
 import balancetalk.module.member.domain.MemberRepository;
@@ -44,7 +46,7 @@ public class MemberService {
     @Transactional(readOnly = true)
     public MemberResponseDto findById(Long id) {
         Member member = memberRepository.findById(id)
-                .orElseThrow();
+                .orElseThrow(() -> new BalanceTalkException(ErrorCode.NOT_FOUND_MEMBER));
         return MemberResponseDto.fromEntity(member);
     }
 

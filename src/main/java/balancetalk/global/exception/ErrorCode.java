@@ -20,6 +20,7 @@ public enum ErrorCode {
     NOT_FOUND_MEMBER(NOT_FOUND, "존재하지 않는 회원입니다."),
     NOT_FOUND_VOTE(NOT_FOUND, "해당 게시글에서 투표한 기록이 존재하지 않습니다."),
 
+
     // 409
     ALREADY_VOTE(CONFLICT, "투표는 한 번만 가능합니다.");
 
