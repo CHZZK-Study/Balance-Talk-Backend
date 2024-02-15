@@ -67,7 +67,7 @@ public class Post extends BaseTimeEntity {
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
     private List<PostTag> postTags = new ArrayList<>();
 
-    @OneToMany(mappedBy = "post")
+    @OneToMany(mappedBy = "post") // TODO : 게시글을 삭제하면 북마크, 댓글은 어떤 상태로 남아야 하는가?
     private List<Bookmark> bookmarks = new ArrayList<>();
 
     @OneToMany(mappedBy = "post")
