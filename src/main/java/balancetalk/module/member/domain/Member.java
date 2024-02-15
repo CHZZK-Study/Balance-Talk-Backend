@@ -122,6 +122,7 @@ public class Member extends BaseTimeEntity implements UserDetails {
         this.nickname = nickname;
         this.password = password;
     }
+
     public int getPostCount() {
         return Optional.ofNullable(posts)
                 .map(List::size).orElse(0);

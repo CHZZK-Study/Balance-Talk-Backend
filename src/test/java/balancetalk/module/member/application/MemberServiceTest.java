@@ -65,6 +65,7 @@ class MemberServiceTest {
         when(jwtTokenProvider.createToken(member.getEmail(), member.getRole())).thenReturn(null);
         // TODO: jwt 토큰 null -> 인증 오류
 
+
         // when
         LoginSuccessDto result = memberService.login(loginDto);
 

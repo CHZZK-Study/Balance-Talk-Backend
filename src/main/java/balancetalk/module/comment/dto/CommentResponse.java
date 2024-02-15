@@ -14,6 +14,7 @@ public class CommentResponse {
     private String content;
     private String memberName;
     private Long postId;
+    // TODO : selectedOptionId 추가, 엔티티 연관 필요
     private int likeCount;
     private LocalDateTime createdAt;
     private LocalDateTime lastModifiedAt;

@@ -48,5 +48,4 @@ public class MemberController {
     public MemberResponseDto updateMemberInfo(@PathVariable("memberId") Long memberId, @Valid @RequestBody MemberUpdateDto memberUpdateDto) {
         return memberService.update(memberId, memberUpdateDto);
     }
-
 }
