@@ -1,10 +1,7 @@
 package balancetalk.module.member.presentation;
 
 import balancetalk.module.member.application.MemberService;
-import balancetalk.module.member.dto.JoinDto;
-import balancetalk.module.member.dto.LoginDto;
-import balancetalk.module.member.dto.LoginSuccessDto;
-import balancetalk.module.member.dto.MemberResponseDto;
+import balancetalk.module.member.dto.*;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -46,4 +43,9 @@ public class MemberController {
         return memberService.findAll();
     }
 
+    @ResponseStatus(HttpStatus.OK)
+    @PutMapping("/{memberId}")
+    public MemberResponseDto updateMemberInfo(@PathVariable("memberId") Long memberId, @Valid @RequestBody MemberUpdateDto memberUpdateDto) {
+        return memberService.update(memberId, memberUpdateDto);
+    }
 }

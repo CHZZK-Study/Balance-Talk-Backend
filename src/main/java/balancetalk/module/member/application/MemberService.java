@@ -5,15 +5,13 @@ import balancetalk.global.exception.ErrorCode;
 import balancetalk.global.jwt.JwtTokenProvider;
 import balancetalk.module.member.domain.Member;
 import balancetalk.module.member.domain.MemberRepository;
-import balancetalk.module.member.dto.JoinDto;
-import balancetalk.module.member.dto.LoginDto;
-import balancetalk.module.member.dto.LoginSuccessDto;
-import balancetalk.module.member.dto.MemberResponseDto;
+import balancetalk.module.member.dto.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
+
 @Service
 @RequiredArgsConstructor
 public class MemberService {
@@ -51,7 +49,7 @@ public class MemberService {
     @Transactional(readOnly = true)
     public MemberResponseDto findById(Long id) {
         Member member = memberRepository.findById(id)
-                .orElseThrow(() -> new BalanceTalkException(ErrorCode.NOT_FOUND_MEMBER));
+                .orElseThrow(() -> new BalanceTalkException(ErrorCode.NOT_FOUND_MEMBER_INFORMATION));
         return MemberResponseDto.fromEntity(member);
     }
 
@@ -61,5 +59,13 @@ public class MemberService {
         return members.stream()
                 .map(MemberResponseDto::fromEntity)
                 .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public MemberResponseDto update(Long memberId, final MemberUpdateDto memberUpdateDto) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new BalanceTalkException(ErrorCode.NOT_FOUND_MEMBER));
+        member.updateMember(memberUpdateDto.getNickname(), memberUpdateDto.getPassword());
+        return MemberResponseDto.fromEntity(member);
     }
 }
