@@ -5,8 +5,8 @@ import balancetalk.module.post.dto.PostRequestDto;
 import balancetalk.module.post.dto.PostResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 
 @RestController
@@ -22,7 +22,6 @@ public class PostController {
         postService.save(postRequestDto);
         return "게시글이 등록 되었습니다.";
     }
-
 
     @ResponseStatus(HttpStatus.OK)
     @GetMapping
@@ -41,5 +40,15 @@ public class PostController {
     public String deletePost(@PathVariable("postId") Long postId) {
         postService.deleteById(postId);
         return "요청이 정상적으로 처리되었습니다.";
+    }
+
+    @ResponseStatus(HttpStatus.CREATED)
+    @PostMapping("/{postId}/likes")
+    public ResponseEntity<String> likePost(@PathVariable Long postId, @RequestBody Long memberId) {
+        Long likedPostId = postService.likePost(postId, memberId);
+        String contentLocation = "/posts/" + likedPostId;
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .header("Content-Location", contentLocation)
+                .body("요청이 정상적으로 처리되었습니다.");
     }
 }
