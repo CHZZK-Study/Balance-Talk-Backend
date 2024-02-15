@@ -13,7 +13,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("bookmark/posts")
+@RequestMapping("/bookmark")
 public class BookmarkController {
     private final BookmarkService bookmarkService;
 
@@ -26,8 +26,15 @@ public class BookmarkController {
     }
 
     @ResponseStatus(HttpStatus.OK)
-    @GetMapping
-    public List<BookmarkResponseDto> findAllPost() {
-        return bookmarkService.findAll();
+    @GetMapping("/{memberId}") // TODO: Spring Security 도입 후 현재 인증된 사용자 정보 기반으로 조회하게 변경 필요
+    public List<BookmarkResponseDto> findAllPost(@PathVariable Long memberId) {
+        return bookmarkService.findAllByMember(memberId);
+    }
+
+    @ResponseStatus(HttpStatus.CREATED)
+    @DeleteMapping("/{bookmarkId}")
+    public String deleteBookmark(@PathVariable Long bookmarkId) {
+        bookmarkService.deleteById(bookmarkId);
+        return "북마크가 삭제되었습니다.";
     }
 }
