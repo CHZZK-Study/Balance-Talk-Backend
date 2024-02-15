@@ -23,7 +23,6 @@ public enum ErrorCode {
     NOT_FOUND_BALANCE_OPTION(NOT_FOUND, "존재하지 않는 선택지입니다."),
     NOT_FOUND_MEMBER(NOT_FOUND, "존재하지 않는 회원입니다."),
     NOT_FOUND_VOTE(NOT_FOUND, "해당 게시글에서 투표한 기록이 존재하지 않습니다."),
-    NOT_FOUND_MEMBER_INFORMATION(NOT_FOUND, "회원 정보를 찾을 수 없습니다"),
 
 
     // 409

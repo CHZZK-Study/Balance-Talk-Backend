@@ -51,7 +51,7 @@ public class MemberService {
     @Transactional(readOnly = true)
     public MemberResponseDto findById(Long id) {
         Member member = memberRepository.findById(id)
-                .orElseThrow(() -> new BalanceTalkException(ErrorCode.NOT_FOUND_MEMBER_INFORMATION));
+                .orElseThrow(() -> new BalanceTalkException(ErrorCode.NOT_FOUND_MEMBER));
         return MemberResponseDto.fromEntity(member);
     }
 
