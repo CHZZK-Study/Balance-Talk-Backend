@@ -30,9 +30,16 @@ public class MemberService {
     @Transactional
     public LoginSuccessDto login(final LoginDto loginDto) {
         Member member = memberRepository.findByEmail(loginDto.getEmail())
-                .orElseThrow(() -> new IllegalArgumentException("가입되지 않은 사용자 입니다."));
-        // TODO: Error Response 추가
+                .orElseThrow(() -> new BalanceTalkException(ErrorCode.MISMATCHED_EMAIL_OR_PASSWORD));
+        if (!member.getPassword().equals(loginDto.getPassword())) {
+            throw new BalanceTalkException(ErrorCode.MISMATCHED_EMAIL_OR_PASSWORD);
+        }
         String token = jwtTokenProvider.createToken(member.getEmail(), member.getRole());
+
+        if (token == null) {
+            throw new BalanceTalkException(ErrorCode.AUTHENTICATION_ERROR);
+        }
+
         return LoginSuccessDto.builder()
                 .email(member.getEmail())
                 .password(member.getPassword())
@@ -44,7 +51,7 @@ public class MemberService {
     @Transactional(readOnly = true)
     public MemberResponseDto findById(Long id) {
         Member member = memberRepository.findById(id)
-                .orElseThrow(() -> new BalanceTalkException(ErrorCode.NOT_FOUND_MEMBER));
+                .orElseThrow(() -> new BalanceTalkException(ErrorCode.NOT_FOUND_MEMBER_INFORMATION));
         return MemberResponseDto.fromEntity(member);
     }
 
