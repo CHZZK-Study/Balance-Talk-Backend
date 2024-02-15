@@ -42,8 +42,8 @@ public class CommentService {
         return CommentResponse.fromEntity(comment);
     }
 
-    @Transactional
-    public List<CommentResponse> readCommentsByPostId(Long postId) {
+    @Transactional(readOnly = true)
+    public List<CommentResponse> findAll(Long postId) {
         validatePostId(postId);
 
         List<Comment> comments = commentRepository.findByPostId(postId);
@@ -57,7 +57,7 @@ public class CommentService {
         Comment comment = validateCommentId(commentId);
 
         comment.updateContent(content);
-        return commentRepository.save(comment);
+        return comment;
     }
 
     @Transactional
@@ -66,7 +66,7 @@ public class CommentService {
         commentRepository.deleteById(commentId);
     }
 
-    private Member validateMemberId(CommentCreateRequest request) {
+    private Member validateMemberId(CommentCreateRequest request) { // TODO: validate 메서드 분리 재고
         return memberRepository.findById(request.getMemberId())
                 .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_MEMBER));
     }
