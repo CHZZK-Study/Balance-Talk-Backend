@@ -18,7 +18,7 @@ public class BookmarkController {
     private final BookmarkService bookmarkService;
 
     @ResponseStatus(HttpStatus.CREATED)
-    @PostMapping("/{postId}")
+    @PostMapping("/posts/{postId}")
     public String addBookmark(@PathVariable Long postId, @RequestBody final BookmarkRequestDto bookmarkRequestDto) {
         bookmarkService.save(bookmarkRequestDto, postId);
 
@@ -26,7 +26,7 @@ public class BookmarkController {
     }
 
     @ResponseStatus(HttpStatus.OK)
-    @GetMapping("/{memberId}") // TODO: Spring Security 도입 후 현재 인증된 사용자 정보 기반으로 조회하게 변경 필요
+    @GetMapping("/members/{memberId}") // TODO: Spring Security 도입 후 현재 인증된 사용자 정보 기반으로 조회하게 변경 필요
     public List<BookmarkResponseDto> findAllPost(@PathVariable Long memberId) {
         return bookmarkService.findAllByMember(memberId);
     }
