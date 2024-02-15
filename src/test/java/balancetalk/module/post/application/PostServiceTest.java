@@ -22,6 +22,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.*;
 
+import static org.assertj.core.api.Assertions.*;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -91,7 +92,7 @@ class PostServiceTest {
         Post result = postService.save(postRequestDto);
 
         // then
-        org.assertj.core.api.Assertions.assertThat(result.getMember().getId()).isEqualTo(member.getId());
+        assertThat(result.getMember().getId()).isEqualTo(member.getId());
 
     }
 

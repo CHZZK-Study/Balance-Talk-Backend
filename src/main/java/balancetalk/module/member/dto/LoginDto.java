@@ -1,6 +1,7 @@
 package balancetalk.module.member.dto;
 
 import balancetalk.module.member.domain.Member;
+import balancetalk.module.member.domain.Role;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
