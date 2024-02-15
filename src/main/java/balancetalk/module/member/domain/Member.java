@@ -17,16 +17,21 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
+
 import jakarta.validation.constraints.*;
 import lombok.*;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 @Entity
 @Builder
 @Getter
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Member extends BaseTimeEntity {
+public class Member extends BaseTimeEntity implements UserDetails {
 
     @Id
     @GeneratedValue
@@ -81,6 +86,47 @@ public class Member extends BaseTimeEntity {
 
     @OneToMany(mappedBy = "reporter")
     private List<Report> reports = new ArrayList<>(); // 신고한 기록
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return null;
+    }
+
+    @Override
+    public String getUsername() {
+        return email;
+    }
+
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true;
+    }
+
+    public int getPostCount() {
+        return Optional.ofNullable(posts)
+                .map(List::size).orElse(0);
+    }
+
+    public int getPostLikes() {
+        return Optional.ofNullable(postLikes)
+                .map(List::size).orElse(0);
+    }
 
     public boolean hasVoted(Post post) {
         return votes.stream()
