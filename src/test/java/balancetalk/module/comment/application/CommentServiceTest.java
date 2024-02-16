@@ -202,7 +202,7 @@ class CommentServiceTest {
 
     @Test
     @DisplayName("게시글에 대한 댓글 조회 실패 - 게시글을 찾을 수 없음")
-void readCommentsByPostId_Fail_PostNotFound() {
+    void readCommentsByPostId_Fail_PostNotFound() {
         // given
         Long postId = 1L;
 
@@ -214,6 +214,7 @@ void readCommentsByPostId_Fail_PostNotFound() {
         assertThatThrownBy(() -> commentService.findAll(postId))
                 .isInstanceOf(BalanceTalkException.class)
                 .hasMessageContaining("존재하지 않는 게시글입니다.");
+    }
     @DisplayName("사용자가 특정 댓글에 추천을 누르면 해당 댓글 id가 반환된다.")
     void createCommentLike_Success() {
         // given
