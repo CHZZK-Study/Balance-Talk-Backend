@@ -14,10 +14,7 @@ import balancetalk.module.post.domain.PostTag;
 import balancetalk.module.post.dto.PostRequestDto;
 import balancetalk.module.post.dto.PostResponseDto;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
-import balancetalk.module.post.dto.PostResponseDto;
-
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,7 +31,7 @@ public class PostService {
     public Post save(final PostRequestDto postRequestDto) {
 
         Member member = memberRepository.findById(postRequestDto.getMemberId())
-                .orElseThrow();
+                .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_MEMBER));
 
         Post postEntity = postRequestDto.toEntity(member);
 
@@ -62,14 +59,13 @@ public class PostService {
     @Transactional(readOnly = true)
     public PostResponseDto findById(Long postId) {
         Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new NoSuchElementException("해당 post를 찾을 수 없습니다."));
+                .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_POST));
         return PostResponseDto.fromEntity(post);
     }
 
     public void deleteById(Long postId) {
         Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new NoSuchElementException("게시글 삭제 실패"));
-        // todo: 에러 추가
+                .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_POST));
         postRepository.deleteById(postId);
     }
 
