@@ -49,7 +49,7 @@ public class MemberService {
     @Transactional(readOnly = true)
     public MemberResponseDto findById(Long id) {
         Member member = memberRepository.findById(id)
-                .orElseThrow(() -> new BalanceTalkException(ErrorCode.NOT_FOUND_MEMBER_INFORMATION));
+                .orElseThrow(() -> new BalanceTalkException(ErrorCode.NOT_FOUND_MEMBER));
         return MemberResponseDto.fromEntity(member);
     }
 
@@ -67,5 +67,20 @@ public class MemberService {
                 .orElseThrow(() -> new BalanceTalkException(ErrorCode.NOT_FOUND_MEMBER));
         member.updateMember(memberUpdateDto.getNickname(), memberUpdateDto.getPassword());
         return MemberResponseDto.fromEntity(member);
+    }
+
+    @Transactional
+    public void delete(Long memberId, final LoginDto loginDto) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new BalanceTalkException(ErrorCode.NOT_FOUND_MEMBER));
+
+        if (!member.getEmail().equals(loginDto.getEmail())) {
+            throw new BalanceTalkException(ErrorCode.FORBIDDEN_MEMBER_DELETE);
+        }
+        if (!member.getPassword().equals(loginDto.getPassword())) {
+            throw new BalanceTalkException(ErrorCode.INCORRECT_PASSWORD);
+        }
+
+        memberRepository.deleteById(memberId);
     }
 }

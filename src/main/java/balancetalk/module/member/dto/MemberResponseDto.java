@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class MemberResponseDto {
     private String nickname;
-    private String profilePhoto;
+    private String profilePhoto; // TODO: profilePhoto 추가
     private LocalDateTime createdAt;
     private int postsCount;
     private int totalPostLike;
