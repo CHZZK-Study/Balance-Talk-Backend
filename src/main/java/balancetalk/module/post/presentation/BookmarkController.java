@@ -3,10 +3,8 @@ package balancetalk.module.post.presentation;
 import balancetalk.module.post.application.BookmarkService;
 import balancetalk.module.post.dto.BookmarkRequestDto;
 import balancetalk.module.post.dto.BookmarkResponseDto;
-import balancetalk.module.post.dto.PostResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;

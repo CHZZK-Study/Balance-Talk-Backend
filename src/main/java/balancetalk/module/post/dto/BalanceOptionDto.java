@@ -2,7 +2,10 @@ package balancetalk.module.post.dto;
 
 import balancetalk.module.file.dto.FileDto;
 import balancetalk.module.post.domain.BalanceOption;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @Builder
