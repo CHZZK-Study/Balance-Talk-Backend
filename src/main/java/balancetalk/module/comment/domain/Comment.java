@@ -55,10 +55,6 @@ public class Comment extends BaseTimeEntity {
     @JoinColumn(name = "post_id")
     private Post post;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "balance_option_id")
-    private BalanceOption balanceOption;
-
     @OneToMany(mappedBy = "comment")
     private List<CommentLike> likes = new ArrayList<>();
 

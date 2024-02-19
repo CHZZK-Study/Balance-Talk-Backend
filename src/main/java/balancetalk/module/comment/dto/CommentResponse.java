@@ -19,13 +19,15 @@ public class CommentResponse {
     private LocalDateTime createdAt;
     private LocalDateTime lastModifiedAt;
 
-    public static CommentResponse fromEntity(Comment comment) {
+    public static CommentResponse fromEntity(Comment comment, Long balanceOptionId) {
+
+
         return CommentResponse.builder()
                 .id(comment.getId())
                 .content(comment.getContent())
                 .memberName(comment.getMember().getNickname())
                 .postId(comment.getPost().getId())
-                .balanceOptionId(comment.getBalanceOption().getId())
+                .balanceOptionId(balanceOptionId)
                 // .likeCount(comment.getLikes().size()) //TODO: likeCount가 NULL이라 Response 어려움
                 .createdAt(comment.getCreatedAt())
                 .lastModifiedAt(comment.getLastModifiedAt())

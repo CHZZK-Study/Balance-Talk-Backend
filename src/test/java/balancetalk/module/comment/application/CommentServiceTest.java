@@ -61,7 +61,7 @@ class CommentServiceTest {
         when(commentRepository.save(any(Comment.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
         // when
-        CommentResponse response = commentService.createComment(request, postId);
+        Comment response = commentService.createComment(request, postId);
 
         // then
         assertThat(response.getContent()).isEqualTo(request.getContent());

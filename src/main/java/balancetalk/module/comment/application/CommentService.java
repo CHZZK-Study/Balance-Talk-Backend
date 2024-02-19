@@ -18,8 +18,14 @@ import balancetalk.module.post.domain.BalanceOption;
 import balancetalk.module.post.domain.BalanceOptionRepository;
 import balancetalk.module.post.domain.Post;
 import balancetalk.module.post.domain.PostRepository;
+
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
+
+import balancetalk.module.vote.domain.Vote;
+import balancetalk.module.vote.domain.VoteRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,15 +40,15 @@ public class CommentService {
     private final PostRepository postRepository;
     private final BalanceOptionRepository balanceOptionRepository;
     private final CommentLikeRepository commentLikeRepository;
+    private final VoteRepository voteRepository;
 
-    public CommentResponse createComment(CommentCreateRequest request, Long postId) {
+    public Comment createComment(CommentCreateRequest request, Long postId) {
         Member member = validateMemberId(request);
         Post post = validatePostId(postId);
         BalanceOption balanceOption = validateBalanceOptionId(request, post);
 
-        Comment comment = request.toEntity(member, post, balanceOption);
-        comment = commentRepository.save(comment);
-        return CommentResponse.fromEntity(comment);
+        Comment comment = request.toEntity(member, post);
+        return commentRepository.save(comment);
     }
 
     @Transactional(readOnly = true)
@@ -50,9 +56,16 @@ public class CommentService {
         validatePostId(postId);
 
         List<Comment> comments = commentRepository.findByPostId(postId);
-        return comments.stream()
-                .map(CommentResponse::fromEntity)
-                .collect(Collectors.toList());
+        List<CommentResponse> responses = new ArrayList<>();
+
+        for (Comment comment : comments) {
+            Optional<Vote> voteForComment = voteRepository.findByMemberIdAndBalanceOption_PostId(comment.getMember().getId(), postId);
+
+            Long balanceOptionId = voteForComment.map(Vote::getBalanceOption).map(BalanceOption::getId).orElse(null);
+            CommentResponse response = CommentResponse.fromEntity(comment, balanceOptionId);
+            responses.add(response);
+        }
+        return responses;
     }
 
     public Comment updateComment(Long commentId, String content) {
