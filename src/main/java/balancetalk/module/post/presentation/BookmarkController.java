@@ -31,7 +31,7 @@ public class BookmarkController {
         return bookmarkService.findAllByMember(memberId);
     }
 
-    @ResponseStatus(HttpStatus.CREATED)
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping("/members/{memberId}/{bookmarkId}")
     public String deleteBookmark(@PathVariable Long bookmarkId, @PathVariable Long memberId) {
         bookmarkService.deleteById(memberId, bookmarkId);
