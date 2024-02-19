@@ -2,17 +2,19 @@ package balancetalk.module.post.dto;
 
 import balancetalk.module.file.dto.FileDto;
 import balancetalk.module.post.domain.BalanceOption;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.*;
 
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class BalanceOptionDto {
+
+    @Schema(description = "선택지 제목", example = "선택지 제목1")
     private String title;
+
+    @Schema(description = "선택지 내용", example = "선택지 내용1")
     private String description;
     private FileDto file;
 

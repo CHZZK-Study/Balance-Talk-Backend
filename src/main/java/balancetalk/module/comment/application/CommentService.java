@@ -15,7 +15,6 @@ import balancetalk.module.comment.dto.CommentResponse;
 import balancetalk.module.member.domain.Member;
 import balancetalk.module.member.domain.MemberRepository;
 import balancetalk.module.post.domain.BalanceOption;
-import balancetalk.module.post.domain.BalanceOptionRepository;
 import balancetalk.module.post.domain.Post;
 import balancetalk.module.post.domain.PostRepository;
 
@@ -38,7 +37,6 @@ public class CommentService {
     private final CommentRepository commentRepository;
     private final MemberRepository memberRepository;
     private final PostRepository postRepository;
-    private final BalanceOptionRepository balanceOptionRepository;
     private final CommentLikeRepository commentLikeRepository;
     private final VoteRepository voteRepository;
 
@@ -108,7 +106,7 @@ public class CommentService {
       
     public Long likeComment(Long postId, Long commentId, Long memberId) {
         Comment comment = commentRepository.findById(commentId)
-                .orElseThrow(); // TODO 예외 처리
+                .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_COMMENT));
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new BalanceTalkException(ErrorCode.NOT_FOUND_MEMBER));
 
@@ -123,5 +121,14 @@ public class CommentService {
         commentLikeRepository.save(commentLike);
 
         return comment.getId();
+    }
+
+    public void cancelLikeComment(Long commentId, Long memberId) {
+        Comment comment = commentRepository.findById(commentId)
+                .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_COMMENT));
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new BalanceTalkException(ErrorCode.NOT_FOUND_MEMBER));
+
+        commentLikeRepository.deleteByMemberAndComment(member, comment);
     }
 }
