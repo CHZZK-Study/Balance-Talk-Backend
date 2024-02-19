@@ -14,7 +14,7 @@ public class CommentResponse {
     private String content;
     private String memberName;
     private Long postId;
-    private Long balanceOptionId;
+    private Long selectedOptionId;
     private int likeCount;
     private LocalDateTime createdAt;
     private LocalDateTime lastModifiedAt;
@@ -27,7 +27,7 @@ public class CommentResponse {
                 .content(comment.getContent())
                 .memberName(comment.getMember().getNickname())
                 .postId(comment.getPost().getId())
-                .balanceOptionId(balanceOptionId)
+                .selectedOptionId(balanceOptionId)
                 // .likeCount(comment.getLikes().size()) //TODO: likeCount가 NULL이라 Response 어려움
                 .createdAt(comment.getCreatedAt())
                 .lastModifiedAt(comment.getLastModifiedAt())

@@ -93,7 +93,7 @@ public class CommentService {
 
     private BalanceOption validateBalanceOptionId(CommentCreateRequest request, Post post) {
         return post.getOptions().stream()
-                .filter(option -> option.getId().equals(request.getBalanceOptionId()))
+                .filter(option -> option.getId().equals(request.getSelectedOptionId()))
                 .findFirst()
                 .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_BALANCE_OPTION));
     }
