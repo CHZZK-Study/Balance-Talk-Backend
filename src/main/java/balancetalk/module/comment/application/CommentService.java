@@ -46,6 +46,8 @@ public class CommentService {
         Member member = validateMemberId(request);
         Post post = validatePostId(postId);
         BalanceOption balanceOption = validateBalanceOptionId(request, post);
+        voteRepository.findByMemberIdAndBalanceOption_PostId(request.getMemberId(), postId)
+                .orElseThrow(() -> new BalanceTalkException(ErrorCode.NOT_FOUND_VOTE));
 
         Comment comment = request.toEntity(member, post);
         return commentRepository.save(comment);
@@ -61,7 +63,8 @@ public class CommentService {
         for (Comment comment : comments) {
             Optional<Vote> voteForComment = voteRepository.findByMemberIdAndBalanceOption_PostId(comment.getMember().getId(), postId);
 
-            Long balanceOptionId = voteForComment.map(Vote::getBalanceOption).map(BalanceOption::getId).orElse(null);
+            Long balanceOptionId = voteForComment.map(Vote::getBalanceOption).map(BalanceOption::getId)
+                    .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_BALANCE_OPTION));
             CommentResponse response = CommentResponse.fromEntity(comment, balanceOptionId);
             responses.add(response);
         }
