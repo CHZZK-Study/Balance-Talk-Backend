@@ -33,7 +33,7 @@ dependencies {
 	runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.2'
 
 	// emailAuth
-	implementation 'org.springframework.boot:spring-boot-starter-mail:2.7.0'
+	implementation 'org.springframework.boot:spring-boot-starter-mail'
 
 
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
