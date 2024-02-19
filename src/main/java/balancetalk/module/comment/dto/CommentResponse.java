@@ -24,7 +24,9 @@ public class CommentResponse {
 
     @Schema(description = "해당 댓글에 맞는 게시글 id", example = "1")
     private Long postId;
-    // TODO : selectedOptionId 추가, 엔티티 연관 필요
+  
+    @Schema(description = "해당 댓글에 맞는 선택지 id", example = "23")
+    private Long selectedOptionId;
 
     @Schema(description = "댓글 추천 수", example = "24")
     private int likeCount;
@@ -35,12 +37,15 @@ public class CommentResponse {
     @Schema(description = "댓글 수정 날짜")
     private LocalDateTime lastModifiedAt;
 
-    public static CommentResponse fromEntity(Comment comment) {
+    public static CommentResponse fromEntity(Comment comment, Long balanceOptionId) {
+
+
         return CommentResponse.builder()
                 .id(comment.getId())
                 .content(comment.getContent())
                 .memberName(comment.getMember().getNickname())
                 .postId(comment.getPost().getId())
+                .selectedOptionId(balanceOptionId)
                 // .likeCount(comment.getLikes().size()) //TODO: likeCount가 NULL이라 Response 어려움
                 .createdAt(comment.getCreatedAt())
                 .lastModifiedAt(comment.getLastModifiedAt())

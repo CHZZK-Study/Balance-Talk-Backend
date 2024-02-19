@@ -17,9 +17,9 @@ public class CommentCreateRequest {
 
     @Schema(description = "회원 id", example = "1")
     private Long memberId;
-
+  
     @Schema(description = "선택지 id", example = "23")
-    private Long balanceOptionId;
+    private Long selectedOptionId;
 
     public Comment toEntity(Member member, Post post) {
         return Comment.builder()

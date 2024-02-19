@@ -3,6 +3,7 @@ package balancetalk.module.comment.domain;
 import balancetalk.global.common.BaseTimeEntity;
 import balancetalk.module.ViewStatus;
 import balancetalk.module.member.domain.Member;
+import balancetalk.module.post.domain.BalanceOption;
 import balancetalk.module.post.domain.Post;
 import balancetalk.module.report.domain.Report;
 import jakarta.persistence.Column;
