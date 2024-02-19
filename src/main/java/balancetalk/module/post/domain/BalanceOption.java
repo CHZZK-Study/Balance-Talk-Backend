@@ -46,7 +46,7 @@ public class BalanceOption {
     public int voteCount() {
         return votes.size();
     }
-  
+
     public void addPost(Post post) {
         this.post = post;
     }
