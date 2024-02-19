@@ -48,4 +48,11 @@ public class MemberController {
     public MemberResponseDto updateMemberInfo(@PathVariable("memberId") Long memberId, @Valid @RequestBody MemberUpdateDto memberUpdateDto) {
         return memberService.update(memberId, memberUpdateDto);
     }
+
+    @ResponseStatus(HttpStatus.OK)
+    @DeleteMapping("/{memberId}")
+    public String deleteMember(@PathVariable("memberId") Long memberId, @Valid @RequestBody LoginDto loginDto) {
+        memberService.delete(memberId, loginDto);
+        return "회원 탈퇴가 정상적으로 처리되었습니다.";
+    }
 }

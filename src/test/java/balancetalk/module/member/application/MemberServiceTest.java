@@ -13,11 +13,11 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-
-import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class MemberServiceTest {
@@ -125,12 +125,32 @@ class MemberServiceTest {
         // when
         when(memberRepository.findById(any())).thenReturn(Optional.of(member));
         member.updateMember(memberUpdateDto.getNickname(), memberUpdateDto.getPassword());
-        when(memberRepository.save(any())).thenReturn(member);
 
         memberService.update(member.getId(), memberUpdateDto);
 
         // then
         assertThat(member.getNickname()).isEqualTo(memberUpdateDto.getNickname());
         assertThat(member.getPassword()).isEqualTo(memberUpdateDto.getPassword());
+    }
+
+    @Test
+    @DisplayName("회원 탈퇴 - 성공")
+    void Member_Delete_Success() {
+        // given
+        LoginDto loginDto = LoginDto.builder()
+                .email("test1234@naver.com")
+                .password("Test1234test!")
+                .build();
+        Member member = joinDto.toEntity();
+
+        when(memberRepository.findById(any())).thenReturn(Optional.of(member));
+        doNothing().when(memberRepository).deleteById(member.getId());
+
+        // when
+        memberService.delete(member.getId(), loginDto);
+
+        // then
+        verify(memberRepository).deleteById(member.getId());
+        assertThat(member.getId()).isNull();
     }
 }

@@ -202,7 +202,7 @@ class CommentServiceTest {
 
     @Test
     @DisplayName("게시글에 대한 댓글 조회 실패 - 게시글을 찾을 수 없음")
-void readCommentsByPostId_Fail_PostNotFound() {
+    void readCommentsByPostId_Fail_PostNotFound() {
         // given
         Long postId = 1L;
 
