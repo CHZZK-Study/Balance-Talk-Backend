@@ -49,7 +49,7 @@ public class PostService {
 
     @Transactional(readOnly = true)
     public List<PostResponseDto> findAll() {
-        // todo: 검색, 정렬, 마감 기능 추가
+        // TODO: 검색, 정렬, 마감 기능 추가
         List<Post> posts = postRepository.findAll();
         return posts.stream()
                 .map(PostResponseDto::fromEntity)
