@@ -3,6 +3,7 @@ package balancetalk.module.comment.domain;
 import balancetalk.global.common.BaseTimeEntity;
 import balancetalk.module.ViewStatus;
 import balancetalk.module.member.domain.Member;
+import balancetalk.module.post.domain.BalanceOption;
 import balancetalk.module.post.domain.Post;
 import balancetalk.module.report.domain.Report;
 import jakarta.persistence.Column;
@@ -53,6 +54,10 @@ public class Comment extends BaseTimeEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "post_id")
     private Post post;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "balance_option_id")
+    private BalanceOption balanceOption;
 
     @OneToMany(mappedBy = "comment")
     private List<CommentLike> likes = new ArrayList<>();

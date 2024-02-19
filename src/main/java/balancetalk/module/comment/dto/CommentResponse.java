@@ -14,7 +14,7 @@ public class CommentResponse {
     private String content;
     private String memberName;
     private Long postId;
-    // TODO : selectedOptionId 추가, 엔티티 연관 필요
+    private Long balanceOptionId;
     private int likeCount;
     private LocalDateTime createdAt;
     private LocalDateTime lastModifiedAt;
@@ -25,6 +25,7 @@ public class CommentResponse {
                 .content(comment.getContent())
                 .memberName(comment.getMember().getNickname())
                 .postId(comment.getPost().getId())
+                .balanceOptionId(comment.getBalanceOption().getId())
                 // .likeCount(comment.getLikes().size()) //TODO: likeCount가 NULL이라 Response 어려움
                 .createdAt(comment.getCreatedAt())
                 .lastModifiedAt(comment.getLastModifiedAt())

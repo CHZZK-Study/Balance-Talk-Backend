@@ -38,9 +38,9 @@ public class CommentService {
     public CommentResponse createComment(CommentCreateRequest request, Long postId) {
         Member member = validateMemberId(request);
         Post post = validatePostId(postId);
-        validateBalanceOptionId(request, post);
+        BalanceOption balanceOption = validateBalanceOptionId(request, post);
 
-        Comment comment = request.toEntity(member, post);
+        Comment comment = request.toEntity(member, post, balanceOption);
         comment = commentRepository.save(comment);
         return CommentResponse.fromEntity(comment);
     }
