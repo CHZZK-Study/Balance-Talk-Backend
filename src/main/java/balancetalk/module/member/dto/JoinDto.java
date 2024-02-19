@@ -2,6 +2,8 @@ package balancetalk.module.member.dto;
 
 import balancetalk.module.member.domain.Member;
 import balancetalk.module.member.domain.Role;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -11,6 +13,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class JoinDto {
+
     private String nickname;
     private String email;
     private String password;
