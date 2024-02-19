@@ -2,7 +2,10 @@ package balancetalk.module.post.dto;
 
 import balancetalk.module.post.domain.Post;
 import balancetalk.module.post.domain.PostCategory;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;

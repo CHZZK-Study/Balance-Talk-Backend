@@ -137,4 +137,9 @@ public class Member extends BaseTimeEntity implements UserDetails {
         return votes.stream()
                 .anyMatch(vote -> vote.getBalanceOption().getPost().equals(post));
     }
+
+    public boolean hasBookmarked(Post post) {
+        return bookmarks.stream()
+                .anyMatch(bookmark -> bookmark.getPost().equals(post));
+    }
 }
