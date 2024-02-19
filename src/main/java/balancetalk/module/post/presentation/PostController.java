@@ -59,4 +59,11 @@ public class PostController {
                 .header("Content-Location", contentLocation)
                 .body("요청이 정상적으로 처리되었습니다.");
     }
+
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @DeleteMapping("/{postId}/likes")
+    public String cancelLikePost(@PathVariable Long postId, @RequestBody Long memberId) {
+        postService.cancelLikePost(postId, memberId);
+        return "요청이 정상적으로 처리되었습니다.";
+    }
 }

@@ -1,6 +1,5 @@
 package balancetalk.module.post.dto;
 
-import balancetalk.module.ViewStatus;
 import balancetalk.module.member.domain.Member;
 import balancetalk.module.post.domain.Post;
 import balancetalk.module.post.domain.PostCategory;

@@ -1,17 +1,18 @@
 package balancetalk.module.post.domain;
 
-import balancetalk.module.comment.domain.Comment;
-import balancetalk.module.report.domain.Report;
-import balancetalk.module.ViewStatus;
-import balancetalk.module.member.domain.Member;
 import balancetalk.global.common.BaseTimeEntity;
+import balancetalk.module.ViewStatus;
+import balancetalk.module.comment.domain.Comment;
+import balancetalk.module.member.domain.Member;
+import balancetalk.module.report.domain.Report;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
+import lombok.*;
+import org.hibernate.annotations.ColumnDefault;
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import lombok.*;
-import org.hibernate.annotations.ColumnDefault;
 
 @Entity
 @Getter

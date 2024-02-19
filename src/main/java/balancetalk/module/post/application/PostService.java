@@ -19,6 +19,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.stream.Collectors;
+
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -86,5 +90,14 @@ public class PostService {
         postLikeRepository.save(postLike);
 
         return post.getId();
+    }
+
+    public void cancelLikePost(Long postId, Long memberId) {
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_POST));
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_MEMBER));
+
+        postLikeRepository.deleteByMemberAndPost(member, post);
     }
 }
