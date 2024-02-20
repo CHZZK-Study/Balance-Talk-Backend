@@ -17,38 +17,48 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 import jakarta.validation.constraints.*;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 @Entity
+@Builder
+@Getter
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Member extends BaseTimeEntity {
+public class Member extends BaseTimeEntity implements UserDetails {
 
     @Id
     @GeneratedValue
     @Column(name = "member_id")
     private Long id;
 
-    @NotNull
+    @NotBlank
     @Size(min = 2, max = 10)
+    @Column(nullable = false, length = 10, unique = true)
     private String nickname;
 
     @NotNull
     @Size(max = 30)
     @Email(regexp = "^[a-zA-Z0-9._%+-]{1,20}@[a-zA-Z0-9.-]{1,10}\\.[a-zA-Z]{2,}$")
+    @Column(nullable = false, length = 30, unique = true)
     private String email;
 
-    @NotNull
+    @NotBlank
     @Size(min = 10, max = 20)
-    @Pattern(regexp = "^(?=.*[0-9])(?=.*[a-zA-Z])$")
+    @Pattern(regexp = "^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d@$!%*#?&]{10,20}$")
+    @Column(nullable = false)
     private String password;
 
-    @Enumerated(value = EnumType.STRING)
     @NotNull
-    private Role role;
+    @Enumerated(value = EnumType.STRING)
+    @Column(nullable = false)
+    private Role role = Role.USER;
 
     @Size(min = 15)
     private String ip;
@@ -76,4 +86,60 @@ public class Member extends BaseTimeEntity {
 
     @OneToMany(mappedBy = "reporter")
     private List<Report> reports = new ArrayList<>(); // 신고한 기록
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return null;
+    }
+
+    @Override
+    public String getUsername() {
+        return email;
+    }
+
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true;
+    }
+
+    public void updateMember(String nickname, String password) {
+        this.nickname = nickname;
+        this.password = password;
+    }
+
+    public int getPostCount() {
+        return Optional.ofNullable(posts)
+                .map(List::size).orElse(0);
+    }
+
+    public int getPostLikes() {
+        return Optional.ofNullable(postLikes)
+                .map(List::size).orElse(0);
+    }
+
+    public boolean hasVoted(Post post) {
+        return votes.stream()
+                .anyMatch(vote -> vote.getBalanceOption().getPost().equals(post));
+    }
+
+    public boolean hasBookmarked(Post post) {
+        return bookmarks.stream()
+                .anyMatch(bookmark -> bookmark.getPost().equals(post));
+    }
 }

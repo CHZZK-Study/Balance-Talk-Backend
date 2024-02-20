@@ -1,14 +1,16 @@
 package balancetalk.module.post.domain;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
+import lombok.*;
 
+import java.util.ArrayList;
+import java.util.List;
 @Entity
+@Builder
+@Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class Tag {
 
     @Id
@@ -16,8 +18,13 @@ public class Tag {
     @Column(name = "tag_id")
     private Long id;
 
-    // TODO 개선 필요
-//    @ManyToMany(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "post_id")
-//    private List<Post> posts = new ArrayList<>();
+    @NotNull
+    private String name;
+
+    @OneToMany(mappedBy = "tag")
+    private List<PostTag> postTags = new ArrayList<>();
+
+    public Tag(String name){
+        this.name = name;
+    }
 }

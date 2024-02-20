@@ -1,10 +1,11 @@
 package balancetalk.module.comment.domain;
 
-import balancetalk.module.report.domain.Report;
+import balancetalk.global.common.BaseTimeEntity;
 import balancetalk.module.ViewStatus;
 import balancetalk.module.member.domain.Member;
+import balancetalk.module.post.domain.BalanceOption;
 import balancetalk.module.post.domain.Post;
-import balancetalk.global.common.BaseTimeEntity;
+import balancetalk.module.report.domain.Report;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -16,16 +17,21 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import java.util.ArrayList;
 import java.util.List;
-
-import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
+@Builder
+@Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class Comment extends BaseTimeEntity {
 
     @Id
@@ -54,4 +60,8 @@ public class Comment extends BaseTimeEntity {
 
     @OneToMany(mappedBy = "comment")
     private List<Report> reports = new ArrayList<>();
+
+    public void updateContent(String content) {
+        this.content = content;
+    }
 }

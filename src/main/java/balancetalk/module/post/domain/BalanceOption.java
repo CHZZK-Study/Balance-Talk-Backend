@@ -2,24 +2,18 @@ package balancetalk.module.post.domain;
 
 import balancetalk.module.file.domain.File;
 import balancetalk.module.vote.domain.Vote;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+import lombok.*;
+
 import java.util.ArrayList;
 import java.util.List;
 
-import jakarta.validation.constraints.NotNull;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-
 @Entity
+@Getter
+@Builder
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class BalanceOption {
 
@@ -28,15 +22,17 @@ public class BalanceOption {
     @Column(name = "balance_option_id")
     private Long id;
 
-    @NotNull
+    @NotBlank
     @Size(max = 50)
+    @Column(nullable = false, length = 50)
     private String title;
 
-    @NotNull
+    @NotBlank
     @Size(max = 100)
+    @Column(nullable = false, length = 100)
     private String description;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "file_id")
     private File file;
 
@@ -46,4 +42,12 @@ public class BalanceOption {
 
     @OneToMany(mappedBy = "balanceOption")
     private List<Vote> votes = new ArrayList<>();
+
+    public int voteCount() {
+        return votes.size();
+    }
+
+    public void addPost(Post post) {
+        this.post = post;
+    }
 }

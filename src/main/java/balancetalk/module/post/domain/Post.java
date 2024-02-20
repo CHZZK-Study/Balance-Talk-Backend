@@ -1,33 +1,23 @@
 package balancetalk.module.post.domain;
 
-import balancetalk.module.comment.domain.Comment;
-import balancetalk.module.report.domain.Report;
-import balancetalk.module.ViewStatus;
-import balancetalk.module.member.domain.Member;
 import balancetalk.global.common.BaseTimeEntity;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
-import jakarta.validation.constraints.Future;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.PositiveOrZero;
+import balancetalk.module.ViewStatus;
+import balancetalk.module.comment.domain.Comment;
+import balancetalk.module.member.domain.Member;
+import balancetalk.module.report.domain.Report;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
+import lombok.*;
+import org.hibernate.annotations.ColumnDefault;
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.NotNull;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-
 @Entity
+@Getter
+@Builder
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Post extends BaseTimeEntity {
 
@@ -37,30 +27,35 @@ public class Post extends BaseTimeEntity {
     private Long id;
 
     @NotBlank
-    @Max(50)
+    @Size(max = 50)
+    @Column(nullable = false, length = 50)
     private String title;
 
     @NotNull
     @Future
+    @Column(nullable = false)
     private LocalDateTime deadline;
 
-    @NotNull
     @PositiveOrZero
+    @ColumnDefault("0")
+    @Column(nullable = false)
     private Long views;
 
     @Enumerated(value = EnumType.STRING)
-    @NotNull
+    @ColumnDefault("'NORMAL'")
+    @Column(nullable = false)
     private ViewStatus viewStatus;
 
-    @Enumerated(value = EnumType.STRING)
     @NotNull
-    private PostCategory Category;
+    @Enumerated(value = EnumType.STRING)
+    @Column(nullable = false)
+    private PostCategory category;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
 
-    @OneToMany(mappedBy = "post")
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
     private List<BalanceOption> options = new ArrayList<>();
 
     @OneToMany(mappedBy = "post")
@@ -69,14 +64,31 @@ public class Post extends BaseTimeEntity {
     @OneToMany(mappedBy = "post")
     private List<Comment> comments = new ArrayList<>();
 
-    // TODO 개선 필요
-//    @ManyToMany(mappedBy = "tag")
-//    @JoinColumn(name = "tag_id")
-//    private List<Tag> tags = new ArrayList<>();
+
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
+    private List<PostTag> postTags = new ArrayList<>();
 
     @OneToMany(mappedBy = "post")
     private List<Bookmark> bookmarks = new ArrayList<>();
 
     @OneToMany(mappedBy = "post")
     private List<Report> reports = new ArrayList<>();
+
+    public boolean isCasual() {
+        return this.category == PostCategory.CASUAL;
+    }
+    
+    @PrePersist
+    public void init() {
+        this.views = 0L;
+        this.viewStatus = ViewStatus.NORMAL;
+    }
+
+    public boolean notContainsBalanceOption(BalanceOption option) {
+        return !options.contains(option);
+    }
+
+    public boolean hasDeadlineExpired() {
+        return deadline.isBefore(LocalDateTime.now());
+    }
 }
