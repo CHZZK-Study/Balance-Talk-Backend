@@ -1,12 +1,5 @@
 package balancetalk.module.comment.application;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
 import balancetalk.global.exception.BalanceTalkException;
 import balancetalk.global.exception.ErrorCode;
 import balancetalk.module.comment.domain.Comment;
@@ -16,17 +9,25 @@ import balancetalk.module.comment.dto.CommentCreateRequest;
 import balancetalk.module.comment.dto.CommentResponse;
 import balancetalk.module.member.domain.Member;
 import balancetalk.module.member.domain.MemberRepository;
+import balancetalk.module.post.domain.BalanceOption;
 import balancetalk.module.post.domain.Post;
 import balancetalk.module.post.domain.PostRepository;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import balancetalk.module.vote.domain.Vote;
+import balancetalk.module.vote.domain.VoteRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+
+import java.util.List;
+import java.util.Optional;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class CommentServiceTest {
@@ -46,18 +47,26 @@ class CommentServiceTest {
     @Mock
     private CommentLikeRepository commentLikeRepository;
 
+    @Mock
+    private VoteRepository voteRepository;
+
     @Test
     @DisplayName("댓글 생성 성공")
     void createComment_Success() {
         // given
         Long memberId = 1L;
         Long postId = 1L;
-        Member member = Member.builder().id(memberId).build();
-        Post post = Post.builder().id(postId).options(new ArrayList<>()).build();
-        CommentCreateRequest request = new CommentCreateRequest("댓글 내용입니다.", memberId, null);
+        Long selectedOptionId = 1L;
+        Long voteId = 1L;
+        Vote vote = Vote.builder().id(voteId).build();
+        Member member = Member.builder().id(memberId).votes(List.of(vote)).build();
+        BalanceOption balanceOption = BalanceOption.builder().id(selectedOptionId).build();
+        Post post = Post.builder().id(postId).options(List.of(balanceOption)).build();
+        CommentCreateRequest request = new CommentCreateRequest("댓글 내용입니다.", memberId, selectedOptionId);
 
         when(memberRepository.findById(memberId)).thenReturn(Optional.of(member));
         when(postRepository.findById(postId)).thenReturn(Optional.of(post));
+        when(voteRepository.findByMemberIdAndBalanceOption_PostId(memberId, postId)).thenReturn(Optional.of(vote));
         when(commentRepository.save(any(Comment.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
         // when
@@ -65,6 +74,8 @@ class CommentServiceTest {
 
         // then
         assertThat(response.getContent()).isEqualTo(request.getContent());
+        assertThat(response.getMember()).isEqualTo(member);
+        assertThat(response.getPost()).isEqualTo(post);
         verify(commentRepository).save(any(Comment.class));
     }
 
@@ -72,9 +83,12 @@ class CommentServiceTest {
     @DisplayName("게시글에 대한 댓글 조회 성공")
     void readCommentsByPostId_Success() {
         // given
+        Long memberId = 1L;
         Long postId = 1L;
         Member mockMember = Member.builder().id(1L).nickname("회원1").build();
-        Post mockPost = Post.builder().id(postId).build();
+        BalanceOption balanceOption = BalanceOption.builder().id(1L).build();
+        Post mockPost = Post.builder().id(postId).options(List.of(balanceOption)).build();
+        Vote vote = Vote.builder().id(1L).balanceOption(balanceOption).build();
 
         List<Comment> comments = List.of(
                 Comment.builder().id(1L).content("댓글 1").member(mockMember).post(mockPost).build(),
@@ -82,6 +96,8 @@ class CommentServiceTest {
         );
 
         when(commentRepository.findByPostId(postId)).thenReturn(comments);
+        when(postRepository.findById(postId)).thenReturn(Optional.of(mockPost));
+        when(voteRepository.findByMemberIdAndBalanceOption_PostId(memberId, postId)).thenReturn(Optional.of(vote));
 
         // when
         List<CommentResponse> responses = commentService.findAll(postId);
@@ -105,14 +121,12 @@ class CommentServiceTest {
         Comment existingComment = Comment.builder().id(commentId).content("기존 댓글 내용").build();
 
         when(commentRepository.findById(commentId)).thenReturn(Optional.of(existingComment));
-        when(commentRepository.save(any(Comment.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
         // when
         Comment updatedComment = commentService.updateComment(commentId, updatedContent);
 
         // then
         assertThat(updatedComment.getContent()).isEqualTo(updatedContent);
-        verify(commentRepository).save(any(Comment.class));
     }
 
     @Test
@@ -120,7 +134,9 @@ class CommentServiceTest {
     void deleteComment_Success() {
         // given
         Long commentId = 1L;
+        Comment existingComment = Comment.builder().id(commentId).content("기존 댓글 내용").build();
 
+        when(commentRepository.findById(commentId)).thenReturn(Optional.of(existingComment));
         doNothing().when(commentRepository).deleteById(commentId);
 
         // when
