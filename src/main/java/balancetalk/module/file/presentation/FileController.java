@@ -22,4 +22,11 @@ public class FileController {
         fileService.uploadFile(file);
         return "파일이 업로드되었습니다.";
     }
+
+    @ResponseStatus(HttpStatus.OK)
+    @GetMapping("/download/{fileId}")
+    public String downloadFile(@PathVariable Long fileId) throws IOException {
+        fileService.downloadFile(fileId);
+        return "파일이 다운로드되었습니다.";
+    }
 }

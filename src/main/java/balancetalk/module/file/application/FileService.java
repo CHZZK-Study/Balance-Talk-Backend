@@ -49,6 +49,21 @@ public class FileService {
         return fileRepository.save(saveFile);
     }
 
+    public ResponseEntity<Resource> downloadFile(Long fileId) throws IOException {
+        File file = fileRepository.findById(fileId)
+                .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_DIRECTORY));
+        Path path = Paths.get(file.getPath());
+        Resource resource = new UrlResource(path.toUri());
+        String contentType = servletContext.getMimeType(resource.getFile().getAbsolutePath());
+        if(contentType == null) {
+            contentType = "application/octet-stream";
+        }
+        return ResponseEntity.ok()
+                .contentType(MediaType.parseMediaType(contentType))
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + file.getUploadName() + "\"")
+                .body(resource);
+    }
+
     private FileType convertMimeTypeToFileType(String mimeType) {
         if (mimeType == null) {
             throw new IllegalArgumentException("MIME 타입은 NULL이 될 수 없습니다.");
