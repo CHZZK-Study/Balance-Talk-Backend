@@ -5,7 +5,7 @@ import jakarta.validation.constraints.Email;
 import lombok.Data;
 
 @Data
-public class EmailRequest {
+public class EmailRequestDto {
     @Email
     private String email;
 }
