@@ -37,8 +37,11 @@ public enum ErrorCode {
     // 409
     ALREADY_VOTE(CONFLICT, "투표는 한 번만 가능합니다."),
     ALREADY_LIKE_COMMENT(CONFLICT, "이미 추천을 누른 댓글입니다."),
-    ALREADY_LIKE_POST(CONFLICT, "이미 추천을 누른 게시글입니다.");
+    ALREADY_LIKE_POST(CONFLICT, "이미 추천을 누른 게시글입니다."),
 
+    // 500
+    DUPLICATE_EMAIL(INTERNAL_SERVER_ERROR, "이미 존재하는 이메일 입니다. 다른 이메일을 입력해주세요"),
+    AUTHORIZATION_CODE_MISMATCH(INTERNAL_SERVER_ERROR, "인증 번호가 일치하지 않습니다.");
     private final HttpStatus httpStatus;
     private final String message;
 }
