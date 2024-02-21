@@ -1,5 +1,6 @@
 package balancetalk.global.mail.dto;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Email;
 import lombok.Data;
 
@@ -7,6 +8,9 @@ import lombok.Data;
 public class EmailVerificationDto {
 
     @Email
+    @Schema(description = "인증 번호를 검증할 이메일 주소", example = "test1234@naver.com")
     private String email;
+
+    @Schema(description = "인증 번호", example = "4f7dfb")
     private String verificationCode;
 }
