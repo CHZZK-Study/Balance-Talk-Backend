@@ -32,6 +32,7 @@ public enum ErrorCode {
     NOT_FOUND_VOTE(NOT_FOUND, "해당 게시글에서 투표한 기록이 존재하지 않습니다."),
     NOT_FOUND_BOOKMARK(NOT_FOUND, "해당 게시글에서 북마크한 기록이 존재하지 않습니다."),
     NOT_FOUND_COMMENT(NOT_FOUND, "존재하지 않는 댓글입니다."),
+    NOT_FOUND_DIRECTORY(NOT_FOUND, "존재하지 않는 디렉토리입니다."),
 
     // 409
     ALREADY_VOTE(CONFLICT, "투표는 한 번만 가능합니다."),
