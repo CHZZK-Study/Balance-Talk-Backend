@@ -15,6 +15,7 @@ public class FileDto {
     private Long id;
     @Schema(description = "사용자가 업로드한 파일명", example = "사진1")
     private String uploadName;
+    @Schema(description = "서버에 저장되는 파일명", example = "d23d2dqwt1251asbds사진1")
     private String storedName;
     @Schema(description = "업로드한 파일의 경로", example = "/...")
     private String path;
