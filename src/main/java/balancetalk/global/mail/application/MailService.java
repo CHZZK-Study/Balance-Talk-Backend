@@ -1,27 +1,44 @@
 package balancetalk.global.mail.application;
 
-import balancetalk.global.mail.dto.EmailRequest;
+import balancetalk.global.exception.BalanceTalkException;
+import balancetalk.global.mail.dto.EmailRequestDto;
+import balancetalk.global.mail.dto.EmailVerificationDto;
+import balancetalk.global.redis.application.RedisService;
+import balancetalk.module.member.domain.Member;
+import balancetalk.module.member.domain.MemberRepository;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
+
+import java.time.Duration;
+import java.util.Optional;
+import java.util.UUID;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class MailService {
 
     private final JavaMailSender javaMailSender;
-    private static final String senderEmail = "bootsprng@gmail.com";
-    private static int number;
+    private final RedisService redisService;
+    private final MemberRepository memberRepository;
 
-    public static void createNumber(){
-        number = (int)(Math.random() * (90000)) + 100000;
+    private static final String senderEmail = "bootsprng@gmail.com";
+
+    @Value("${spring.mail.auth-code-expiration-millis}")
+    private long authCodeExpirationMillis;
+
+    private String createNumber(){
+        return UUID.randomUUID().toString().substring(0, 6);
     }
 
-    public MimeMessage CreateMail(EmailRequest request){
-        createNumber();
+    public MimeMessage CreateMail(EmailRequestDto request){
+        String authCode = createNumber();
+
         MimeMessage message = javaMailSender.createMimeMessage();
 
         try {
@@ -30,20 +47,30 @@ public class MailService {
             message.setSubject("이메일 인증");
             String body = "";
             body += "<h3>" + "요청하신 인증 번호입니다." + "</h3>";
-            body += "<h1>" + number + "</h1>";
+            body += "<h1>" + authCode + "</h1>";
             body += "<h3>" + "감사합니다." + "</h3>";
             message.setText(body,"UTF-8", "html");
         } catch (MessagingException e) {
             e.printStackTrace();
         }
-
+        redisService.setValues(request.getEmail(), authCode, Duration.ofMillis(authCodeExpirationMillis));
         return message;
     }
 
-    public int sendMail(EmailRequest request){
+    public void sendMail(EmailRequestDto request){
         MimeMessage message = CreateMail(request);
         javaMailSender.send(message);
-        return number;
     }
+
+    public boolean verifyCode(EmailVerificationDto request) {
+        Optional<Member> member = memberRepository.findByEmail(request.getEmail());
+        if (member.isPresent()) {
+            throw new IllegalArgumentException("회원 중복!");
+        }
+        String redisValue = redisService.getValues(request.getEmail());
+        log.info("인증번호 = {}" , redisValue);
+        return redisService.checkExistsValue(redisValue) && redisValue.equals(request.getVerificationCode());
+    }
+
 
 }
