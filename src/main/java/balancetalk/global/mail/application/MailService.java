@@ -1,6 +1,7 @@
 package balancetalk.global.mail.application;
 
 import balancetalk.global.exception.BalanceTalkException;
+import balancetalk.global.exception.ErrorCode;
 import balancetalk.global.mail.dto.EmailRequestDto;
 import balancetalk.global.mail.dto.EmailVerificationDto;
 import balancetalk.global.redis.application.RedisService;
@@ -13,7 +14,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
-
 import java.time.Duration;
 import java.util.Optional;
 import java.util.UUID;
@@ -58,19 +58,23 @@ public class MailService {
     }
 
     public void sendMail(EmailRequestDto request){
+        validateEmail(request.getEmail());
         MimeMessage message = CreateMail(request);
         javaMailSender.send(message);
     }
 
-    public boolean verifyCode(EmailVerificationDto request) {
-        Optional<Member> member = memberRepository.findByEmail(request.getEmail());
-        if (member.isPresent()) {
-            throw new IllegalArgumentException("회원 중복!");
-        }
+    public void verifyCode(EmailVerificationDto request) {
+        validateEmail(request.getEmail());
         String redisValue = redisService.getValues(request.getEmail());
-        log.info("인증번호 = {}" , redisValue);
-        return redisService.checkExistsValue(redisValue) && redisValue.equals(request.getVerificationCode());
+        if (!redisService.checkExistsValue(redisValue) || !redisValue.equals(request.getVerificationCode())) {
+            throw new BalanceTalkException(ErrorCode.AUTHORIZATION_CODE_MISMATCH);
+        }
     }
 
-
+    private void validateEmail(String email) {
+        Optional<Member> member = memberRepository.findByEmail(email);
+        if (member.isPresent()) {
+            throw new BalanceTalkException(ErrorCode.DUPLICATE_EMAIL);
+        }
+    }
 }
