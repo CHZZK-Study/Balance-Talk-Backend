@@ -190,7 +190,7 @@ class PostServiceTest {
 
         // when
         assertThatThrownBy(() -> postService.deleteById(2L))
-                .isInstanceOf(NoSuchElementException.class);
+                .isInstanceOf(BalanceTalkException.class);
     }
 
     public Member createMember(Long id) {
