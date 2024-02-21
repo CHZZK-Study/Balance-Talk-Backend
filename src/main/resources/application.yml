@@ -24,8 +24,8 @@ spring:
       hibernate:
         format_sql: true
 
-  redis:
-    data:
+  data:
+    redis:
       host: 127.0.0.1
       port: 6379
 
