@@ -2,6 +2,7 @@ package balancetalk.module.post.dto;
 
 import balancetalk.module.post.domain.PostTag;
 import balancetalk.module.post.domain.Tag;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 
 @Data
@@ -10,6 +11,7 @@ import lombok.*;
 @AllArgsConstructor
 public class PostTagDto {
 
+    @Schema(description = "게시글 태그", example = "태그1")
     private String tagName;
     public PostTag toEntity() {
         return PostTag.builder()

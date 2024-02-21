@@ -15,11 +15,16 @@ import balancetalk.module.comment.dto.CommentResponse;
 import balancetalk.module.member.domain.Member;
 import balancetalk.module.member.domain.MemberRepository;
 import balancetalk.module.post.domain.BalanceOption;
-import balancetalk.module.post.domain.BalanceOptionRepository;
 import balancetalk.module.post.domain.Post;
 import balancetalk.module.post.domain.PostRepository;
+
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
+
+import balancetalk.module.vote.domain.Vote;
+import balancetalk.module.vote.domain.VoteRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,17 +37,18 @@ public class CommentService {
     private final CommentRepository commentRepository;
     private final MemberRepository memberRepository;
     private final PostRepository postRepository;
-    private final BalanceOptionRepository balanceOptionRepository;
     private final CommentLikeRepository commentLikeRepository;
+    private final VoteRepository voteRepository;
 
-    public CommentResponse createComment(CommentCreateRequest request, Long postId) {
+    public Comment createComment(CommentCreateRequest request, Long postId) {
         Member member = validateMemberId(request);
         Post post = validatePostId(postId);
-        validateBalanceOptionId(request, post);
+        BalanceOption balanceOption = validateBalanceOptionId(request, post);
+        voteRepository.findByMemberIdAndBalanceOption_PostId(request.getMemberId(), postId)
+                .orElseThrow(() -> new BalanceTalkException(ErrorCode.NOT_FOUND_VOTE));
 
         Comment comment = request.toEntity(member, post);
-        comment = commentRepository.save(comment);
-        return CommentResponse.fromEntity(comment);
+        return commentRepository.save(comment);
     }
 
     @Transactional(readOnly = true)
@@ -50,9 +56,17 @@ public class CommentService {
         validatePostId(postId);
 
         List<Comment> comments = commentRepository.findByPostId(postId);
-        return comments.stream()
-                .map(CommentResponse::fromEntity)
-                .collect(Collectors.toList());
+        List<CommentResponse> responses = new ArrayList<>();
+
+        for (Comment comment : comments) {
+            Optional<Vote> voteForComment = voteRepository.findByMemberIdAndBalanceOption_PostId(comment.getMember().getId(), postId);
+
+            Long balanceOptionId = voteForComment.map(Vote::getBalanceOption).map(BalanceOption::getId)
+                    .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_BALANCE_OPTION));
+            CommentResponse response = CommentResponse.fromEntity(comment, balanceOptionId);
+            responses.add(response);
+        }
+        return responses;
     }
 
     public Comment updateComment(Long commentId, String content) {
@@ -80,7 +94,7 @@ public class CommentService {
 
     private BalanceOption validateBalanceOptionId(CommentCreateRequest request, Post post) {
         return post.getOptions().stream()
-                .filter(option -> option.getId().equals(request.getBalanceOptionId()))
+                .filter(option -> option.getId().equals(request.getSelectedOptionId()))
                 .findFirst()
                 .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_BALANCE_OPTION));
     }
@@ -92,7 +106,7 @@ public class CommentService {
       
     public Long likeComment(Long postId, Long commentId, Long memberId) {
         Comment comment = commentRepository.findById(commentId)
-                .orElseThrow(); // TODO 예외 처리
+                .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_COMMENT));
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new BalanceTalkException(ErrorCode.NOT_FOUND_MEMBER));
 
@@ -107,5 +121,14 @@ public class CommentService {
         commentLikeRepository.save(commentLike);
 
         return comment.getId();
+    }
+
+    public void cancelLikeComment(Long commentId, Long memberId) {
+        Comment comment = commentRepository.findById(commentId)
+                .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_COMMENT));
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new BalanceTalkException(ErrorCode.NOT_FOUND_MEMBER));
+
+        commentLikeRepository.deleteByMemberAndComment(member, comment);
     }
 }
