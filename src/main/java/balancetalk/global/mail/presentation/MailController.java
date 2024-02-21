@@ -5,7 +5,6 @@ import balancetalk.global.mail.dto.EmailRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/email")
@@ -15,12 +14,7 @@ public class MailController {
 
     @PostMapping("/request")
     public String authEmail(@Valid @RequestBody EmailRequest request) {
-        mailService.sendEmail(request);
-        return "ok";
-    }
-
-    @GetMapping
-    public String test() {
-        return "ok";
+        int number = mailService.sendMail(request);
+        return "인증 번호가 발송되었습니다.";
     }
 }
