@@ -1,5 +1,6 @@
 spring:
   mail:
+    auth-code-expiration-millis: 1800000
     host: smtp.gmail.com
     port: 587
     username: bootsprng@gmail.com
