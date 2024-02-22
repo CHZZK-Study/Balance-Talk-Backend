@@ -117,19 +117,19 @@ class MemberServiceTest {
     void Member_Update_Success() {
         // given
         Member member = joinDto.toEntity();
-        NicknameUpdate nicknameUpdate = NicknameUpdate.builder()
+        MemberUpdateDto memberUpdateDto = MemberUpdateDto.builder()
                 .nickname("새로운닉네임")
                 .password("Testcase1234!")
                 .build();
         // when
         when(memberRepository.findById(any())).thenReturn(Optional.of(member));
-        member.updateMember(nicknameUpdate.getNickname(), nicknameUpdate.getPassword());
+        member.updateMember(memberUpdateDto.getNickname(), memberUpdateDto.getPassword());
 
-        memberService.update(member.getId(), nicknameUpdate);
+        memberService.update(member.getId(), memberUpdateDto);
 
         // then
-        assertThat(member.getNickname()).isEqualTo(nicknameUpdate.getNickname());
-        assertThat(member.getPassword()).isEqualTo(nicknameUpdate.getPassword());
+        assertThat(member.getNickname()).isEqualTo(memberUpdateDto.getNickname());
+        assertThat(member.getPassword()).isEqualTo(memberUpdateDto.getPassword());
     }
 
     @Test
