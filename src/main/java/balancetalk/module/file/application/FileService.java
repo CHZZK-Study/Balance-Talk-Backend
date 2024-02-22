@@ -57,14 +57,14 @@ public class FileService {
     @Transactional(readOnly = true)
     public ResponseEntity<Resource> downloadFile(Long fileId) {
         File file = fileRepository.findById(fileId)
-                .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_DIRECTORY));
+                .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_FILE));
         Path path = Paths.get(file.getPath());
 
         try {
             Resource resource = new UrlResource(path.toUri());
 
             if (!resource.exists() || !resource.isReadable()) {
-                throw new BalanceTalkException(NOT_FOUND_FILE);
+                throw new BalanceTalkException(NOT_FOUND_DIRECTORY);
             }
 
             String contentType = servletContext.getMimeType(resource.getFile().getAbsolutePath());
