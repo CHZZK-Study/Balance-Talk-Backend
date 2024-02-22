@@ -18,6 +18,8 @@ public enum ErrorCode {
     MIME_TYPE_NULL(BAD_REQUEST, "MIME 타입이 null입니다."),
     FILE_UPLOAD_FAILED(BAD_REQUEST, "파일 업로드에 실패했습니다."),
     FILE_DOWNLOAD_FAILED(BAD_REQUEST, "파일 다운로드에 실패했습니다."),
+    FILE_SIZE_EXCEEDED(BAD_REQUEST, "파일 크기가 초과되었습니다."),
+
 
     // 401
     MISMATCHED_EMAIL_OR_PASSWORD(UNAUTHORIZED, "이메일 또는 비밀번호가 잘못되었습니다."),

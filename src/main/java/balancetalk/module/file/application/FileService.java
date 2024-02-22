@@ -1,5 +1,6 @@
 package balancetalk.module.file.application;
 
+import balancetalk.global.config.FileConfig;
 import balancetalk.global.exception.BalanceTalkException;
 import balancetalk.module.file.domain.File;
 import balancetalk.module.file.domain.FileRepository;
@@ -31,17 +32,17 @@ import static balancetalk.global.exception.ErrorCode.*;
 public class FileService {
     private final FileRepository fileRepository;
     private final ServletContext servletContext;
+    private final FileConfig fileConfig;
 
     // 파일 업로드
     @Transactional
     public File uploadFile(MultipartFile file) {
-        String uploadDir = "C:\\Users\\King\\Desktop"; // TODO : 경로 configuration 파일로 빼기
+        String uploadDir = fileConfig.getLocation();
         String originalFileName = file.getOriginalFilename();
         String storedFileName = UUID.randomUUID().toString().replace("-", "") + "_" + originalFileName;
         String path = Paths.get(uploadDir, storedFileName).toString();
         String contentType = file.getContentType();
         FileType fileType = convertMimeTypeToFileType(contentType);
-
         FileDto fileDto = FileDto.of(file, storedFileName, path, fileType);
         File saveFile = fileDto.toEntity();
 
@@ -71,6 +72,8 @@ public class FileService {
             if (contentType == null) {
                 contentType = "application/octet-stream";
             }
+
+
 
             return ResponseEntity.ok()
                     .contentType(MediaType.parseMediaType(contentType))
