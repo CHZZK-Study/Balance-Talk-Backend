@@ -3,12 +3,14 @@ package balancetalk.module.member.application;
 import balancetalk.global.exception.BalanceTalkException;
 import balancetalk.global.exception.ErrorCode;
 import balancetalk.global.jwt.JwtTokenProvider;
+import balancetalk.global.redis.application.RedisService;
 import balancetalk.module.member.domain.Member;
 import balancetalk.module.member.domain.MemberRepository;
 import balancetalk.module.member.dto.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -29,34 +31,34 @@ public class MemberService {
 
     @Transactional
     public Long join(final JoinDto joinDto) {
+        joinDto.setPassword(passwordEncoder.encode(joinDto.getPassword()));
         Member member = joinDto.toEntity();
-        memberRepository.save(member);
-        String encodedPassword = passwordEncoder.encode(member.getPassword());
-        member.changePassword(encodedPassword);
-        return member.getId();
+        return memberRepository.save(member).getId();
     }
 
     @Transactional
     public LoginSuccessDto login(final LoginDto loginDto) {
         Member member = memberRepository.findByEmail(loginDto.getEmail())
                 .orElseThrow(() -> new BalanceTalkException(ErrorCode.MISMATCHED_EMAIL_OR_PASSWORD));
-        log.info("member.getPassword={}",member.getPassword());
-        log.info("loginDto.getPassword={}",loginDto.getPassword());
         if (!passwordEncoder.matches(loginDto.getPassword(), member.getPassword())) {
             throw new BalanceTalkException(ErrorCode.MISMATCHED_EMAIL_OR_PASSWORD);
         }
 
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(loginDto.getEmail(), loginDto.getPassword())
-        );
+        try {
+            Authentication authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(loginDto.getEmail(), loginDto.getPassword())
+            );
 
-        return LoginSuccessDto.builder()
-                .email(member.getEmail())
-                .password(member.getPassword())
-                .role(member.getRole())
-                .accessToken(jwtTokenProvider.createAccessToken(authentication))
-                .refreshToken(jwtTokenProvider.createRefreshToken(authentication))
-                .build();
+            return LoginSuccessDto.builder()
+                    .email(member.getEmail())
+                    .password(member.getPassword())
+                    .role(member.getRole())
+                    .accessToken(jwtTokenProvider.createAccessToken(authentication))
+                    .refreshToken(jwtTokenProvider.createRefreshToken(authentication))
+                    .build();
+        } catch (BadCredentialsException e) {
+            throw new BadCredentialsException("credential 오류!!");
+        }
     }
 
     @Transactional(readOnly = true)

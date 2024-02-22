@@ -50,9 +50,7 @@ public class Member extends BaseTimeEntity implements UserDetails {
     @Column(nullable = false, length = 30, unique = true)
     private String email;
 
-//    @NotBlank
-//    @Size(min = 10, max = 20)
-//    @Pattern(regexp = "^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d@$!%*#?&]{10,20}$")
+    @NotBlank
     @Column(nullable = false)
     private String password;
 
@@ -142,9 +140,5 @@ public class Member extends BaseTimeEntity implements UserDetails {
     public boolean hasBookmarked(Post post) {
         return bookmarks.stream()
                 .anyMatch(bookmark -> bookmark.getPost().equals(post));
-    }
-
-    public void changePassword(String encodedPassword) {
-        this.password = encodedPassword;
     }
 }
