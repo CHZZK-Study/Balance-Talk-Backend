@@ -7,11 +7,13 @@ import balancetalk.module.member.domain.Member;
 import balancetalk.module.member.domain.MemberRepository;
 import balancetalk.module.member.dto.*;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class MemberService {
@@ -62,10 +64,18 @@ public class MemberService {
     }
 
     @Transactional
-    public MemberResponseDto update(Long memberId, final MemberUpdateDto memberUpdateDto) {
+    public MemberResponseDto updateNickname(Long memberId, final NicknameUpdate nicknameUpdate) {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new BalanceTalkException(ErrorCode.NOT_FOUND_MEMBER));
-        member.updateMember(memberUpdateDto.getNickname(), memberUpdateDto.getPassword());
+        member.updateNickname(nicknameUpdate.getNickname());
+        return MemberResponseDto.fromEntity(member);
+    }
+
+    @Transactional
+    public MemberResponseDto updatePassword(Long memberId, final PasswordUpdate passwordUpdate) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new BalanceTalkException(ErrorCode.NOT_FOUND_MEMBER));
+        member.updatePassword(passwordUpdate.getPassword());
         return MemberResponseDto.fromEntity(member);
     }
 
