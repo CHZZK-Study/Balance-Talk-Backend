@@ -24,6 +24,9 @@ repositories {
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 
+	// aws s3
+	implementation 'org.springframework.cloud:spring-cloud-starter-aws'
+
 	// security
 	implementation 'org.springframework.boot:spring-boot-starter-security'
 
