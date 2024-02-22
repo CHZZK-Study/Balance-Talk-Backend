@@ -66,9 +66,9 @@ public class MailService {
     public void verifyCode(EmailVerificationDto request) {
         validateEmail(request.getEmail());
         String redisValue = redisService.getValues(request.getEmail());
-        if (!redisService.checkExistsValue(redisValue) || !redisValue.equals(request.getVerificationCode())) {
-            throw new BalanceTalkException(ErrorCode.AUTHORIZATION_CODE_MISMATCH);
-        }
+        Optional.ofNullable(redisValue)
+                .filter(code -> code.equals(request.getVerificationCode()))
+                .orElseThrow(() -> new BalanceTalkException(ErrorCode.AUTHORIZATION_CODE_MISMATCH));
     }
 
     private void validateEmail(String email) {
