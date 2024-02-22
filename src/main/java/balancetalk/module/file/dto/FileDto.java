@@ -27,6 +27,7 @@ public class FileDto {
     public File toEntity() {
         return File.builder()
                 .uploadName(uploadName)
+                .storedName(storedName)
                 .path(path)
                 .type(type)
                 .size(size)
