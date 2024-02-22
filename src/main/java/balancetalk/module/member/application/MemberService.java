@@ -7,42 +7,55 @@ import balancetalk.module.member.domain.Member;
 import balancetalk.module.member.domain.MemberRepository;
 import balancetalk.module.member.dto.*;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class MemberService {
 
     private final JwtTokenProvider jwtTokenProvider;
+    private final AuthenticationManager authenticationManager;
     private final MemberRepository memberRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Transactional
     public Long join(final JoinDto joinDto) {
         Member member = joinDto.toEntity();
-        return memberRepository.save(member).getId();
+        memberRepository.save(member);
+        String encodedPassword = passwordEncoder.encode(member.getPassword());
+        member.changePassword(encodedPassword);
+        return member.getId();
     }
 
     @Transactional
     public LoginSuccessDto login(final LoginDto loginDto) {
         Member member = memberRepository.findByEmail(loginDto.getEmail())
                 .orElseThrow(() -> new BalanceTalkException(ErrorCode.MISMATCHED_EMAIL_OR_PASSWORD));
-        if (!member.getPassword().equals(loginDto.getPassword())) {
+        log.info("member.getPassword={}",member.getPassword());
+        log.info("loginDto.getPassword={}",loginDto.getPassword());
+        if (!passwordEncoder.matches(loginDto.getPassword(), member.getPassword())) {
             throw new BalanceTalkException(ErrorCode.MISMATCHED_EMAIL_OR_PASSWORD);
         }
-        String token = jwtTokenProvider.createToken(member.getEmail(), member.getRole());
 
-        if (token == null) {
-            throw new BalanceTalkException(ErrorCode.AUTHENTICATION_ERROR);
-        }
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(loginDto.getEmail(), loginDto.getPassword())
+        );
 
         return LoginSuccessDto.builder()
                 .email(member.getEmail())
                 .password(member.getPassword())
                 .role(member.getRole())
-                .token(token)
+                .accessToken(jwtTokenProvider.createAccessToken(authentication))
+                .refreshToken(jwtTokenProvider.createRefreshToken(authentication))
                 .build();
     }
 
