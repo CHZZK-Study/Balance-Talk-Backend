@@ -34,7 +34,7 @@ spring:
     secret: YmFsYW5jZS10YWxrLWJhY2tlbmQtand0LXJlZnJlc2gtdG9rZW4tYWNjZXNzLXRva2VuLWFkYXB0LWp1bnNvby1nZW5lcmF0b3ItbWFzdGVyCg== # 임의의 문자열 base64로 인코딩
     token:
       access-expiration-time: 43200000    # 12시간
-      refresh-expiration-time: 604800000   # 7일
+      refresh-expiration-time: 1209600000   # 2주
 
 logging.level:
   org.hibernate.SQL: debug
