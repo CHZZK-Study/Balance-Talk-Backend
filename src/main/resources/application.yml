@@ -16,6 +16,10 @@ spring:
     url: jdbc:h2:tcp://localhost/~/balancetalk
     username: sa
     password:
+  servlet:
+    multipart:
+      max-file-size: 3MB
+      max-request-size: 5MB
 
   jpa:
     hibernate:
