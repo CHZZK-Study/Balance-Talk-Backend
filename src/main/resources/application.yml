@@ -1,0 +1,40 @@
+spring:
+  mail:
+    auth-code-expiration-millis: 1800000
+    host: smtp.gmail.com
+    port: 587
+    username: bootsprng@gmail.com
+    password: qrxu maij fsea yrqs
+    properties:
+      mail:
+        smtp:
+          auth: true
+          timeout: 5000
+          starttls:
+            enable: true
+  datasource:
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:tcp://localhost/~/balancetalk
+    username: sa
+    password:
+
+  jpa:
+    hibernate:
+      ddl-auto: create
+    properties:
+      hibernate:
+        format_sql: true
+
+  data:
+    redis:
+      host: 127.0.0.1
+      port: 6379
+
+  jwt:
+    secret: YmFsYW5jZS10YWxrLWJhY2tlbmQtand0LXJlZnJlc2gtdG9rZW4tYWNjZXNzLXRva2VuLWFkYXB0LWp1bnNvby1nZW5lcmF0b3ItbWFzdGVyCg== # 임의의 문자열 base64로 인코딩
+    token:
+      access-expiration-time: 43200000    # 12시간
+      refresh-expiration-time: 604800000   # 7일
+
+logging.level:
+  org.hibernate.SQL: debug
