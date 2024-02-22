@@ -51,10 +51,19 @@ public class MemberController {
     }
 
     @ResponseStatus(HttpStatus.OK)
+    @PutMapping("/nickname/{memberId}")
+    @Operation(summary = "회원 닉네임 수정", description = "회원 닉네임을 수정한다.")
+    public String updateNickname(@PathVariable("memberId") Long memberId, @Valid @RequestBody NicknameUpdate nicknameUpdate) {
+        memberService.updateNickname(memberId, nicknameUpdate);
+        return "회원 닉네임이 변경되었습니다.";
+    }
+
+    @ResponseStatus(HttpStatus.OK)
     @PutMapping("/{memberId}")
-    @Operation(summary = "회원 정보 수정", description = "회원 이메일이나 패스워드를 수정한다.")
-    public MemberResponseDto updateMemberInfo(@PathVariable("memberId") Long memberId, @Valid @RequestBody MemberUpdateDto memberUpdateDto) {
-        return memberService.update(memberId, memberUpdateDto);
+    @Operation(summary = "회원 비밀번호 수정", description = "회원 패스워드를 수정한다.")
+    public String updatePassword(@PathVariable("memberId") Long memberId, @Valid @RequestBody PasswordUpdate passwordUpdate) {
+        memberService.updatePassword(memberId, passwordUpdate);
+        return "회원 비밀번호가 변경되었습니다.";
     }
 
     @ResponseStatus(HttpStatus.OK)
