@@ -1,13 +1,11 @@
 package balancetalk.module.file.presentation;
 
 import balancetalk.module.file.application.FileService;
+import balancetalk.module.file.application.S3UploadService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
 import java.io.IOException;
 
 @RestController
@@ -15,12 +13,12 @@ import java.io.IOException;
 @RequestMapping("/files")
 public class FileController {
     private final FileService fileService;
+    private final S3UploadService s3UploadService;
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/upload")
-    public String uploadFile(@RequestParam("file") MultipartFile file) throws IOException {
-        fileService.uploadFile(file);
-        return "파일이 업로드되었습니다.";
+    public String uploadImage(@RequestParam("file") MultipartFile file) {
+        return s3UploadService.uploadImage(file);
     }
 
     @ResponseStatus(HttpStatus.OK)
