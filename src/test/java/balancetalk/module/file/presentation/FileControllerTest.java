@@ -56,7 +56,6 @@ public class FileControllerTest {
                 "Hello, World!".getBytes()
         );
 
-        // 파일 이름 길이 제한을 초과할 경우 예외를 던지도록 설정
         // 파일 업로드 요청 시뮬레이션
         mockMvc.perform(multipart("/files/upload").file(file))
                 .andExpect(status().isBadRequest()); // 예외 발생 시 BadRequest (400) 상태 코드를 반환하도록 예상
