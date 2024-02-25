@@ -24,6 +24,9 @@ repositories {
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 
+	// aws
+	implementation 'software.amazon.awssdk:aws-sdk-java:2.24.8'
+
 	// security
 	implementation 'org.springframework.boot:spring-boot-starter-security'
 
