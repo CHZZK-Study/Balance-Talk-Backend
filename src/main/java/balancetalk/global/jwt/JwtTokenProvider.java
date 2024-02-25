@@ -1,61 +1,106 @@
 package balancetalk.global.jwt;
 
+import balancetalk.global.redis.application.RedisService;
 import balancetalk.module.member.domain.Role;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
 import java.security.Key;
+import java.time.Duration;
 import java.util.Date;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class JwtTokenProvider {
 
-    private Long tokenValidTime = 30 * 60 * 1000L; // 30분 유효 시간
-    private final UserDetailsService userDetailsService;
-    private final Key secretKey = Keys.secretKeyFor(SignatureAlgorithm.HS512);
+    private final RedisService redisService;
 
-    public String createToken(String email, Role role) {
-        Claims claims = Jwts.claims().setSubject(email); // JWT payload에 저장되는 정보 단위
-        claims.put("role" , role);
+    @Value("${spring.jwt.secret}")
+    private String secretKey;
+
+    @Value("${spring.jwt.token.access-expiration-time}")
+    private long accessExpirationTime;
+
+    @Value("${spring.jwt.token.refresh-expiration-time}")
+    private long refreshExpirationTime;
+
+    private final UserDetailsService userDetailsService;
+
+    /**
+     * Access 토큰 생성
+     */
+    public String createAccessToken(Authentication authentication) {
+        Claims claims = Jwts.claims().setSubject(authentication.getName());
         Date now = new Date();
+        Date expireDate = new Date(now.getTime() + accessExpirationTime);
+
         return Jwts.builder()
-                .setClaims(claims) // 정보 저장
-                .setIssuedAt(now) // 토큰 발행 시간
-                .setExpiration(new Date(now.getTime() + tokenValidTime)) // 30분 유효시간 설정
-                .signWith(secretKey) // 암호화 알고리즘과 secretKey
+                .setClaims(claims)
+                .setIssuedAt(now)
+                .setExpiration(expireDate)
+                .signWith(SignatureAlgorithm.HS512, secretKey) // TODO: secretKey를 미리 암호화?
                 .compact();
     }
 
-    // 인증 정보 조회
-    public Authentication getAuthentication(String token) {
-        UserDetails userDetails = userDetailsService.loadUserByUsername(this.getUserEmail(token));
-        return new UsernamePasswordAuthenticationToken(userDetails, userDetails.getAuthorities());
+    /**
+     * Refresh 토큰 생성
+     */
+    public String createRefreshToken(Authentication authentication) {
+        Claims claims = Jwts.claims().setSubject(authentication.getName());
+        Date now = new Date();
+        Date expireDate = new Date(now.getTime() + refreshExpirationTime);
+
+        String refreshToken = Jwts.builder()
+                .setClaims(claims)
+                .setIssuedAt(now)
+                .setExpiration(expireDate)
+                .signWith(SignatureAlgorithm.HS512, secretKey)
+                .compact();
+        // redis에 refresh token 저장
+        redisService.setValues(authentication.getName(), refreshToken, Duration.ofMillis(refreshExpirationTime));
+        return refreshToken;
     }
 
-    // 토큰에서 회원 정보 추출
-    public String getUserEmail(String token) {
-        return Jwts.parserBuilder().setSigningKey(secretKey).build().parseClaimsJws(token).getBody().getSubject();
+    // 토큰으로부터 클레임을 만들고, User 객체를 생성해서 Authentication 객체 반환
+    public Authentication getAuthentication(String token) {
+        String userPrincipal = Jwts.parserBuilder().setSigningKey(secretKey).build().parseClaimsJws(token).getBody().getSubject();
+        UserDetails userDetails = userDetailsService.loadUserByUsername(userPrincipal);
+
+        return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
+
     }
+
+    // http 헤더로부터 bearer 토큰 가져옴
+    public String resolveToken(HttpServletRequest request) {
+        String bearerToken = request.getHeader("Authorization");
+        if (bearerToken != null && bearerToken.startsWith("bearer ")) {
+            return bearerToken.substring(7); // 실제 토큰만 추출
+        }
+        return null;
+     }
 
     // 토큰 유효성, 만료일자 확인
-    public boolean validateToken(String jwtToken) {
+    public boolean validateToken(String token) {
         try {
-            Jws<Claims> claims = Jwts.parserBuilder().setSigningKey(secretKey).build().parseClaimsJws(jwtToken);
-            return !claims.getBody().getExpiration().before(new Date()); // 만료시간 이전이면 true 반환
-        } catch (Exception e) {
-            return false; // 만료시간 이후라면 false 반환
+            Jws<Claims> claims = Jwts.parserBuilder().setSigningKey(secretKey).build().parseClaimsJws(token);
+            return true;
+        } catch (ExpiredJwtException e) {
+            log.error(e.getMessage());
+            throw new IllegalArgumentException("토큰 만료");
+        } catch (JwtException e) {
+            log.error(e.getMessage());
+            throw new IllegalArgumentException("유효하지 않은 JWT");
         }
-    }
-
-    // request Header에서 토큰 값 가져오기
-    public String resolveToken(HttpServletRequest request) {
-        return request.getHeader("X-AUTH-TOKEN");
     }
 }
