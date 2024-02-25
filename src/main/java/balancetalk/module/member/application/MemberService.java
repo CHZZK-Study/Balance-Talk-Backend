@@ -48,13 +48,12 @@ public class MemberService {
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(loginDto.getEmail(), loginDto.getPassword())
             );
-
+            TokenDto tokenDto = new TokenDto(jwtTokenProvider.createAccessToken(authentication), jwtTokenProvider.createRefreshToken(authentication));
             return LoginSuccessDto.builder()
                     .email(member.getEmail())
                     .password(member.getPassword())
                     .role(member.getRole())
-                    .accessToken(jwtTokenProvider.createAccessToken(authentication))
-                    .refreshToken(jwtTokenProvider.createRefreshToken(authentication))
+                    .tokenDto(tokenDto)
                     .build();
         } catch (BadCredentialsException e) {
             throw new BadCredentialsException("credential 오류!!");
