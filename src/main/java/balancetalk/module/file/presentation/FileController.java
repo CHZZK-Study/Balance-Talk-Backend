@@ -24,7 +24,7 @@ public class FileController {
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/upload/multiple")
-    public List<String> uploadImage(@RequestParam("file") List<MultipartFile> files) {
+    public List<String> uploadMultipleImages(@RequestParam("file") List<MultipartFile> files) {
         return s3UploadService.uploadMultipleImage(files);
     }
 
