@@ -30,7 +30,7 @@ public class FileController {
 
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/download/{fileId}")
-    public String downloadFile(@PathVariable Long fileId) throws IOException {
+    public String downloadFile(@PathVariable Long fileId) {
         fileService.downloadFile(fileId);
         return "파일이 다운로드되었습니다.";
     }

@@ -15,6 +15,11 @@ public enum ErrorCode {
     UNMODIFIABLE_VOTE(BAD_REQUEST, "투표 수정이 불가능한 게시글입니다."),
     ALREADY_BOOKMARK(BAD_REQUEST, "이미 북마크한 게시글입니다."),
     INCORRECT_PASSWORD(BAD_REQUEST, "비밀번호가 잘못되었거나 요청 형식이 올바르지 않습니다"),
+    MIME_TYPE_NULL(BAD_REQUEST, "MIME 타입이 null입니다."),
+    FILE_UPLOAD_FAILED(BAD_REQUEST, "파일 업로드에 실패했습니다."),
+    FILE_DOWNLOAD_FAILED(BAD_REQUEST, "파일 다운로드에 실패했습니다."),
+    FILE_SIZE_EXCEEDED(BAD_REQUEST, "파일 크기가 초과되었습니다."),
+
 
     // 401
     MISMATCHED_EMAIL_OR_PASSWORD(UNAUTHORIZED, "이메일 또는 비밀번호가 잘못되었습니다."),
@@ -33,6 +38,8 @@ public enum ErrorCode {
     NOT_FOUND_BOOKMARK(NOT_FOUND, "해당 게시글에서 북마크한 기록이 존재하지 않습니다."),
     NOT_FOUND_COMMENT(NOT_FOUND, "존재하지 않는 댓글입니다."),
     NOT_FOUND_DIRECTORY(NOT_FOUND, "존재하지 않는 디렉토리입니다."),
+    NOT_SUPPORTED_FILE_TYPE(NOT_FOUND, "지원하지 않는 파일 형식입니다."),
+    NOT_FOUND_FILE(NOT_FOUND, "존재하지 않는 파일입니다."),
 
     // 409
     ALREADY_VOTE(CONFLICT, "투표는 한 번만 가능합니다."),

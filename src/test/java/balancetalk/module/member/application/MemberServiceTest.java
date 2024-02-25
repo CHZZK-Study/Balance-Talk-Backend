@@ -113,23 +113,41 @@ class MemberServiceTest {
     }
 
     @Test
-    @DisplayName("회원 정보 수정 - 성공")
-    void Member_Update_Success() {
+    @DisplayName("회원 닉네임 수정 - 성공")
+    void Nickname_Update_Success() {
         // given
         Member member = joinDto.toEntity();
-        MemberUpdateDto memberUpdateDto = MemberUpdateDto.builder()
-                .nickname("새로운닉네임")
-                .password("Testcase1234!")
-                .build();
+        NicknameUpdate nicknameUpdate = new NicknameUpdate();
+        nicknameUpdate.setNickname("새로운닉네임");
+
         // when
         when(memberRepository.findById(any())).thenReturn(Optional.of(member));
-        member.updateMember(memberUpdateDto.getNickname(), memberUpdateDto.getPassword());
+        member.updateNickname(nicknameUpdate.getNickname());
 
-        memberService.update(member.getId(), memberUpdateDto);
+        memberService.updateNickname(member.getId(), nicknameUpdate);
 
         // then
-        assertThat(member.getNickname()).isEqualTo(memberUpdateDto.getNickname());
-        assertThat(member.getPassword()).isEqualTo(memberUpdateDto.getPassword());
+        assertThat(member.getNickname()).isNotEqualTo(joinDto.getNickname());
+        assertThat(member.getNickname()).isEqualTo(nicknameUpdate.getNickname());
+    }
+
+    @Test
+    @DisplayName("회원 패스워드 변경 - 성공")
+    void Password_Update_Success() {
+        // given
+        Member member = joinDto.toEntity();
+        PasswordUpdate passwordUpdate = new PasswordUpdate();
+        passwordUpdate.setPassword("Updated1234!");
+
+        // when
+        when(memberRepository.findById(any())).thenReturn(Optional.of(member));
+        member.updatePassword(passwordUpdate.getPassword());
+
+        memberService.updatePassword(member.getId(), passwordUpdate);
+
+        // then
+        assertThat(member.getPassword()).isNotEqualTo(joinDto.getPassword());
+        assertThat(member.getPassword()).isEqualTo(passwordUpdate.getPassword());
     }
 
     @Test

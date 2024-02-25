@@ -3,24 +3,35 @@ package balancetalk.module.member.application;
 import balancetalk.global.exception.BalanceTalkException;
 import balancetalk.global.exception.ErrorCode;
 import balancetalk.global.jwt.JwtTokenProvider;
+import balancetalk.global.redis.application.RedisService;
 import balancetalk.module.member.domain.Member;
 import balancetalk.module.member.domain.MemberRepository;
 import balancetalk.module.member.dto.*;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class MemberService {
 
     private final JwtTokenProvider jwtTokenProvider;
+    private final AuthenticationManager authenticationManager;
     private final MemberRepository memberRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Transactional
     public Long join(final JoinDto joinDto) {
+        joinDto.setPassword(passwordEncoder.encode(joinDto.getPassword()));
         Member member = joinDto.toEntity();
         return memberRepository.save(member).getId();
     }
@@ -29,21 +40,25 @@ public class MemberService {
     public LoginSuccessDto login(final LoginDto loginDto) {
         Member member = memberRepository.findByEmail(loginDto.getEmail())
                 .orElseThrow(() -> new BalanceTalkException(ErrorCode.MISMATCHED_EMAIL_OR_PASSWORD));
-        if (!member.getPassword().equals(loginDto.getPassword())) {
+        if (!passwordEncoder.matches(loginDto.getPassword(), member.getPassword())) {
             throw new BalanceTalkException(ErrorCode.MISMATCHED_EMAIL_OR_PASSWORD);
         }
-        String token = jwtTokenProvider.createToken(member.getEmail(), member.getRole());
 
-        if (token == null) {
-            throw new BalanceTalkException(ErrorCode.AUTHENTICATION_ERROR);
+        try {
+            Authentication authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(loginDto.getEmail(), loginDto.getPassword())
+            );
+
+            return LoginSuccessDto.builder()
+                    .email(member.getEmail())
+                    .password(member.getPassword())
+                    .role(member.getRole())
+                    .accessToken(jwtTokenProvider.createAccessToken(authentication))
+                    .refreshToken(jwtTokenProvider.createRefreshToken(authentication))
+                    .build();
+        } catch (BadCredentialsException e) {
+            throw new BadCredentialsException("credential 오류!!");
         }
-
-        return LoginSuccessDto.builder()
-                .email(member.getEmail())
-                .password(member.getPassword())
-                .role(member.getRole())
-                .token(token)
-                .build();
     }
 
     @Transactional(readOnly = true)
@@ -62,11 +77,17 @@ public class MemberService {
     }
 
     @Transactional
-    public MemberResponseDto update(Long memberId, final MemberUpdateDto memberUpdateDto) {
+    public void updateNickname(Long memberId, final NicknameUpdate nicknameUpdate) {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new BalanceTalkException(ErrorCode.NOT_FOUND_MEMBER));
-        member.updateMember(memberUpdateDto.getNickname(), memberUpdateDto.getPassword());
-        return MemberResponseDto.fromEntity(member);
+        member.updateNickname(nicknameUpdate.getNickname());
+    }
+
+    @Transactional
+    public void updatePassword(Long memberId, final PasswordUpdate passwordUpdate) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new BalanceTalkException(ErrorCode.NOT_FOUND_MEMBER));
+        member.updatePassword(passwordUpdate.getPassword());
     }
 
     @Transactional
