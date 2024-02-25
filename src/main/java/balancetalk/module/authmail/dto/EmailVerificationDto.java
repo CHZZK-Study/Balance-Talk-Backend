@@ -1,4 +1,4 @@
-package balancetalk.global.mail.dto;
+package balancetalk.module.authmail.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Email;

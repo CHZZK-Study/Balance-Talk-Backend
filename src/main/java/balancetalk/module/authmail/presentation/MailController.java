@@ -1,8 +1,8 @@
-package balancetalk.global.mail.presentation;
+package balancetalk.module.authmail.presentation;
 
-import balancetalk.global.mail.application.MailService;
-import balancetalk.global.mail.dto.EmailRequestDto;
-import balancetalk.global.mail.dto.EmailVerificationDto;
+import balancetalk.module.authmail.application.MailService;
+import balancetalk.module.authmail.dto.EmailRequestDto;
+import balancetalk.module.authmail.dto.EmailVerificationDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;

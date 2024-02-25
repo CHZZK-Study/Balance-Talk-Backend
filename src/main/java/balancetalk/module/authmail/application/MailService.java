@@ -1,9 +1,9 @@
-package balancetalk.global.mail.application;
+package balancetalk.module.authmail.application;
 
 import balancetalk.global.exception.BalanceTalkException;
 import balancetalk.global.exception.ErrorCode;
-import balancetalk.global.mail.dto.EmailRequestDto;
-import balancetalk.global.mail.dto.EmailVerificationDto;
+import balancetalk.module.authmail.dto.EmailRequestDto;
+import balancetalk.module.authmail.dto.EmailVerificationDto;
 import balancetalk.global.redis.application.RedisService;
 import balancetalk.module.member.domain.Member;
 import balancetalk.module.member.domain.MemberRepository;
