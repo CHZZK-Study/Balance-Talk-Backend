@@ -62,11 +62,17 @@ public class MemberService {
     }
 
     @Transactional
-    public MemberResponseDto update(Long memberId, final MemberUpdateDto memberUpdateDto) {
+    public void updateNickname(Long memberId, final NicknameUpdate nicknameUpdate) {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new BalanceTalkException(ErrorCode.NOT_FOUND_MEMBER));
-        member.updateMember(memberUpdateDto.getNickname(), memberUpdateDto.getPassword());
-        return MemberResponseDto.fromEntity(member);
+        member.updateNickname(nicknameUpdate.getNickname());
+    }
+
+    @Transactional
+    public void updatePassword(Long memberId, final PasswordUpdate passwordUpdate) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new BalanceTalkException(ErrorCode.NOT_FOUND_MEMBER));
+        member.updatePassword(passwordUpdate.getPassword());
     }
 
     @Transactional

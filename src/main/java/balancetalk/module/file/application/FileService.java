@@ -1,5 +1,6 @@
 package balancetalk.module.file.application;
 
+import balancetalk.global.config.FileConfig;
 import balancetalk.global.exception.BalanceTalkException;
 import balancetalk.module.file.domain.File;
 import balancetalk.module.file.domain.FileRepository;
@@ -24,54 +25,74 @@ import java.nio.file.StandardCopyOption;
 import java.util.Arrays;
 import java.util.UUID;
 
-import static balancetalk.global.exception.ErrorCode.NOT_FOUND_DIRECTORY;
+import static balancetalk.global.exception.ErrorCode.*;
 
 @Service
 @RequiredArgsConstructor
 public class FileService {
     private final FileRepository fileRepository;
     private final ServletContext servletContext;
+    private final FileConfig fileConfig;
 
     // 파일 업로드
     @Transactional
-    public File uploadFile(MultipartFile file) throws IOException {
-        String uploadDir = "C:\\Users\\King\\Desktop"; // TODO : 경로 configuration 파일로 빼기
+    public File uploadFile(MultipartFile file) {
+        String uploadDir = fileConfig.getLocation();
         String originalFileName = file.getOriginalFilename();
         String storedFileName = UUID.randomUUID().toString().replace("-", "") + "_" + originalFileName;
         String path = Paths.get(uploadDir, storedFileName).toString();
         String contentType = file.getContentType();
         FileType fileType = convertMimeTypeToFileType(contentType);
-
         FileDto fileDto = FileDto.of(file, storedFileName, path, fileType);
         File saveFile = fileDto.toEntity();
 
-        Files.copy(file.getInputStream(), Paths.get(path), StandardCopyOption.REPLACE_EXISTING);
+        try {
+            Files.copy(file.getInputStream(), Paths.get(path), StandardCopyOption.REPLACE_EXISTING);
+        } catch (IOException e) {
+            throw new BalanceTalkException(FILE_UPLOAD_FAILED);
+        }
         return fileRepository.save(saveFile);
     }
 
-    public ResponseEntity<Resource> downloadFile(Long fileId) throws IOException {
+    @Transactional(readOnly = true)
+    public ResponseEntity<Resource> downloadFile(Long fileId) {
         File file = fileRepository.findById(fileId)
-                .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_DIRECTORY));
+                .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_FILE));
         Path path = Paths.get(file.getPath());
-        Resource resource = new UrlResource(path.toUri());
-        String contentType = servletContext.getMimeType(resource.getFile().getAbsolutePath());
-        if(contentType == null) {
-            contentType = "application/octet-stream";
+
+        try {
+            Resource resource = new UrlResource(path.toUri());
+
+            if (!resource.exists() || !resource.isReadable()) {
+                throw new BalanceTalkException(NOT_FOUND_DIRECTORY);
+            }
+
+            String contentType = servletContext.getMimeType(resource.getFile().getAbsolutePath());
+
+            if (contentType == null) {
+                contentType = "application/octet-stream";
+            }
+
+
+
+            return ResponseEntity.ok()
+                    .contentType(MediaType.parseMediaType(contentType))
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + file.getUploadName() + "\"")
+                    .body(resource);
+
+        } catch (IOException e) {
+            throw new BalanceTalkException(FILE_DOWNLOAD_FAILED);
         }
-        return ResponseEntity.ok()
-                .contentType(MediaType.parseMediaType(contentType))
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + file.getUploadName() + "\"")
-                .body(resource);
     }
 
     private FileType convertMimeTypeToFileType(String mimeType) {
         if (mimeType == null) {
-            throw new IllegalArgumentException("MIME 타입은 NULL이 될 수 없습니다.");
+            throw new BalanceTalkException(MIME_TYPE_NULL);
         }
 
         return Arrays.stream(FileType.values())
                 .filter(type -> type.getMimeType().equalsIgnoreCase(mimeType))
                 .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("지원하지 않는 파일 타입 : " + mimeType));
+                .orElseThrow(() -> new BalanceTalkException(NOT_SUPPORTED_FILE_TYPE));
     }
 }

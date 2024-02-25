@@ -118,8 +118,11 @@ public class Member extends BaseTimeEntity implements UserDetails {
         return true;
     }
 
-    public void updateMember(String nickname, String password) {
+    public void updateNickname(String nickname) {
         this.nickname = nickname;
+    }
+
+    public void updatePassword(String password) {
         this.password = password;
     }
 
