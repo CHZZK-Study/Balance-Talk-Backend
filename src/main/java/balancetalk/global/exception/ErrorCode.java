@@ -19,6 +19,7 @@ public enum ErrorCode {
     FILE_UPLOAD_FAILED(BAD_REQUEST, "파일 업로드에 실패했습니다."),
     FILE_DOWNLOAD_FAILED(BAD_REQUEST, "파일 다운로드에 실패했습니다."),
     FILE_SIZE_EXCEEDED(BAD_REQUEST, "파일 크기가 초과되었습니다."),
+    FILE_NAME_EXCEEDED(BAD_REQUEST, "파일 이름이 너무 깁니다."),
 
 
     // 401
