@@ -3,7 +3,6 @@ package balancetalk.module.member.application;
 import balancetalk.global.exception.BalanceTalkException;
 import balancetalk.global.exception.ErrorCode;
 import balancetalk.global.jwt.JwtTokenProvider;
-import balancetalk.global.redis.application.RedisService;
 import balancetalk.module.member.domain.Member;
 import balancetalk.module.member.domain.MemberRepository;
 import balancetalk.module.member.dto.*;
@@ -56,7 +55,7 @@ public class MemberService {
                     .tokenDto(tokenDto)
                     .build();
         } catch (BadCredentialsException e) {
-            throw new BadCredentialsException("credential 오류!!");
+            throw new BalanceTalkException(ErrorCode.BAD_CREDENTIAL_ERROR);
         }
     }
 

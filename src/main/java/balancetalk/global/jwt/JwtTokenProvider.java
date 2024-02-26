@@ -1,5 +1,7 @@
 package balancetalk.global.jwt;
 
+import balancetalk.global.exception.BalanceTalkException;
+import balancetalk.global.exception.ErrorCode;
 import balancetalk.global.redis.application.RedisService;
 import balancetalk.module.member.dto.TokenDto;
 import io.jsonwebtoken.*;
@@ -92,10 +94,10 @@ public class JwtTokenProvider {
             return true;
         } catch (ExpiredJwtException e) {
             log.error(e.getMessage());
-            throw new IllegalArgumentException("토큰 만료");
+            throw new BalanceTalkException(ErrorCode.EXPIRED_JWT_TOKEN);
         } catch (JwtException e) {
             log.error(e.getMessage());
-            throw new IllegalArgumentException("유효하지 않은 JWT");
+            throw new BalanceTalkException(ErrorCode.INVALID_JWT_TOKEN);
         }
     }
     public TokenDto reissueToken(String refreshToken) {
@@ -105,9 +107,8 @@ public class JwtTokenProvider {
         // redis에 저장된 RefreshToken 값을 가져옴
         String redisRefreshToken = redisService.getValues(authentication.getName());
         if (!redisRefreshToken.equals(refreshToken)) {
-            throw new IllegalArgumentException("Refresh Token이 존재하지 않음.");
+            throw new BalanceTalkException(ErrorCode.INVALID_REFRESH_TOKEN);
         }
-
         TokenDto tokenDto = new TokenDto(
                 createAccessToken(authentication),
                 createRefreshToken(authentication)
