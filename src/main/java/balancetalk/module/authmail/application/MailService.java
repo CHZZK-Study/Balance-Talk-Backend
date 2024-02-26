@@ -36,7 +36,7 @@ public class MailService {
         return UUID.randomUUID().toString().substring(0, 6);
     }
 
-    public MimeMessage CreateMail(EmailRequestDto request){
+    public MimeMessage createMail(EmailRequestDto request){
         String authCode = createNumber();
 
         MimeMessage message = javaMailSender.createMimeMessage();
@@ -59,7 +59,7 @@ public class MailService {
 
     public void sendMail(EmailRequestDto request){
         validateEmail(request.getEmail());
-        MimeMessage message = CreateMail(request);
+        MimeMessage message = createMail(request);
         javaMailSender.send(message);
     }
 
