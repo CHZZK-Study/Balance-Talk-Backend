@@ -35,7 +35,7 @@ public class JwtTokenProvider {
     private long refreshExpirationTime;
 
     private final UserDetailsService userDetailsService;
-    private final AuthenticationManager authenticationManager;
+
     /**
      * Access 토큰 생성
      */
