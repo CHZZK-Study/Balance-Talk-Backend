@@ -1,6 +1,5 @@
 package balancetalk.global.jwt;
 
-import balancetalk.global.redis.application.RedisService;
 import balancetalk.module.member.domain.Member;
 import balancetalk.module.member.domain.MemberRepository;
 import balancetalk.module.member.domain.Role;
@@ -12,11 +11,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.transaction.annotation.Transactional;
-import software.amazon.awssdk.services.neptunedata.model.IllegalArgumentException;
 
 import java.util.Date;
 
@@ -115,7 +112,7 @@ class JwtTokenProviderTest {
                 .setExpiration(expireDate)
                 .compact();
         assertThatThrownBy(() -> jwtTokenProvider.getPayload(expiredToken))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(java.lang.IllegalArgumentException.class)
                 .hasMessage("만료된 토큰 입니다.");
 
     }
