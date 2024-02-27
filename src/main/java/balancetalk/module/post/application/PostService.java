@@ -48,7 +48,7 @@ public class PostService {
             postTag.addPost(post);
         }
 
-        return PostResponseDto.fromEntity(postRepository.save(post));
+        return PostResponseDto.fromEntity(postRepository.save(post), member);
     }
 
     private Member getMember(PostRequestDto postRequestDto) {
@@ -65,11 +65,13 @@ public class PostService {
     }
 
     @Transactional(readOnly = true)
-    public List<PostResponseDto> findAll() {
+    public List<PostResponseDto> findAll(Long memberId) {
         // TODO: 검색, 정렬, 마감 기능 추가
         List<Post> posts = postRepository.findAll();
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_MEMBER));
         return posts.stream()
-                .map(PostResponseDto::fromEntity)
+                .map(post -> PostResponseDto.fromEntity(post, member))
                 .collect(Collectors.toList());
     }
 

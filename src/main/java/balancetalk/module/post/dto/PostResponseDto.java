@@ -65,7 +65,7 @@ public class PostResponseDto {
                 .createdBy(post.getMember().getNickname())
                 .build();
     }
-    
+
     private static List<PostTagDto> getPostTags(Post post) {
         return post.getPostTags().stream()
                 .map(PostTagDto::fromEntity)
