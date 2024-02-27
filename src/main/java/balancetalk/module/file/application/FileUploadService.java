@@ -1,8 +1,11 @@
 package balancetalk.module.file.application;
 
+import balancetalk.global.exception.BalanceTalkException;
+import balancetalk.global.exception.ErrorCode;
 import balancetalk.module.file.domain.File;
 import balancetalk.module.file.domain.FileRepository;
 import balancetalk.module.file.domain.FileType;
+import balancetalk.module.file.dto.FileDto;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
@@ -18,7 +21,7 @@ import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
 @Service
 @RequiredArgsConstructor
-public class S3UploadService {
+public class FileUploadService {
 
     private final S3Client s3Client;
     private final FileRepository fileRepository;
@@ -27,33 +30,20 @@ public class S3UploadService {
     private String bucket;
 
     @Transactional
-    public String uploadImage(MultipartFile multipartFile) {
+    public FileDto uploadImage(MultipartFile multipartFile) {
         String uploadDir = "balance-talk-images/balance-option/";
         String originalName = multipartFile.getOriginalFilename();
         String storedName = String.format("%s_%s", UUID.randomUUID(), originalName);
         long contentLength = multipartFile.getSize();
         FileType fileType = convertMimeTypeToFileType(multipartFile.getContentType());
+
         try (InputStream inputStream = multipartFile.getInputStream()) {
+            putObjectToS3(uploadDir + storedName, inputStream, contentLength);
+            File file = fileRepository.save(createFile(originalName, storedName, uploadDir, fileType, contentLength));
 
-            PutObjectRequest putObjectRequest = PutObjectRequest.builder()
-                    .bucket(bucket)
-                    .key(uploadDir + storedName)
-                    .build();
-
-            s3Client.putObject(putObjectRequest, RequestBody.fromInputStream(inputStream, contentLength));
-
-            File file = File.builder()
-                    .originalName(originalName)
-                    .storedName(storedName)
-                    .path(uploadDir)
-                    .type(fileType)
-                    .size(contentLength)
-                    .build();
-            File saved = fileRepository.save(file);
-
-            return saved.getPath() + saved.getStoredName();
+            return FileDto.fromEntity(file);
         } catch (IOException e) {
-            throw new RuntimeException(e); // TODO 예외 처리
+            throw new BalanceTalkException(ErrorCode.FILE_UPLOAD_FAILED);
         }
     }
 
@@ -66,5 +56,26 @@ public class S3UploadService {
                 .filter(type -> type.getMimeType().equalsIgnoreCase(mimeType))
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("지원하지 않는 파일 타입 : " + mimeType));
+    }
+
+    private void putObjectToS3(String key, InputStream inputStream, long contentLength) {
+        PutObjectRequest putObjectRequest = PutObjectRequest.builder()
+                .bucket(bucket)
+                .key(key)
+                .build();
+
+        s3Client.putObject(putObjectRequest, RequestBody.fromInputStream(inputStream, contentLength));
+    }
+
+    private File createFile(String originalName, String storedName, String uploadDir, FileType fileType,
+                            long contentLength) {
+
+        return File.builder()
+                .originalName(originalName)
+                .storedName(storedName)
+                .path(uploadDir)
+                .type(fileType)
+                .size(contentLength)
+                .build();
     }
 }
