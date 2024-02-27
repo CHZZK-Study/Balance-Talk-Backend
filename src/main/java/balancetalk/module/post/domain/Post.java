@@ -79,6 +79,9 @@ public class Post extends BaseTimeEntity {
     }
 
     public long likesCount() {
+        if (likes == null) {
+            return 0;
+        }
         return likes.size();
     }
     
