@@ -122,4 +122,6 @@ class JwtTokenProviderTest {
                 .hasMessage("만료된 토큰 입니다.");
 
     }
+
+    // TODO: accessToken 만료 시 refreshToken 재발급 테스트 추가 필요
 }
