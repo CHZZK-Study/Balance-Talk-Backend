@@ -198,7 +198,7 @@ class PostServiceTest {
     }
 
     public File createFile() {
-        return File.builder().uploadName("파일1").path("../").type(FileType.JPEG).size(236L).build();
+        return File.builder().originalName("파일1").path("../").type(FileType.JPEG).size(236L).build();
     }
 
     public PostTag createPostTag() {
