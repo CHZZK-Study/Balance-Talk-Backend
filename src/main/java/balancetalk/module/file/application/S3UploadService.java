@@ -6,9 +6,7 @@ import balancetalk.module.file.domain.FileType;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
-import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -27,13 +25,6 @@ public class S3UploadService {
 
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;
-
-    @Transactional
-    public List<String> uploadMultipleImage(List<MultipartFile> multipartFiles) {
-        return multipartFiles.stream()
-                .map(this::uploadImage)
-                .collect(Collectors.toList());
-    }
 
     @Transactional
     public String uploadImage(MultipartFile multipartFile) {
