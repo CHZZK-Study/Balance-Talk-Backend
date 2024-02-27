@@ -20,7 +20,6 @@ public class LoginSuccessDto {
     @Schema(description = "회원 역할", example = "USER")
     private Role role;
 
-    private String accessToken;
+    private TokenDto tokenDto;
 
-    private String refreshToken;
 }

@@ -71,14 +71,17 @@ public class FileService {
             if (contentType == null) {
                 contentType = "application/octet-stream";
             }
+
+            return ResponseEntity.ok()
+                    .contentType(MediaType.parseMediaType(contentType))
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + file.getOriginalName() + "\"")
+                    .body(resource);
+
         } catch (IOException e) {
             throw new BalanceTalkException(FILE_DOWNLOAD_FAILED);
         }
 
-        return ResponseEntity.ok()
-                .contentType(MediaType.parseMediaType(contentType))
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + file.getUploadName() + "\"")
-                .body(resource);
+
     }
 
     private FileType convertMimeTypeToFileType(String mimeType) {

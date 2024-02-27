@@ -84,11 +84,28 @@ public class JwtTokenProvider {
     // http 헤더로부터 bearer 토큰 가져옴
     public String resolveToken(HttpServletRequest request) {
         String bearerToken = request.getHeader("Authorization");
-        if (bearerToken != null && bearerToken.startsWith("bearer ")) {
+        log.info("bearerToken={}", bearerToken);
+        if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
             return bearerToken.substring(7); // 실제 토큰만 추출
         }
         return null;
      }
+
+    public String getPayload(String token) {
+        return tokenToJws(token).getBody().getSubject();
+    }
+
+    private Jws<Claims> tokenToJws(final String token) {
+        try {
+            return Jwts.parserBuilder().setSigningKey(secretKey).build().parseClaimsJws(token);
+        } catch (final IllegalArgumentException | MalformedJwtException e) {
+            throw new IllegalArgumentException("Token이 null이거나 Token 파싱 오류");
+        } catch (final SignatureException e) {
+            throw new IllegalArgumentException("토큰의 시크릿 키가 일치하지 않습니다.");
+        } catch (final ExpiredJwtException e) {
+            throw new IllegalArgumentException("만료된 토큰 입니다.");
+        }
+    }
 
     // 토큰 유효성, 만료일자 확인
     public boolean validateToken(String token) {

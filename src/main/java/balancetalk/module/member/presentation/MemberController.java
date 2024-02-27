@@ -1,5 +1,6 @@
 package balancetalk.module.member.presentation;
 
+import balancetalk.global.jwt.JwtTokenProvider;
 import balancetalk.module.member.application.MemberService;
 import balancetalk.module.member.dto.*;
 import io.swagger.v3.oas.annotations.Operation;
@@ -7,10 +8,12 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 @Tag(name = "member", description = "회원 API")
@@ -18,7 +21,6 @@ import java.util.List;
 public class MemberController {
 
     private final MemberService memberService;
-
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/join")
     @Operation(summary = "회원 가입", description = "닉네임, 이메일, 비밀번호를 입력하여 회원 가입을 한다.")
@@ -37,14 +39,14 @@ public class MemberController {
     }
 
     @ResponseStatus(HttpStatus.OK)
-    @GetMapping("/{memberId}")
-    @Operation(summary = "단일 회원 조회", description = "해당 id값과 일치하는 회원 정보를 조회한다.")
-    public MemberResponseDto findMemberInfo(@PathVariable("memberId") Long memberId) {
-        return memberService.findById(memberId);
+    @GetMapping("/find")
+    @Operation(summary = "단일 회원 조회", description = "해당 jwt 토큰 값과 일치하는 회원 정보를 조회한다.")
+    public MemberResponseDto findMemberInfo(HttpServletRequest request) {
+        return memberService.findById(request);
     }
 
     @ResponseStatus(HttpStatus.OK)
-    @GetMapping
+    @GetMapping("/findAll")
     @Operation(summary = "전체 회원 조회", description = "모든 회원 정보를 조회한다.")
     public List<MemberResponseDto> findAllMemberInfo() {
         return memberService.findAll();
@@ -72,5 +74,10 @@ public class MemberController {
     public String deleteMember(@PathVariable("memberId") Long memberId, @Valid @RequestBody LoginDto loginDto) {
         memberService.delete(memberId, loginDto);
         return "회원 탈퇴가 정상적으로 처리되었습니다.";
+    }
+
+    @PostMapping("/test")
+    public String test() {
+        return "success";
     }
 }
