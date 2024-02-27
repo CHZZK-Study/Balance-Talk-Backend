@@ -1,11 +1,8 @@
 package balancetalk.module.comment.presentation;
 
 import balancetalk.module.comment.application.CommentService;
-import balancetalk.module.comment.domain.Comment;
 import balancetalk.module.comment.dto.CommentCreateRequest;
 import balancetalk.module.comment.dto.CommentResponse;
-import java.util.List;
-
 import balancetalk.module.comment.dto.ReplyCreateRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -13,6 +10,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @Tag(name = "comment", description = "댓글 API")
