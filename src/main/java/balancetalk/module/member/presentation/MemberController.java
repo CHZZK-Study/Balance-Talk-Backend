@@ -53,31 +53,27 @@ public class MemberController {
     }
 
     @ResponseStatus(HttpStatus.OK)
-    @PutMapping("/nickname/{memberId}")
+    @PutMapping("/update/nickname")
     @Operation(summary = "회원 닉네임 수정", description = "회원 닉네임을 수정한다.")
-    public String updateNickname(@PathVariable("memberId") Long memberId, @Valid @RequestBody NicknameUpdate nicknameUpdate) {
-        memberService.updateNickname(memberId, nicknameUpdate);
+    public String updateNickname(@Valid @RequestBody NicknameUpdate nicknameUpdate, HttpServletRequest request) {
+        memberService.updateNickname(nicknameUpdate, request);
         return "회원 닉네임이 변경되었습니다.";
     }
 
     @ResponseStatus(HttpStatus.OK)
-    @PutMapping("/{memberId}")
+    @PutMapping("/update/password")
     @Operation(summary = "회원 비밀번호 수정", description = "회원 패스워드를 수정한다.")
-    public String updatePassword(@PathVariable("memberId") Long memberId, @Valid @RequestBody PasswordUpdate passwordUpdate) {
-        memberService.updatePassword(memberId, passwordUpdate);
+    public String updatePassword(@Valid @RequestBody PasswordUpdate passwordUpdate, HttpServletRequest request) {
+        memberService.updatePassword(passwordUpdate, request);
         return "회원 비밀번호가 변경되었습니다.";
     }
 
     @ResponseStatus(HttpStatus.OK)
-    @DeleteMapping("/{memberId}")
+    @DeleteMapping("/delete")
     @Operation(summary = "회원 삭제", description = "해당 id값과 일치하는 회원 정보를 삭제한다.")
-    public String deleteMember(@PathVariable("memberId") Long memberId, @Valid @RequestBody LoginDto loginDto) {
-        memberService.delete(memberId, loginDto);
+    public String deleteMember(@Valid @RequestBody LoginDto loginDto, HttpServletRequest request) {
+        memberService.delete(loginDto, request);
         return "회원 탈퇴가 정상적으로 처리되었습니다.";
     }
 
-    @PostMapping("/test")
-    public String test() {
-        return "success";
-    }
 }
