@@ -74,10 +74,12 @@ public class PostService {
     }
 
     @Transactional(readOnly = true)
-    public PostResponseDto findById(Long postId) {
+    public PostResponseDto findById(Long postId, Long memberId) {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_POST));
-        return PostResponseDto.fromEntity(post);
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_MEMBER));
+        return PostResponseDto.fromEntity(post, member);
     }
 
     public void deleteById(Long postId) {
