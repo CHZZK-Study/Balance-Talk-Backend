@@ -32,25 +32,28 @@ public class PostResponseDto {
 
     private List<PostTagDto> postTags;
 
-
     // todo: likeCount, createdBy, ProfilePhoto 추가
     public static PostResponseDto fromEntity(Post post) {
-        List<BalanceOptionDto> balanceOptionDtos = post.getOptions().stream()
-                .map(BalanceOptionDto::fromEntity)
-                .collect(Collectors.toList());
-
-        List<PostTagDto> postTagDtos = post.getPostTags().stream()
-                .map(PostTagDto::fromEntity)
-                .collect(Collectors.toList());
-
         return PostResponseDto.builder()
                 .id(post.getId())
                 .title(post.getTitle())
                 .deadline(post.getDeadline())
                 .views(post.getViews())
                 .category(post.getCategory())
-                .balanceOptions(balanceOptionDtos)
-                .postTags(postTagDtos)
+                .balanceOptions(getBalanceOptions(post))
+                .postTags(getPostTags(post))
                 .build();
+    }
+
+    private static List<PostTagDto> getPostTags(Post post) {
+        return post.getPostTags().stream()
+                .map(PostTagDto::fromEntity)
+                .collect(Collectors.toList());
+    }
+
+    private static List<BalanceOptionDto> getBalanceOptions(Post post) {
+        return post.getOptions().stream()
+                .map(BalanceOptionDto::fromEntity)
+                .collect(Collectors.toList());
     }
 }
