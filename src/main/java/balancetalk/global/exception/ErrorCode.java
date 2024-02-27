@@ -40,6 +40,7 @@ public enum ErrorCode {
     NOT_FOUND_DIRECTORY(NOT_FOUND, "존재하지 않는 디렉토리입니다."),
     NOT_SUPPORTED_FILE_TYPE(NOT_FOUND, "지원하지 않는 파일 형식입니다."),
     NOT_FOUND_FILE(NOT_FOUND, "존재하지 않는 파일입니다."),
+    NOT_FOUND_PARENT_COMMENT(NOT_FOUND, "존재하지 않는 원 댓글입니다."),
 
     // 409
     ALREADY_VOTE(CONFLICT, "투표는 한 번만 가능합니다."),

@@ -1,10 +1,12 @@
 package balancetalk.module.comment.presentation;
 
 import balancetalk.module.comment.application.CommentService;
+import balancetalk.module.comment.domain.Comment;
 import balancetalk.module.comment.dto.CommentCreateRequest;
 import balancetalk.module.comment.dto.CommentResponse;
 import java.util.List;
 
+import balancetalk.module.comment.dto.ReplyCreateRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -49,6 +51,14 @@ public class CommentController {
     public String deleteComment(@PathVariable Long commentId) {
         commentService.deleteComment(commentId);
         return "댓글이 정상적으로 삭제되었습니다.";
+    }
+
+    @ResponseStatus(HttpStatus.CREATED)
+    @PostMapping("/{commentId}/replies")
+    @Operation(summary = "답글 작성", description = "comment-id에 해당하는 댓글에 답글을 작성한다.")
+    public String createComment(@PathVariable Long postId, @PathVariable Long commentId, @RequestBody ReplyCreateRequest request) {
+        commentService.createReply(postId, commentId, request);
+        return "답글이 정상적으로 작성되었습니다.";
     }
 
     @PostMapping("/{commentId}/likes")

@@ -1,9 +1,5 @@
 package balancetalk.module.comment.application;
 
-import static balancetalk.global.exception.ErrorCode.NOT_FOUND_BALANCE_OPTION;
-import static balancetalk.global.exception.ErrorCode.NOT_FOUND_COMMENT;
-import static balancetalk.global.exception.ErrorCode.NOT_FOUND_MEMBER;
-import static balancetalk.global.exception.ErrorCode.NOT_FOUND_POST;
 import balancetalk.global.exception.BalanceTalkException;
 import balancetalk.global.exception.ErrorCode;
 import balancetalk.module.comment.domain.Comment;
@@ -12,6 +8,7 @@ import balancetalk.module.comment.domain.CommentLikeRepository;
 import balancetalk.module.comment.domain.CommentRepository;
 import balancetalk.module.comment.dto.CommentCreateRequest;
 import balancetalk.module.comment.dto.CommentResponse;
+import balancetalk.module.comment.dto.ReplyCreateRequest;
 import balancetalk.module.member.domain.Member;
 import balancetalk.module.member.domain.MemberRepository;
 import balancetalk.module.post.domain.BalanceOption;
@@ -28,6 +25,8 @@ import balancetalk.module.vote.domain.VoteRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import static balancetalk.global.exception.ErrorCode.*;
 
 @Service
 @Transactional
@@ -79,6 +78,27 @@ public class CommentService {
     public void deleteComment(Long commentId) {
         validateCommentId(commentId);
         commentRepository.deleteById(commentId);
+    }
+
+    @Transactional
+    public Comment createReply(Long postId, Long commentId, ReplyCreateRequest request) {
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_POST));
+
+        Comment parentComment = commentRepository.findById(commentId)
+                .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_COMMENT));
+
+        Member member = memberRepository.findById(request.getMemberId())
+                .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_MEMBER));
+
+
+        // 부모 댓글과 연결된 게시글이 맞는지 확인
+        if (!parentComment.getPost().equals(post)) {
+            throw new BalanceTalkException(NOT_FOUND_PARENT_COMMENT);
+        }
+
+        Comment reply = request.toEntity(member, post, parentComment);
+        return commentRepository.save(reply);
     }
 
 
