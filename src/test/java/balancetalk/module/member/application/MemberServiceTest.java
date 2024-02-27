@@ -62,7 +62,7 @@ class MemberServiceTest {
 
         Member member = joinDto.toEntity();
         when(memberRepository.findByEmail(any())).thenReturn(Optional.of(member));
-        when(jwtTokenProvider.createToken(member.getEmail(), member.getRole())).thenReturn("token");
+        // when(jwtTokenProvider.createToken(member.getEmail(), member.getRole())).thenReturn("token");
         // TODO: jwt 토큰 null -> 인증 오류
 
         // when
