@@ -22,8 +22,11 @@ public class PostResponseDto {
     @Schema(description = "투료 종료 기한", example = "2024-03-16 08:27:17.391706\t")
     private LocalDateTime deadline;
 
-    @Schema(description = "게시글 조회 수", example = "126")
-    private Long views;
+    @Schema(description = "게시글 조회수", example = "126")
+    private long views;
+
+    @Schema(description = "게시글 추천수", example = "15")
+    private long likesCount;
 
     @Schema(description = "게시글 카테고리", example = "CASUAL")
     private PostCategory category;
@@ -39,6 +42,7 @@ public class PostResponseDto {
                 .title(post.getTitle())
                 .deadline(post.getDeadline())
                 .views(post.getViews())
+                .likesCount(post.likesCount())
                 .category(post.getCategory())
                 .balanceOptions(getBalanceOptions(post))
                 .postTags(getPostTags(post))

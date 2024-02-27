@@ -77,6 +77,10 @@ public class Post extends BaseTimeEntity {
     public boolean isCasual() {
         return this.category == PostCategory.CASUAL;
     }
+
+    public long likesCount() {
+        return likes.size();
+    }
     
     @PrePersist
     public void init() {
