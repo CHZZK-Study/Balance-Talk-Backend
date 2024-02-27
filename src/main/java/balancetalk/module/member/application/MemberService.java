@@ -61,11 +61,8 @@ public class MemberService {
     }
 
     @Transactional(readOnly = true)
-    public MemberResponseDto findById(HttpServletRequest request) {
-        String token = jwtTokenProvider.resolveToken(request);
-        String email = jwtTokenProvider.getPayload(token);
-        Member member = memberRepository.findByEmail(email)
-                .orElseThrow(() -> new BalanceTalkException(ErrorCode.NOT_FOUND_MEMBER));
+    public MemberResponseDto findMember(HttpServletRequest request) {
+        Member member = extractMember(request);
         return MemberResponseDto.fromEntity(member);
     }
 
@@ -79,28 +76,19 @@ public class MemberService {
 
     @Transactional
     public void updateNickname(final NicknameUpdate nicknameUpdate, HttpServletRequest request) {
-        String token = jwtTokenProvider.resolveToken(request);
-        String email = jwtTokenProvider.getPayload(token);
-        Member member = memberRepository.findByEmail(email)
-                .orElseThrow(() -> new BalanceTalkException(ErrorCode.NOT_FOUND_MEMBER));
+        Member member = extractMember(request);
         member.updateNickname(nicknameUpdate.getNickname());
     }
 
     @Transactional
     public void updatePassword(final PasswordUpdate passwordUpdate, HttpServletRequest request) {
-        String token = jwtTokenProvider.resolveToken(request);
-        String email = jwtTokenProvider.getPayload(token);
-        Member member = memberRepository.findByEmail(email)
-                .orElseThrow(() -> new BalanceTalkException(ErrorCode.NOT_FOUND_MEMBER));
+        Member member = extractMember(request);
         member.updatePassword(passwordEncoder.encode(passwordUpdate.getPassword()));
     }
 
     @Transactional
     public void delete(final LoginDto loginDto, HttpServletRequest request) {
-        String token = jwtTokenProvider.resolveToken(request);
-        String email = jwtTokenProvider.getPayload(token);
-        Member member = memberRepository.findByEmail(email)
-                .orElseThrow(() -> new BalanceTalkException(ErrorCode.NOT_FOUND_MEMBER));
+        Member member = extractMember(request);
         if (!member.getEmail().equals(loginDto.getEmail())) {
             throw new BalanceTalkException(ErrorCode.FORBIDDEN_MEMBER_DELETE);
         }
@@ -108,6 +96,14 @@ public class MemberService {
         if (!passwordEncoder.matches(loginDto.getPassword(), member.getPassword())) {
             throw new BalanceTalkException(ErrorCode.MISMATCHED_EMAIL_OR_PASSWORD);
         }
-        memberRepository.deleteByEmail(email);
+        memberRepository.deleteByEmail(member.getEmail());
+    }
+
+    private Member extractMember(HttpServletRequest request) {
+        String token = jwtTokenProvider.resolveToken(request);
+        String email = jwtTokenProvider.getPayload(token);
+        Member member = memberRepository.findByEmail(email)
+                .orElseThrow(() -> new BalanceTalkException(ErrorCode.NOT_FOUND_MEMBER));
+        return member;
     }
 }

@@ -42,7 +42,7 @@ public class MemberController {
     @GetMapping("/find")
     @Operation(summary = "단일 회원 조회", description = "해당 jwt 토큰 값과 일치하는 회원 정보를 조회한다.")
     public MemberResponseDto findMemberInfo(HttpServletRequest request) {
-        return memberService.findById(request);
+        return memberService.findMember(request);
     }
 
     @ResponseStatus(HttpStatus.OK)

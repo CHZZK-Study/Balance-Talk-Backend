@@ -84,7 +84,6 @@ public class JwtTokenProvider {
     // http 헤더로부터 bearer 토큰 가져옴
     public String resolveToken(HttpServletRequest request) {
         String bearerToken = request.getHeader("Authorization");
-        log.info("bearerToken={}", bearerToken);
         if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
             return bearerToken.substring(7); // 실제 토큰만 추출
         }
@@ -95,7 +94,7 @@ public class JwtTokenProvider {
         return tokenToJws(token).getBody().getSubject();
     }
 
-    private Jws<Claims> tokenToJws(final String token) {
+    public Jws<Claims> tokenToJws(final String token) {
         try {
             return Jwts.parserBuilder().setSigningKey(secretKey).build().parseClaimsJws(token);
         } catch (final IllegalArgumentException | MalformedJwtException e) {
