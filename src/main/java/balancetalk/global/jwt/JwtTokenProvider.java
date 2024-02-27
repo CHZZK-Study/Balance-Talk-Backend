@@ -1,13 +1,9 @@
 package balancetalk.global.jwt;
 
 import balancetalk.global.redis.application.RedisService;
-import balancetalk.module.member.domain.Role;
 import io.jsonwebtoken.*;
-import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j2;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -15,7 +11,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
-import java.security.Key;
 import java.time.Duration;
 import java.util.Date;
 
