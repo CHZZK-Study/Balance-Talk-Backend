@@ -35,7 +35,13 @@ public class PostResponseDto {
 
     private List<PostTagDto> postTags;
 
-    // todo: likeCount, createdBy, ProfilePhoto 추가
+    @Schema(description = "게시글 작성일", example = "2022-02-12")
+    private LocalDateTime createdAt;
+
+    @Schema(description = "게시글 작성자", example = "작성자 닉네임")
+    private String createdBy;
+
+    // todo: ProfilePhoto 추가
     public static PostResponseDto fromEntity(Post post) {
         return PostResponseDto.builder()
                 .id(post.getId())
@@ -46,6 +52,8 @@ public class PostResponseDto {
                 .category(post.getCategory())
                 .balanceOptions(getBalanceOptions(post))
                 .postTags(getPostTags(post))
+                .createdAt(post.getCreatedAt())
+                .createdBy(post.getMember().getNickname())
                 .build();
     }
 
