@@ -37,9 +37,6 @@ class JwtTokenProviderTest {
 
     private Member member;
 
-    @MockBean
-    private RedisService redisService; // RedisService를 mock으로 대체
-
     @BeforeEach
     void setMember() {
         member = Member.builder()
