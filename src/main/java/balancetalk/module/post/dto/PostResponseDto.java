@@ -1,5 +1,6 @@
 package balancetalk.module.post.dto;
 
+import balancetalk.module.member.domain.Member;
 import balancetalk.module.post.domain.Post;
 import balancetalk.module.post.domain.PostCategory;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -22,8 +23,17 @@ public class PostResponseDto {
     @Schema(description = "투료 종료 기한", example = "2024-03-16 08:27:17.391706\t")
     private LocalDateTime deadline;
 
-    @Schema(description = "게시글 조회 수", example = "126")
-    private Long views;
+    @Schema(description = "게시글 조회수", example = "126")
+    private long views;
+
+    @Schema(description = "게시글 추천수", example = "15")
+    private long likesCount;
+
+    @Schema(description = "추천 여부", example = "true")
+    private boolean myLike;
+
+    @Schema(description = "북마크 여부", example = "false")
+    private boolean myBookmark;
 
     @Schema(description = "게시글 카테고리", example = "CASUAL")
     private PostCategory category;
@@ -32,16 +42,27 @@ public class PostResponseDto {
 
     private List<PostTagDto> postTags;
 
-    // todo: likeCount, createdBy, ProfilePhoto 추가
-    public static PostResponseDto fromEntity(Post post) {
+    @Schema(description = "게시글 작성일", example = "2022-02-12")
+    private LocalDateTime createdAt;
+
+    @Schema(description = "게시글 작성자", example = "작성자 닉네임")
+    private String createdBy;
+
+    // todo: ProfilePhoto 추가
+    public static PostResponseDto fromEntity(Post post, Member member) {
         return PostResponseDto.builder()
                 .id(post.getId())
                 .title(post.getTitle())
                 .deadline(post.getDeadline())
                 .views(post.getViews())
+                .likesCount(post.likesCount())
+                .myLike(member.hasLiked(post))
+                .myBookmark(member.hasBookmarked(post))
                 .category(post.getCategory())
                 .balanceOptions(getBalanceOptions(post))
                 .postTags(getPostTags(post))
+                .createdAt(post.getCreatedAt())
+                .createdBy(post.getMember().getNickname())
                 .build();
     }
 
