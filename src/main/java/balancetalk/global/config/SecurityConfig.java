@@ -1,5 +1,7 @@
 package balancetalk.global.config;
 
+import balancetalk.global.jwt.JwtAccessDeniedHandler;
+import balancetalk.global.jwt.JwtAuthenticationEntryPoint;
 import balancetalk.global.jwt.JwtAuthenticationFilter;
 import balancetalk.global.jwt.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +22,8 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
 
     private final JwtTokenProvider jwtTokenProvider;
+    private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
+    private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
 
     @Bean
     public BCryptPasswordEncoder passwordEncoder() {
@@ -35,6 +39,10 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
                 .cors(cors -> cors.disable())
+                .exceptionHandling(exception -> {
+                    exception.authenticationEntryPoint(jwtAuthenticationEntryPoint);
+                    exception.accessDeniedHandler(jwtAccessDeniedHandler);
+                })
                 // h2 콘솔 사용
                 .headers(header -> header.frameOptions(frameOption -> frameOption.disable()).disable())
                 // 세션 사용 X (jwt 사용)
