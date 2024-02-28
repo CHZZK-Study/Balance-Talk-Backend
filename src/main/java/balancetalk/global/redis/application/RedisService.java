@@ -33,9 +33,6 @@ public class RedisService {
     @Transactional(readOnly = true)
     public String getValues(String key) {
         ValueOperations<String, Object> values = redisTemplate.opsForValue();
-        if (values.get(key) == null) {
-            return "false";
-        }
         return (String) values.get(key);
     }
 
@@ -64,7 +61,8 @@ public class RedisService {
         values.delete(key, hashKey);
     }
 
-    public boolean checkExistsValue(String value) {
-        return !value.equals("false");
+    public boolean checkExistsValue(String key) {
+        String value = getValues(key);
+        return value != null;
     }
 }
