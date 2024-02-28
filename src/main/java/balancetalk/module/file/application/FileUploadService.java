@@ -19,6 +19,9 @@ import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
+import static balancetalk.global.exception.ErrorCode.MIME_TYPE_NULL;
+import static balancetalk.global.exception.ErrorCode.NOT_SUPPORTED_FILE_TYPE;
+
 @Service
 @RequiredArgsConstructor
 public class FileUploadService {
@@ -49,13 +52,13 @@ public class FileUploadService {
 
     private FileType convertMimeTypeToFileType(String mimeType) {
         if (mimeType == null) {
-            throw new IllegalArgumentException("MIME 타입은 NULL이 될 수 없습니다.");
+            throw new BalanceTalkException(MIME_TYPE_NULL);
         }
 
         return Arrays.stream(FileType.values())
                 .filter(type -> type.getMimeType().equalsIgnoreCase(mimeType))
                 .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("지원하지 않는 파일 타입 : " + mimeType));
+                .orElseThrow(() -> new BalanceTalkException(NOT_SUPPORTED_FILE_TYPE));
     }
 
     private void putObjectToS3(String key, InputStream inputStream, long contentLength) {
