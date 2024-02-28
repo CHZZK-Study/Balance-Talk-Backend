@@ -17,7 +17,6 @@ public enum ErrorCode {
     INCORRECT_PASSWORD(BAD_REQUEST, "비밀번호가 잘못되었거나 요청 형식이 올바르지 않습니다"),
     MIME_TYPE_NULL(BAD_REQUEST, "MIME 타입이 null입니다."),
     FILE_UPLOAD_FAILED(BAD_REQUEST, "파일 업로드에 실패했습니다."),
-    FILE_DOWNLOAD_FAILED(BAD_REQUEST, "파일 다운로드에 실패했습니다."),
     FILE_SIZE_EXCEEDED(BAD_REQUEST, "파일 크기가 초과되었습니다."),
     EXPIRED_JWT_TOKEN(BAD_REQUEST, "만료된 토큰 입니다."),
     INVALID_JWT_TOKEN(BAD_REQUEST, "유효하지 않은 토큰입니다."),
@@ -52,6 +51,10 @@ public enum ErrorCode {
     // 500
     REDIS_CONNECTION_FAIL(INTERNAL_SERVER_ERROR, "Redis 연결에 실패했습니다.");
 
+
+    // 500
+    DUPLICATE_EMAIL(INTERNAL_SERVER_ERROR, "이미 존재하는 이메일 입니다. 다른 이메일을 입력해주세요"),
+    AUTHORIZATION_CODE_MISMATCH(INTERNAL_SERVER_ERROR, "인증 번호가 일치하지 않습니다.");
     private final HttpStatus httpStatus;
     private final String message;
 }

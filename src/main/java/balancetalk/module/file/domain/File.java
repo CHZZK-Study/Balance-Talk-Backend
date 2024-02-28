@@ -23,7 +23,7 @@ public class File {
     @NotBlank
     @Size(max = 50)
     @Column(nullable = false, length = 50)
-    private String uploadName; // 사용자가 업로드한 파일명
+    private String originalName; // 사용자가 업로드한 파일명
 
     @Size(max = 100)
     @Column(length = 50, unique = true)
@@ -45,12 +45,4 @@ public class File {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "notice_id")
     private Notice notice;
-
-    @Builder
-    public File(String uploadName, String path, FileType type, Long size) {
-        this.uploadName = uploadName;
-        this.path = path;
-        this.type = type;
-        this.size = size;
-    }
 }

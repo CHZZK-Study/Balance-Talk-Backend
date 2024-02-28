@@ -1,7 +1,7 @@
 package balancetalk.module.file.domain;
 
 public enum FileType {
-    JPEG("image/jpeg", "jpg"),
+    JPEG("image/jpeg", "jpeg"),
     PNG("image/png", "png"),
     GIF("image/gif", "gif"),
     BMP("image/bmp", "bmp"),
