@@ -31,8 +31,6 @@ public class JoinDto {
     @Schema(description = "회원 역할", example = "USER")
     private Role role;
 
-    @Schema(description = "회원 ip", example = "127.0.0.1")
-    private String ip;
     // TODO: profilePhoto 추가
 
     public Member toEntity() {
@@ -41,7 +39,6 @@ public class JoinDto {
                 .email(email)
                 .password(password)
                 .role(role)
-                .ip(ip)
                 .build();
     }
 }

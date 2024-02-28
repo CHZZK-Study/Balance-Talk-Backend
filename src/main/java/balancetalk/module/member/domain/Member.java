@@ -59,9 +59,6 @@ public class Member extends BaseTimeEntity implements UserDetails {
     @Column(nullable = false)
     private Role role = Role.USER;
 
-    @Size(min = 15)
-    private String ip;
-
     @OneToMany(mappedBy = "member")
     private List<Post> posts = new ArrayList<>();
 
