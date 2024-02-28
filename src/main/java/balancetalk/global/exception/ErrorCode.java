@@ -18,6 +18,7 @@ public enum ErrorCode {
     MIME_TYPE_NULL(BAD_REQUEST, "MIME 타입이 null입니다."),
     FILE_UPLOAD_FAILED(BAD_REQUEST, "파일 업로드에 실패했습니다."),
     FILE_SIZE_EXCEEDED(BAD_REQUEST, "파일 크기가 초과되었습니다."),
+    FILE_NAME_EXCEEDED(BAD_REQUEST, "파일 이름이 너무 깁니다."),
     EXPIRED_JWT_TOKEN(BAD_REQUEST, "만료된 토큰 입니다."),
     INVALID_JWT_TOKEN(BAD_REQUEST, "유효하지 않은 토큰입니다."),
     INVALID_REFRESH_TOKEN(BAD_REQUEST, "RefreshToken이 존재하지 않습니다."),
