@@ -49,7 +49,8 @@ public class MemberService {
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(loginDto.getEmail(), loginDto.getPassword())
             );
-            TokenDto tokenDto = new TokenDto("Bearer", jwtTokenProvider.createAccessToken(authentication), jwtTokenProvider.createRefreshToken(authentication));
+            String refreshToken = jwtTokenProvider.createRefreshToken(authentication);
+            TokenDto tokenDto = jwtTokenProvider.reissueToken(refreshToken); // 만료되었다면, 재발급
             return LoginSuccessDto.builder()
                     .email(member.getEmail())
                     .password(member.getPassword())
@@ -57,15 +58,13 @@ public class MemberService {
                     .tokenDto(tokenDto)
                     .build();
         } catch (BadCredentialsException e) {
-            throw new BalanceTalkException(ErrorCode.BAD_CREDENTIAL_ERROR);
+            throw new BadCredentialsException("credential 오류!!");
         }
     }
 
     @Transactional(readOnly = true)
-    public MemberResponseDto findById(HttpServletRequest request) {
-        String token = jwtTokenProvider.resolveToken(request);
-        String email = jwtTokenProvider.getPayload(token);
-        Member member = memberRepository.findByEmail(email)
+    public MemberResponseDto findById(Long id) {
+        Member member = memberRepository.findById(id)
                 .orElseThrow(() -> new BalanceTalkException(ErrorCode.NOT_FOUND_MEMBER));
         return MemberResponseDto.fromEntity(member);
     }
@@ -79,31 +78,35 @@ public class MemberService {
     }
 
     @Transactional
-    public void updateNickname(Long memberId, final NicknameUpdate nicknameUpdate) {
-        Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new BalanceTalkException(ErrorCode.NOT_FOUND_MEMBER));
+    public void updateNickname(final NicknameUpdate nicknameUpdate, HttpServletRequest request) {
+        Member member = extractMember(request);
         member.updateNickname(nicknameUpdate.getNickname());
     }
 
     @Transactional
-    public void updatePassword(Long memberId, final PasswordUpdate passwordUpdate) {
-        Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new BalanceTalkException(ErrorCode.NOT_FOUND_MEMBER));
-        member.updatePassword(passwordUpdate.getPassword());
+    public void updatePassword(final PasswordUpdate passwordUpdate, HttpServletRequest request) {
+        Member member = extractMember(request);
+        member.updatePassword(passwordEncoder.encode(passwordUpdate.getPassword()));
     }
 
     @Transactional
-    public void delete(Long memberId, final LoginDto loginDto) {
-        Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new BalanceTalkException(ErrorCode.NOT_FOUND_MEMBER));
-
+    public void delete(final LoginDto loginDto, HttpServletRequest request) {
+        Member member = extractMember(request);
         if (!member.getEmail().equals(loginDto.getEmail())) {
             throw new BalanceTalkException(ErrorCode.FORBIDDEN_MEMBER_DELETE);
         }
-        if (!member.getPassword().equals(loginDto.getPassword())) {
-            throw new BalanceTalkException(ErrorCode.INCORRECT_PASSWORD);
-        }
 
-        memberRepository.deleteById(memberId);
+        if (!passwordEncoder.matches(loginDto.getPassword(), member.getPassword())) {
+            throw new BalanceTalkException(ErrorCode.MISMATCHED_EMAIL_OR_PASSWORD);
+        }
+        memberRepository.deleteByEmail(member.getEmail());
+    }
+
+    private Member extractMember(HttpServletRequest request) {
+        String token = jwtTokenProvider.resolveToken(request);
+        String email = jwtTokenProvider.getPayload(token);
+        Member member = memberRepository.findByEmail(email)
+                .orElseThrow(() -> new BalanceTalkException(ErrorCode.NOT_FOUND_MEMBER));
+        return member;
     }
 }

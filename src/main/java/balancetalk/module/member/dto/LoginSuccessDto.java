@@ -21,4 +21,5 @@ public class LoginSuccessDto {
     private Role role;
 
     private TokenDto tokenDto;
+
 }

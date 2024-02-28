@@ -13,6 +13,9 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class MemberResponseDto {
 
+    @Schema(description = "회원 id", example = "1")
+    private Long id;
+
     @Schema(description = "회원 닉네임", example = "닉네임")
     private String nickname;
     @Schema(description = "회원 프로필", example = "../")
@@ -28,6 +31,7 @@ public class MemberResponseDto {
 
     public static MemberResponseDto fromEntity(Member member) {
         return MemberResponseDto.builder()
+                .id(member.getId())
                 .nickname(member.getNickname())
                 //.profilePhoto(file.getPath())
                 .createdAt(member.getCreatedAt())

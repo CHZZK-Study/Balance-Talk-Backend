@@ -1,6 +1,9 @@
 package balancetalk.global.jwt;
 
+import balancetalk.global.exception.BalanceTalkException;
+import balancetalk.global.exception.ErrorCode;
 import balancetalk.global.redis.application.RedisService;
+import balancetalk.module.member.dto.TokenDto;
 import io.jsonwebtoken.*;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -122,5 +125,21 @@ public class JwtTokenProvider {
         if (authentication == null) {
             throw new IllegalArgumentException("유저 정보가 존재하지 않습니다.");
         }
+    }
+
+    public TokenDto reissueToken(String refreshToken) {
+        validateToken(refreshToken);
+        Authentication authentication = getAuthentication(refreshToken);
+        // redis에 저장된 RefreshToken 값을 가져옴
+        String redisRefreshToken = redisService.getValues(authentication.getName());
+        if (!redisRefreshToken.equals(refreshToken)) {
+            throw new BalanceTalkException(ErrorCode.INVALID_REFRESH_TOKEN);
+        }
+        TokenDto tokenDto = new TokenDto(
+                "Bearer",
+                createAccessToken(authentication),
+                createRefreshToken(authentication)
+        );
+        return tokenDto;
     }
 }
