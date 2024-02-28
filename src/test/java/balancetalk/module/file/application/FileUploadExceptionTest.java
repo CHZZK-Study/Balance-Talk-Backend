@@ -36,6 +36,7 @@ public class FileUploadExceptionTest {
     private MailService mailService;
 
     @Test
+    @DisplayName("파일 업로드 실패 - 파일 크기가 너무 큼")
     public void uploadOverSizedFile_ShouldReturnBadRequest() {
         Resource overSizedFile = new ClassPathResource("overSizedFile.jpg");
         HttpHeaders headers = new HttpHeaders();
