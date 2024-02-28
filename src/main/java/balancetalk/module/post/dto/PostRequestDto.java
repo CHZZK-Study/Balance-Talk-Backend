@@ -1,10 +1,14 @@
 package balancetalk.module.post.dto;
 
+import balancetalk.module.file.domain.File;
 import balancetalk.module.member.domain.Member;
+import balancetalk.module.post.domain.BalanceOption;
 import balancetalk.module.post.domain.Post;
 import balancetalk.module.post.domain.PostCategory;
+import balancetalk.module.post.domain.PostTag;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
+import java.util.stream.IntStream;
 import lombok.*;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -35,14 +39,24 @@ public class PostRequestDto {
     @Schema(description = "태그 리스트", example = "[\"태그1\", \"태그2\", \"태그3\"]")
     private List<PostTagDto> tags;
 
-    public Post toEntity(Member member) {
+    public Post toEntity(Member member, List<File> images) {
         return Post.builder()
                 .member(member)
                 .title(title)
                 .deadline(deadline)
                 .category(category)
-                .options(balanceOptions.stream().map(BalanceOptionDto::toEntity).collect(Collectors.toList()))
-                .postTags(tags.stream().map(PostTagDto::toEntity).collect(Collectors.toList()))
+                .options(getBalanceOptions(images))
+                .postTags(getPostTags())
                 .build();
+    }
+
+    private List<BalanceOption> getBalanceOptions(List<File> images) {
+        return IntStream.range(0, balanceOptions.size())
+                .mapToObj(i -> balanceOptions.get(i).toEntity(images.get(i)))
+                .collect(Collectors.toList());
+    }
+
+    private List<PostTag> getPostTags() {
+        return tags.stream().map(PostTagDto::toEntity).collect(Collectors.toList());
     }
 }

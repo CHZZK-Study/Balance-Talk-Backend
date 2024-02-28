@@ -4,7 +4,6 @@ import balancetalk.module.file.domain.File;
 import balancetalk.module.file.domain.FileType;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
-import org.springframework.web.multipart.MultipartFile;
 
 @Data
 @Builder
@@ -15,7 +14,7 @@ public class FileDto {
     private Long id;
 
     @Schema(description = "사용자가 업로드한 파일명", example = "사진1")
-    private String uploadName;
+    private String originalName;
 
     @Schema(description = "서버에 저장되는 파일명", example = "d23d2dqwt1251asbds사진1")
     private String storedName;
@@ -31,7 +30,7 @@ public class FileDto {
 
     public File toEntity() {
         return File.builder()
-                .originalName(uploadName)
+                .originalName(originalName)
                 .storedName(storedName)
                 .path(path)
                 .type(type)
@@ -41,19 +40,11 @@ public class FileDto {
 
     public static FileDto fromEntity(File file) {
         return FileDto.builder()
-                .uploadName(file.getOriginalName())
+                .id(file.getId())
+                .originalName(file.getOriginalName())
+                .storedName(file.getStoredName())
                 .path(file.getPath())
                 .type(file.getType())
-                .size(file.getSize())
-                .build();
-    }
-
-    public static FileDto of(MultipartFile file, String storedFileName, String path, FileType fileType) {
-        return FileDto.builder()
-                .uploadName(file.getOriginalFilename())
-                .storedName(storedFileName)
-                .path(path)
-                .type(fileType)
                 .size(file.getSize())
                 .build();
     }
