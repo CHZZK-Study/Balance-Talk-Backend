@@ -1,6 +1,9 @@
 package balancetalk.global.jwt;
 
+import balancetalk.global.exception.BalanceTalkException;
+import balancetalk.global.exception.ErrorCode;
 import balancetalk.global.redis.application.RedisService;
+import balancetalk.module.member.dto.TokenDto;
 import io.jsonwebtoken.*;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -104,22 +107,6 @@ public class JwtTokenProvider {
         }
     }
 
-    public String getPayload(String token) {
-        return tokenToJws(token).getBody().getSubject();
-    }
-
-    public Jws<Claims> tokenToJws(final String token) {
-        try {
-            return Jwts.parserBuilder().setSigningKey(secretKey).build().parseClaimsJws(token);
-        } catch (final IllegalArgumentException | MalformedJwtException e) {
-            throw new IllegalArgumentException("Token이 null이거나 Token 파싱 오류");
-        } catch (final SignatureException e) {
-            throw new IllegalArgumentException("토큰의 시크릿 키가 일치하지 않습니다.");
-        } catch (final ExpiredJwtException e) {
-            throw new IllegalArgumentException("만료된 토큰 입니다.");
-        }
-    }
-
     // 토큰 유효성, 만료일자 확인
     public boolean validateToken(String token) {
         try {
@@ -137,6 +124,16 @@ public class JwtTokenProvider {
     private void validateAuthentication(Authentication authentication) {
         if (authentication == null) {
             throw new IllegalArgumentException("유저 정보가 존재하지 않습니다.");
+        }
+    }
+
+    public TokenDto reissueToken(String refreshToken) {
+        validateToken(refreshToken);
+        Authentication authentication = getAuthentication(refreshToken);
+        // redis에 저장된 RefreshToken 값을 가져옴
+        String redisRefreshToken = redisService.getValues(authentication.getName());
+        if (!redisRefreshToken.equals(refreshToken)) {
+            throw new BalanceTalkException(ErrorCode.INVALID_REFRESH_TOKEN);
         }
         TokenDto tokenDto = new TokenDto(
                 "Bearer",

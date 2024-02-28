@@ -49,7 +49,8 @@ public class MemberService {
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(loginDto.getEmail(), loginDto.getPassword())
             );
-            TokenDto tokenDto = new TokenDto("Bearer", jwtTokenProvider.createAccessToken(authentication), jwtTokenProvider.createRefreshToken(authentication));
+            String refreshToken = jwtTokenProvider.createRefreshToken(authentication);
+            TokenDto tokenDto = jwtTokenProvider.reissueToken(refreshToken); // 만료되었다면, 재발급
             return LoginSuccessDto.builder()
                     .email(member.getEmail())
                     .password(member.getPassword())
@@ -62,10 +63,8 @@ public class MemberService {
     }
 
     @Transactional(readOnly = true)
-    public MemberResponseDto findById(HttpServletRequest request) {
-        String token = jwtTokenProvider.resolveToken(request);
-        String email = jwtTokenProvider.getPayload(token);
-        Member member = memberRepository.findByEmail(email)
+    public MemberResponseDto findById(Long id) {
+        Member member = memberRepository.findById(id)
                 .orElseThrow(() -> new BalanceTalkException(ErrorCode.NOT_FOUND_MEMBER));
         return MemberResponseDto.fromEntity(member);
     }
