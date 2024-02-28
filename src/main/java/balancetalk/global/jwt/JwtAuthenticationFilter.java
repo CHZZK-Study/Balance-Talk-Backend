@@ -1,5 +1,6 @@
 package balancetalk.global.jwt;
 
+import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletRequest;
@@ -10,9 +11,7 @@ import org.springframework.data.redis.RedisConnectionFailureException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.GenericFilterBean;
-
 import java.io.IOException;
-
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends GenericFilterBean {
 
@@ -21,7 +20,6 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         String token = jwtTokenProvider.resolveToken((HttpServletRequest) request);
-
         try {
             if (token != null && jwtTokenProvider.validateToken(token)) {
                 Authentication auth = jwtTokenProvider.getAuthentication(token);
@@ -30,11 +28,9 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
         } catch (RedisConnectionFailureException e) {
             SecurityContextHolder.clearContext();
             throw new IllegalAccessError("Redis 연결 실패");
-        } catch (Exception e) {
+        } catch (ExpiredJwtException e) {
             throw new IllegalArgumentException("JWT가 유효하지 않음.");
         }
         chain.doFilter(request, response);
     }
-
-
 }

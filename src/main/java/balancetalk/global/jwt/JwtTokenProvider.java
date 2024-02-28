@@ -76,9 +76,7 @@ public class JwtTokenProvider {
     public Authentication getAuthentication(String token) {
         String userPrincipal = Jwts.parserBuilder().setSigningKey(secretKey).build().parseClaimsJws(token).getBody().getSubject();
         UserDetails userDetails = userDetailsService.loadUserByUsername(userPrincipal);
-
         return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
-
     }
 
     // http 헤더로부터 bearer 토큰 가져옴

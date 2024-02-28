@@ -39,21 +39,21 @@ public class MemberController {
     }
 
     @ResponseStatus(HttpStatus.OK)
-    @GetMapping("/find")
-    @Operation(summary = "단일 회원 조회", description = "해당 jwt 토큰 값과 일치하는 회원 정보를 조회한다.")
-    public MemberResponseDto findMemberInfo(HttpServletRequest request) {
-        return memberService.findMember(request);
+    @GetMapping("/{memberId}")
+    @Operation(summary = "단일 회원 조회", description = "memberId와 일치하는 회원 정보를 조회한다.")
+    public MemberResponseDto findMemberInfo(@PathVariable("memberId") Long memberId) {
+        return memberService.findById(memberId);
     }
 
     @ResponseStatus(HttpStatus.OK)
-    @GetMapping("/findAll")
+    @GetMapping
     @Operation(summary = "전체 회원 조회", description = "모든 회원 정보를 조회한다.")
     public List<MemberResponseDto> findAllMemberInfo() {
         return memberService.findAll();
     }
 
     @ResponseStatus(HttpStatus.OK)
-    @PutMapping("/update/nickname")
+    @PutMapping("/nickname")
     @Operation(summary = "회원 닉네임 수정", description = "회원 닉네임을 수정한다.")
     public String updateNickname(@Valid @RequestBody NicknameUpdate nicknameUpdate, HttpServletRequest request) {
         memberService.updateNickname(nicknameUpdate, request);
@@ -61,7 +61,7 @@ public class MemberController {
     }
 
     @ResponseStatus(HttpStatus.OK)
-    @PutMapping("/update/password")
+    @PutMapping("/password")
     @Operation(summary = "회원 비밀번호 수정", description = "회원 패스워드를 수정한다.")
     public String updatePassword(@Valid @RequestBody PasswordUpdate passwordUpdate, HttpServletRequest request) {
         memberService.updatePassword(passwordUpdate, request);

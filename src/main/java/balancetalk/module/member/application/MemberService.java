@@ -61,8 +61,9 @@ public class MemberService {
     }
 
     @Transactional(readOnly = true)
-    public MemberResponseDto findMember(HttpServletRequest request) {
-        Member member = extractMember(request);
+    public MemberResponseDto findById(Long id) {
+        Member member = memberRepository.findById(id)
+                .orElseThrow(() -> new BalanceTalkException(ErrorCode.NOT_FOUND_MEMBER));
         return MemberResponseDto.fromEntity(member);
     }
 
