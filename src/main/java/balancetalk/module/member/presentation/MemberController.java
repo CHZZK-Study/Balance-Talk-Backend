@@ -67,11 +67,10 @@ public class MemberController {
     }
 
     @ResponseStatus(HttpStatus.OK)
-    @DeleteMapping("/delete")
+    @DeleteMapping
     @Operation(summary = "회원 삭제", description = "해당 id값과 일치하는 회원 정보를 삭제한다.")
     public String deleteMember(@Valid @RequestBody LoginDto loginDto, HttpServletRequest request) {
         memberService.delete(loginDto, request);
         return "회원 탈퇴가 정상적으로 처리되었습니다.";
     }
-
 }

@@ -29,15 +29,17 @@ public class PostController {
     @ResponseStatus(HttpStatus.OK)
     @GetMapping
     @Operation(summary = "모든 게시글 조회", description = "해당 회원이 쓴 모든 글을 조회한다.")
-    public List<PostResponseDto> findAllPost() {
-        return postService.findAll();
+    public List<PostResponseDto> findAllPost(@RequestParam("member-id") Long memberId) {
+        return postService.findAll(memberId);
     }
 
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/{postId}")
     @Operation(summary = "게시글 조회", description = "post-id에 해당하는 게시글을 조회한다.")
-    public PostResponseDto findSinglePost(@PathVariable("postId") Long postId) {
-        return postService.findById(postId);
+    public PostResponseDto findSinglePost(@PathVariable("postId") Long postId,
+                                          @RequestParam("member-id") Long memberId) {
+
+        return postService.findById(postId, memberId);
     }
 
     @ResponseStatus(HttpStatus.CREATED)
