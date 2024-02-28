@@ -47,7 +47,7 @@ public class MemberService {
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(loginDto.getEmail(), loginDto.getPassword())
             );
-            TokenDto tokenDto = new TokenDto(jwtTokenProvider.createAccessToken(authentication), jwtTokenProvider.createRefreshToken(authentication));
+            TokenDto tokenDto = new TokenDto("Bearer", jwtTokenProvider.createAccessToken(authentication), jwtTokenProvider.createRefreshToken(authentication));
             return LoginSuccessDto.builder()
                     .email(member.getEmail())
                     .password(member.getPassword())
