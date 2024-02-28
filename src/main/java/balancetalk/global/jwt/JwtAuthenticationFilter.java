@@ -1,5 +1,7 @@
 package balancetalk.global.jwt;
 
+import balancetalk.global.exception.BalanceTalkException;
+import balancetalk.global.exception.ErrorCode;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -7,11 +9,13 @@ import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.RedisConnectionFailureException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.GenericFilterBean;
 import java.io.IOException;
+@Slf4j
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends GenericFilterBean {
 
@@ -20,6 +24,7 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         String token = jwtTokenProvider.resolveToken((HttpServletRequest) request);
+
         try {
             if (token != null && jwtTokenProvider.validateToken(token)) {
                 Authentication auth = jwtTokenProvider.getAuthentication(token);
@@ -27,9 +32,10 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
             }
         } catch (RedisConnectionFailureException e) {
             SecurityContextHolder.clearContext();
-            throw new IllegalAccessError("Redis 연결 실패");
+            throw new BalanceTalkException(ErrorCode.REDIS_CONNECTION_FAIL);
         } catch (ExpiredJwtException e) {
-            throw new IllegalArgumentException("JWT가 유효하지 않음.");
+            log.error(e.getMessage());
+            throw new BalanceTalkException(ErrorCode.EXPIRED_JWT_TOKEN);
         }
         chain.doFilter(request, response);
     }

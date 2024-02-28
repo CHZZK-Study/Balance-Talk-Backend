@@ -22,9 +22,8 @@ public class PostController {
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
     @Operation(summary = "게시글 생성" , description = "로그인 상태인 회원이 게시글을 작성한다.")
-    public String createPost(@RequestBody final PostRequestDto postRequestDto) {
-        postService.save(postRequestDto);
-        return "게시글이 등록 되었습니다.";
+    public PostResponseDto createPost(@RequestBody final PostRequestDto postRequestDto) {
+        return postService.save(postRequestDto);
     }
 
     @ResponseStatus(HttpStatus.OK)

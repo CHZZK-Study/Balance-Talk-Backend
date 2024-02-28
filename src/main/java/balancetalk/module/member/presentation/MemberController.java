@@ -25,8 +25,6 @@ public class MemberController {
     @PostMapping("/join")
     @Operation(summary = "회원 가입", description = "닉네임, 이메일, 비밀번호를 입력하여 회원 가입을 한다.")
     public String join(@Valid @RequestBody JoinDto joinDto, HttpServletRequest request) {
-        String ipAddress = request.getRemoteAddr();
-        joinDto.setIp(ipAddress);
         memberService.join(joinDto);
         return "회원가입이 정상적으로 처리되었습니다.";
     }
