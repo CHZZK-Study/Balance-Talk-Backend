@@ -6,8 +6,10 @@ import balancetalk.global.jwt.JwtTokenProvider;
 import balancetalk.module.member.domain.Member;
 import balancetalk.module.member.domain.MemberRepository;
 import balancetalk.module.member.dto.*;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -60,8 +62,10 @@ public class MemberService {
     }
 
     @Transactional(readOnly = true)
-    public MemberResponseDto findById(Long id) {
-        Member member = memberRepository.findById(id)
+    public MemberResponseDto findById(HttpServletRequest request) {
+        String token = jwtTokenProvider.resolveToken(request);
+        String email = jwtTokenProvider.getPayload(token);
+        Member member = memberRepository.findByEmail(email)
                 .orElseThrow(() -> new BalanceTalkException(ErrorCode.NOT_FOUND_MEMBER));
         return MemberResponseDto.fromEntity(member);
     }
