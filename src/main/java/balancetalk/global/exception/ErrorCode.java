@@ -21,6 +21,7 @@ public enum ErrorCode {
     EXPIRED_JWT_TOKEN(BAD_REQUEST, "만료된 토큰 입니다."),
     INVALID_JWT_TOKEN(BAD_REQUEST, "유효하지 않은 토큰입니다."),
     INVALID_REFRESH_TOKEN(BAD_REQUEST, "RefreshToken이 존재하지 않습니다."),
+    EXCEED_MAX_DEPTH(BAD_REQUEST, "답글에 답글을 달 수 없습니다."),
 
     // 401
     MISMATCHED_EMAIL_OR_PASSWORD(UNAUTHORIZED, "이메일 또는 비밀번호가 잘못되었습니다."),
