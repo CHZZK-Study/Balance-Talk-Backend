@@ -111,9 +111,10 @@ public class MemberService {
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         if (principal instanceof UserDetails) {
             String username = ((UserDetails) principal).getUsername();
-            log.info("Before logout={}" , redisService.getValues(username));
+            if (redisService.getValues(username) == null) {
+                throw new BalanceTalkException(ErrorCode.UNAUTHORIZED_LOGOUT);
+            }
             redisService.deleteValues(username);
-            log.info("After logout={}" , redisService.getValues(username));
         }
     }
 
