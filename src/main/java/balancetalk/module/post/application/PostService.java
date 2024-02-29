@@ -3,6 +3,7 @@ package balancetalk.module.post.application;
 import static balancetalk.global.exception.ErrorCode.*;
 
 import balancetalk.global.exception.BalanceTalkException;
+import balancetalk.global.redis.application.RedisService;
 import balancetalk.module.file.domain.File;
 import balancetalk.module.file.domain.FileRepository;
 import balancetalk.module.member.domain.Member;
@@ -33,9 +34,13 @@ public class PostService {
     private final MemberRepository memberRepository;
     private final PostLikeRepository postLikeRepository;
     private final FileRepository fileRepository;
+    private final RedisService redisService;
 
     public PostResponseDto save(final PostRequestDto postRequestDto) {
         Member member = getMember(postRequestDto);
+        if (redisService.getValues(member.getEmail()) == null) {
+            throw new BalanceTalkException(NOT_AUTHENTICATED_POST_CREATION);
+        }
         List<File> images = getImages(postRequestDto);
         Post post = postRequestDto.toEntity(member, images);
 
