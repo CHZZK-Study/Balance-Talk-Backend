@@ -42,7 +42,7 @@ public class BookmarkService {
         return bookmarkRepository.save(bookmark);
     }
 
-    @Transactional(readOnly = true) // TODO: Spring Security 도입 후 현재 인증된 사용자 정보 기반으로 조회하게 변경 필요
+    @Transactional(readOnly = true)
     public List<BookmarkResponseDto> findAllByMember() {
         Member member = getCurrentMember();
         List<Bookmark> bookmarks = bookmarkRepository.findByMember(member);
@@ -53,16 +53,16 @@ public class BookmarkService {
     }
 
     @Transactional
-    public void deleteById(Long bookmarkId) { // TODO: Spring Security 도입 후 현재 인증된 사용자 정보 기반으로 삭제하게 변경 필요
+    public void deleteByPostId(Long postId) {
         Member member = getCurrentMember();
-        Bookmark bookmark = bookmarkRepository.findById(bookmarkId)
+        Bookmark bookmark = bookmarkRepository.findByMemberAndPostId(member, postId)
                 .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_BOOKMARK));
 
         if (!bookmark.getMember().equals(member)) {
             throw new BalanceTalkException(FORBIDDEN_BOOKMARK_DELETE);
         }
 
-        bookmarkRepository.deleteById(bookmarkId);
+        bookmarkRepository.delete(bookmark);
     }
 
     private Member getCurrentMember() {
