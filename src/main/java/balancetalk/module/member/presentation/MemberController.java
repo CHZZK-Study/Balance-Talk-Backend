@@ -21,6 +21,7 @@ import java.util.List;
 public class MemberController {
 
     private final MemberService memberService;
+
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/join")
     @Operation(summary = "회원 가입", description = "닉네임, 이메일, 비밀번호를 입력하여 회원 가입을 한다.")
@@ -72,5 +73,13 @@ public class MemberController {
     public String deleteMember(@Valid @RequestBody LoginDto loginDto, HttpServletRequest request) {
         memberService.delete(loginDto, request);
         return "회원 탈퇴가 정상적으로 처리되었습니다.";
+    }
+
+    @ResponseStatus(HttpStatus.OK)
+    @PostMapping("/logout")
+    @Operation(summary = "로그아웃", description = "로그인 된 회원을 로그 아웃한다.")
+    public String logout() {
+        memberService.logout();
+        return "로그아웃이 정상적으로 처리되었습니다.";
     }
 }

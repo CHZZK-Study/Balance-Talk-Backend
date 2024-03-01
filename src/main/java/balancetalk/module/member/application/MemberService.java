@@ -3,6 +3,7 @@ package balancetalk.module.member.application;
 import balancetalk.global.exception.BalanceTalkException;
 import balancetalk.global.exception.ErrorCode;
 import balancetalk.global.jwt.JwtTokenProvider;
+import balancetalk.global.redis.application.RedisService;
 import balancetalk.module.member.domain.Member;
 import balancetalk.module.member.domain.MemberRepository;
 import balancetalk.module.member.dto.*;
@@ -14,6 +15,8 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,6 +32,7 @@ public class MemberService {
     private final AuthenticationManager authenticationManager;
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
+    private final RedisService redisService;
 
     @Transactional
     public Long join(final JoinDto joinDto) {
@@ -100,6 +104,18 @@ public class MemberService {
             throw new BalanceTalkException(ErrorCode.MISMATCHED_EMAIL_OR_PASSWORD);
         }
         memberRepository.deleteByEmail(member.getEmail());
+    }
+
+    @Transactional
+    public void logout(){
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (principal instanceof UserDetails) {
+            String username = ((UserDetails) principal).getUsername();
+            if (redisService.getValues(username) == null) {
+                throw new BalanceTalkException(ErrorCode.UNAUTHORIZED_LOGOUT);
+            }
+            redisService.deleteValues(username);
+        }
     }
 
     private Member extractMember(HttpServletRequest request) {

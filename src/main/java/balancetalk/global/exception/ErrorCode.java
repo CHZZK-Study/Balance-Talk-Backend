@@ -26,11 +26,13 @@ public enum ErrorCode {
     MISMATCHED_EMAIL_OR_PASSWORD(UNAUTHORIZED, "이메일 또는 비밀번호가 잘못되었습니다."),
     AUTHENTICATION_ERROR(UNAUTHORIZED, "인증 오류가 발생했습니다."),
     BAD_CREDENTIAL_ERROR(UNAUTHORIZED, "로그인에 실패했습니다."),
+    UNAUTHORIZED_LOGOUT(UNAUTHORIZED, "로그아웃을 위해서는 인증이 필요합니다."),
   
     // 403
     FORBIDDEN_COMMENT_MODIFY(FORBIDDEN, "댓글 수정 권한이 없습니다."), // TODO : Spring Security 적용 후 적용 필요
     FORBIDDEN_COMMENT_DELETE(FORBIDDEN, "댓글 삭제 권한이 없습니다."), // TODO : SecurityContextHolder 사용 예정
     FORBIDDEN_MEMBER_DELETE(FORBIDDEN, "사용자 탈퇴 권한이 없습니다."),
+    NOT_AUTHENTICATED_POST_CREATION(FORBIDDEN, "로그아웃 한 사용자는 게시글을 작성할 수 없습니다"),
 
     // 404
     NOT_FOUND_POST(NOT_FOUND, "존재하지 않는 게시글입니다."),
@@ -51,9 +53,6 @@ public enum ErrorCode {
 
     // 500
     REDIS_CONNECTION_FAIL(INTERNAL_SERVER_ERROR, "Redis 연결에 실패했습니다."),
-
-
-    // 500
     DUPLICATE_EMAIL(INTERNAL_SERVER_ERROR, "이미 존재하는 이메일 입니다. 다른 이메일을 입력해주세요"),
     AUTHORIZATION_CODE_MISMATCH(INTERNAL_SERVER_ERROR, "인증 번호가 일치하지 않습니다.");
     private final HttpStatus httpStatus;
