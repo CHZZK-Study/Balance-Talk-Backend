@@ -13,11 +13,7 @@ import lombok.NoArgsConstructor;
 @Data
 @Builder
 @NoArgsConstructor
-@AllArgsConstructor
 public class BookmarkRequestDto {
-    @Schema(description = "게시글 id", example = "1")
-    private Long postId;
-
     public Bookmark toEntity(Member member, Post post) {
         return Bookmark.builder()
                 .member(member)
