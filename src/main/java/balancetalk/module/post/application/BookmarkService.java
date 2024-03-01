@@ -10,6 +10,9 @@ import balancetalk.module.post.domain.PostRepository;
 import balancetalk.module.post.dto.BookmarkRequestDto;
 import balancetalk.module.post.dto.BookmarkResponseDto;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,8 +31,7 @@ public class BookmarkService {
 
     @Transactional
     public Bookmark save(final BookmarkRequestDto bookmarkRequestDto, Long postId) {
-        Member member = memberRepository.findById(bookmarkRequestDto.getMemberId())
-                .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_MEMBER));
+        Member member = getCurrentMember();
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_POST));
         if (member.hasBookmarked(post)) {
@@ -41,9 +43,8 @@ public class BookmarkService {
     }
 
     @Transactional(readOnly = true) // TODO: Spring Security 도입 후 현재 인증된 사용자 정보 기반으로 조회하게 변경 필요
-    public List<BookmarkResponseDto> findAllByMember(Long memberId) {
-        Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_MEMBER));
+    public List<BookmarkResponseDto> findAllByMember() {
+        Member member = getCurrentMember();
         List<Bookmark> bookmarks = bookmarkRepository.findByMember(member);
 
         return bookmarks.stream()
@@ -52,12 +53,23 @@ public class BookmarkService {
     }
 
     @Transactional
-    public void deleteById(Long memberId, Long bookmarkId) { // TODO: Spring Security 도입 후 현재 인증된 사용자 정보 기반으로 삭제하게 변경 필요
-        memberRepository.findById(memberId)
-                .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_MEMBER));
-        bookmarkRepository.findById(bookmarkId)
+    public void deleteById(Long bookmarkId) { // TODO: Spring Security 도입 후 현재 인증된 사용자 정보 기반으로 삭제하게 변경 필요
+        Member member = getCurrentMember();
+        Bookmark bookmark = bookmarkRepository.findById(bookmarkId)
                 .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_BOOKMARK));
 
+        if (!bookmark.getMember().equals(member)) {
+            throw new BalanceTalkException(FORBIDDEN_BOOKMARK_DELETE);
+        }
+
         bookmarkRepository.deleteById(bookmarkId);
+    }
+
+    private Member getCurrentMember() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName();
+
+        return memberRepository.findByEmail(email)
+                .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_MEMBER));
     }
 }

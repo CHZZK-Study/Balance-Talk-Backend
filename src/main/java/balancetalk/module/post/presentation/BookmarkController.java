@@ -28,17 +28,17 @@ public class BookmarkController {
     }
 
     @ResponseStatus(HttpStatus.OK)
-    @GetMapping("/members/{memberId}") // TODO: Spring Security 도입 후 현재 인증된 사용자 정보 기반으로 조회하게 변경 필요
+    @GetMapping // TODO: Spring Security 도입 후 현재 인증된 사용자 정보 기반으로 조회하게 변경 필요
     @Operation(summary = "북마크에 추가된 게시글 목록 조회", description = "회원이 북마크한 모든 게시글을 조회한다.")
-    public List<BookmarkResponseDto> findAllPost(@PathVariable Long memberId) {
-        return bookmarkService.findAllByMember(memberId);
+    public List<BookmarkResponseDto> findAllPost() {
+        return bookmarkService.findAllByMember();
     }
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping("/members/{memberId}/{bookmarkId}")
     @Operation(summary = "북마크 삭제" , description = "회원이 북마크한 게시글을 삭제한다.")
-    public String deleteBookmark(@PathVariable Long bookmarkId, @PathVariable Long memberId) {
-        bookmarkService.deleteById(memberId, bookmarkId);
+    public String deleteBookmark(@PathVariable Long bookmarkId) {
+        bookmarkService.deleteById(bookmarkId);
         return "북마크가 삭제되었습니다.";
     }
 }
