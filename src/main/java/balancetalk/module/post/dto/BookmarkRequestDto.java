@@ -15,10 +15,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class BookmarkRequestDto {
-
-    @Schema(description = "회원 id", example = "1")
-    private Long memberId;
-
     @Schema(description = "게시글 id", example = "1")
     private Long postId;
 
