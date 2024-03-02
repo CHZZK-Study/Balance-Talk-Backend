@@ -293,4 +293,39 @@ class CommentServiceTest {
                 .isInstanceOf(BalanceTalkException.class)
                 .hasMessageContaining(ErrorCode.ALREADY_LIKE_COMMENT.getMessage());
     }
+
+    @Test
+    @DisplayName("댓글 수정 실패 - 권한 없음")
+    void updateComment_Fail_ForbiddenModify() {
+        // given
+        Long commentId = 1L;
+        String updatedContent = "업데이트된 댓글 내용";
+        Member commentOwner = Member.builder().email("owner@example.com").build(); // 댓글 소유자
+        Comment existingComment = Comment.builder().id(commentId).member(commentOwner).content("기존 댓글 내용").build();
+
+        when(commentRepository.findById(commentId)).thenReturn(Optional.of(existingComment));
+        when(memberRepository.findByEmail(authenticatedEmail)).thenReturn(Optional.of(Member.builder().email(authenticatedEmail).build()));
+
+        // when, then
+        assertThatThrownBy(() -> commentService.updateComment(commentId, updatedContent))
+                .isInstanceOf(BalanceTalkException.class)
+                .hasMessageContaining(ErrorCode.FORBIDDEN_COMMENT_MODIFY.getMessage());
+    }
+
+    @Test
+    @DisplayName("댓글 삭제 실패 - 권한 없음")
+    void deleteComment_Fail_ForbiddenDelete() {
+        // given
+        Long commentId = 1L;
+        Member commentOwner = Member.builder().email("owner@example.com").build(); // 댓글 소유자
+        Comment existingComment = Comment.builder().id(commentId).member(commentOwner).content("기존 댓글 내용").build();
+
+        when(commentRepository.findById(commentId)).thenReturn(Optional.of(existingComment));
+        when(memberRepository.findByEmail(authenticatedEmail)).thenReturn(Optional.of(Member.builder().email(authenticatedEmail).build()));
+
+        // when, then
+        assertThatThrownBy(() -> commentService.deleteComment(commentId))
+                .isInstanceOf(BalanceTalkException.class)
+                .hasMessageContaining(ErrorCode.FORBIDDEN_COMMENT_DELETE.getMessage());
+    }
 }
