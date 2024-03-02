@@ -17,6 +17,8 @@ import balancetalk.module.post.domain.PostRepository;
 import balancetalk.module.vote.domain.Vote;
 import balancetalk.module.vote.domain.VoteRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -38,7 +40,7 @@ public class CommentService {
     private final VoteRepository voteRepository;
 
     public Comment createComment(CommentCreateRequest request, Long postId) {
-        Member member = validateMemberId(request);
+        Member member = getCurrentMember();
         Post post = validatePostId(postId);
         BalanceOption balanceOption = validateBalanceOptionId(request, post);
         voteRepository.findByMemberIdAndBalanceOption_PostId(request.getMemberId(), postId)
@@ -86,8 +88,7 @@ public class CommentService {
         Comment parentComment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_COMMENT));
 
-        Member member = memberRepository.findById(request.getMemberId())
-                .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_MEMBER));
+        Member member = getCurrentMember();
 
 
         // 부모 댓글과 연결된 게시글이 맞는지 확인
@@ -97,12 +98,6 @@ public class CommentService {
 
         Comment reply = request.toEntity(member, post, parentComment);
         return commentRepository.save(reply);
-    }
-
-
-    private Member validateMemberId(CommentCreateRequest request) { // TODO: validate 메서드 분리 재고
-        return memberRepository.findById(request.getMemberId())
-                .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_MEMBER));
     }
 
     private Post validatePostId(Long postId) {
@@ -122,11 +117,10 @@ public class CommentService {
                 .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_COMMENT));
     }
       
-    public Long likeComment(Long postId, Long commentId, Long memberId) {
+    public Long likeComment(Long postId, Long commentId) {
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_COMMENT));
-        Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new BalanceTalkException(ErrorCode.NOT_FOUND_MEMBER));
+        Member member = getCurrentMember();
 
         if (commentLikeRepository.existsByMemberAndComment(member, comment)) {
             throw new BalanceTalkException(ErrorCode.ALREADY_LIKE_COMMENT);
@@ -141,12 +135,19 @@ public class CommentService {
         return comment.getId();
     }
 
-    public void cancelLikeComment(Long commentId, Long memberId) {
+    public void cancelLikeComment(Long commentId) {
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_COMMENT));
-        Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new BalanceTalkException(ErrorCode.NOT_FOUND_MEMBER));
+        Member member = getCurrentMember();
 
         commentLikeRepository.deleteByMemberAndComment(member, comment);
+    }
+
+    private Member getCurrentMember() { // TODO: global static 메서드로 전환?
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName();
+
+        return memberRepository.findByEmail(email)
+                .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_MEMBER));
     }
 }
