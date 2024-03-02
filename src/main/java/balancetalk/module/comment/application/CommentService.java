@@ -44,7 +44,7 @@ public class CommentService {
         Member member = getCurrentMember(memberRepository);
         Post post = validatePostId(postId);
         BalanceOption balanceOption = validateBalanceOptionId(request, post);
-        voteRepository.findByMemberIdAndBalanceOption_PostId(request.getMemberId(), postId)
+        voteRepository.findByMemberIdAndBalanceOption_PostId(member.getId(), postId)
                 .orElseThrow(() -> new BalanceTalkException(ErrorCode.NOT_FOUND_VOTE));
 
         Comment comment = request.toEntity(member, post);
@@ -52,7 +52,7 @@ public class CommentService {
     }
 
     @Transactional(readOnly = true)
-    public List<CommentResponse> findAll(Long postId) { // TODO: 탈퇴한 회원의 정보는 어떻게 표시되는가?
+    public List<CommentResponse> findAll(Long postId) {
         validatePostId(postId);
 
         List<Comment> comments = commentRepository.findByPostId(postId);
