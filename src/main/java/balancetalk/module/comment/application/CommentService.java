@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static balancetalk.global.exception.ErrorCode.*;
+import static balancetalk.global.utils.SecurityUtils.getCurrentMember;
 
 @Service
 @Transactional
@@ -40,7 +41,7 @@ public class CommentService {
     private final VoteRepository voteRepository;
 
     public Comment createComment(CommentCreateRequest request, Long postId) {
-        Member member = getCurrentMember();
+        Member member = getCurrentMember(memberRepository);
         Post post = validatePostId(postId);
         BalanceOption balanceOption = validateBalanceOptionId(request, post);
         voteRepository.findByMemberIdAndBalanceOption_PostId(request.getMemberId(), postId)
@@ -88,7 +89,7 @@ public class CommentService {
         Comment parentComment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_COMMENT));
 
-        Member member = getCurrentMember();
+        Member member = getCurrentMember(memberRepository);
 
 
         // 부모 댓글과 연결된 게시글이 맞는지 확인
@@ -120,7 +121,7 @@ public class CommentService {
     public Long likeComment(Long postId, Long commentId) {
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_COMMENT));
-        Member member = getCurrentMember();
+        Member member = getCurrentMember(memberRepository);
 
         if (commentLikeRepository.existsByMemberAndComment(member, comment)) {
             throw new BalanceTalkException(ErrorCode.ALREADY_LIKE_COMMENT);
@@ -138,16 +139,8 @@ public class CommentService {
     public void cancelLikeComment(Long commentId) {
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_COMMENT));
-        Member member = getCurrentMember();
+        Member member = getCurrentMember(memberRepository);
 
         commentLikeRepository.deleteByMemberAndComment(member, comment);
-    }
-
-    private Member getCurrentMember() { // TODO: global static 메서드로 전환?
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String email = authentication.getName();
-
-        return memberRepository.findByEmail(email)
-                .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_MEMBER));
     }
 }
