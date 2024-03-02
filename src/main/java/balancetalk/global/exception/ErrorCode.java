@@ -29,8 +29,8 @@ public enum ErrorCode {
     UNAUTHORIZED_LOGOUT(UNAUTHORIZED, "로그아웃을 위해서는 인증이 필요합니다."),
   
     // 403
-    FORBIDDEN_COMMENT_MODIFY(FORBIDDEN, "댓글 수정 권한이 없습니다."), // TODO : Spring Security 적용 후 적용 필요
-    FORBIDDEN_COMMENT_DELETE(FORBIDDEN, "댓글 삭제 권한이 없습니다."), // TODO : SecurityContextHolder 사용 예정
+    FORBIDDEN_COMMENT_MODIFY(FORBIDDEN, "댓글 수정 권한이 없습니다."),
+    FORBIDDEN_COMMENT_DELETE(FORBIDDEN, "댓글 삭제 권한이 없습니다."),
     FORBIDDEN_MEMBER_DELETE(FORBIDDEN, "사용자 탈퇴 권한이 없습니다."),
     NOT_AUTHENTICATED_POST_CREATION(FORBIDDEN, "로그아웃 한 사용자는 게시글을 작성할 수 없습니다"),
 

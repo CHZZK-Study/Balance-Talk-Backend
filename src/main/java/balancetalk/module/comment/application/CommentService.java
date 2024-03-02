@@ -72,12 +72,22 @@ public class CommentService {
     public Comment updateComment(Long commentId, String content) {
         Comment comment = validateCommentId(commentId);
 
+        if (!getCurrentMember(memberRepository).equals(comment.getMember())) {
+            throw new BalanceTalkException(FORBIDDEN_COMMENT_MODIFY);
+        }
+
         comment.updateContent(content);
         return comment;
     }
 
     public void deleteComment(Long commentId) {
         validateCommentId(commentId);
+        Member commentMember = commentRepository.findById(commentId).get().getMember();
+
+        if (!getCurrentMember(memberRepository).equals(commentMember)) {
+            throw new BalanceTalkException(FORBIDDEN_COMMENT_DELETE);
+        }
+
         commentRepository.deleteById(commentId);
     }
 
