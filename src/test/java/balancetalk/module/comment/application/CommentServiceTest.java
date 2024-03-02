@@ -3,9 +3,7 @@ package balancetalk.module.comment.application;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 import balancetalk.global.exception.BalanceTalkException;
 import balancetalk.global.exception.ErrorCode;
@@ -25,12 +23,17 @@ import balancetalk.module.vote.domain.VoteRepository;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 @ExtendWith(MockitoExtension.class)
 class CommentServiceTest {
@@ -53,23 +56,37 @@ class CommentServiceTest {
     @Mock
     private VoteRepository voteRepository;
 
+    private final String authenticatedEmail = "user@example.com";
+
+
+    @BeforeEach
+    void setUp() {
+        // SecurityContext에 인증된 사용자 설정
+        Authentication authentication = mock(Authentication.class);
+        SecurityContext securityContext = mock(SecurityContext.class);
+        lenient().when(securityContext.getAuthentication()).thenReturn(authentication);
+        SecurityContextHolder.setContext(securityContext);
+
+         lenient().when(authentication.getName()).thenReturn(authenticatedEmail);
+    }
+
+
     @Test
     @DisplayName("댓글 생성 성공")
     void createComment_Success() {
         // given
-        Long memberId = 1L;
         Long postId = 1L;
         Long selectedOptionId = 1L;
         Long voteId = 1L;
         Vote vote = Vote.builder().id(voteId).build();
-        Member member = Member.builder().id(memberId).votes(List.of(vote)).build();
+        Member member = Member.builder().email(authenticatedEmail).votes(List.of(vote)).build();
         BalanceOption balanceOption = BalanceOption.builder().id(selectedOptionId).build();
         Post post = Post.builder().id(postId).options(List.of(balanceOption)).build();
-        CommentCreateRequest request = new CommentCreateRequest("댓글 내용입니다.", memberId, selectedOptionId);
+        CommentCreateRequest request = new CommentCreateRequest("댓글 내용입니다.", selectedOptionId);
 
-        when(memberRepository.findById(memberId)).thenReturn(Optional.of(member));
+        when(memberRepository.findByEmail(authenticatedEmail)).thenReturn(Optional.of(member));
         when(postRepository.findById(postId)).thenReturn(Optional.of(post));
-        when(voteRepository.findByMemberIdAndBalanceOption_PostId(memberId, postId)).thenReturn(Optional.of(vote));
+        when(voteRepository.findByMemberIdAndBalanceOption_PostId(member.getId(), postId)).thenReturn(Optional.of(vote));
         when(commentRepository.save(any(Comment.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
         // when
@@ -121,8 +138,10 @@ class CommentServiceTest {
         // given
         Long commentId = 1L;
         String updatedContent = "업데이트된 댓글 내용";
-        Comment existingComment = Comment.builder().id(commentId).content("기존 댓글 내용").build();
+        Member member = Member.builder().email(authenticatedEmail).votes(List.of()).build();
+        Comment existingComment = Comment.builder().id(commentId).member(member).content("기존 댓글 내용").build();
 
+        when(memberRepository.findByEmail(authenticatedEmail)).thenReturn(Optional.of(member));
         when(commentRepository.findById(commentId)).thenReturn(Optional.of(existingComment));
 
         // when
@@ -137,8 +156,10 @@ class CommentServiceTest {
     void deleteComment_Success() {
         // given
         Long commentId = 1L;
-        Comment existingComment = Comment.builder().id(commentId).content("기존 댓글 내용").build();
+        Member member = Member.builder().email(authenticatedEmail).votes(List.of()).build();
+        Comment existingComment = Comment.builder().id(commentId).member(member).content("기존 댓글 내용").build();
 
+        when(memberRepository.findByEmail(authenticatedEmail)).thenReturn(Optional.of(member));
         when(commentRepository.findById(commentId)).thenReturn(Optional.of(existingComment));
         doNothing().when(commentRepository).deleteById(commentId);
 
@@ -151,13 +172,11 @@ class CommentServiceTest {
 
     @Test
     @DisplayName("댓글 생성 실패 - 회원을 찾을 수 없음")
-    void createComment_Fail_MemberNotFound() {
+        void createComment_Fail_MemberNotFound() {
         // given
         Long memberId = 1L;
         Long postId = 1L;
-        CommentCreateRequest request = new CommentCreateRequest("댓글 내용입니다.", memberId, null);
-
-        when(memberRepository.findById(memberId)).thenReturn(Optional.empty());
+        CommentCreateRequest request = new CommentCreateRequest("댓글 내용입니다.", null);
 
         // when
 
@@ -171,11 +190,12 @@ class CommentServiceTest {
     @DisplayName("댓글 생성 실패 - 게시글을 찾을 수 없음")
     void createComment_Fail_PostNotFound() {
         // given
-        Long memberId = 1L;
         Long postId = 1L;
-        CommentCreateRequest request = new CommentCreateRequest("댓글 내용입니다.", memberId, null);
+        Member member = Member.builder().email(authenticatedEmail).votes(List.of()).build();
+        CommentCreateRequest request = new CommentCreateRequest("댓글 내용입니다.", null);
 
-        when(memberRepository.findById(memberId)).thenReturn(Optional.of(Member.builder().id(memberId).build()));
+
+        when(memberRepository.findByEmail(authenticatedEmail)).thenReturn(Optional.of(Member.builder().id(member.getId()).build()));
         when(postRepository.findById(postId)).thenReturn(Optional.empty());
 
         // when
@@ -234,21 +254,21 @@ class CommentServiceTest {
                 .isInstanceOf(BalanceTalkException.class)
                 .hasMessageContaining("존재하지 않는 게시글입니다.");
     }
+
+    @Test
     @DisplayName("사용자가 특정 댓글에 추천을 누르면 해당 댓글 id가 반환된다.")
     void createCommentLike_Success() {
         // given
         Comment comment = Comment.builder()
                 .id(1L)
                 .build();
-        Member member = Member.builder()
-                .id(1L)
-                .build();
+        Member member = Member.builder().email(authenticatedEmail).votes(List.of()).build();
 
         when(commentRepository.findById(any())).thenReturn(Optional.of(comment));
-        when(memberRepository.findById(any())).thenReturn(Optional.of(member));
+        when(memberRepository.findByEmail(authenticatedEmail)).thenReturn(Optional.of(member));
 
         // when
-        Long likedCommentId = commentService.likeComment(1L, comment.getId(), member.getId());
+        Long likedCommentId = commentService.likeComment(1L, comment.getId());
 
         // then
         assertThat(likedCommentId).isEqualTo(comment.getId());
@@ -261,17 +281,15 @@ class CommentServiceTest {
         Comment comment = Comment.builder()
                 .id(1L)
                 .build();
-        Member member = Member.builder()
-                .id(1L)
-                .build();
+        Member member = Member.builder().email(authenticatedEmail).votes(List.of()).build();
 
         when(commentRepository.findById(any())).thenReturn(Optional.of(comment));
-        when(memberRepository.findById(any())).thenReturn(Optional.of(member));
+        when(memberRepository.findByEmail(authenticatedEmail)).thenReturn(Optional.of(member));
         when(commentLikeRepository.existsByMemberAndComment(member, comment))
                 .thenThrow(new BalanceTalkException(ErrorCode.ALREADY_LIKE_COMMENT));
 
         // when, then
-        assertThatThrownBy(() -> commentService.likeComment(1L, comment.getId(), member.getId()))
+        assertThatThrownBy(() -> commentService.likeComment(1L, comment.getId()))
                 .isInstanceOf(BalanceTalkException.class)
                 .hasMessageContaining(ErrorCode.ALREADY_LIKE_COMMENT.getMessage());
     }
