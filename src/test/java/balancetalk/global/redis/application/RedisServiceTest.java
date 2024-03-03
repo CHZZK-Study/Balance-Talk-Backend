@@ -55,7 +55,7 @@ class RedisCrudTEST {
         redisService.deleteValues(KEY);
 
         // then
-        assertThat(redisService.getValues(KEY)).isEqualTo("false");
+        assertThat(redisService.getValues(KEY)).isEqualTo(null);
     }
 
     @Test
@@ -69,7 +69,7 @@ class RedisCrudTEST {
                 () -> {
                     String expiredValue = redisService.getValues(KEY);
                     assertThat(expiredValue).isNotEqualTo(findValue);
-                    assertThat(expiredValue).isEqualTo("false");
+                    assertThat(expiredValue).isEqualTo(null);
                 }
         );
     }
