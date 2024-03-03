@@ -53,8 +53,8 @@ public class PostController {
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/{postId}/likes")
     @Operation(summary = "게시글 추천", description = "post-id에 해당하는 게시글에 추천을 누른다.")
-    public ResponseEntity<String> likePost(@PathVariable("postId") Long postId, @RequestBody Long memberId) {
-        Long likedPostId = postService.likePost(postId, memberId);
+    public ResponseEntity<String> likePost(@PathVariable("postId") Long postId) {
+        Long likedPostId = postService.likePost(postId);
         String contentLocation = "/posts/" + likedPostId;
         return ResponseEntity.status(HttpStatus.CREATED)
                 .header("Content-Location", contentLocation)
@@ -63,8 +63,8 @@ public class PostController {
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping("/{postId}/likes")
-    public String cancelLikePost(@PathVariable("postId") Long postId, @RequestBody Long memberId) {
-        postService.cancelLikePost(postId, memberId);
+    public String cancelLikePost(@PathVariable("postId") Long postId) {
+        postService.cancelLikePost(postId);
         return "요청이 정상적으로 처리되었습니다.";
     }
 }
