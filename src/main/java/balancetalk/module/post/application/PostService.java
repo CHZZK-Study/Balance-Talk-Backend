@@ -90,9 +90,14 @@ public class PostService {
         return PostResponseDto.fromEntity(post, member);
     }
 
+    @Transactional
     public void deleteById(Long postId) {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_POST));
+        Member member = getCurrentMember(memberRepository);
+        if (!post.getMember().getEmail().equals(member.getEmail())) {
+            throw new BalanceTalkException(FORBIDDEN_POST_DELETE);
+        }
         postRepository.deleteById(postId);
     }
 
@@ -101,7 +106,6 @@ public class PostService {
                 .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_POST));
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_MEMBER));
-
         if (postLikeRepository.existsByMemberAndPost(member, post)) {
             throw new BalanceTalkException(ALREADY_LIKE_POST);
         }
@@ -120,7 +124,9 @@ public class PostService {
                 .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_POST));
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_MEMBER));
-
+        if (post.likesCount() == 0) {
+            throw new BalanceTalkException(ALREADY_CANCEL_LIKE_POST);
+        }
         postLikeRepository.deleteByMemberAndPost(member, post);
     }
 }
