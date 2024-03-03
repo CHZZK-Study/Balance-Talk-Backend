@@ -17,6 +17,7 @@ import balancetalk.module.post.domain.PostRepository;
 import balancetalk.module.vote.domain.Vote;
 import balancetalk.module.vote.domain.VoteRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -36,6 +37,9 @@ public class CommentService {
     private final PostRepository postRepository;
     private final CommentLikeRepository commentLikeRepository;
     private final VoteRepository voteRepository;
+
+    @Value("${comments.max-depth}")
+    private int maxDepth;
 
     public Comment createComment(CommentCreateRequest request, Long postId) {
         Member member = validateMemberId(request);
@@ -90,10 +94,14 @@ public class CommentService {
                 .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_MEMBER));
 
 
+
+
         // 부모 댓글과 연결된 게시글이 맞는지 확인
         if (!parentComment.getPost().equals(post)) {
             throw new BalanceTalkException(NOT_FOUND_PARENT_COMMENT);
         }
+
+        validateDepth(parentComment);
 
         Comment reply = request.toEntity(member, post, parentComment);
         return commentRepository.save(reply);
@@ -120,6 +128,22 @@ public class CommentService {
     private Comment validateCommentId(Long commentId) {
         return commentRepository.findById(commentId)
                 .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_COMMENT));
+    }
+
+    private void validateDepth(Comment parentComment) {
+        int depth = calculateDepth(parentComment);
+        if (depth >= maxDepth) {
+            throw new BalanceTalkException(EXCEED_MAX_DEPTH);
+        }
+    }
+
+    private int calculateDepth(Comment comment) {
+        int depth = 0;
+        while (comment.getParent() != null) {
+            depth++;
+            comment = comment.getParent();
+        }
+        return depth;
     }
       
     public Long likeComment(Long postId, Long commentId, Long memberId) {
