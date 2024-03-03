@@ -57,11 +57,6 @@ public class PostService {
         return PostResponseDto.fromEntity(postRepository.save(post), member);
     }
 
-    private Member getMember(PostRequestDto postRequestDto) {
-        return memberRepository.findById(postRequestDto.getMemberId())
-                .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_MEMBER));
-    }
-
     private List<File> getImages(PostRequestDto postRequestDto) {
         List<BalanceOptionDto> balanceOptions = postRequestDto.getBalanceOptions();
         return balanceOptions.stream()
@@ -83,8 +78,7 @@ public class PostService {
 
     @Transactional(readOnly = true)
     public PostResponseDto findById(Long postId, Long memberId) {
-        Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_POST));
+        Post post = getCurrentPost(postId);
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_MEMBER));
         return PostResponseDto.fromEntity(post, member);
@@ -92,8 +86,7 @@ public class PostService {
 
     @Transactional
     public void deleteById(Long postId) {
-        Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_POST));
+        Post post = getCurrentPost(postId);
         Member member = getCurrentMember(memberRepository);
         if (!post.getMember().getEmail().equals(member.getEmail())) {
             throw new BalanceTalkException(FORBIDDEN_POST_DELETE);
@@ -102,8 +95,7 @@ public class PostService {
     }
 
     public Long likePost(Long postId) {
-        Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_POST));
+        Post post = getCurrentPost(postId);
         Member member = getCurrentMember(memberRepository);
         if (postLikeRepository.existsByMemberAndPost(member, post)) {
             throw new BalanceTalkException(ALREADY_LIKE_POST);
@@ -119,12 +111,16 @@ public class PostService {
     }
 
     public void cancelLikePost(Long postId) {
-        Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_POST));
+        Post post = getCurrentPost(postId);
         Member member = getCurrentMember(memberRepository);
         if (post.likesCount() == 0) {
             throw new BalanceTalkException(ALREADY_CANCEL_LIKE_POST);
         }
         postLikeRepository.deleteByMemberAndPost(member, post);
+    }
+
+    private Post getCurrentPost(Long postId) {
+        return postRepository.findById(postId)
+                .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_POST));
     }
 }
