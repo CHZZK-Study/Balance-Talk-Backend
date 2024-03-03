@@ -22,23 +22,24 @@ public class PostController {
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
     @Operation(summary = "게시글 생성" , description = "로그인 상태인 회원이 게시글을 작성한다.")
-    public String createPost(@RequestBody final PostRequestDto postRequestDto) {
-        postService.save(postRequestDto);
-        return "게시글이 등록 되었습니다.";
+    public PostResponseDto createPost(@RequestBody final PostRequestDto postRequestDto) {
+        return postService.save(postRequestDto);
     }
 
     @ResponseStatus(HttpStatus.OK)
     @GetMapping
     @Operation(summary = "모든 게시글 조회", description = "해당 회원이 쓴 모든 글을 조회한다.")
-    public List<PostResponseDto> findAllPost() {
-        return postService.findAll();
+    public List<PostResponseDto> findAllPost(@RequestParam("member-id") Long memberId) {
+        return postService.findAll(memberId);
     }
 
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/{postId}")
     @Operation(summary = "게시글 조회", description = "post-id에 해당하는 게시글을 조회한다.")
-    public PostResponseDto findSinglePost(@PathVariable("postId") Long postId) {
-        return postService.findById(postId);
+    public PostResponseDto findSinglePost(@PathVariable("postId") Long postId,
+                                          @RequestParam("member-id") Long memberId) {
+
+        return postService.findById(postId, memberId);
     }
 
     @ResponseStatus(HttpStatus.CREATED)

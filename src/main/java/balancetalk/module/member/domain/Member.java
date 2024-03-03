@@ -25,6 +25,7 @@ import jakarta.validation.constraints.*;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Entity
 @Builder
@@ -50,8 +51,6 @@ public class Member extends BaseTimeEntity implements UserDetails {
     private String email;
 
     @NotBlank
-    @Size(min = 10, max = 20)
-    @Pattern(regexp = "^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d@$!%*#?&]{10,20}$")
     @Column(nullable = false)
     private String password;
 
@@ -59,9 +58,6 @@ public class Member extends BaseTimeEntity implements UserDetails {
     @Enumerated(value = EnumType.STRING)
     @Column(nullable = false)
     private Role role = Role.USER;
-
-    @Size(min = 15)
-    private String ip;
 
     @OneToMany(mappedBy = "member")
     private List<Post> posts = new ArrayList<>();
@@ -118,8 +114,11 @@ public class Member extends BaseTimeEntity implements UserDetails {
         return true;
     }
 
-    public void updateMember(String nickname, String password) {
+    public void updateNickname(String nickname) {
         this.nickname = nickname;
+    }
+
+    public void updatePassword(String password) {
         this.password = password;
     }
 
@@ -141,5 +140,10 @@ public class Member extends BaseTimeEntity implements UserDetails {
     public boolean hasBookmarked(Post post) {
         return bookmarks.stream()
                 .anyMatch(bookmark -> bookmark.getPost().equals(post));
+    }
+
+    public boolean hasLiked(Post post) {
+        return postLikes.stream()
+                .anyMatch(like -> like.getPost().equals(post));
     }
 }

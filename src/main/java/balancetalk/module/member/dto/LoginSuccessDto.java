@@ -20,6 +20,6 @@ public class LoginSuccessDto {
     @Schema(description = "회원 역할", example = "USER")
     private Role role;
 
-    @Schema(description = "회원 가입시 발급되는 로그인 토큰", example = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ0ZXN0MTIzNEBuYXZlci5jb20iLCJyb2xlIjoiVVNFUiIsImlhdCI6MTcwODI2NTk1NSwiZXhwIjoxNzA4MjY3NzU1fQ.qUScBwxl534kzgg3nG8kd4MymWj1D2HLc1_n1dh-xBxXQFzzhI-DQd3w60U4vX1_O5mwWoYQc0hMtVY56yu9gg")
-    private String token;
+    private TokenDto tokenDto;
+
 }

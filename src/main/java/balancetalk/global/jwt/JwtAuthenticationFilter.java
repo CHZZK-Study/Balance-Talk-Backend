@@ -1,17 +1,21 @@
 package balancetalk.global.jwt;
 
+import balancetalk.global.exception.BalanceTalkException;
+import balancetalk.global.exception.ErrorCode;
+import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.redis.RedisConnectionFailureException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.GenericFilterBean;
-
 import java.io.IOException;
-
+@Slf4j
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends GenericFilterBean {
 
@@ -21,14 +25,20 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         String token = jwtTokenProvider.resolveToken((HttpServletRequest) request);
 
-        // 토큰이 유효할 때
-        if (token != null && jwtTokenProvider.validateToken(token)) {
-            // 토큰으로부터 유저 정보를 받는다
-            Authentication authentication = jwtTokenProvider.getAuthentication(token);
-            // SecurityContext에 객체 저장
-            SecurityContextHolder.getContext().setAuthentication(authentication);
+        try {
+            if (token != null && jwtTokenProvider.validateToken(token)) {
+                Authentication auth = jwtTokenProvider.getAuthentication(token);
+                SecurityContextHolder.getContext().setAuthentication(auth);
+            }
+        } catch (RedisConnectionFailureException e) {
+            SecurityContextHolder.clearContext();
+            throw new BalanceTalkException(ErrorCode.REDIS_CONNECTION_FAIL);
+        } catch (ExpiredJwtException e) {
+            log.error(e.getMessage());
+            throw new BalanceTalkException(ErrorCode.EXPIRED_JWT_TOKEN);
         }
-        // 다음 필터로 진행
         chain.doFilter(request, response);
     }
+
+
 }

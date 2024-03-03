@@ -1,10 +1,14 @@
 package balancetalk.global.config;
 
+import balancetalk.global.jwt.JwtAccessDeniedHandler;
+import balancetalk.global.jwt.JwtAuthenticationEntryPoint;
 import balancetalk.global.jwt.JwtAuthenticationFilter;
 import balancetalk.global.jwt.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -18,6 +22,8 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
 
     private final JwtTokenProvider jwtTokenProvider;
+    private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
+    private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
 
     @Bean
     public BCryptPasswordEncoder passwordEncoder() {
@@ -25,10 +31,18 @@ public class SecurityConfig {
     }
 
     @Bean
+    public AuthenticationManager authenticationManager (AuthenticationConfiguration authenticationConfiguration) throws Exception {
+        return authenticationConfiguration.getAuthenticationManager();
+    }
+    @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(csrf -> csrf.disable())
                 .cors(cors -> cors.disable())
+                .exceptionHandling(exception -> {
+                    exception.authenticationEntryPoint(jwtAuthenticationEntryPoint);
+                    exception.accessDeniedHandler(jwtAccessDeniedHandler);
+                })
                 // h2 콘솔 사용
                 .headers(header -> header.frameOptions(frameOption -> frameOption.disable()).disable())
                 // 세션 사용 X (jwt 사용)
