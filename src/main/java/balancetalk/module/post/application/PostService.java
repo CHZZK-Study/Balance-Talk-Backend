@@ -1,6 +1,7 @@
 package balancetalk.module.post.application;
 
 import static balancetalk.global.exception.ErrorCode.*;
+import static balancetalk.global.utils.SecurityUtils.getCurrentMember;
 
 import balancetalk.global.exception.BalanceTalkException;
 import balancetalk.global.redis.application.RedisService;
@@ -37,7 +38,7 @@ public class PostService {
     private final RedisService redisService;
 
     public PostResponseDto save(final PostRequestDto postRequestDto) {
-        Member member = getMember(postRequestDto);
+        Member member = getCurrentMember(memberRepository);
         if (redisService.getValues(member.getEmail()) == null) {
             throw new BalanceTalkException(NOT_AUTHENTICATED_POST_CREATION);
         }
