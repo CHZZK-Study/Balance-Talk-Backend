@@ -3,6 +3,7 @@ package balancetalk.module.vote.application;
 import static balancetalk.global.exception.ErrorCode.*;
 
 import balancetalk.global.exception.BalanceTalkException;
+import balancetalk.global.utils.SecurityUtils;
 import balancetalk.module.member.domain.Member;
 import balancetalk.module.member.domain.MemberRepository;
 import balancetalk.module.post.domain.BalanceOption;
@@ -34,8 +35,7 @@ public class VoteService {
                 .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_POST));
         BalanceOption balanceOption = balanceOptionRepository.findById(voteRequest.getSelectedOptionId())
                 .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_BALANCE_OPTION));
-        Member member = memberRepository.findById(voteRequest.getMemberId())
-                .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_MEMBER));
+        Member member = SecurityUtils.getCurrentMember(memberRepository);
 
         if (post.notContainsBalanceOption(balanceOption)) {
             throw new BalanceTalkException(MISMATCHED_BALANCE_OPTION);
@@ -79,8 +79,7 @@ public class VoteService {
 
         BalanceOption newSelectedOption = balanceOptionRepository.findById(voteRequest.getSelectedOptionId())
                 .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_BALANCE_OPTION));
-        Member member = memberRepository.findById(voteRequest.getMemberId())
-                .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_MEMBER));
+        Member member = SecurityUtils.getCurrentMember(memberRepository);
         Vote findVote = member.getVotes().stream()
                 .filter(vote -> vote.getBalanceOption().getPost().equals(post))
                 .findFirst()

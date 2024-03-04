@@ -15,9 +15,6 @@ public class VoteRequest {
     @Schema(description = "투표한 선택지 id", example = "23")
     private Long selectedOptionId;
 
-    @Schema(description = "회원 id", example = "1")
-    private Long memberId;
-
     public Vote toEntity(BalanceOption balanceOption, Member member) {
         return Vote.builder()
                 .balanceOption(balanceOption)
