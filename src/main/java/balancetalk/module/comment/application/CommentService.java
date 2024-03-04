@@ -6,7 +6,7 @@ import balancetalk.module.comment.domain.Comment;
 import balancetalk.module.comment.domain.CommentLike;
 import balancetalk.module.comment.domain.CommentLikeRepository;
 import balancetalk.module.comment.domain.CommentRepository;
-import balancetalk.module.comment.dto.CommentCreateRequest;
+import balancetalk.module.comment.dto.CommentRequest;
 import balancetalk.module.comment.dto.CommentResponse;
 import balancetalk.module.comment.dto.ReplyCreateRequest;
 import balancetalk.module.member.domain.Member;
@@ -37,7 +37,7 @@ public class CommentService {
     private final CommentLikeRepository commentLikeRepository;
     private final VoteRepository voteRepository;
 
-    public Comment createComment(CommentCreateRequest request, Long postId) {
+    public Comment createComment(CommentRequest request, Long postId) {
         Member member = validateMemberId(request);
         Post post = validatePostId(postId);
         BalanceOption balanceOption = validateBalanceOptionId(request, post);
@@ -100,7 +100,7 @@ public class CommentService {
     }
 
 
-    private Member validateMemberId(CommentCreateRequest request) { // TODO: validate 메서드 분리 재고
+    private Member validateMemberId(CommentRequest request) { // TODO: validate 메서드 분리 재고
         return memberRepository.findById(request.getMemberId())
                 .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_MEMBER));
     }
@@ -110,7 +110,7 @@ public class CommentService {
                 .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_POST));
     }
 
-    private BalanceOption validateBalanceOptionId(CommentCreateRequest request, Post post) {
+    private BalanceOption validateBalanceOptionId(CommentRequest request, Post post) {
         return post.getOptions().stream()
                 .filter(option -> option.getId().equals(request.getSelectedOptionId()))
                 .findFirst()

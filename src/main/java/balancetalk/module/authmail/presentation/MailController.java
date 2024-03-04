@@ -11,12 +11,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@Tag(name = "email", description = "회원 가입을 위한 이메일 인증 번호 API")
 @RequiredArgsConstructor
 @RequestMapping("/email")
+@Tag(name = "email", description = "회원 가입을 위한 이메일 인증 번호 API")
 public class MailController {
 
     private final MailService mailService;
+
     @ResponseStatus(HttpStatus.OK)
     @PostMapping("/request")
     @Operation(summary = "인증 번호 발송", description = "해당 이메일 주소로 인증 번호를 발송한다.")

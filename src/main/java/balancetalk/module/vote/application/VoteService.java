@@ -51,7 +51,7 @@ public class VoteService {
     }
 
     @Transactional(readOnly = true)
-    public List<VotingStatusResponse> readVotingStatus(Long postId) {
+    public List<VotingStatusResponse> votingStatus(Long postId) {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_POST));
 

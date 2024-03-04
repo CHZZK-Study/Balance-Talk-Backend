@@ -15,8 +15,8 @@ import java.util.List;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@Tag(name = "member", description = "회원 API")
 @RequestMapping("/members")
+@Tag(name = "member", description = "회원 API")
 public class MemberController {
 
     private final MemberService memberService;
@@ -24,7 +24,7 @@ public class MemberController {
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/join")
     @Operation(summary = "회원 가입", description = "닉네임, 이메일, 비밀번호를 입력하여 회원 가입을 한다.")
-    public String join(@Valid @RequestBody JoinRequest joinDto, HttpServletRequest request) {
+    public String join(@Valid @RequestBody JoinRequest joinDto) {
         memberService.join(joinDto);
         return "회원가입이 정상적으로 처리되었습니다.";
     }
@@ -68,7 +68,7 @@ public class MemberController {
 
     @ResponseStatus(HttpStatus.OK)
     @DeleteMapping
-    @Operation(summary = "회원 삭제", description = "해당 id값과 일치하는 회원 정보를 삭제한다.")
+    @Operation(summary = "회원 삭제", description = "회원 정보를 삭제한다.")
     public String deleteMember(@Valid @RequestBody LoginRequest loginRequest, HttpServletRequest request) {
         memberService.delete(loginRequest, request);
         return "회원 탈퇴가 정상적으로 처리되었습니다.";

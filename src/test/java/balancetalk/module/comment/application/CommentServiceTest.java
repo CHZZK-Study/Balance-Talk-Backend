@@ -12,7 +12,7 @@ import balancetalk.global.exception.ErrorCode;
 import balancetalk.module.comment.domain.Comment;
 import balancetalk.module.comment.domain.CommentLikeRepository;
 import balancetalk.module.comment.domain.CommentRepository;
-import balancetalk.module.comment.dto.CommentCreateRequest;
+import balancetalk.module.comment.dto.CommentRequest;
 import balancetalk.module.comment.dto.CommentResponse;
 import balancetalk.module.member.domain.Member;
 import balancetalk.module.member.domain.MemberRepository;
@@ -22,7 +22,6 @@ import balancetalk.module.post.domain.Post;
 import balancetalk.module.post.domain.PostRepository;
 import balancetalk.module.vote.domain.Vote;
 import balancetalk.module.vote.domain.VoteRepository;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
@@ -65,7 +64,7 @@ class CommentServiceTest {
         Member member = Member.builder().id(memberId).votes(List.of(vote)).build();
         BalanceOption balanceOption = BalanceOption.builder().id(selectedOptionId).build();
         Post post = Post.builder().id(postId).options(List.of(balanceOption)).build();
-        CommentCreateRequest request = new CommentCreateRequest("댓글 내용입니다.", memberId, selectedOptionId);
+        CommentRequest request = new CommentRequest("댓글 내용입니다.", memberId, selectedOptionId);
 
         when(memberRepository.findById(memberId)).thenReturn(Optional.of(member));
         when(postRepository.findById(postId)).thenReturn(Optional.of(post));
@@ -155,7 +154,7 @@ class CommentServiceTest {
         // given
         Long memberId = 1L;
         Long postId = 1L;
-        CommentCreateRequest request = new CommentCreateRequest("댓글 내용입니다.", memberId, null);
+        CommentRequest request = new CommentRequest("댓글 내용입니다.", memberId, null);
 
         when(memberRepository.findById(memberId)).thenReturn(Optional.empty());
 
@@ -173,7 +172,7 @@ class CommentServiceTest {
         // given
         Long memberId = 1L;
         Long postId = 1L;
-        CommentCreateRequest request = new CommentCreateRequest("댓글 내용입니다.", memberId, null);
+        CommentRequest request = new CommentRequest("댓글 내용입니다.", memberId, null);
 
         when(memberRepository.findById(memberId)).thenReturn(Optional.of(Member.builder().id(memberId).build()));
         when(postRepository.findById(postId)).thenReturn(Optional.empty());

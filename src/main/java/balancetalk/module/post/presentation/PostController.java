@@ -13,8 +13,8 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@Tag(name = "post", description = "게시글 API")
 @RequestMapping("/posts")
+@Tag(name = "post", description = "게시글 API")
 public class PostController {
 
     private final PostService postService;
@@ -29,16 +29,15 @@ public class PostController {
     @ResponseStatus(HttpStatus.OK)
     @GetMapping
     @Operation(summary = "모든 게시글 조회", description = "해당 회원이 쓴 모든 글을 조회한다.")
-    public List<PostResponse> findAllPost(@RequestParam("member-id") Long memberId) {
+    public List<PostResponse> findAllPosts(@RequestParam("member-id") Long memberId) {
         return postService.findAll(memberId);
     }
 
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/{postId}")
     @Operation(summary = "게시글 조회", description = "post-id에 해당하는 게시글을 조회한다.")
-    public PostResponse findSinglePost(@PathVariable("postId") Long postId,
-                                       @RequestParam("member-id") Long memberId) {
-
+    public PostResponse findPost(@PathVariable("postId") Long postId,
+                                 @RequestParam("member-id") Long memberId) {
         return postService.findById(postId, memberId);
     }
 
@@ -53,16 +52,14 @@ public class PostController {
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/{postId}/likes")
     @Operation(summary = "게시글 추천", description = "post-id에 해당하는 게시글에 추천을 누른다.")
-    public ResponseEntity<String> likePost(@PathVariable Long postId, @RequestBody Long memberId) {
-        Long likedPostId = postService.likePost(postId, memberId);
-        String contentLocation = "/posts/" + likedPostId;
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .header("Content-Location", contentLocation)
-                .body("요청이 정상적으로 처리되었습니다.");
+    public String likePost(@PathVariable Long postId, @RequestBody Long memberId) {
+        postService.likePost(postId, memberId);
+        return "요청이 정상적으로 처리되었습니다.";
     }
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping("/{postId}/likes")
+    @Operation(summary = "게시글 추천 취소", description = "post-id에 해당하는 게시글에 누른 추천을 취소한다.")
     public String cancelLikePost(@PathVariable Long postId, @RequestBody Long memberId) {
         postService.cancelLikePost(postId, memberId);
         return "요청이 정상적으로 처리되었습니다.";
