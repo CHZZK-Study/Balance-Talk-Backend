@@ -2,8 +2,8 @@ package balancetalk.module.authmail.application;
 
 import balancetalk.global.exception.BalanceTalkException;
 import balancetalk.global.exception.ErrorCode;
-import balancetalk.module.authmail.dto.EmailRequestDto;
-import balancetalk.module.authmail.dto.EmailVerificationDto;
+import balancetalk.module.authmail.dto.EmailRequest;
+import balancetalk.module.authmail.dto.EmailVerification;
 import balancetalk.global.redis.application.RedisService;
 import balancetalk.module.member.domain.Member;
 import balancetalk.module.member.domain.MemberRepository;
@@ -36,7 +36,7 @@ public class MailService {
         return UUID.randomUUID().toString().substring(0, 6);
     }
 
-    public MimeMessage createMail(EmailRequestDto request){
+    public MimeMessage createMail(EmailRequest request){
         String authCode = createNumber();
 
         MimeMessage message = javaMailSender.createMimeMessage();
@@ -57,13 +57,13 @@ public class MailService {
         return message;
     }
 
-    public void sendMail(EmailRequestDto request){
+    public void sendMail(EmailRequest request){
         validateEmail(request.getEmail());
         MimeMessage message = createMail(request);
         javaMailSender.send(message);
     }
 
-    public void verifyCode(EmailVerificationDto request) {
+    public void verifyCode(EmailVerification request) {
         validateEmail(request.getEmail());
         String redisValue = redisService.getValues(request.getEmail());
         Optional.ofNullable(redisValue)

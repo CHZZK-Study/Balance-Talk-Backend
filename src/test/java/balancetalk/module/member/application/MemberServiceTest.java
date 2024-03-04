@@ -55,7 +55,7 @@ import java.util.Optional;
 //    @DisplayName("로그인 테스트 성공")
 //    void LoginMember_Success() {
 //        // given
-//        LoginDto loginDto = LoginDto.builder()
+//        LoginRequest loginDto = LoginRequest.builder()
 //                .email("test1234@naver.com")
 //                .password("Test1234test!")
 //                .build();
@@ -66,7 +66,7 @@ import java.util.Optional;
 //        // TODO: jwt 토큰 null -> 인증 오류
 //
 //        // when
-//        LoginSuccessDto result = memberService.login(loginDto);
+//        LoginResponse result = memberService.login(loginDto);
 //
 //        // then
 //        assertThat(result.getEmail()).isEqualTo(member.getEmail());
@@ -154,7 +154,7 @@ import java.util.Optional;
 //    @DisplayName("회원 탈퇴 - 성공")
 //    void Member_Delete_Success() {
 //        // given
-//        LoginDto loginDto = LoginDto.builder()
+//        LoginRequest loginDto = LoginRequest.builder()
 //                .email("test1234@naver.com")
 //                .password("Test1234test!")
 //                .build();

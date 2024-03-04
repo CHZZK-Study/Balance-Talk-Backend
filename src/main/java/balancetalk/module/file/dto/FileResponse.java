@@ -9,7 +9,7 @@ import lombok.*;
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-public class FileDto {
+public class FileResponse {
     @Schema(description = "파일 id", example = "1")
     private Long id;
 
@@ -38,8 +38,8 @@ public class FileDto {
                 .build();
     }
 
-    public static FileDto fromEntity(File file) {
-        return FileDto.builder()
+    public static FileResponse fromEntity(File file) {
+        return FileResponse.builder()
                 .id(file.getId())
                 .originalName(file.getOriginalName())
                 .storedName(file.getStoredName())

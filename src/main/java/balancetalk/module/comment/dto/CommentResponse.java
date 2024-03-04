@@ -2,7 +2,6 @@ package balancetalk.module.comment.dto;
 
 import balancetalk.module.comment.domain.Comment;
 import java.time.LocalDateTime;
-
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -38,15 +37,13 @@ public class CommentResponse {
     private LocalDateTime lastModifiedAt;
 
     public static CommentResponse fromEntity(Comment comment, Long balanceOptionId) {
-
-
         return CommentResponse.builder()
                 .id(comment.getId())
                 .content(comment.getContent())
                 .memberName(comment.getMember().getNickname())
                 .postId(comment.getPost().getId())
                 .selectedOptionId(balanceOptionId)
-                // .likeCount(comment.getLikes().size()) //TODO: likeCount가 NULL이라 Response 어려움
+                .likeCount(comment.getLikes().size())
                 .createdAt(comment.getCreatedAt())
                 .lastModifiedAt(comment.getLastModifiedAt())
                 .build();

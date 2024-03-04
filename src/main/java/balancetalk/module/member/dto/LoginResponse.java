@@ -6,11 +6,13 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class LoginSuccessDto {
+public class LoginResponse {
+
     @Schema(description = "회원 이메일", example = "test1234@naver.com")
     private String email;
 

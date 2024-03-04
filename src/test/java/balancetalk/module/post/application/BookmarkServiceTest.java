@@ -7,7 +7,7 @@ import balancetalk.module.post.domain.Bookmark;
 import balancetalk.module.post.domain.BookmarkRepository;
 import balancetalk.module.post.domain.Post;
 import balancetalk.module.post.domain.PostRepository;
-import balancetalk.module.post.dto.BookmarkRequestDto;
+import balancetalk.module.post.dto.BookmarkRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -48,7 +48,7 @@ class BookmarkServiceTest {
         Long postId = 1L;
         Member member = Member.builder().id(memberId).bookmarks(new ArrayList<>()).build();
         Post post = Post.builder().id(postId).build();
-        BookmarkRequestDto request = new BookmarkRequestDto(memberId, postId);
+        BookmarkRequest request = new BookmarkRequest(memberId, postId);
 
         when(memberRepository.findById(memberId)).thenReturn(Optional.of(member));
         when(postRepository.findById(postId)).thenReturn(Optional.of(post));
@@ -106,7 +106,7 @@ class BookmarkServiceTest {
         Long postId = 1L;
         Member member = Member.builder().id(memberId).bookmarks(new ArrayList<>()).build();
         Post post = Post.builder().id(postId).build();
-        BookmarkRequestDto request = new BookmarkRequestDto(memberId, postId);
+        BookmarkRequest request = new BookmarkRequest(memberId, postId);
 
         when(memberRepository.findById(memberId)).thenReturn(Optional.of(member));
         when(postRepository.findById(postId)).thenReturn(Optional.of(post));
@@ -126,7 +126,7 @@ class BookmarkServiceTest {
         Long memberId = 1L;
         Long postId = 1L;
         Member member = Member.builder().id(memberId).bookmarks(new ArrayList<>()).build();
-        BookmarkRequestDto request = new BookmarkRequestDto(memberId, postId);
+        BookmarkRequest request = new BookmarkRequest(memberId, postId);
 
         when(memberRepository.findById(memberId)).thenReturn(Optional.of(member));
         when(postRepository.findById(postId)).thenReturn(Optional.empty());

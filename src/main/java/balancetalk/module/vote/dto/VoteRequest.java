@@ -12,6 +12,7 @@ import lombok.Data;
 @AllArgsConstructor
 @Builder
 public class VoteRequest {
+
     @Schema(description = "투표한 선택지 id", example = "23")
     private Long selectedOptionId;
 
