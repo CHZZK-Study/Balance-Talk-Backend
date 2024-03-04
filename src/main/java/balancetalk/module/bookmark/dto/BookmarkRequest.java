@@ -1,7 +1,7 @@
-package balancetalk.module.post.dto;
+package balancetalk.module.bookmark.dto;
 
 import balancetalk.module.member.domain.Member;
-import balancetalk.module.post.domain.Bookmark;
+import balancetalk.module.bookmark.domain.Bookmark;
 import balancetalk.module.post.domain.Post;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;

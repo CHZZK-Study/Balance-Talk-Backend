@@ -1,8 +1,8 @@
-package balancetalk.module.post.presentation;
+package balancetalk.module.bookmark.presentation;
 
-import balancetalk.module.post.application.BookmarkService;
-import balancetalk.module.post.dto.BookmarkRequest;
-import balancetalk.module.post.dto.BookmarkResponse;
+import balancetalk.module.bookmark.application.BookmarkService;
+import balancetalk.module.bookmark.dto.BookmarkRequest;
+import balancetalk.module.bookmark.dto.BookmarkResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;

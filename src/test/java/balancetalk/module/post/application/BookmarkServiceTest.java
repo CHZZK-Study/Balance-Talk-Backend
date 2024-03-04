@@ -1,13 +1,14 @@
 package balancetalk.module.post.application;
 
 import balancetalk.global.exception.BalanceTalkException;
+import balancetalk.module.bookmark.application.BookmarkService;
 import balancetalk.module.member.domain.Member;
 import balancetalk.module.member.domain.MemberRepository;
-import balancetalk.module.post.domain.Bookmark;
-import balancetalk.module.post.domain.BookmarkRepository;
+import balancetalk.module.bookmark.domain.Bookmark;
+import balancetalk.module.bookmark.domain.BookmarkRepository;
 import balancetalk.module.post.domain.Post;
 import balancetalk.module.post.domain.PostRepository;
-import balancetalk.module.post.dto.BookmarkRequest;
+import balancetalk.module.bookmark.dto.BookmarkRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

@@ -23,11 +23,11 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class MailService {
 
+    private static final String senderEmail = "bootsprng@gmail.com";
+
     private final JavaMailSender javaMailSender;
     private final RedisService redisService;
     private final MemberRepository memberRepository;
-
-    private static final String senderEmail = "bootsprng@gmail.com";
 
     @Value("${spring.mail.auth-code-expiration-millis}")
     private long authCodeExpirationMillis;
