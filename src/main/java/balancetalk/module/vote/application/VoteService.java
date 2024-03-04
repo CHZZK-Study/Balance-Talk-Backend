@@ -31,29 +31,50 @@ public class VoteService {
     private final PostRepository postRepository;
 
     public Vote createVote(Long postId, VoteRequest voteRequest) {
-        Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_POST));
-        BalanceOption balanceOption = balanceOptionRepository.findById(voteRequest.getSelectedOptionId())
-                .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_BALANCE_OPTION));
-        Member member = SecurityUtils.getCurrentMember(memberRepository);
-
-        if (post.notContainsBalanceOption(balanceOption)) {
-            throw new BalanceTalkException(MISMATCHED_BALANCE_OPTION);
-        }
-        if (member.hasVoted(post)) {
-            throw new BalanceTalkException(ALREADY_VOTE);
-        }
+        Post post = getPost(postId);
         if (post.hasDeadlineExpired()) {
             throw new BalanceTalkException(EXPIRED_POST_DEADLINE);
         }
 
-        return voteRepository.save(voteRequest.toEntity(balanceOption, member));
+        BalanceOption balanceOption = getBalanceOption(voteRequest);
+        if (post.notContainsBalanceOption(balanceOption)) {
+            throw new BalanceTalkException(MISMATCHED_BALANCE_OPTION);
+        }
+
+        if (voteRequest.isUser()) {
+            return voteForMember(voteRequest, post, balanceOption);
+        }
+
+        return voteForGuest(voteRequest, balanceOption);
+    }
+
+    private Post getPost(Long postId) {
+        return postRepository.findById(postId)
+                .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_POST));
+    }
+
+    private BalanceOption getBalanceOption(VoteRequest voteRequest) {
+        return balanceOptionRepository.findById(voteRequest.getSelectedOptionId())
+                .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_BALANCE_OPTION));
+    }
+
+    private Vote voteForMember(VoteRequest voteRequest, Post post, BalanceOption balanceOption) {
+        Member member = SecurityUtils.getCurrentMember(memberRepository);
+
+        if (member.hasVoted(post)) {
+            throw new BalanceTalkException(ALREADY_VOTE);
+        }
+
+        return voteRepository.save(voteRequest.toEntityWithMember(balanceOption, member));
+    }
+
+    private Vote voteForGuest(VoteRequest voteRequest, BalanceOption balanceOption) {
+        return voteRepository.save(voteRequest.toEntity(balanceOption));
     }
 
     @Transactional(readOnly = true)
     public List<VotingStatusResponse> readVotingStatus(Long postId) {
-        Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_POST));
+        Post post = getPost(postId);
 
         List<BalanceOption> options = post.getOptions();
         List<VotingStatusResponse> responses = new ArrayList<>();
@@ -70,20 +91,21 @@ public class VoteService {
     }
 
     public Vote updateVote(Long postId, VoteRequest voteRequest) {
-        Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_POST));
-
+        Post post = getPost(postId);
         if (post.isCasual()) {
             throw new BalanceTalkException(UNMODIFIABLE_VOTE);
         }
-
-        BalanceOption newSelectedOption = balanceOptionRepository.findById(voteRequest.getSelectedOptionId())
-                .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_BALANCE_OPTION));
+        BalanceOption newSelectedOption = getBalanceOption(voteRequest);
         Member member = SecurityUtils.getCurrentMember(memberRepository);
-        Vote findVote = member.getVotes().stream()
+        Vote participatedVote = getParticipatedVote(post, member);
+
+        return participatedVote.changeBalanceOption(newSelectedOption);
+    }
+
+    private Vote getParticipatedVote(Post post, Member member) {
+        return member.getVotes().stream()
                 .filter(vote -> vote.getBalanceOption().getPost().equals(post))
                 .findFirst()
                 .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_VOTE));
-        return findVote.changeBalanceOption(newSelectedOption);
     }
 }
