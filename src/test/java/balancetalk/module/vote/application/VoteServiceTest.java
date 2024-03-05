@@ -8,7 +8,6 @@ import static org.mockito.Mockito.when;
 
 import balancetalk.global.exception.BalanceTalkException;
 import balancetalk.global.exception.ErrorCode;
-import balancetalk.global.utils.SecurityUtils;
 import balancetalk.module.member.domain.Member;
 import balancetalk.module.member.domain.MemberRepository;
 import balancetalk.module.post.domain.*;
@@ -30,7 +29,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.test.context.support.WithMockUser;
 
 @ExtendWith(MockitoExtension.class)
 class VoteServiceTest {
@@ -224,7 +222,6 @@ class VoteServiceTest {
     @DisplayName("투표 생성 시 이미 투표한 기록이 있는 게시글인 경우 예외가 발생한다.")
     void createVote_Fail_ByAlreadyVoted() {
         // given
-
         BalanceOption balanceOption = BalanceOption.builder()
                 .id(1L)
                 .build();
@@ -282,6 +279,18 @@ class VoteServiceTest {
         assertThat(votingStatusResponses.get(0).getVoteCount()).isEqualTo(5);
         assertThat(votingStatusResponses.get(1).getOptionTitle()).isEqualTo("B");
         assertThat(votingStatusResponses.get(1).getVoteCount()).isEqualTo(3);
+    }
+
+    @Test
+    @DisplayName("투표 현황 조회 시 게시글 정보가 없는 경우 예외를 발생시킨다.")
+    void readVotingStatus_Fail_ByNotFoundPost() {
+        // given
+        when(postRepository.findById(any())).thenThrow(new BalanceTalkException(ErrorCode.NOT_FOUND_POST));
+
+        // when, then
+        assertThatThrownBy(() -> voteService.votingStatus(1L))
+                .isInstanceOf(BalanceTalkException.class)
+                .hasMessageContaining(ErrorCode.NOT_FOUND_POST.getMessage());
     }
 
     @Test
