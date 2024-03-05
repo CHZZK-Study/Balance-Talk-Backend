@@ -221,6 +221,38 @@ class VoteServiceTest {
     }
 
     @Test
+    @DisplayName("투표 생성 시 이미 투표한 기록이 있는 게시글인 경우 예외가 발생한다.")
+    void createVote_Fail_ByAlreadyVoted() {
+        // given
+
+        BalanceOption balanceOption = BalanceOption.builder()
+                .id(1L)
+                .build();
+        Post post = Post.builder()
+                .id(1L)
+                .deadline(LocalDateTime.now().plusDays(1))
+                .options(List.of(balanceOption))
+                .build();
+        balanceOption.addPost(post);
+        Vote vote = Vote.builder()
+                .id(1L)
+                .balanceOption(balanceOption)
+                .build();
+        Member member = Member.builder()
+                .votes(List.of(vote))
+                .build();
+
+        when(postRepository.findById(any())).thenReturn(Optional.of(post));
+        when(balanceOptionRepository.findById(any())).thenReturn(Optional.of(balanceOption));
+        when(memberRepository.findByEmail(any())).thenReturn(Optional.of(member));
+
+        // when, then
+        assertThatThrownBy(() -> voteService.createVote(1L, new VoteRequest(1L, true)))
+                .isInstanceOf(BalanceTalkException.class)
+                .hasMessageContaining(ErrorCode.ALREADY_VOTE.getMessage());
+    }
+
+    @Test
     @DisplayName("각 선택지의 제목과 투표 수를 조회한다.")
     void readVotingStatus_Success() {
         // given
