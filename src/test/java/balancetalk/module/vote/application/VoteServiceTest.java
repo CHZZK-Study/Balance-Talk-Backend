@@ -6,6 +6,8 @@ import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import balancetalk.global.exception.BalanceTalkException;
+import balancetalk.global.exception.ErrorCode;
 import balancetalk.global.utils.SecurityUtils;
 import balancetalk.module.member.domain.Member;
 import balancetalk.module.member.domain.MemberRepository;
@@ -125,6 +127,18 @@ class VoteServiceTest {
 
         // then
         assertThat(createdVote.getBalanceOption()).isEqualTo(option);
+    }
+
+    @Test
+    @DisplayName("투표 생성 시 게시글 정보가 없는 경우 예외가 발생한다.")
+    void createVote_Fail_ByNotFoundPost() {
+        // given
+        when(postRepository.findById(any())).thenThrow(new BalanceTalkException(ErrorCode.NOT_FOUND_POST));
+
+        // when, then
+        assertThatThrownBy(()-> voteService.createVote(1L, new VoteRequest(1L, true)))
+                .isInstanceOf(BalanceTalkException.class)
+                .hasMessageContaining(ErrorCode.NOT_FOUND_POST.getMessage());
     }
 
     @Test
