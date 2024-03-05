@@ -1,6 +1,7 @@
-package balancetalk.module.post.application;
+package balancetalk.module.bookmark;
 
 import balancetalk.global.exception.BalanceTalkException;
+import balancetalk.module.bookmark.application.BookmarkService;
 import balancetalk.module.bookmark.domain.Bookmark;
 import balancetalk.module.bookmark.domain.BookmarkRepository;
 import balancetalk.module.bookmark.dto.BookmarkResponse;
@@ -33,7 +34,7 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 class BookmarkServiceTest {
     @InjectMocks
-    private balancetalk.module.post.application.BookmarkService bookmarkService;
+    private BookmarkService bookmarkService;
 
     @Mock
     private BookmarkRepository bookmarkRepository;
@@ -72,7 +73,7 @@ class BookmarkServiceTest {
         when(bookmarkRepository.save(any(Bookmark.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
         // when
-        Bookmark response = bookmarkService.save(postId);
+        Bookmark response = bookmarkService.createBookmark(postId);
 
         // then
         assertThat(response.getMember()).isEqualTo(member);
@@ -129,7 +130,7 @@ class BookmarkServiceTest {
 
         // when
         // then
-        assertThatThrownBy(() -> bookmarkService.save(postId))
+        assertThatThrownBy(() -> bookmarkService.createBookmark(postId))
                 .isInstanceOf(BalanceTalkException.class)
                 .hasMessageContaining("이미 북마크한 게시글입니다.");
     }
@@ -147,7 +148,7 @@ class BookmarkServiceTest {
 
         // when
         // then
-        assertThatThrownBy(() -> bookmarkService.save(postId))
+        assertThatThrownBy(() -> bookmarkService.createBookmark(postId))
                 .isInstanceOf(BalanceTalkException.class)
                 .hasMessageContaining("존재하지 않는 게시글입니다.");
     }
