@@ -1,7 +1,5 @@
 package balancetalk.module.comment.application;
 
-import static balancetalk.global.exception.ErrorCode.*;
-
 import balancetalk.global.exception.BalanceTalkException;
 import balancetalk.global.exception.ErrorCode;
 import balancetalk.module.comment.domain.Comment;
