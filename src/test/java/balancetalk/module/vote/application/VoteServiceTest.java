@@ -63,7 +63,7 @@ class VoteServiceTest {
 
     @Test
     @DisplayName("회원과 선택지 정보를 바탕으로 투표를 생성한다.")
-    void createVote_Success() {
+    void createVote_Success_withMember() {
         // given
         BalanceOption option = createBalanceOption(1L, "A", List.of());
         Post post = Post.builder()
@@ -93,6 +93,37 @@ class VoteServiceTest {
 
         // then
         assertThat(createdVote.getMember()).isEqualTo(member);
+        assertThat(createdVote.getBalanceOption()).isEqualTo(option);
+    }
+
+    @Test
+    @DisplayName("비회원과 선택지 정보를 바탕으로 투표를 생성한다.")
+    void createVote_Success_withGuest() {
+        // given
+        BalanceOption option = createBalanceOption(1L, "A", List.of());
+        Post post = Post.builder()
+                .id(1L)
+                .deadline(LocalDateTime.now().plusDays(1))
+                .options(List.of(option))
+                .build();
+        Vote vote = Vote.builder()
+                .id(1L)
+                .balanceOption(option)
+                .build();
+
+        when(postRepository.findById(any())).thenReturn(Optional.of(post));
+        when(balanceOptionRepository.findById(any())).thenReturn(Optional.of(option));
+        when(voteRepository.save(any())).thenReturn(vote);
+
+        VoteRequest voteRequest = VoteRequest.builder()
+                .selectedOptionId(option.getId())
+                .isUser(false)
+                .build();
+
+        // when
+        Vote createdVote = voteService.createVote(post.getId(), voteRequest);
+
+        // then
         assertThat(createdVote.getBalanceOption()).isEqualTo(option);
     }
 
