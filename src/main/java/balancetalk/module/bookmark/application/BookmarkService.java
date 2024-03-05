@@ -1,14 +1,14 @@
-package balancetalk.module.post.application;
+package balancetalk.module.bookmark.application;
 
 import balancetalk.global.exception.BalanceTalkException;
 import balancetalk.module.member.domain.Member;
 import balancetalk.module.member.domain.MemberRepository;
-import balancetalk.module.post.domain.Bookmark;
-import balancetalk.module.post.domain.BookmarkRepository;
+import balancetalk.module.bookmark.domain.Bookmark;
+import balancetalk.module.bookmark.domain.BookmarkRepository;
 import balancetalk.module.post.domain.Post;
 import balancetalk.module.post.domain.PostRepository;
-import balancetalk.module.post.dto.BookmarkRequestDto;
-import balancetalk.module.post.dto.BookmarkResponseDto;
+import balancetalk.module.bookmark.dto.BookmarkRequest;
+import balancetalk.module.bookmark.dto.BookmarkResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,7 +27,7 @@ public class BookmarkService {
     private final PostRepository postRepository;
 
     @Transactional
-    public Bookmark save(final BookmarkRequestDto bookmarkRequestDto, Long postId) {
+    public Bookmark save(final BookmarkRequest bookmarkRequestDto, Long postId) {
         Member member = memberRepository.findById(bookmarkRequestDto.getMemberId())
                 .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_MEMBER));
         Post post = postRepository.findById(postId)
@@ -41,13 +41,13 @@ public class BookmarkService {
     }
 
     @Transactional(readOnly = true) // TODO: Spring Security 도입 후 현재 인증된 사용자 정보 기반으로 조회하게 변경 필요
-    public List<BookmarkResponseDto> findAllByMember(Long memberId) {
+    public List<BookmarkResponse> findAllByMember(Long memberId) {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_MEMBER));
         List<Bookmark> bookmarks = bookmarkRepository.findByMember(member);
 
         return bookmarks.stream()
-                .map(BookmarkResponseDto::fromEntity)
+                .map(BookmarkResponse::fromEntity)
                 .collect(Collectors.toList());
     }
 

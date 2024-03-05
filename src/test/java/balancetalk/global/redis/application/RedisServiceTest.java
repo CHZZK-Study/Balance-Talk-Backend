@@ -10,7 +10,11 @@ import static org.assertj.core.api.Assertions.*;
 import static org.awaitility.Awaitility.await;
 
 @SpringBootTest
+<<<<<<< HEAD
 class RedisCrudTEST {
+=======
+class RedisCrudTest {
+>>>>>>> main
 
     final String KEY = "key";
     final String VALUE = "value";
@@ -55,7 +59,11 @@ class RedisCrudTEST {
         redisService.deleteValues(KEY);
 
         // then
+<<<<<<< HEAD
         assertThat(redisService.getValues(KEY)).isEqualTo("false");
+=======
+        assertThat(redisService.getValues(KEY)).isEqualTo(null);
+>>>>>>> main
     }
 
     @Test
@@ -69,7 +77,11 @@ class RedisCrudTEST {
                 () -> {
                     String expiredValue = redisService.getValues(KEY);
                     assertThat(expiredValue).isNotEqualTo(findValue);
+<<<<<<< HEAD
                     assertThat(expiredValue).isEqualTo("false");
+=======
+                    assertThat(expiredValue).isEqualTo(null);
+>>>>>>> main
                 }
         );
     }

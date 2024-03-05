@@ -1,6 +1,6 @@
 package balancetalk.module.member.domain;
 
-import balancetalk.module.post.domain.Bookmark;
+import balancetalk.module.bookmark.domain.Bookmark;
 import balancetalk.module.comment.domain.Comment;
 import balancetalk.module.comment.domain.CommentLike;
 import balancetalk.module.Notice;

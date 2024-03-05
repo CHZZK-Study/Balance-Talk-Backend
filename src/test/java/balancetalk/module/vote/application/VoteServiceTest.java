@@ -98,7 +98,7 @@ class VoteServiceTest {
         when(postRepository.findById(any())).thenReturn(Optional.of(post));
 
         // when
-        List<VotingStatusResponse> votingStatusResponses = voteService.readVotingStatus(1L);
+        List<VotingStatusResponse> votingStatusResponses = voteService.votingStatus(1L);
 
         // then
         assertThat(votingStatusResponses.get(0).getOptionTitle()).isEqualTo("A");

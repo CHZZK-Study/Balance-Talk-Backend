@@ -73,7 +73,7 @@ public class VoteService {
     }
 
     @Transactional(readOnly = true)
-    public List<VotingStatusResponse> readVotingStatus(Long postId) {
+    public List<VotingStatusResponse> votingStatus(Long postId) {
         Post post = getPost(postId);
 
         List<BalanceOption> options = post.getOptions();

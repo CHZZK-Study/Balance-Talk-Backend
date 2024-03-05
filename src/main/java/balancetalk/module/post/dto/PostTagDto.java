@@ -13,6 +13,7 @@ public class PostTagDto {
 
     @Schema(description = "게시글 태그", example = "태그1")
     private String tagName;
+
     public PostTag toEntity() {
         return PostTag.builder()
                 .tag(Tag.builder().name(tagName).build())
