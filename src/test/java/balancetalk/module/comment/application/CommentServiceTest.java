@@ -136,6 +136,7 @@ class CommentServiceTest {
     void updateComment_Success() {
         // given
         Long commentId = 1L;
+        Long postId = 1L;
         String updatedContent = "업데이트된 댓글 내용";
         Member member = Member.builder().email(authenticatedEmail).votes(List.of()).build();
         Comment existingComment = Comment.builder().id(commentId).member(member).content("기존 댓글 내용").build();
@@ -144,7 +145,7 @@ class CommentServiceTest {
         when(commentRepository.findById(commentId)).thenReturn(Optional.of(existingComment));
 
         // when
-        Comment updatedComment = commentService.updateComment(commentId, updatedContent);
+        Comment updatedComment = commentService.updateComment(commentId, postId, updatedContent);
 
         // then
         assertThat(updatedComment.getContent()).isEqualTo(updatedContent);
@@ -155,6 +156,7 @@ class CommentServiceTest {
     void deleteComment_Success() {
         // given
         Long commentId = 1L;
+        Long postId = 1L;
         Member member = Member.builder().email(authenticatedEmail).votes(List.of()).build();
         Comment existingComment = Comment.builder().id(commentId).member(member).content("기존 댓글 내용").build();
 
@@ -163,7 +165,7 @@ class CommentServiceTest {
         doNothing().when(commentRepository).deleteById(commentId);
 
         // when
-        commentService.deleteComment(commentId);
+        commentService.deleteComment(commentId, postId);
 
         // then
         verify(commentRepository).deleteById(commentId);
@@ -209,6 +211,7 @@ class CommentServiceTest {
     void updateComment_Fail_CommentNotFound() {
         // given
         Long commentId = 1L;
+        Long postId = 1L;
         String updatedContent = "업데이트된 댓글 내용";
 
         when(commentRepository.findById(commentId)).thenReturn(Optional.empty());
@@ -216,7 +219,7 @@ class CommentServiceTest {
         // when
 
         // then
-        assertThatThrownBy(() -> commentService.updateComment(commentId, updatedContent))
+        assertThatThrownBy(() -> commentService.updateComment(commentId, postId, updatedContent))
                 .isInstanceOf(BalanceTalkException.class)
                 .hasMessageContaining("존재하지 않는 댓글입니다.");
     }
@@ -226,13 +229,14 @@ class CommentServiceTest {
     void deleteComment_Fail_CommentNotFound() {
         // given
         Long commentId = 1L;
+        Long postId = 1L;
 
         when(commentRepository.findById(commentId)).thenReturn(Optional.empty());
 
         // when
 
         // then
-        assertThatThrownBy(() -> commentService.deleteComment(commentId))
+        assertThatThrownBy(() -> commentService.deleteComment(commentId, postId))
                 .isInstanceOf(BalanceTalkException.class)
                 .hasMessageContaining("존재하지 않는 댓글입니다.");
     }
@@ -297,6 +301,7 @@ class CommentServiceTest {
     void updateComment_Fail_ForbiddenModify() {
         // given
         Long commentId = 1L;
+        Long postId = 1L;
         String updatedContent = "업데이트된 댓글 내용";
         Member commentOwner = Member.builder().email("owner@example.com").build(); // 댓글 소유자
         Comment existingComment = Comment.builder().id(commentId).member(commentOwner).content("기존 댓글 내용").build();
@@ -305,7 +310,7 @@ class CommentServiceTest {
         when(memberRepository.findByEmail(authenticatedEmail)).thenReturn(Optional.of(Member.builder().email(authenticatedEmail).build()));
 
         // when, then
-        assertThatThrownBy(() -> commentService.updateComment(commentId, updatedContent))
+        assertThatThrownBy(() -> commentService.updateComment(commentId, postId, updatedContent))
                 .isInstanceOf(BalanceTalkException.class)
                 .hasMessageContaining(ErrorCode.FORBIDDEN_COMMENT_MODIFY.getMessage());
     }
@@ -315,6 +320,7 @@ class CommentServiceTest {
     void deleteComment_Fail_ForbiddenDelete() {
         // given
         Long commentId = 1L;
+        Long postId = 1L;
         Member commentOwner = Member.builder().email("owner@example.com").build(); // 댓글 소유자
         Comment existingComment = Comment.builder().id(commentId).member(commentOwner).content("기존 댓글 내용").build();
 
@@ -322,7 +328,7 @@ class CommentServiceTest {
         when(memberRepository.findByEmail(authenticatedEmail)).thenReturn(Optional.of(Member.builder().email(authenticatedEmail).build()));
 
         // when, then
-        assertThatThrownBy(() -> commentService.deleteComment(commentId))
+        assertThatThrownBy(() -> commentService.deleteComment(commentId, postId))
                 .isInstanceOf(BalanceTalkException.class)
                 .hasMessageContaining(ErrorCode.FORBIDDEN_COMMENT_DELETE.getMessage());
     }

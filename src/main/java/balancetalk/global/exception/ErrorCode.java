@@ -33,8 +33,8 @@ public enum ErrorCode {
     UNAUTHORIZED_LOGOUT(UNAUTHORIZED, "로그아웃을 위해서는 인증이 필요합니다."),
 
     // 403
-    FORBIDDEN_COMMENT_MODIFY(FORBIDDEN, "해당 댓글은 수정 권한이 없습니다."), // TODO : Spring Security 적용 후 적용 필요
-    FORBIDDEN_COMMENT_DELETE(FORBIDDEN, "해당 댓글은 삭제 권한이 없습니다."), // TODO : SecurityContextHolder 사용 예정
+    FORBIDDEN_COMMENT_MODIFY(FORBIDDEN, "해당 댓글은 수정 권한이 없습니다."),
+    FORBIDDEN_COMMENT_DELETE(FORBIDDEN, "해당 댓글은 삭제 권한이 없습니다."),
     FORBIDDEN_MEMBER_DELETE(FORBIDDEN, "사용자 탈퇴 권한이 없습니다."),
     FORBIDDEN_BOOKMARK_DELETE(FORBIDDEN, "북마크 삭제 권한이 없습니다."),
     FORBIDDEN_POST_CREATE(FORBIDDEN, "글쓰기 권한이 없습니다."),
@@ -50,6 +50,7 @@ public enum ErrorCode {
     NOT_SUPPORTED_FILE_TYPE(NOT_FOUND, "지원하지 않는 파일 형식입니다."),
     NOT_FOUND_FILE(NOT_FOUND, "존재하지 않는 파일입니다."),
     NOT_FOUND_PARENT_COMMENT(NOT_FOUND, "존재하지 않는 원 댓글입니다."),
+    NOT_FOUND_COMMENT_AT_THAT_POST(NOT_FOUND, "해당 게시글에 존재하지 않는 댓글입니다."),
 
     // 409
     ALREADY_VOTE(CONFLICT, "이미 투표한 게시글입니다."),
