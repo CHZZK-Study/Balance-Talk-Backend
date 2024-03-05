@@ -64,7 +64,7 @@ public class CommentController {
     public String likeComment(@PathVariable Long postId,
                                               @PathVariable Long commentId,
                                               @RequestBody Long memberId) {
-        commentService.likeComment(postId, commentId, memberId);
+        commentService.likeComment(postId, commentId);
         return "요청이 정상적으로 처리되었습니다.";
     }
 
@@ -74,6 +74,6 @@ public class CommentController {
     public void cancelLikeComment(@PathVariable Long postId,
                                     @PathVariable Long commentId,
                                     @RequestBody Long memberId) {
-        commentService.cancelLikeComment(commentId, memberId);
+        commentService.cancelLikeComment(commentId);
     }
 }

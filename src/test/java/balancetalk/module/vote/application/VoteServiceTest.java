@@ -64,7 +64,6 @@ class VoteServiceTest {
 
         VoteRequest voteRequest = VoteRequest.builder()
                 .selectedOptionId(option.getId())
-                .memberId(member.getId())
                 .build();
 
         // when
@@ -148,7 +147,6 @@ class VoteServiceTest {
 
         VoteRequest voteRequest = VoteRequest.builder()
                 .selectedOptionId(optionB.getId())
-                .memberId(member.getId())
                 .build();
 
         // when

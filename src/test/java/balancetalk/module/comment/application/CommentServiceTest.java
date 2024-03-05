@@ -10,20 +10,19 @@ import balancetalk.global.exception.ErrorCode;
 import balancetalk.module.comment.domain.Comment;
 import balancetalk.module.comment.domain.CommentLikeRepository;
 import balancetalk.module.comment.domain.CommentRepository;
-import balancetalk.module.comment.dto.CommentCreateRequest;
+import balancetalk.module.comment.dto.CommentRequest;
 import balancetalk.module.comment.dto.CommentResponse;
 import balancetalk.module.member.domain.Member;
 import balancetalk.module.member.domain.MemberRepository;
-
 import balancetalk.module.post.domain.BalanceOption;
 import balancetalk.module.post.domain.Post;
 import balancetalk.module.post.domain.PostRepository;
 import balancetalk.module.vote.domain.Vote;
 import balancetalk.module.vote.domain.VoteRepository;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -82,7 +81,7 @@ class CommentServiceTest {
         Member member = Member.builder().email(authenticatedEmail).votes(List.of(vote)).build();
         BalanceOption balanceOption = BalanceOption.builder().id(selectedOptionId).build();
         Post post = Post.builder().id(postId).options(List.of(balanceOption)).build();
-        CommentCreateRequest request = new CommentCreateRequest("댓글 내용입니다.", selectedOptionId);
+        CommentRequest request = new CommentRequest("댓글 내용입니다.", selectedOptionId);
 
         when(memberRepository.findByEmail(authenticatedEmail)).thenReturn(Optional.of(member));
         when(postRepository.findById(postId)).thenReturn(Optional.of(post));
@@ -111,8 +110,8 @@ class CommentServiceTest {
         Vote vote = Vote.builder().id(1L).balanceOption(balanceOption).build();
 
         List<Comment> comments = List.of(
-                Comment.builder().id(1L).content("댓글 1").member(mockMember).post(mockPost).build(),
-                Comment.builder().id(2L).content("댓글 2").member(mockMember).post(mockPost).build()
+                Comment.builder().id(1L).content("댓글 1").member(mockMember).post(mockPost).likes(new ArrayList<>()).build(),
+                Comment.builder().id(2L).content("댓글 2").member(mockMember).post(mockPost).likes(new ArrayList<>()).build()
         );
 
         when(commentRepository.findByPostId(postId)).thenReturn(comments);
@@ -174,9 +173,8 @@ class CommentServiceTest {
     @DisplayName("댓글 생성 실패 - 회원을 찾을 수 없음")
         void createComment_Fail_MemberNotFound() {
         // given
-        Long memberId = 1L;
         Long postId = 1L;
-        CommentCreateRequest request = new CommentCreateRequest("댓글 내용입니다.", null);
+        CommentRequest request = new CommentRequest("댓글 내용입니다.", null);
 
         // when
 
@@ -192,7 +190,7 @@ class CommentServiceTest {
         // given
         Long postId = 1L;
         Member member = Member.builder().email(authenticatedEmail).votes(List.of()).build();
-        CommentCreateRequest request = new CommentCreateRequest("댓글 내용입니다.", null);
+        CommentRequest request = new CommentRequest("댓글 내용입니다.", null);
 
 
         when(memberRepository.findByEmail(authenticatedEmail)).thenReturn(Optional.of(Member.builder().id(member.getId()).build()));

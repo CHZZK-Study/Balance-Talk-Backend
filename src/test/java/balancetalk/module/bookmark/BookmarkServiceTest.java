@@ -1,13 +1,14 @@
-package balancetalk.module.post.application;
+package balancetalk.module.bookmark;
 
 import balancetalk.global.exception.BalanceTalkException;
+import balancetalk.module.bookmark.application.BookmarkService;
+import balancetalk.module.bookmark.domain.Bookmark;
+import balancetalk.module.bookmark.domain.BookmarkRepository;
+import balancetalk.module.bookmark.dto.BookmarkResponse;
 import balancetalk.module.member.domain.Member;
 import balancetalk.module.member.domain.MemberRepository;
-import balancetalk.module.post.domain.Bookmark;
-import balancetalk.module.post.domain.BookmarkRepository;
 import balancetalk.module.post.domain.Post;
 import balancetalk.module.post.domain.PostRepository;
-import balancetalk.module.post.dto.BookmarkResponseDto;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -32,6 +33,7 @@ import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class BookmarkServiceTest {
+
     @InjectMocks
     private BookmarkService bookmarkService;
 
@@ -65,7 +67,6 @@ class BookmarkServiceTest {
         Long postId = 1L;
         Member member = Member.builder().email(authenticatedEmail).bookmarks(new ArrayList<>()).build();
         Post post = Post.builder().id(postId).build();
-        Bookmark bookmark = Bookmark.builder().member(member).post(post).build();
 
         when(memberRepository.findByEmail(authenticatedEmail)).thenReturn(Optional.of(member));
         when(postRepository.findById(postId)).thenReturn(Optional.of(post));
@@ -89,7 +90,7 @@ class BookmarkServiceTest {
         when(bookmarkRepository.findByMember(member)).thenReturn(new ArrayList<>());
 
         // when
-        List<BookmarkResponseDto> result = bookmarkService.findAllByMember();
+        List<BookmarkResponse> result = bookmarkService.findAllByMember();
 
         // then
         assertThat(result).isEmpty();
@@ -121,7 +122,6 @@ class BookmarkServiceTest {
         Long postId = 1L;
         Member member = Member.builder().email(authenticatedEmail).bookmarks(new ArrayList<>()).build();
         Post post = Post.builder().id(postId).build();
-        Bookmark bookmark = Bookmark.builder().member(member).post(post).build();
 
         when(memberRepository.findByEmail(authenticatedEmail)).thenReturn(Optional.of(member));
         when(postRepository.findById(postId)).thenReturn(Optional.of(post));
@@ -140,7 +140,6 @@ class BookmarkServiceTest {
         // given
         Long postId = 1L;
         Member member = Member.builder().email(authenticatedEmail).bookmarks(new ArrayList<>()).build();
-        Bookmark bookmark = Bookmark.builder().member(member).post(Post.builder().id(postId).build()).build();
 
         when(memberRepository.findByEmail(authenticatedEmail)).thenReturn(Optional.of(member));
         when(postRepository.findById(postId)).thenReturn(Optional.empty());

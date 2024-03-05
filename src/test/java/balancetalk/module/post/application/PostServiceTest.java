@@ -27,11 +27,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 //                .id(1L)
 //                .build();
 //
-<<<<<<< HEAD
-//        FileDto fileDto = FileDto.builder()
-=======
 //        FileResponse fileDto = FileResponse.builder()
->>>>>>> main
 //                .uploadName("파일1")
 //                .path("../")
 //                .type(FileType.JPEG)
@@ -100,11 +96,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 //        when(postRepository.findAll()).thenReturn(posts);
 //
 //        // when
-<<<<<<< HEAD
-//        List<PostResponseDto> result = postService.findAll();
-=======
 //        List<PostResponse> result = postService.findAll();
->>>>>>> main
 //
 //        // then
 //        assertEquals(result.get(0).getId(), 1L);
@@ -125,11 +117,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 //        when(postRepository.findById(1L)).thenReturn(Optional.of(post));
 //
 //        // when
-<<<<<<< HEAD
-//        PostResponseDto result = postService.findById(post.getId());
-=======
 //        PostResponse result = postService.findById(post.getId());
->>>>>>> main
 //
 //        // then
 //        assertEquals(post.getId() , result.getId());
@@ -149,11 +137,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 //
 //        when(postRepository.findById(1L)).thenReturn(Optional.of(post));
 //
-<<<<<<< HEAD
-//        PostResponseDto result = postService.findById(post.getId());
-=======
 //        PostResponse result = postService.findById(post.getId());
->>>>>>> main
 //
 //        // when
 //        postService.deleteById(result.getId());
@@ -175,11 +159,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 //
 //        when(postRepository.findById(1L)).thenReturn(Optional.of(post));
 //
-<<<<<<< HEAD
-//        PostResponseDto result = postService.findById(post.getId());
-=======
 //        PostResponse result = postService.findById(post.getId());
->>>>>>> main
 //
 //        // when
 //        assertThatThrownBy(() -> postService.deleteById(2L))

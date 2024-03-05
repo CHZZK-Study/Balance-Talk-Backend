@@ -2,13 +2,8 @@ package balancetalk.module.authmail.application;
 
 import balancetalk.global.exception.BalanceTalkException;
 import balancetalk.global.redis.application.RedisService;
-<<<<<<< HEAD
-import balancetalk.module.authmail.dto.EmailRequestDto;
-import balancetalk.module.authmail.dto.EmailVerificationDto;
-=======
 import balancetalk.module.authmail.dto.EmailRequest;
 import balancetalk.module.authmail.dto.EmailVerification;
->>>>>>> main
 import balancetalk.module.member.domain.Member;
 import balancetalk.module.member.domain.MemberRepository;
 import jakarta.mail.internet.MimeMessage;
@@ -47,11 +42,7 @@ class MailServiceTest {
     void createEmailFormat() {
         // Given
         String email = "test@gmail.com";
-<<<<<<< HEAD
-        EmailRequestDto request = new EmailRequestDto(email);
-=======
         EmailRequest request = new EmailRequest(email);
->>>>>>> main
         MimeMessage mockMimeMessage = mock(MimeMessage.class);
         when(javaMailSender.createMimeMessage()).thenReturn(mockMimeMessage);
 
@@ -66,11 +57,7 @@ class MailServiceTest {
     @DisplayName("Redis에 저장된 유저 이메일로 올바르게 인증 번호가 조회되는지 테스트")
     void findValidRedisValueByEmail() {
         // given
-<<<<<<< HEAD
-        EmailVerificationDto request = new EmailVerificationDto("test@gmail.com", "123456");
-=======
         EmailVerification request = new EmailVerification("test@gmail.com", "123456");
->>>>>>> main
 
         when(redisService.getValues(request.getEmail())).thenReturn(request.getVerificationCode());
 
@@ -82,11 +69,7 @@ class MailServiceTest {
     @DisplayName("인증 번호가 다를 때 예외 처리 테스트")
     void incorrectAuthException() {
         // given
-<<<<<<< HEAD
-        EmailVerificationDto request = new EmailVerificationDto("test@gmail.com", "123456");
-=======
         EmailVerification request = new EmailVerification("test@gmail.com", "123456");
->>>>>>> main
         String wrongNumber = "111111";
         when(redisService.getValues(request.getEmail())).thenReturn(wrongNumber);
 
@@ -106,11 +89,7 @@ class MailServiceTest {
                 .build();
 
         when(memberRepository.findByEmail(duplicateEmail)).thenReturn(Optional.of(member));
-<<<<<<< HEAD
-        EmailRequestDto requestDto = new EmailRequestDto(duplicateEmail);
-=======
         EmailRequest requestDto = new EmailRequest(duplicateEmail);
->>>>>>> main
 
         // when, then
         assertThatThrownBy(() -> mailService.sendMail(requestDto))
