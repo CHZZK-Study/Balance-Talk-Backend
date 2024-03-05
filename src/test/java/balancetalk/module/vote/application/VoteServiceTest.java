@@ -2,8 +2,11 @@ package balancetalk.module.vote.application;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import balancetalk.global.utils.SecurityUtils;
 import balancetalk.module.member.domain.Member;
 import balancetalk.module.member.domain.MemberRepository;
 import balancetalk.module.post.domain.*;
@@ -15,15 +18,22 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.test.context.support.WithMockUser;
 
 @ExtendWith(MockitoExtension.class)
 class VoteServiceTest {
+
+    private final String AUTHENTICATED_EMAIL = "user@example.com";
 
     @InjectMocks
     VoteService voteService;
@@ -40,6 +50,17 @@ class VoteServiceTest {
     @Mock
     PostRepository postRepository;
 
+    @BeforeEach
+    void setUp() {
+        // SecurityContext에 인증된 사용자 설정
+        Authentication authentication = mock(Authentication.class);
+        SecurityContext securityContext = mock(SecurityContext.class);
+        lenient().when(securityContext.getAuthentication()).thenReturn(authentication);
+        SecurityContextHolder.setContext(securityContext);
+
+        lenient().when(authentication.getName()).thenReturn(AUTHENTICATED_EMAIL);
+    }
+
     @Test
     @DisplayName("회원과 선택지 정보를 바탕으로 투표를 생성한다.")
     void createVote_Success() {
@@ -50,7 +71,7 @@ class VoteServiceTest {
                 .deadline(LocalDateTime.now().plusDays(1))
                 .options(List.of(option))
                 .build();
-        Member member = createMember(1L);
+        Member member = createMember();
         Vote vote = Vote.builder()
                 .id(1L)
                 .member(member)
@@ -59,11 +80,12 @@ class VoteServiceTest {
 
         when(postRepository.findById(any())).thenReturn(Optional.of(post));
         when(balanceOptionRepository.findById(any())).thenReturn(Optional.of(option));
-        when(memberRepository.findById(any())).thenReturn(Optional.of(member));
+        when(memberRepository.findByEmail(AUTHENTICATED_EMAIL)).thenReturn(Optional.of(member));
         when(voteRepository.save(any())).thenReturn(vote);
 
         VoteRequest voteRequest = VoteRequest.builder()
                 .selectedOptionId(option.getId())
+                .isUser(true)
                 .build();
 
         // when
@@ -133,6 +155,7 @@ class VoteServiceTest {
 
         Member member = Member.builder()
                 .id(1L)
+                .email(AUTHENTICATED_EMAIL)
                 .votes(votes)
                 .build();
 
@@ -142,7 +165,7 @@ class VoteServiceTest {
                 .build();
 
         when(postRepository.findById(post.getId())).thenReturn(Optional.of(post));
-        when(memberRepository.findById(any())).thenReturn(Optional.of(member));
+        when(memberRepository.findByEmail(AUTHENTICATED_EMAIL)).thenReturn(Optional.of(member));
         when(balanceOptionRepository.findById(optionB.getId())).thenReturn(Optional.of(optionB));
 
         VoteRequest voteRequest = VoteRequest.builder()
@@ -171,9 +194,10 @@ class VoteServiceTest {
                 .build();
     }
 
-    private Member createMember(Long id) {
+    private Member createMember() {
         return Member.builder()
-                .id(id)
+                .id(1L)
+                .email(AUTHENTICATED_EMAIL)
                 .votes(List.of())
                 .build();
     }
