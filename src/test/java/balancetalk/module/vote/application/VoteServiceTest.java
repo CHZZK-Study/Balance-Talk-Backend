@@ -160,6 +160,28 @@ class VoteServiceTest {
     }
 
     @Test
+    @DisplayName("투표 생성 시 회원 정보가 없는 경우 예외가 발생한다.")
+    void createVote_Fail_ByNotFoundMember() {
+        // given
+        BalanceOption optionA = BalanceOption.builder().build();
+        BalanceOption optionB = BalanceOption.builder().build();
+        Post post = Post.builder()
+                .id(1L)
+                .deadline(LocalDateTime.now().plusDays(1))
+                .options(List.of(optionA, optionB))
+                .build();
+
+        when(postRepository.findById(any())).thenReturn(Optional.of(post));
+        when(balanceOptionRepository.findById(any())).thenReturn(Optional.of(optionA));
+        when(memberRepository.findByEmail(any())).thenThrow(new BalanceTalkException(ErrorCode.NOT_FOUND_MEMBER));
+
+        // when, then
+        assertThatThrownBy(() -> voteService.createVote(1L, new VoteRequest(1L, true)))
+                .isInstanceOf(BalanceTalkException.class)
+                .hasMessageContaining(ErrorCode.NOT_FOUND_MEMBER.getMessage());
+    }
+
+    @Test
     @DisplayName("각 선택지의 제목과 투표 수를 조회한다.")
     void readVotingStatus_Success() {
         // given
