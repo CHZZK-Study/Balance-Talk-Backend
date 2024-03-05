@@ -1,7 +1,6 @@
-package balancetalk.module.bookmark;
+package balancetalk.module.bookmark.application;
 
 import balancetalk.global.exception.BalanceTalkException;
-import balancetalk.module.bookmark.application.BookmarkService;
 import balancetalk.module.bookmark.domain.Bookmark;
 import balancetalk.module.bookmark.domain.BookmarkRepository;
 import balancetalk.module.bookmark.dto.BookmarkResponse;
