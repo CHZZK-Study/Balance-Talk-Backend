@@ -61,9 +61,7 @@ public class CommentController {
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/{commentId}/likes")
     @Operation(summary = "댓글 추천", description = "comment-id에 해당하는 댓글에 추천을 누른다.")
-    public String likeComment(@PathVariable Long postId,
-                                              @PathVariable Long commentId,
-                                              @RequestBody Long memberId) {
+    public String likeComment(@PathVariable Long postId, @PathVariable Long commentId) {
         commentService.likeComment(postId, commentId);
         return "요청이 정상적으로 처리되었습니다.";
     }
@@ -71,9 +69,7 @@ public class CommentController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping("/{commentId}/likes")
     @Operation(summary = "댓글 추천 취소", description = "comment-id에 해당하는 댓글에 누른 추천을 취소한다.")
-    public void cancelLikeComment(@PathVariable Long postId,
-                                    @PathVariable Long commentId,
-                                    @RequestBody Long memberId) {
+    public void cancelLikeComment(@PathVariable Long commentId) {
         commentService.cancelLikeComment(commentId);
     }
 }
