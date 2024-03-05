@@ -444,6 +444,23 @@ class VoteServiceTest {
                 .hasMessageContaining(ErrorCode.NOT_FOUND_VOTE.getMessage());
     }
 
+    @Test
+    @DisplayName("투표 수정 시 게시글의 카테고리가 캐주얼인 경우 예외를 발생시킨다.")
+    void updateVote_Fail_ByPostIsCasual() {
+        // given
+        Post post = Post.builder()
+                .id(1L)
+                .category(PostCategory.CASUAL)
+                .build();
+
+        when(postRepository.findById(any())).thenReturn(Optional.of(post));
+
+        // when, then
+        assertThatThrownBy(() -> voteService.updateVote(1L, new VoteRequest(1L, true)))
+                .isInstanceOf(BalanceTalkException.class)
+                .hasMessageContaining(ErrorCode.UNMODIFIABLE_VOTE.getMessage());
+    }
+
     private Vote createVote(Long id) {
         return Vote.builder()
                 .id(id)
