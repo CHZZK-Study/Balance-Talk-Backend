@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 
+import static org.springframework.http.HttpStatus.*;
+
 @Getter
 @RequiredArgsConstructor
 public enum ErrorCode {
@@ -29,11 +31,12 @@ public enum ErrorCode {
     AUTHENTICATION_ERROR(UNAUTHORIZED, "인증 오류가 발생했습니다."),
     BAD_CREDENTIAL_ERROR(UNAUTHORIZED, "로그인에 실패했습니다."),
     UNAUTHORIZED_LOGOUT(UNAUTHORIZED, "로그아웃을 위해서는 인증이 필요합니다."),
-  
+
     // 403
     FORBIDDEN_COMMENT_MODIFY(FORBIDDEN, "해당 댓글은 수정 권한이 없습니다."), // TODO : Spring Security 적용 후 적용 필요
     FORBIDDEN_COMMENT_DELETE(FORBIDDEN, "해당 댓글은 삭제 권한이 없습니다."), // TODO : SecurityContextHolder 사용 예정
     FORBIDDEN_MEMBER_DELETE(FORBIDDEN, "사용자 탈퇴 권한이 없습니다."),
+    FORBIDDEN_BOOKMARK_DELETE(FORBIDDEN, "북마크 삭제 권한이 없습니다."),
     FORBIDDEN_POST_CREATE(FORBIDDEN, "글쓰기 권한이 없습니다."),
 
     // 404
