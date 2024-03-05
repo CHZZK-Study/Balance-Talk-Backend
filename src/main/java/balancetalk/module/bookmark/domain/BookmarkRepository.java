@@ -1,4 +1,4 @@
-package balancetalk.module.post.domain;
+package balancetalk.module.bookmark.domain;
 
 import balancetalk.module.member.domain.Member;
 import org.springframework.data.jpa.repository.JpaRepository;

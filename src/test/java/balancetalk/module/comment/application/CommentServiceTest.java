@@ -1,19 +1,13 @@
 package balancetalk.module.comment.application;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
 import balancetalk.global.exception.BalanceTalkException;
 import balancetalk.global.exception.ErrorCode;
 import balancetalk.module.comment.domain.Comment;
 import balancetalk.module.comment.domain.CommentLikeRepository;
 import balancetalk.module.comment.domain.CommentRepository;
-import balancetalk.module.comment.dto.CommentCreateRequest;
+import balancetalk.module.comment.dto.CommentRequest;
 import balancetalk.module.comment.dto.CommentResponse;
+import balancetalk.module.comment.dto.ReplyCreateRequest;
 import balancetalk.module.member.domain.Member;
 import balancetalk.module.member.domain.MemberRepository;
 
@@ -22,15 +16,26 @@ import balancetalk.module.post.domain.Post;
 import balancetalk.module.post.domain.PostRepository;
 import balancetalk.module.vote.domain.Vote;
 import balancetalk.module.vote.domain.VoteRepository;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.annotation.ProfileValueSourceConfiguration;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.util.ReflectionTestUtils;
+
+import java.util.List;
+import java.util.Optional;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class CommentServiceTest {
@@ -53,6 +58,11 @@ class CommentServiceTest {
     @Mock
     private VoteRepository voteRepository;
 
+
+    @BeforeEach
+    void setUp() {
+        ReflectionTestUtils.setField(commentService, "maxDepth", 1);
+    }
     @Test
     @DisplayName("댓글 생성 성공")
     void createComment_Success() {
@@ -65,7 +75,7 @@ class CommentServiceTest {
         Member member = Member.builder().id(memberId).votes(List.of(vote)).build();
         BalanceOption balanceOption = BalanceOption.builder().id(selectedOptionId).build();
         Post post = Post.builder().id(postId).options(List.of(balanceOption)).build();
-        CommentCreateRequest request = new CommentCreateRequest("댓글 내용입니다.", memberId, selectedOptionId);
+        CommentRequest request = new CommentRequest("댓글 내용입니다.", memberId, selectedOptionId);
 
         when(memberRepository.findById(memberId)).thenReturn(Optional.of(member));
         when(postRepository.findById(postId)).thenReturn(Optional.of(post));
@@ -155,7 +165,7 @@ class CommentServiceTest {
         // given
         Long memberId = 1L;
         Long postId = 1L;
-        CommentCreateRequest request = new CommentCreateRequest("댓글 내용입니다.", memberId, null);
+        CommentRequest request = new CommentRequest("댓글 내용입니다.", memberId, null);
 
         when(memberRepository.findById(memberId)).thenReturn(Optional.empty());
 
@@ -173,7 +183,7 @@ class CommentServiceTest {
         // given
         Long memberId = 1L;
         Long postId = 1L;
-        CommentCreateRequest request = new CommentCreateRequest("댓글 내용입니다.", memberId, null);
+        CommentRequest request = new CommentRequest("댓글 내용입니다.", memberId, null);
 
         when(memberRepository.findById(memberId)).thenReturn(Optional.of(Member.builder().id(memberId).build()));
         when(postRepository.findById(postId)).thenReturn(Optional.empty());
@@ -274,5 +284,72 @@ class CommentServiceTest {
         assertThatThrownBy(() -> commentService.likeComment(1L, comment.getId(), member.getId()))
                 .isInstanceOf(BalanceTalkException.class)
                 .hasMessageContaining(ErrorCode.ALREADY_LIKE_COMMENT.getMessage());
+    }
+
+    @Test
+    @DisplayName("답글 생성 성공")
+    void createReply_Success() {
+        // given
+        Long postId = 1L;
+        Long commentId = 1L;
+        Long memberId = 1L;
+        ReplyCreateRequest request = new ReplyCreateRequest("답글 내용입니다.", memberId, commentId);
+
+        Member member = Member.builder().id(memberId).build();
+        Comment parentComment = Comment.builder().id(commentId).post(Post.builder().id(postId).build()).build();
+
+        when(memberRepository.findById(memberId)).thenReturn(Optional.of(member));
+        when(commentRepository.findById(commentId)).thenReturn(Optional.of(parentComment));
+        when(postRepository.findById(postId)).thenReturn(Optional.of(parentComment.getPost()));
+        when(commentRepository.save(any(Comment.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        // when
+        Comment response = commentService.createReply(postId, memberId, request);
+
+        // then
+        assertThat(response.getContent()).isEqualTo(request.getContent());
+        assertThat(response.getMember()).isEqualTo(member);
+        assertThat(response.getParent()).isEqualTo(parentComment);
+        verify(commentRepository).save(any(Comment.class));
+    }
+
+    @Test
+    @DisplayName("답글에 대한 답글 생성 시도 시 예외 발생")
+    void createReplyToReply_Failure_DepthLimitExceeded() {
+        // given
+        Long postId = 1L;
+        Long parentCommentId = 1L;
+        Long memberId = 1L;
+        ReplyCreateRequest request = new ReplyCreateRequest("답글의 답글 내용입니다.", memberId, parentCommentId);
+
+
+
+        Member member = Member.builder().id(memberId).build();
+        Post post = Post.builder().id(postId).build();
+        Comment parentComment = Comment.builder().id(parentCommentId).post(post).build();
+        Comment replyComment = Comment.builder().id(2L).parent(parentComment).post(post).build();
+
+        when(memberRepository.findById(memberId)).thenReturn(Optional.of(member));
+        when(commentRepository.findById(parentCommentId)).thenReturn(Optional.of(replyComment)); // 주의: 여기서 parentCommentId로 replyComment를 반환
+        when(postRepository.findById(postId)).thenReturn(Optional.of(post));
+
+        // when & then
+        assertThatThrownBy(() -> commentService.createReply(postId, parentCommentId, request))
+                .isInstanceOf(BalanceTalkException.class)
+                .hasMessageContaining(ErrorCode.EXCEED_MAX_DEPTH.getMessage());
+    }
+    @Test
+    @DisplayName("잘못된 postId로 답글 생성 시도 시 예외 발생")
+    void createReplyWithWrongPostId_Failure() {
+        // given
+        Long wrongPostId = 2L;
+        Long memberId = 1L;
+        Long commentId = 1L;
+        ReplyCreateRequest request = new ReplyCreateRequest("답글 내용입니다.", memberId, commentId);
+
+        when(postRepository.findById(wrongPostId)).thenReturn(Optional.empty());
+
+        // when, then
+        assertThrows(BalanceTalkException.class, () -> commentService.createReply(wrongPostId, commentId, request));
     }
 }

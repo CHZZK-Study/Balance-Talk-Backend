@@ -7,6 +7,7 @@ import balancetalk.module.post.domain.Bookmark;
 import balancetalk.module.post.domain.BookmarkRepository;
 import balancetalk.module.post.domain.Post;
 import balancetalk.module.post.domain.PostRepository;
+import balancetalk.module.post.dto.BookmarkRequestDto;
 import balancetalk.module.post.dto.BookmarkResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
@@ -44,12 +45,12 @@ public class BookmarkService {
     }
 
     @Transactional(readOnly = true)
-    public List<BookmarkResponseDto> findAllByMember() {
+    public List<BookmarkResponse> findAllByMember() {
         Member member = getCurrentMember();
         List<Bookmark> bookmarks = bookmarkRepository.findByMember(member);
 
         return bookmarks.stream()
-                .map(BookmarkResponseDto::fromEntity)
+                .map(BookmarkResponse::fromEntity)
                 .collect(Collectors.toList());
     }
 

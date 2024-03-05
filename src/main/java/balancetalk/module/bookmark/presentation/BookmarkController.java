@@ -1,6 +1,7 @@
 package balancetalk.module.post.presentation;
 
 import balancetalk.module.post.application.BookmarkService;
+import balancetalk.module.post.dto.BookmarkRequestDto;
 import balancetalk.module.post.dto.BookmarkResponseDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -14,23 +15,24 @@ import java.util.List;
 @RequiredArgsConstructor
 @Tag(name = "bookmark", description = "게시글 북마크 API")
 @RequestMapping("/bookmark")
+@Tag(name = "bookmark", description = "게시글 북마크 API")
 public class BookmarkController {
+
     private final BookmarkService bookmarkService;
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/posts/{postId}")
     @Operation(summary = "북마크 추가", description = "post-id에 해당하는 게시글을 북마크에 추가한다.")
-    public String addBookmark(@PathVariable Long postId) {
+    public String createBookmark(@PathVariable Long postId) {
         bookmarkService.save(postId);
-
         return "북마크가 등록 되었습니다.";
     }
 
     @ResponseStatus(HttpStatus.OK)
     @GetMapping
     @Operation(summary = "북마크에 추가된 게시글 목록 조회", description = "회원이 북마크한 모든 게시글을 조회한다.")
-    public List<BookmarkResponseDto> findAllPost() {
-        return bookmarkService.findAllByMember();
+    public List<BookmarkResponse> findAllPosts(@PathVariable Long memberId) {
+        return bookmarkService.findAllByMember(memberId);
     }
 
     @ResponseStatus(HttpStatus.NO_CONTENT)

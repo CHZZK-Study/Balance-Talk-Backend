@@ -3,6 +3,7 @@ package balancetalk.module.post.application;
 import static balancetalk.global.exception.ErrorCode.*;
 
 import balancetalk.global.exception.BalanceTalkException;
+import balancetalk.global.redis.application.RedisService;
 import balancetalk.module.file.domain.File;
 import balancetalk.module.file.domain.FileRepository;
 import balancetalk.module.member.domain.Member;
@@ -14,8 +15,8 @@ import balancetalk.module.post.domain.PostLikeRepository;
 import balancetalk.module.post.domain.PostRepository;
 import balancetalk.module.post.domain.PostTag;
 import balancetalk.module.post.dto.BalanceOptionDto;
-import balancetalk.module.post.dto.PostRequestDto;
-import balancetalk.module.post.dto.PostResponseDto;
+import balancetalk.module.post.dto.PostRequest;
+import balancetalk.module.post.dto.PostResponse;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -33,11 +34,15 @@ public class PostService {
     private final MemberRepository memberRepository;
     private final PostLikeRepository postLikeRepository;
     private final FileRepository fileRepository;
+    private final RedisService redisService;
 
-    public PostResponseDto save(final PostRequestDto postRequestDto) {
-        Member member = getMember(postRequestDto);
-        List<File> images = getImages(postRequestDto);
-        Post post = postRequestDto.toEntity(member, images);
+    public PostResponse save(final PostRequest request) {
+        Member member = getMember(request);
+        if (redisService.getValues(member.getEmail()) == null) {
+            throw new BalanceTalkException(FORBIDDEN_POST_CREATE);
+        }
+        List<File> images = getImages(request);
+        Post post = request.toEntity(member, images);
 
         List<BalanceOption> options = post.getOptions();
         for (BalanceOption option : options) {
@@ -48,15 +53,15 @@ public class PostService {
             postTag.addPost(post);
         }
 
-        return PostResponseDto.fromEntity(postRepository.save(post), member);
+        return PostResponse.fromEntity(postRepository.save(post), member);
     }
 
-    private Member getMember(PostRequestDto postRequestDto) {
+    private Member getMember(PostRequest postRequestDto) {
         return memberRepository.findById(postRequestDto.getMemberId())
                 .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_MEMBER));
     }
 
-    private List<File> getImages(PostRequestDto postRequestDto) {
+    private List<File> getImages(PostRequest postRequestDto) {
         List<BalanceOptionDto> balanceOptions = postRequestDto.getBalanceOptions();
         return balanceOptions.stream()
                 .map(optionDto -> fileRepository.findByStoredName(optionDto.getStoredFileName())
@@ -65,23 +70,24 @@ public class PostService {
     }
 
     @Transactional(readOnly = true)
-    public List<PostResponseDto> findAll(Long memberId) {
+    public List<PostResponse> findAll(Long memberId) {
         // TODO: 검색, 정렬, 마감 기능 추가
         List<Post> posts = postRepository.findAll();
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_MEMBER));
         return posts.stream()
-                .map(post -> PostResponseDto.fromEntity(post, member))
+                .map(post -> PostResponse.fromEntity(post, member))
                 .collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
-    public PostResponseDto findById(Long postId, Long memberId) {
+    public PostResponse findById(Long postId, Long memberId) {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_POST));
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_MEMBER));
-        return PostResponseDto.fromEntity(post, member);
+
+        return PostResponse.fromEntity(post, member);
     }
 
     public void deleteById(Long postId) {

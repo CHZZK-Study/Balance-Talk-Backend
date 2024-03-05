@@ -1,12 +1,14 @@
 package balancetalk.module.comment.application;
 
+import static balancetalk.global.exception.ErrorCode.*;
+
 import balancetalk.global.exception.BalanceTalkException;
 import balancetalk.global.exception.ErrorCode;
 import balancetalk.module.comment.domain.Comment;
 import balancetalk.module.comment.domain.CommentLike;
 import balancetalk.module.comment.domain.CommentLikeRepository;
 import balancetalk.module.comment.domain.CommentRepository;
-import balancetalk.module.comment.dto.CommentCreateRequest;
+import balancetalk.module.comment.dto.CommentRequest;
 import balancetalk.module.comment.dto.CommentResponse;
 import balancetalk.module.comment.dto.ReplyCreateRequest;
 import balancetalk.module.member.domain.Member;
@@ -17,14 +19,12 @@ import balancetalk.module.post.domain.PostRepository;
 import balancetalk.module.vote.domain.Vote;
 import balancetalk.module.vote.domain.VoteRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-
-import static balancetalk.global.exception.ErrorCode.*;
 
 @Service
 @Transactional
@@ -37,7 +37,10 @@ public class CommentService {
     private final CommentLikeRepository commentLikeRepository;
     private final VoteRepository voteRepository;
 
-    public Comment createComment(CommentCreateRequest request, Long postId) {
+    @Value("${comments.max-depth}")
+    private int maxDepth;
+
+    public Comment createComment(CommentRequest request, Long postId) {
         Member member = validateMemberId(request);
         Post post = validatePostId(postId);
         BalanceOption balanceOption = validateBalanceOptionId(request, post);
@@ -90,17 +93,20 @@ public class CommentService {
                 .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_MEMBER));
 
 
+
+
         // 부모 댓글과 연결된 게시글이 맞는지 확인
         if (!parentComment.getPost().equals(post)) {
             throw new BalanceTalkException(NOT_FOUND_PARENT_COMMENT);
         }
 
+        validateDepth(parentComment);
+
         Comment reply = request.toEntity(member, post, parentComment);
         return commentRepository.save(reply);
     }
 
-
-    private Member validateMemberId(CommentCreateRequest request) { // TODO: validate 메서드 분리 재고
+    private Member validateMemberId(CommentRequest request) { // TODO: validate 메서드 분리 재고
         return memberRepository.findById(request.getMemberId())
                 .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_MEMBER));
     }
@@ -110,7 +116,7 @@ public class CommentService {
                 .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_POST));
     }
 
-    private BalanceOption validateBalanceOptionId(CommentCreateRequest request, Post post) {
+    private BalanceOption validateBalanceOptionId(CommentRequest request, Post post) {
         return post.getOptions().stream()
                 .filter(option -> option.getId().equals(request.getSelectedOptionId()))
                 .findFirst()
@@ -120,6 +126,22 @@ public class CommentService {
     private Comment validateCommentId(Long commentId) {
         return commentRepository.findById(commentId)
                 .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_COMMENT));
+    }
+
+    private void validateDepth(Comment parentComment) {
+        int depth = calculateDepth(parentComment);
+        if (depth >= maxDepth) {
+            throw new BalanceTalkException(EXCEED_MAX_DEPTH);
+        }
+    }
+
+    private int calculateDepth(Comment comment) {
+        int depth = 0;
+        while (comment.getParent() != null) {
+            depth++;
+            comment = comment.getParent();
+        }
+        return depth;
     }
       
     public Long likeComment(Long postId, Long commentId, Long memberId) {
