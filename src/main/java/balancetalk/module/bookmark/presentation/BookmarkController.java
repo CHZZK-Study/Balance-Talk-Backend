@@ -23,7 +23,7 @@ public class BookmarkController {
     @PostMapping("/posts/{postId}")
     @Operation(summary = "북마크 추가", description = "post-id에 해당하는 게시글을 북마크에 추가한다.")
     public String createBookmark(@PathVariable Long postId) {
-        bookmarkService.save(postId);
+        bookmarkService.createBookmark(postId);
         return "북마크가 등록 되었습니다.";
     }
 

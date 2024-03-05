@@ -28,7 +28,7 @@ public class BookmarkService {
     private final PostRepository postRepository;
 
     @Transactional
-    public Bookmark save(Long postId) {
+    public Bookmark createBookmark(Long postId) {
         Member member = getCurrentMember();
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_POST));
