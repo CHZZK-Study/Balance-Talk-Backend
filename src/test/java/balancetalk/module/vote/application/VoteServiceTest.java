@@ -349,9 +349,28 @@ class VoteServiceTest {
     @DisplayName("투표 수정 시 게시글 정보가 없는 경우 예외를 발생시킨다.")
     void updateVote_Fail_ByNotFoundPost() {
         // when, then
-        assertThatThrownBy(()->voteService.updateVote(1L, new VoteRequest(1L, true)))
-                    .isInstanceOf(BalanceTalkException.class)
-                    .hasMessageContaining(ErrorCode.NOT_FOUND_POST.getMessage());
+        assertThatThrownBy(() -> voteService.updateVote(1L, new VoteRequest(1L, true)))
+                .isInstanceOf(BalanceTalkException.class)
+                .hasMessageContaining(ErrorCode.NOT_FOUND_POST.getMessage());
+    }
+
+    @Test
+    @DisplayName("투표 수정 시 선택지 정보가 없는 경우 예외를 발생시킨다.")
+    void updateVote_Fail_ByNotFoundBalanceOption() {
+        // given
+        Post post = Post.builder()
+                .id(1L)
+                .category(PostCategory.DISCUSSION)
+                .build();
+
+        when(postRepository.findById(any())).thenReturn(Optional.of(post));
+        when(balanceOptionRepository.findById(any()))
+                .thenThrow(new BalanceTalkException(ErrorCode.NOT_FOUND_BALANCE_OPTION));
+
+        // when, then
+        assertThatThrownBy(() -> voteService.updateVote(1L, new VoteRequest(1L, true)))
+                .isInstanceOf(BalanceTalkException.class)
+                .hasMessageContaining(ErrorCode.NOT_FOUND_BALANCE_OPTION.getMessage());
     }
 
     private Vote createVote(Long id) {
