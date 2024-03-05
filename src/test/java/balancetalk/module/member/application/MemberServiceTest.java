@@ -16,6 +16,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -31,9 +34,6 @@ class MemberServiceTest {
     JwtTokenProvider jwtTokenProvider;
 
     @Mock
-    AuthenticationManager authenticationManager;
-
-    @Mock
     MemberRepository memberRepository;
 
     @Mock
@@ -44,6 +44,15 @@ class MemberServiceTest {
 
     @Mock
     HttpServletRequest request;
+
+    @Mock
+    UserDetails userDetails;
+
+    @Mock
+    Authentication authentication;
+
+    @Mock
+    AuthenticationManager authenticationManager;
 
     @InjectMocks
     MemberService memberService;
@@ -255,8 +264,78 @@ class MemberServiceTest {
         when(memberRepository.findByEmail(member.getEmail())).thenReturn(Optional.of(member));
         when(passwordEncoder.matches(loginRequest.getPassword(), member.getPassword())).thenReturn(true);
 
+        // when
         memberService.delete(loginRequest, request);
 
+        // then
         verify(memberRepository, times(1)).deleteByEmail(eq(member.getEmail()));
+    }
+
+    @Test
+    @DisplayName("회원 삭제 실패 - 이메일 불일치")
+    void deleteMemberFailure_EmailMismatch() {
+        // given
+        Member stranger = Member.builder()
+                .id(2L)
+                .email("stranger@gmail.com")
+                .build();
+        when(jwtTokenProvider.resolveToken(request)).thenReturn(accessToken);
+        when(jwtTokenProvider.getPayload(accessToken)).thenReturn(member.getEmail());
+
+        when(memberRepository.findByEmail(member.getEmail())).thenReturn(Optional.of(stranger));
+
+        // when & then
+        assertThatThrownBy(() -> memberService.delete(loginRequest, request))
+                .isInstanceOf(BalanceTalkException.class)
+                .hasMessage("사용자 탈퇴 권한이 없습니다.");
+    }
+
+    @Test
+    @DisplayName("회원 삭제 실패 - 비밀번호 불일치")
+    void deleteMemberFailure_PasswordMismatch() {
+        // Given
+        when(jwtTokenProvider.resolveToken(request)).thenReturn(accessToken);
+        when(jwtTokenProvider.getPayload(accessToken)).thenReturn(member.getEmail());
+
+        when(memberRepository.findByEmail(member.getEmail())).thenReturn(Optional.of(member));
+        when(passwordEncoder.matches(loginRequest.getPassword(), member.getPassword())).thenReturn(false);
+
+        // when
+        assertThatThrownBy(() -> memberService.delete(loginRequest, request))
+                .isInstanceOf(BalanceTalkException.class)
+                .hasMessage("이메일 또는 비밀번호가 잘못되었습니다.");
+    }
+
+    @Test
+    @DisplayName("로그아웃 - 성공")
+    void logoutMemberSuccess() {
+        // given, 로그인 상태
+        when(userDetails.getUsername()).thenReturn(member.getEmail());
+        when(authentication.getPrincipal()).thenReturn(userDetails);
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+
+        when(redisService.getValues(member.getEmail())).thenReturn(refreshToken);
+
+        // when
+        memberService.logout();
+
+        // then
+        verify(redisService).deleteValues(member.getEmail());
+    }
+
+    @Test
+    @DisplayName("로그아웃 실패 - redis에 저장된 정보가 없음")
+    void logoutFailure_RedisNull(){
+        // given, 로그인 상태
+        when(userDetails.getUsername()).thenReturn(member.getEmail());
+        when(authentication.getPrincipal()).thenReturn(userDetails);
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+
+        when(redisService.getValues(anyString())).thenReturn(null);
+
+        // when & then
+        assertThatThrownBy(() -> memberService.logout())
+                .isInstanceOf(BalanceTalkException.class)
+                .hasMessage("로그아웃을 위해서는 인증이 필요합니다.");
     }
 }
