@@ -373,6 +373,31 @@ class VoteServiceTest {
                 .hasMessageContaining(ErrorCode.NOT_FOUND_BALANCE_OPTION.getMessage());
     }
 
+    @Test
+    @DisplayName("투표 수정 시 회원 정보가 없는 경우 예외를 발생시킨다.")
+    void updateVote_Fail_ByNotFoundMember() {
+        // given
+        Post post = Post.builder()
+                .id(1L)
+                .category(PostCategory.DISCUSSION)
+                .build();
+        BalanceOption newOption = BalanceOption.builder()
+                .id(1L)
+                .title("A")
+                .post(post)
+                .build();
+
+        when(postRepository.findById(any())).thenReturn(Optional.of(post));
+        when(balanceOptionRepository.findById(any())).thenReturn(Optional.of(newOption));
+        when(memberRepository.findByEmail(AUTHENTICATED_EMAIL))
+                .thenThrow(new BalanceTalkException(ErrorCode.NOT_FOUND_MEMBER));
+
+        // when, then
+        assertThatThrownBy(() -> voteService.updateVote(1L, new VoteRequest(1L, true)))
+                .isInstanceOf(BalanceTalkException.class)
+                .hasMessageContaining(ErrorCode.NOT_FOUND_MEMBER.getMessage());
+    }
+
     private Vote createVote(Long id) {
         return Vote.builder()
                 .id(id)
