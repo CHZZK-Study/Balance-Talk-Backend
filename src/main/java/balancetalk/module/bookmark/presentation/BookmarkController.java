@@ -1,13 +1,12 @@
 package balancetalk.module.bookmark.presentation;
 
+import balancetalk.module.bookmark.application.BookmarkService;
 import balancetalk.module.bookmark.dto.BookmarkResponse;
-import balancetalk.module.post.application.BookmarkService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 
 @RestController
@@ -23,7 +22,7 @@ public class BookmarkController {
     @PostMapping("/posts/{postId}")
     @Operation(summary = "북마크 추가", description = "post-id에 해당하는 게시글을 북마크에 추가한다.")
     public String createBookmark(@PathVariable Long postId) {
-        bookmarkService.save(postId);
+        bookmarkService.createBookmark(postId);
         return "북마크가 등록 되었습니다.";
     }
 
