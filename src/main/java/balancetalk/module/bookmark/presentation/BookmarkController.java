@@ -1,8 +1,7 @@
-package balancetalk.module.post.presentation;
+package balancetalk.module.bookmark.presentation;
 
+import balancetalk.module.bookmark.dto.BookmarkResponse;
 import balancetalk.module.post.application.BookmarkService;
-import balancetalk.module.post.dto.BookmarkRequestDto;
-import balancetalk.module.post.dto.BookmarkResponseDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -31,8 +30,8 @@ public class BookmarkController {
     @ResponseStatus(HttpStatus.OK)
     @GetMapping
     @Operation(summary = "북마크에 추가된 게시글 목록 조회", description = "회원이 북마크한 모든 게시글을 조회한다.")
-    public List<BookmarkResponse> findAllPosts(@PathVariable Long memberId) {
-        return bookmarkService.findAllByMember(memberId);
+    public List<BookmarkResponse> findAllPosts() {
+        return bookmarkService.findAllByMember();
     }
 
     @ResponseStatus(HttpStatus.NO_CONTENT)

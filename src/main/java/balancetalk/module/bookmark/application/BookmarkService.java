@@ -1,14 +1,13 @@
 package balancetalk.module.post.application;
 
 import balancetalk.global.exception.BalanceTalkException;
+import balancetalk.module.bookmark.domain.Bookmark;
+import balancetalk.module.bookmark.domain.BookmarkRepository;
+import balancetalk.module.bookmark.dto.BookmarkResponse;
 import balancetalk.module.member.domain.Member;
 import balancetalk.module.member.domain.MemberRepository;
-import balancetalk.module.post.domain.Bookmark;
-import balancetalk.module.post.domain.BookmarkRepository;
 import balancetalk.module.post.domain.Post;
 import balancetalk.module.post.domain.PostRepository;
-import balancetalk.module.post.dto.BookmarkRequestDto;
-import balancetalk.module.post.dto.BookmarkResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
