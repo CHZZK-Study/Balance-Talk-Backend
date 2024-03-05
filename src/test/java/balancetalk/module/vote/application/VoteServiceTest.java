@@ -142,6 +142,24 @@ class VoteServiceTest {
     }
 
     @Test
+    @DisplayName("투표 생성 시 선택지 정보가 없는 경우 예외가 발생한다.")
+    void createVote_Fail_ByNotFoundBalanceOption() {
+        // given
+        Post post = Post.builder()
+                .id(1L)
+                .deadline(LocalDateTime.now().plusDays(1))
+                .build();
+        when(postRepository.findById(any())).thenReturn(Optional.of(post));
+        when(balanceOptionRepository.findById(any()))
+                .thenThrow(new BalanceTalkException(ErrorCode.NOT_FOUND_BALANCE_OPTION));
+
+        // when, then
+        assertThatThrownBy(() -> voteService.createVote(1L, new VoteRequest(1L, true)))
+                .isInstanceOf(BalanceTalkException.class)
+                .hasMessageContaining(ErrorCode.NOT_FOUND_BALANCE_OPTION.getMessage());
+    }
+
+    @Test
     @DisplayName("각 선택지의 제목과 투표 수를 조회한다.")
     void readVotingStatus_Success() {
         // given
