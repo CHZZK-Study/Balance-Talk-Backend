@@ -204,6 +204,23 @@ class VoteServiceTest {
     }
 
     @Test
+    @DisplayName("투표 생성 시 게시글 마감 기한이 만료된 경우 예외가 발생한다.")
+    void createVote_Fail_ByExpiredDeadline() {
+        // given
+        Post post = Post.builder()
+                .id(1L)
+                .deadline(LocalDateTime.now().minusDays(1))
+                .build();
+
+        when(postRepository.findById(1L)).thenReturn(Optional.of(post));
+
+        // when, then
+        assertThatThrownBy(()-> voteService.createVote(1L, any()))
+                .isInstanceOf(BalanceTalkException.class)
+                .hasMessageContaining(ErrorCode.EXPIRED_POST_DEADLINE.getMessage());
+    }
+
+    @Test
     @DisplayName("각 선택지의 제목과 투표 수를 조회한다.")
     void readVotingStatus_Success() {
         // given
