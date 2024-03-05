@@ -345,6 +345,15 @@ class VoteServiceTest {
         assertThat(result.getBalanceOption().getTitle()).isEqualTo(newVote.getBalanceOption().getTitle());
     }
 
+    @Test
+    @DisplayName("투표 수정 시 게시글 정보가 없는 경우 예외를 발생시킨다.")
+    void updateVote_Fail_ByNotFoundPost() {
+        // when, then
+        assertThatThrownBy(()->voteService.updateVote(1L, new VoteRequest(1L, true)))
+                    .isInstanceOf(BalanceTalkException.class)
+                    .hasMessageContaining(ErrorCode.NOT_FOUND_POST.getMessage());
+    }
+
     private Vote createVote(Long id) {
         return Vote.builder()
                 .id(id)
