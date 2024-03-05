@@ -39,7 +39,7 @@ public class PostService {
     public PostResponse save(final PostRequest postRequestDto) {
         Member member = getMember(postRequestDto);
         if (redisService.getValues(member.getEmail()) == null) {
-            throw new BalanceTalkException(NOT_AUTHENTICATED_POST_CREATION);
+            throw new BalanceTalkException(FORBIDDEN_POST_CREATE);
         }
         List<File> images = getImages(postRequestDto);
         Post post = postRequestDto.toEntity(member, images);
