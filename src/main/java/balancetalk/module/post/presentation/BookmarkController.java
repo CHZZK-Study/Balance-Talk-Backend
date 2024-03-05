@@ -1,7 +1,6 @@
 package balancetalk.module.post.presentation;
 
 import balancetalk.module.post.application.BookmarkService;
-import balancetalk.module.post.dto.BookmarkRequestDto;
 import balancetalk.module.post.dto.BookmarkResponseDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -21,8 +20,8 @@ public class BookmarkController {
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/posts/{postId}")
     @Operation(summary = "북마크 추가", description = "post-id에 해당하는 게시글을 북마크에 추가한다.")
-    public String addBookmark(@PathVariable Long postId, @RequestBody final BookmarkRequestDto bookmarkRequestDto) {
-        bookmarkService.save(bookmarkRequestDto, postId);
+    public String addBookmark(@PathVariable Long postId) {
+        bookmarkService.save(postId);
 
         return "북마크가 등록 되었습니다.";
     }

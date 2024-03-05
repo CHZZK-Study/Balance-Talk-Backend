@@ -7,7 +7,6 @@ import balancetalk.module.post.domain.Bookmark;
 import balancetalk.module.post.domain.BookmarkRepository;
 import balancetalk.module.post.domain.Post;
 import balancetalk.module.post.domain.PostRepository;
-import balancetalk.module.post.dto.BookmarkRequestDto;
 import balancetalk.module.post.dto.BookmarkResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
@@ -29,14 +28,17 @@ public class BookmarkService {
     private final PostRepository postRepository;
 
     @Transactional
-    public Bookmark save(final BookmarkRequestDto bookmarkRequestDto, Long postId) {
+    public Bookmark save(Long postId) {
         Member member = getCurrentMember();
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_POST));
         if (member.hasBookmarked(post)) {
             throw new BalanceTalkException(ALREADY_BOOKMARK);
         }
-        Bookmark bookmark = bookmarkRequestDto.toEntity(member, post);
+        Bookmark bookmark = Bookmark.builder()
+                .member(member)
+                .post(post)
+                .build();
 
         return bookmarkRepository.save(bookmark);
     }
