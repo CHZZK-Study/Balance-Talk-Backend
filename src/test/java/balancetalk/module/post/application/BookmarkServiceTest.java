@@ -7,7 +7,6 @@ import balancetalk.module.post.domain.Bookmark;
 import balancetalk.module.post.domain.BookmarkRepository;
 import balancetalk.module.post.domain.Post;
 import balancetalk.module.post.domain.PostRepository;
-import balancetalk.module.post.dto.BookmarkRequestDto;
 import balancetalk.module.post.dto.BookmarkResponseDto;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -66,14 +65,14 @@ class BookmarkServiceTest {
         Long postId = 1L;
         Member member = Member.builder().email(authenticatedEmail).bookmarks(new ArrayList<>()).build();
         Post post = Post.builder().id(postId).build();
-        BookmarkRequestDto request = new BookmarkRequestDto();
+        Bookmark bookmark = Bookmark.builder().member(member).post(post).build();
 
         when(memberRepository.findByEmail(authenticatedEmail)).thenReturn(Optional.of(member));
         when(postRepository.findById(postId)).thenReturn(Optional.of(post));
         when(bookmarkRepository.save(any(Bookmark.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
         // when
-        Bookmark response = bookmarkService.save(request, postId);
+        Bookmark response = bookmarkService.save(postId);
 
         // then
         assertThat(response.getMember()).isEqualTo(member);
@@ -122,7 +121,7 @@ class BookmarkServiceTest {
         Long postId = 1L;
         Member member = Member.builder().email(authenticatedEmail).bookmarks(new ArrayList<>()).build();
         Post post = Post.builder().id(postId).build();
-        BookmarkRequestDto request = new BookmarkRequestDto();
+        Bookmark bookmark = Bookmark.builder().member(member).post(post).build();
 
         when(memberRepository.findByEmail(authenticatedEmail)).thenReturn(Optional.of(member));
         when(postRepository.findById(postId)).thenReturn(Optional.of(post));
@@ -130,7 +129,7 @@ class BookmarkServiceTest {
 
         // when
         // then
-        assertThatThrownBy(() -> bookmarkService.save(request, postId))
+        assertThatThrownBy(() -> bookmarkService.save(postId))
                 .isInstanceOf(BalanceTalkException.class)
                 .hasMessageContaining("이미 북마크한 게시글입니다.");
     }
@@ -141,14 +140,14 @@ class BookmarkServiceTest {
         // given
         Long postId = 1L;
         Member member = Member.builder().email(authenticatedEmail).bookmarks(new ArrayList<>()).build();
-        BookmarkRequestDto request = new BookmarkRequestDto();
+        Bookmark bookmark = Bookmark.builder().member(member).post(Post.builder().id(postId).build()).build();
 
         when(memberRepository.findByEmail(authenticatedEmail)).thenReturn(Optional.of(member));
         when(postRepository.findById(postId)).thenReturn(Optional.empty());
 
         // when
         // then
-        assertThatThrownBy(() -> bookmarkService.save(request, postId))
+        assertThatThrownBy(() -> bookmarkService.save(postId))
                 .isInstanceOf(BalanceTalkException.class)
                 .hasMessageContaining("존재하지 않는 게시글입니다.");
     }
