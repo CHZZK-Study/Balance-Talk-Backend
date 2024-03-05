@@ -8,10 +8,8 @@ import balancetalk.module.member.domain.Member;
 import balancetalk.module.member.domain.MemberRepository;
 import balancetalk.module.member.dto.*;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -36,69 +34,72 @@ public class MemberService {
     private final RedisService redisService;
 
     @Transactional
-    public Long join(final JoinDto joinDto) {
-        joinDto.setPassword(passwordEncoder.encode(joinDto.getPassword()));
-        Member member = joinDto.toEntity();
+    public Long join(final JoinRequest joinRequest) {
+        joinRequest.setPassword(passwordEncoder.encode(joinRequest.getPassword()));
+        Member member = joinRequest.toEntity();
         return memberRepository.save(member).getId();
     }
 
     @Transactional
-    public LoginSuccessDto login(final LoginDto loginDto) {
-        Member member = memberRepository.findByEmail(loginDto.getEmail())
+    public LoginResponse login(final LoginRequest loginRequest) {
+        Member member = memberRepository.findByEmail(loginRequest.getEmail())
                 .orElseThrow(() -> new BalanceTalkException(ErrorCode.MISMATCHED_EMAIL_OR_PASSWORD));
-        if (!passwordEncoder.matches(loginDto.getPassword(), member.getPassword())) {
+        if (!passwordEncoder.matches(loginRequest.getPassword(), member.getPassword())) {
             throw new BalanceTalkException(ErrorCode.MISMATCHED_EMAIL_OR_PASSWORD);
         }
 
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(loginDto.getEmail(), loginDto.getPassword())
-        );
-        String refreshToken = jwtTokenProvider.createRefreshToken(authentication);
-        TokenDto tokenDto = jwtTokenProvider.reissueToken(refreshToken); // 만료되었다면, 재발급
-        return LoginSuccessDto.builder()
-                .email(member.getEmail())
-                .password(member.getPassword())
-                .role(member.getRole())
-                .tokenDto(tokenDto)
-                .build();
-
+        try {
+            Authentication authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword())
+            );
+            String refreshToken = jwtTokenProvider.createRefreshToken(authentication);
+            TokenDto tokenDto = jwtTokenProvider.reissueToken(refreshToken); // 만료되었다면, 재발급
+            return LoginResponse.builder()
+                    .email(member.getEmail())
+                    .password(member.getPassword())
+                    .role(member.getRole())
+                    .tokenDto(tokenDto)
+                    .build();
+        } catch (BadCredentialsException e) {
+            throw new BadCredentialsException("credential 오류!!");
+        }
     }
 
     @Transactional(readOnly = true)
-    public MemberResponseDto findById(Long id) {
+    public MemberResponse findById(Long id) {
         Member member = memberRepository.findById(id)
                 .orElseThrow(() -> new BalanceTalkException(ErrorCode.NOT_FOUND_MEMBER));
-        return MemberResponseDto.fromEntity(member);
+        return MemberResponse.fromEntity(member);
     }
 
     @Transactional(readOnly = true)
-    public List<MemberResponseDto> findAll() {
+    public List<MemberResponse> findAll() {
         List<Member> members = memberRepository.findAll();
         return members.stream()
-                .map(MemberResponseDto::fromEntity)
+                .map(MemberResponse::fromEntity)
                 .collect(Collectors.toList());
     }
 
     @Transactional
-    public void updateNickname(final NicknameUpdate nicknameUpdate, HttpServletRequest request) {
+    public void updateNickname(final String newNickname, HttpServletRequest request) {
         Member member = extractMember(request);
-        member.updateNickname(nicknameUpdate.getNickname());
+        member.updateNickname(newNickname);
     }
 
     @Transactional
-    public void updatePassword(final PasswordUpdate passwordUpdate, HttpServletRequest request) {
+    public void updatePassword(final String newPassword, HttpServletRequest request) {
         Member member = extractMember(request);
-        member.updatePassword(passwordEncoder.encode(passwordUpdate.getPassword()));
+        member.updatePassword(passwordEncoder.encode(newPassword));
     }
 
     @Transactional
-    public void delete(final LoginDto loginDto, HttpServletRequest request) {
+    public void delete(final LoginRequest loginRequest, HttpServletRequest request) {
         Member member = extractMember(request);
-        if (!member.getEmail().equals(loginDto.getEmail())) {
+        if (!member.getEmail().equals(loginRequest.getEmail())) {
             throw new BalanceTalkException(ErrorCode.FORBIDDEN_MEMBER_DELETE);
         }
 
-        if (!passwordEncoder.matches(loginDto.getPassword(), member.getPassword())) {
+        if (!passwordEncoder.matches(loginRequest.getPassword(), member.getPassword())) {
             throw new BalanceTalkException(ErrorCode.MISMATCHED_EMAIL_OR_PASSWORD);
         }
         memberRepository.deleteByEmail(member.getEmail());
@@ -106,19 +107,20 @@ public class MemberService {
 
     @Transactional
     public void logout(){
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String email = authentication.getName();
-        if (redisService.getValues(email) == null) {
-            throw new BalanceTalkException(ErrorCode.UNAUTHORIZED_LOGOUT);
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (principal instanceof UserDetails) {
+            String username = ((UserDetails) principal).getUsername();
+            if (redisService.getValues(username) == null) {
+                throw new BalanceTalkException(ErrorCode.UNAUTHORIZED_LOGOUT);
+            }
+            redisService.deleteValues(username);
         }
-        redisService.deleteValues(email);
     }
 
     private Member extractMember(HttpServletRequest request) {
         String token = jwtTokenProvider.resolveToken(request);
         String email = jwtTokenProvider.getPayload(token);
-        Member member = memberRepository.findByEmail(email)
+        return memberRepository.findByEmail(email)
                 .orElseThrow(() -> new BalanceTalkException(ErrorCode.NOT_FOUND_MEMBER));
-        return member;
     }
 }
