@@ -1,35 +1,8 @@
 package balancetalk.module.post.application;
 
-import balancetalk.global.exception.BalanceTalkException;
-import balancetalk.module.file.domain.File;
-import balancetalk.module.file.domain.FileType;
-import balancetalk.module.file.dto.FileDto;
-import balancetalk.module.member.domain.Member;
-import balancetalk.module.member.domain.MemberRepository;
-import balancetalk.module.post.domain.BalanceOption;
-import balancetalk.module.post.domain.Post;
-import balancetalk.module.post.domain.PostLikeRepository;
-import balancetalk.module.post.domain.PostRepository;
-import balancetalk.module.post.domain.PostTag;
-import balancetalk.module.post.domain.Tag;
-import balancetalk.module.post.dto.BalanceOptionDto;
-import balancetalk.module.post.dto.PostRequestDto;
-import balancetalk.module.post.dto.PostResponseDto;
-import balancetalk.module.post.dto.PostTagDto;
-import org.junit.jupiter.api.*;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-import java.util.*;
-
-import static org.assertj.core.api.Assertions.*;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
-import static balancetalk.global.exception.ErrorCode.*;
-import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.mockito.BDDMockito.*;
 
 //@ExtendWith(MockitoExtension.class)
 //class PostServiceTest {
@@ -54,7 +27,11 @@ import static org.mockito.BDDMockito.*;
 //                .id(1L)
 //                .build();
 //
+<<<<<<< HEAD
 //        FileDto fileDto = FileDto.builder()
+=======
+//        FileResponse fileDto = FileResponse.builder()
+>>>>>>> main
 //                .uploadName("파일1")
 //                .path("../")
 //                .type(FileType.JPEG)
@@ -123,7 +100,11 @@ import static org.mockito.BDDMockito.*;
 //        when(postRepository.findAll()).thenReturn(posts);
 //
 //        // when
+<<<<<<< HEAD
 //        List<PostResponseDto> result = postService.findAll();
+=======
+//        List<PostResponse> result = postService.findAll();
+>>>>>>> main
 //
 //        // then
 //        assertEquals(result.get(0).getId(), 1L);
@@ -144,7 +125,11 @@ import static org.mockito.BDDMockito.*;
 //        when(postRepository.findById(1L)).thenReturn(Optional.of(post));
 //
 //        // when
+<<<<<<< HEAD
 //        PostResponseDto result = postService.findById(post.getId());
+=======
+//        PostResponse result = postService.findById(post.getId());
+>>>>>>> main
 //
 //        // then
 //        assertEquals(post.getId() , result.getId());
@@ -164,7 +149,11 @@ import static org.mockito.BDDMockito.*;
 //
 //        when(postRepository.findById(1L)).thenReturn(Optional.of(post));
 //
+<<<<<<< HEAD
 //        PostResponseDto result = postService.findById(post.getId());
+=======
+//        PostResponse result = postService.findById(post.getId());
+>>>>>>> main
 //
 //        // when
 //        postService.deleteById(result.getId());
@@ -186,7 +175,11 @@ import static org.mockito.BDDMockito.*;
 //
 //        when(postRepository.findById(1L)).thenReturn(Optional.of(post));
 //
+<<<<<<< HEAD
 //        PostResponseDto result = postService.findById(post.getId());
+=======
+//        PostResponse result = postService.findById(post.getId());
+>>>>>>> main
 //
 //        // when
 //        assertThatThrownBy(() -> postService.deleteById(2L))

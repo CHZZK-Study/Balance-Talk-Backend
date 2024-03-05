@@ -10,7 +10,7 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class CommentCreateRequest {
+public class CommentRequest {
 
     @Schema(description = "댓글 내용", example = "댓글 내용...")
     private String content;

@@ -2,8 +2,8 @@ package balancetalk.module.authmail.application;
 
 import balancetalk.global.exception.BalanceTalkException;
 import balancetalk.global.exception.ErrorCode;
-import balancetalk.module.authmail.dto.EmailRequestDto;
-import balancetalk.module.authmail.dto.EmailVerificationDto;
+import balancetalk.module.authmail.dto.EmailRequest;
+import balancetalk.module.authmail.dto.EmailVerification;
 import balancetalk.global.redis.application.RedisService;
 import balancetalk.module.member.domain.Member;
 import balancetalk.module.member.domain.MemberRepository;
@@ -23,26 +23,22 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class MailService {
 
+    private static final String SENDER_EMAIL = "bootsprng@gmail.com";
+
     private final JavaMailSender javaMailSender;
     private final RedisService redisService;
     private final MemberRepository memberRepository;
 
-    private static final String senderEmail = "bootsprng@gmail.com";
-
     @Value("${spring.mail.auth-code-expiration-millis}")
     private long authCodeExpirationMillis;
 
-    private String createNumber(){
-        return UUID.randomUUID().toString().substring(0, 6);
-    }
-
-    public MimeMessage createMail(EmailRequestDto request){
+    public MimeMessage createMail(EmailRequest request){
         String authCode = createNumber();
 
         MimeMessage message = javaMailSender.createMimeMessage();
 
         try {
-            message.setFrom(senderEmail);
+            message.setFrom(SENDER_EMAIL);
             message.setRecipients(MimeMessage.RecipientType.TO, request.getEmail());
             message.setSubject("이메일 인증");
             String body = "";
@@ -57,13 +53,17 @@ public class MailService {
         return message;
     }
 
-    public void sendMail(EmailRequestDto request){
+    private String createNumber(){
+        return UUID.randomUUID().toString().substring(0, 6);
+    }
+
+    public void sendMail(EmailRequest request){
         validateEmail(request.getEmail());
         MimeMessage message = createMail(request);
         javaMailSender.send(message);
     }
 
-    public void verifyCode(EmailVerificationDto request) {
+    public void verifyCode(EmailVerification request) {
         validateEmail(request.getEmail());
         String redisValue = redisService.getValues(request.getEmail());
         Optional.ofNullable(redisValue)

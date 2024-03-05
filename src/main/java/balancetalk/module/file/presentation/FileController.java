@@ -1,7 +1,7 @@
 package balancetalk.module.file.presentation;
 
 import balancetalk.module.file.application.FileUploadService;
-import balancetalk.module.file.dto.FileDto;
+import balancetalk.module.file.dto.FileResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -16,7 +16,7 @@ public class FileController {
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/image/upload")
-    public FileDto uploadImage(@RequestParam("file") MultipartFile file) {
+    public FileResponse uploadImage(@RequestParam("file") MultipartFile file) {
         return fileUploadService.uploadImage(file);
     }
 }

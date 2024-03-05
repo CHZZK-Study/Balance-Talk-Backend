@@ -5,7 +5,7 @@ import balancetalk.global.exception.ErrorCode;
 import balancetalk.module.file.domain.File;
 import balancetalk.module.file.domain.FileRepository;
 import balancetalk.module.file.domain.FileType;
-import balancetalk.module.file.dto.FileDto;
+import balancetalk.module.file.dto.FileResponse;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
@@ -30,7 +30,7 @@ public class FileUploadService {
     private String bucket;
 
     @Transactional
-    public FileDto uploadImage(MultipartFile multipartFile) {
+    public FileResponse uploadImage(MultipartFile multipartFile) {
         String uploadDir = "balance-talk-images/balance-option/";
         String originalName = multipartFile.getOriginalFilename();
         String storedName = String.format("%s_%s", UUID.randomUUID(), originalName);
@@ -41,7 +41,7 @@ public class FileUploadService {
             putObjectToS3(uploadDir + storedName, inputStream, contentLength);
             File file = fileRepository.save(createFile(originalName, storedName, uploadDir, fileType, contentLength));
 
-            return FileDto.fromEntity(file);
+            return FileResponse.fromEntity(file);
         } catch (IOException e) {
             throw new BalanceTalkException(ErrorCode.FILE_UPLOAD_FAILED);
         }
