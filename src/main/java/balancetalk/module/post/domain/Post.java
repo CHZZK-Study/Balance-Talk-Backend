@@ -64,7 +64,6 @@ public class Post extends BaseTimeEntity {
     @OneToMany(mappedBy = "post")
     private List<Comment> comments = new ArrayList<>();
 
-
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
     private List<PostTag> postTags = new ArrayList<>();
 

@@ -51,16 +51,16 @@ public class PostController {
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/{postId}/likes")
     @Operation(summary = "게시글 추천", description = "post-id에 해당하는 게시글에 추천을 누른다.")
-    public String likePost(@PathVariable Long postId, @RequestBody Long memberId) {
-        postService.likePost(postId, memberId);
+    public String likePost(@PathVariable Long postId) {
+        postService.likePost(postId);
         return "요청이 정상적으로 처리되었습니다.";
     }
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping("/{postId}/likes")
     @Operation(summary = "게시글 추천 취소", description = "post-id에 해당하는 게시글에 누른 추천을 취소한다.")
-    public String cancelLikePost(@PathVariable Long postId, @RequestBody Long memberId) {
-        postService.cancelLikePost(postId, memberId);
+    public String cancelLikePost(@PathVariable Long postId) {
+        postService.cancelLikePost(postId);
         return "요청이 정상적으로 처리되었습니다.";
     }
 }
