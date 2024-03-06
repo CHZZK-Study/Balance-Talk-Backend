@@ -8,10 +8,15 @@ import balancetalk.module.post.domain.PostCategory;
 import balancetalk.module.post.domain.PostTag;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
-import java.util.stream.IntStream;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Data
@@ -51,9 +56,19 @@ public class PostRequest {
     }
 
     private List<BalanceOption> getBalanceOptions(List<File> images) {
-        return IntStream.range(0, balanceOptions.size())
-                .mapToObj(i -> balanceOptions.get(i).toEntity(images.get(i)))
-                .collect(Collectors.toList());
+        if (images.isEmpty()) {
+            return balanceOptions.stream()
+                    .map(balanceOptionDto -> balanceOptionDto.toEntity(null))
+                    .collect(Collectors.toList());
+        } else {
+            Map<String, File> fileNameToFileMap = images.stream()
+                    .collect(Collectors.toMap(File::getStoredName, Function.identity()));
+
+            return balanceOptions.stream()
+                    .map(balanceOptionDto -> balanceOptionDto.toEntity(fileNameToFileMap.getOrDefault(balanceOptionDto.getStoredFileName(),
+                            null)))
+                    .collect(Collectors.toList());
+        }
     }
 
     private List<PostTag> getPostTags() {
