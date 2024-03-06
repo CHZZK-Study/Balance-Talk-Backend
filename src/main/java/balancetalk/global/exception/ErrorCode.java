@@ -55,6 +55,7 @@ public enum ErrorCode {
     ALREADY_VOTE(CONFLICT, "이미 투표한 게시글입니다."),
     ALREADY_LIKE_COMMENT(CONFLICT, "이미 추천을 누른 댓글입니다."),
     ALREADY_LIKE_POST(CONFLICT, "이미 추천을 누른 게시글입니다."),
+    ALREADY_CANCEL_LIKE_POST(CONFLICT, "이미 추천 취소를 누른 게시글입니다"),
 
     // 500
     REDIS_CONNECTION_FAIL(INTERNAL_SERVER_ERROR, "Redis 연결에 실패했습니다."),
