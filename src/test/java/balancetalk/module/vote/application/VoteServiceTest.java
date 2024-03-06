@@ -8,7 +8,6 @@ import static org.mockito.Mockito.when;
 
 import balancetalk.global.exception.BalanceTalkException;
 import balancetalk.global.exception.ErrorCode;
-import balancetalk.global.utils.SecurityUtils;
 import balancetalk.module.member.domain.Member;
 import balancetalk.module.member.domain.MemberRepository;
 import balancetalk.module.post.domain.*;
@@ -30,7 +29,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.test.context.support.WithMockUser;
 
 @ExtendWith(MockitoExtension.class)
 class VoteServiceTest {
@@ -224,7 +222,6 @@ class VoteServiceTest {
     @DisplayName("투표 생성 시 이미 투표한 기록이 있는 게시글인 경우 예외가 발생한다.")
     void createVote_Fail_ByAlreadyVoted() {
         // given
-
         BalanceOption balanceOption = BalanceOption.builder()
                 .id(1L)
                 .build();
@@ -285,6 +282,18 @@ class VoteServiceTest {
     }
 
     @Test
+    @DisplayName("투표 현황 조회 시 게시글 정보가 없는 경우 예외를 발생시킨다.")
+    void readVotingStatus_Fail_ByNotFoundPost() {
+        // given
+        when(postRepository.findById(any())).thenThrow(new BalanceTalkException(ErrorCode.NOT_FOUND_POST));
+
+        // when, then
+        assertThatThrownBy(() -> voteService.votingStatus(1L))
+                .isInstanceOf(BalanceTalkException.class)
+                .hasMessageContaining(ErrorCode.NOT_FOUND_POST.getMessage());
+    }
+
+    @Test
     @DisplayName("투표를 수정한다.")
     void updateVote_Success() {
         // given
@@ -334,6 +343,122 @@ class VoteServiceTest {
         // then
         assertThat(result.getBalanceOption().getId()).isEqualTo(newVote.getBalanceOption().getId());
         assertThat(result.getBalanceOption().getTitle()).isEqualTo(newVote.getBalanceOption().getTitle());
+    }
+
+    @Test
+    @DisplayName("투표 수정 시 게시글 정보가 없는 경우 예외를 발생시킨다.")
+    void updateVote_Fail_ByNotFoundPost() {
+        // when, then
+        assertThatThrownBy(() -> voteService.updateVote(1L, new VoteRequest(1L, true)))
+                .isInstanceOf(BalanceTalkException.class)
+                .hasMessageContaining(ErrorCode.NOT_FOUND_POST.getMessage());
+    }
+
+    @Test
+    @DisplayName("투표 수정 시 선택지 정보가 없는 경우 예외를 발생시킨다.")
+    void updateVote_Fail_ByNotFoundBalanceOption() {
+        // given
+        Post post = Post.builder()
+                .id(1L)
+                .category(PostCategory.DISCUSSION)
+                .build();
+
+        when(postRepository.findById(any())).thenReturn(Optional.of(post));
+        when(balanceOptionRepository.findById(any()))
+                .thenThrow(new BalanceTalkException(ErrorCode.NOT_FOUND_BALANCE_OPTION));
+
+        // when, then
+        assertThatThrownBy(() -> voteService.updateVote(1L, new VoteRequest(1L, true)))
+                .isInstanceOf(BalanceTalkException.class)
+                .hasMessageContaining(ErrorCode.NOT_FOUND_BALANCE_OPTION.getMessage());
+    }
+
+    @Test
+    @DisplayName("투표 수정 시 회원 정보가 없는 경우 예외를 발생시킨다.")
+    void updateVote_Fail_ByNotFoundMember() {
+        // given
+        Post post = Post.builder()
+                .id(1L)
+                .category(PostCategory.DISCUSSION)
+                .build();
+        BalanceOption newOption = BalanceOption.builder()
+                .id(1L)
+                .title("A")
+                .post(post)
+                .build();
+
+        when(postRepository.findById(any())).thenReturn(Optional.of(post));
+        when(balanceOptionRepository.findById(any())).thenReturn(Optional.of(newOption));
+        when(memberRepository.findByEmail(AUTHENTICATED_EMAIL))
+                .thenThrow(new BalanceTalkException(ErrorCode.NOT_FOUND_MEMBER));
+
+        // when, then
+        assertThatThrownBy(() -> voteService.updateVote(1L, new VoteRequest(1L, true)))
+                .isInstanceOf(BalanceTalkException.class)
+                .hasMessageContaining(ErrorCode.NOT_FOUND_MEMBER.getMessage());
+    }
+
+    @Test
+    @DisplayName("투표 수정 시 회원 정보가 없는 경우 예외를 발생시킨다.")
+    void updateVote_Fail_ByNotFoundVote() {
+        // given
+        Post post = Post.builder()
+                .id(1L)
+                .category(PostCategory.DISCUSSION)
+                .build();
+        BalanceOption option = BalanceOption.builder()
+                .id(1L)
+                .title("origin")
+                .post(post)
+                .build();
+
+        Post otherPost = Post.builder()
+                .id(2L)
+                .category(PostCategory.DISCUSSION)
+                .build();
+        BalanceOption optionInOtherPost = BalanceOption.builder()
+                .id(2L)
+                .title("other")
+                .post(otherPost)
+                .build();
+
+        Vote oldVote = Vote.builder()
+                .id(1L)
+                .balanceOption(optionInOtherPost)
+                .build();
+        List<Vote> votes = List.of(oldVote);
+
+        Member member = Member.builder()
+                .id(1L)
+                .email(AUTHENTICATED_EMAIL)
+                .votes(votes)
+                .build();
+
+        when(postRepository.findById(any())).thenReturn(Optional.of(post));
+        when(balanceOptionRepository.findById(any())).thenReturn(Optional.of(option));
+        when(memberRepository.findByEmail(AUTHENTICATED_EMAIL)).thenReturn(Optional.of(member));
+
+        // when, then
+        assertThatThrownBy(() -> voteService.updateVote(1L, new VoteRequest(2L, true)))
+                .isInstanceOf(BalanceTalkException.class)
+                .hasMessageContaining(ErrorCode.NOT_FOUND_VOTE.getMessage());
+    }
+
+    @Test
+    @DisplayName("투표 수정 시 게시글의 카테고리가 캐주얼인 경우 예외를 발생시킨다.")
+    void updateVote_Fail_ByPostIsCasual() {
+        // given
+        Post post = Post.builder()
+                .id(1L)
+                .category(PostCategory.CASUAL)
+                .build();
+
+        when(postRepository.findById(any())).thenReturn(Optional.of(post));
+
+        // when, then
+        assertThatThrownBy(() -> voteService.updateVote(1L, new VoteRequest(1L, true)))
+                .isInstanceOf(BalanceTalkException.class)
+                .hasMessageContaining(ErrorCode.UNMODIFIABLE_VOTE.getMessage());
     }
 
     private Vote createVote(Long id) {
