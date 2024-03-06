@@ -10,7 +10,7 @@ import static org.assertj.core.api.Assertions.*;
 import static org.awaitility.Awaitility.await;
 
 @SpringBootTest
-class RedisCrudTEST {
+class RedisCrudTest {
 
     final String KEY = "key";
     final String VALUE = "value";

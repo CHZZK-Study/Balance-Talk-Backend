@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class PostRequestDto {
+public class PostRequest {
 
     @Schema(description = "게시글을 작성한 회원 id", example = "1")
     private Long memberId;

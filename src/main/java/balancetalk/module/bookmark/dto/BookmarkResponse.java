@@ -1,6 +1,6 @@
-package balancetalk.module.post.dto;
+package balancetalk.module.bookmark.dto;
 
-import balancetalk.module.post.domain.Bookmark;
+import balancetalk.module.bookmark.domain.Bookmark;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 @Data
 @Builder
 @AllArgsConstructor
-public class BookmarkResponseDto {
+public class BookmarkResponse {
 
     @Schema(description = "북마크 id", example = "5")
     private Long id;
@@ -22,8 +22,8 @@ public class BookmarkResponseDto {
     @Schema(description = "투료 종료 기한", example = "2024-03-16 08:27:17.391706\t")
     private LocalDateTime deadline;
 
-    public static BookmarkResponseDto fromEntity(Bookmark bookmark) {
-        return BookmarkResponseDto.builder()
+    public static BookmarkResponse fromEntity(Bookmark bookmark) {
+        return BookmarkResponse.builder()
                 .id(bookmark.getId())
                 .postTitle(bookmark.getPost().getTitle())
                 .deadline(bookmark.getPost().getDeadline())

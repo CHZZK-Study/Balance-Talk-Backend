@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
 @Data
 @Builder
 @AllArgsConstructor
-public class PostResponseDto {
+public class PostResponse {
 
     @Schema(description = "게시글 id", example = "1")
     private Long id;
@@ -49,8 +49,8 @@ public class PostResponseDto {
     private String createdBy;
 
     // todo: ProfilePhoto 추가
-    public static PostResponseDto fromEntity(Post post, Member member) {
-        return PostResponseDto.builder()
+    public static PostResponse fromEntity(Post post, Member member) {
+        return PostResponse.builder()
                 .id(post.getId())
                 .title(post.getTitle())
                 .deadline(post.getDeadline())
