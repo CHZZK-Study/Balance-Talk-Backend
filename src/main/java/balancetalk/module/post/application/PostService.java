@@ -9,21 +9,17 @@ import balancetalk.module.file.domain.File;
 import balancetalk.module.file.domain.FileRepository;
 import balancetalk.module.member.domain.Member;
 import balancetalk.module.member.domain.MemberRepository;
-import balancetalk.module.post.domain.BalanceOption;
-import balancetalk.module.post.domain.Post;
-import balancetalk.module.post.domain.PostLike;
-import balancetalk.module.post.domain.PostLikeRepository;
-import balancetalk.module.post.domain.PostRepository;
-import balancetalk.module.post.domain.PostTag;
+import balancetalk.module.post.domain.*;
 import balancetalk.module.post.dto.BalanceOptionDto;
 import balancetalk.module.post.dto.PostRequest;
 import balancetalk.module.post.dto.PostResponse;
-import java.util.List;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -65,6 +61,7 @@ public class PostService {
     private List<File> getImages(PostRequest postRequestDto) {
         List<BalanceOptionDto> balanceOptions = postRequestDto.getBalanceOptions();
         return balanceOptions.stream()
+                .filter(optionDto -> optionDto.getStoredFileName() != null && !optionDto.getStoredFileName().isEmpty())
                 .map(optionDto -> fileRepository.findByStoredName(optionDto.getStoredFileName())
                         .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_FILE)))
                 .toList();
