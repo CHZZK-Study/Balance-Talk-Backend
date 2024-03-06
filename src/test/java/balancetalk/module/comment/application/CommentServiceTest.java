@@ -1,5 +1,6 @@
 package balancetalk.module.comment.application;
 
+import static balancetalk.global.exception.ErrorCode.NOT_FOUND_COMMENT_AT_THAT_POST;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
@@ -136,15 +137,18 @@ class CommentServiceTest {
     void updateComment_Success() {
         // given
         Long commentId = 1L;
+        Long postId = 1L;
         String updatedContent = "업데이트된 댓글 내용";
+        Post post = Post.builder().id(postId).build();
         Member member = Member.builder().email(authenticatedEmail).votes(List.of()).build();
-        Comment existingComment = Comment.builder().id(commentId).member(member).content("기존 댓글 내용").build();
+        Comment existingComment = Comment.builder().id(commentId).member(member).post(post).content("기존 댓글 내용").build();
 
+        when(postRepository.findById(postId)).thenReturn(Optional.of(post));
         when(memberRepository.findByEmail(authenticatedEmail)).thenReturn(Optional.of(member));
         when(commentRepository.findById(commentId)).thenReturn(Optional.of(existingComment));
 
         // when
-        Comment updatedComment = commentService.updateComment(commentId, updatedContent);
+        Comment updatedComment = commentService.updateComment(commentId, postId, updatedContent);
 
         // then
         assertThat(updatedComment.getContent()).isEqualTo(updatedContent);
@@ -155,15 +159,18 @@ class CommentServiceTest {
     void deleteComment_Success() {
         // given
         Long commentId = 1L;
+        Long postId = 1L;
+        Post post = Post.builder().id(postId).build();
         Member member = Member.builder().email(authenticatedEmail).votes(List.of()).build();
-        Comment existingComment = Comment.builder().id(commentId).member(member).content("기존 댓글 내용").build();
+        Comment existingComment = Comment.builder().id(commentId).member(member).post(post).content("기존 댓글 내용").build();
 
+        when(postRepository.findById(postId)).thenReturn(Optional.of(post));
         when(memberRepository.findByEmail(authenticatedEmail)).thenReturn(Optional.of(member));
         when(commentRepository.findById(commentId)).thenReturn(Optional.of(existingComment));
         doNothing().when(commentRepository).deleteById(commentId);
 
         // when
-        commentService.deleteComment(commentId);
+        commentService.deleteComment(commentId, postId);
 
         // then
         verify(commentRepository).deleteById(commentId);
@@ -209,6 +216,7 @@ class CommentServiceTest {
     void updateComment_Fail_CommentNotFound() {
         // given
         Long commentId = 1L;
+        Long postId = 1L;
         String updatedContent = "업데이트된 댓글 내용";
 
         when(commentRepository.findById(commentId)).thenReturn(Optional.empty());
@@ -216,7 +224,7 @@ class CommentServiceTest {
         // when
 
         // then
-        assertThatThrownBy(() -> commentService.updateComment(commentId, updatedContent))
+        assertThatThrownBy(() -> commentService.updateComment(commentId, postId, updatedContent))
                 .isInstanceOf(BalanceTalkException.class)
                 .hasMessageContaining("존재하지 않는 댓글입니다.");
     }
@@ -226,13 +234,14 @@ class CommentServiceTest {
     void deleteComment_Fail_CommentNotFound() {
         // given
         Long commentId = 1L;
+        Long postId = 1L;
 
         when(commentRepository.findById(commentId)).thenReturn(Optional.empty());
 
         // when
 
         // then
-        assertThatThrownBy(() -> commentService.deleteComment(commentId))
+        assertThatThrownBy(() -> commentService.deleteComment(commentId, postId))
                 .isInstanceOf(BalanceTalkException.class)
                 .hasMessageContaining("존재하지 않는 댓글입니다.");
     }
@@ -297,17 +306,43 @@ class CommentServiceTest {
     void updateComment_Fail_ForbiddenModify() {
         // given
         Long commentId = 1L;
+        Long postId = 1L;
         String updatedContent = "업데이트된 댓글 내용";
+        Post post = Post.builder().id(postId).build();
         Member commentOwner = Member.builder().email("owner@example.com").build(); // 댓글 소유자
-        Comment existingComment = Comment.builder().id(commentId).member(commentOwner).content("기존 댓글 내용").build();
+        Comment existingComment = Comment.builder().id(commentId).member(commentOwner).post(post).content("기존 댓글 내용").build();
 
+        when(postRepository.findById(postId)).thenReturn(Optional.of(post));
         when(commentRepository.findById(commentId)).thenReturn(Optional.of(existingComment));
         when(memberRepository.findByEmail(authenticatedEmail)).thenReturn(Optional.of(Member.builder().email(authenticatedEmail).build()));
 
         // when, then
-        assertThatThrownBy(() -> commentService.updateComment(commentId, updatedContent))
+        assertThatThrownBy(() -> commentService.updateComment(commentId, postId, updatedContent))
                 .isInstanceOf(BalanceTalkException.class)
                 .hasMessageContaining(ErrorCode.FORBIDDEN_COMMENT_MODIFY.getMessage());
+    }
+
+    @Test
+    @DisplayName("댓글 수정 실패 - 해당 게시물에 존재하지 않는 댓글")
+    void updateComment_Fail_CommentNotExistThatPost() {
+        // given
+        Long commentId = 1L;
+        Long postId = 1L;
+        Long wrongPostID = 2L;
+        String updatedContent = "업데이트된 댓글 내용";
+        Member commentOwner = Member.builder().email(authenticatedEmail).build(); // 댓글 소유자
+        Post post = Post.builder().id(postId).build();
+        Post wrongPost = Post.builder().id(wrongPostID).build();
+        Comment existingComment = Comment.builder().id(commentId).post(post).member(commentOwner).content("기존 댓글 내용").build();
+
+        when(postRepository.findById(wrongPostID)).thenReturn(Optional.of(wrongPost));
+        when(commentRepository.findById(commentId)).thenReturn(Optional.of(existingComment));
+        when(memberRepository.findByEmail(authenticatedEmail)).thenReturn(Optional.of(commentOwner));
+
+        // when, then
+        assertThatThrownBy(() -> commentService.updateComment(commentId, wrongPostID, updatedContent))
+                .isInstanceOf(BalanceTalkException.class)
+                .hasMessageContaining(NOT_FOUND_COMMENT_AT_THAT_POST.getMessage());
     }
 
     @Test
@@ -315,15 +350,40 @@ class CommentServiceTest {
     void deleteComment_Fail_ForbiddenDelete() {
         // given
         Long commentId = 1L;
+        Long postId = 1L;
+        Post post = Post.builder().id(postId).build();
         Member commentOwner = Member.builder().email("owner@example.com").build(); // 댓글 소유자
         Comment existingComment = Comment.builder().id(commentId).member(commentOwner).content("기존 댓글 내용").build();
 
+        when(postRepository.findById(postId)).thenReturn(Optional.of(post));
         when(commentRepository.findById(commentId)).thenReturn(Optional.of(existingComment));
         when(memberRepository.findByEmail(authenticatedEmail)).thenReturn(Optional.of(Member.builder().email(authenticatedEmail).build()));
 
         // when, then
-        assertThatThrownBy(() -> commentService.deleteComment(commentId))
+        assertThatThrownBy(() -> commentService.deleteComment(commentId, postId))
                 .isInstanceOf(BalanceTalkException.class)
                 .hasMessageContaining(ErrorCode.FORBIDDEN_COMMENT_DELETE.getMessage());
+    }
+
+    @Test
+    @DisplayName("댓글 삭제 실패 - 해당 게시물에 존재하지 않는 댓글")
+    void deleteComment_Fail_CommentNotExistThatPost() {
+        // given
+        Long commentId = 1L;
+        Long postId = 1L;
+        Long wrongPostID = 2L;
+        Member commentOwner = Member.builder().email(authenticatedEmail).build(); // 댓글 소유자
+        Post post = Post.builder().id(postId).build();
+        Post wrongPost = Post.builder().id(wrongPostID).build();
+        Comment existingComment = Comment.builder().id(commentId).post(post).member(commentOwner).content("댓글 내용").build();
+
+        when(postRepository.findById(wrongPostID)).thenReturn(Optional.of(wrongPost));
+        when(commentRepository.findById(commentId)).thenReturn(Optional.of(existingComment));
+        when(memberRepository.findByEmail(authenticatedEmail)).thenReturn(Optional.of(commentOwner));
+
+        // when, then
+        assertThatThrownBy(() -> commentService.deleteComment(commentId, wrongPostID))
+                .isInstanceOf(BalanceTalkException.class)
+                .hasMessageContaining(NOT_FOUND_COMMENT_AT_THAT_POST.getMessage());
     }
 }

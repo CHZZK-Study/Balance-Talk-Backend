@@ -9,8 +9,6 @@ import balancetalk.module.member.domain.MemberRepository;
 import balancetalk.module.post.domain.Post;
 import balancetalk.module.post.domain.PostRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,6 +16,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static balancetalk.global.exception.ErrorCode.*;
+import static balancetalk.global.utils.SecurityUtils.getCurrentMember;
 
 @Service
 @RequiredArgsConstructor
@@ -29,7 +28,7 @@ public class BookmarkService {
 
     @Transactional
     public Bookmark createBookmark(Long postId) {
-        Member member = getCurrentMember();
+        Member member = getCurrentMember(memberRepository);
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_POST));
         if (member.hasBookmarked(post)) {
@@ -45,7 +44,7 @@ public class BookmarkService {
 
     @Transactional(readOnly = true)
     public List<BookmarkResponse> findAllByMember() {
-        Member member = getCurrentMember();
+        Member member = getCurrentMember(memberRepository);
         List<Bookmark> bookmarks = bookmarkRepository.findByMember(member);
 
         return bookmarks.stream()
@@ -55,7 +54,7 @@ public class BookmarkService {
 
     @Transactional
     public void deleteByPostId(Long postId) {
-        Member member = getCurrentMember();
+        Member member = getCurrentMember(memberRepository);
         Bookmark bookmark = bookmarkRepository.findByMemberAndPostId(member, postId)
                 .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_BOOKMARK));
 
@@ -64,13 +63,5 @@ public class BookmarkService {
         }
 
         bookmarkRepository.delete(bookmark);
-    }
-
-    private Member getCurrentMember() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String email = authentication.getName();
-
-        return memberRepository.findByEmail(email)
-                .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_MEMBER));
     }
 }

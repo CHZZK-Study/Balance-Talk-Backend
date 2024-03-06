@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
 
 @RestController
@@ -37,16 +38,16 @@ public class CommentController {
     @ResponseStatus(HttpStatus.OK)
     @PutMapping("/{commentId}")
     @Operation(summary = "댓글 수정", description = "comment-id에 해당하는 댓글 내용을 수정한다.")
-    public String updateComment(@PathVariable Long commentId, @RequestBody CommentRequest request) {
-        commentService.updateComment(commentId, request.getContent());
+    public String updateComment(@PathVariable Long commentId, @PathVariable Long postId, @RequestBody CommentRequest request) {
+        commentService.updateComment(commentId, postId, request.getContent());
         return "댓글이 정상적으로 수정되었습니다.";
     }
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping("/{commentId}")
     @Operation(summary = "댓글 삭제", description = "comment-id에 해당하는 댓글을 삭제한다.")
-    public String deleteComment(@PathVariable Long commentId) {
-        commentService.deleteComment(commentId);
+    public String deleteComment(@PathVariable Long commentId, @PathVariable Long postId) {
+        commentService.deleteComment(commentId, postId);
         return "댓글이 정상적으로 삭제되었습니다.";
     }
 
