@@ -33,6 +33,7 @@ public enum ErrorCode {
     UNAUTHORIZED_LOGOUT(UNAUTHORIZED, "로그아웃을 위해서는 인증이 필요합니다."),
 
     // 403
+    FORBIDDEN_POST_DELETE(FORBIDDEN, "해당 게시글은 삭제 권한이 없습니다."),
     FORBIDDEN_COMMENT_MODIFY(FORBIDDEN, "해당 댓글은 수정 권한이 없습니다."),
     FORBIDDEN_COMMENT_DELETE(FORBIDDEN, "해당 댓글은 삭제 권한이 없습니다."),
     FORBIDDEN_MEMBER_DELETE(FORBIDDEN, "사용자 탈퇴 권한이 없습니다."),

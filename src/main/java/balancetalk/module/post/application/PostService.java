@@ -79,7 +79,7 @@ public class PostService {
     }
 
     @Transactional(readOnly = true)
-    public PostResponseDto findById(Long postId, Long memberId) {
+    public PostResponse findById(Long postId, Long memberId) {
         Post post = getCurrentPost(postId);
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_MEMBER));
