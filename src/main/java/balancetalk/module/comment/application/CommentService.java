@@ -1,7 +1,5 @@
 package balancetalk.module.comment.application;
 
-import static balancetalk.global.exception.ErrorCode.*;
-
 import balancetalk.global.exception.BalanceTalkException;
 import balancetalk.global.exception.ErrorCode;
 import balancetalk.module.comment.domain.Comment;
@@ -73,23 +71,33 @@ public class CommentService {
         return responses;
     }
 
-    public Comment updateComment(Long commentId, String content) {
+    public Comment updateComment(Long commentId, Long postId, String content) {
         Comment comment = validateCommentId(commentId);
+        validatePostId(postId);
 
         if (!getCurrentMember(memberRepository).equals(comment.getMember())) {
             throw new BalanceTalkException(FORBIDDEN_COMMENT_MODIFY);
+        }
+
+        if (!comment.getPost().getId().equals(postId)) {
+            throw new BalanceTalkException(NOT_FOUND_COMMENT_AT_THAT_POST);
         }
 
         comment.updateContent(content);
         return comment;
     }
 
-    public void deleteComment(Long commentId) {
-        validateCommentId(commentId);
+    public void deleteComment(Long commentId, Long postId) {
+        Comment comment = validateCommentId(commentId);
         Member commentMember = commentRepository.findById(commentId).get().getMember();
+        validatePostId(postId);
 
         if (!getCurrentMember(memberRepository).equals(commentMember)) {
             throw new BalanceTalkException(FORBIDDEN_COMMENT_DELETE);
+        }
+
+        if (!comment.getPost().getId().equals(postId)) {
+            throw new BalanceTalkException(NOT_FOUND_COMMENT_AT_THAT_POST);
         }
 
         commentRepository.deleteById(commentId);

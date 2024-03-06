@@ -1,7 +1,6 @@
 package balancetalk.global.utils;
 
 import static balancetalk.global.exception.ErrorCode.NOT_FOUND_MEMBER;
-
 import balancetalk.global.exception.BalanceTalkException;
 import balancetalk.module.member.domain.Member;
 import balancetalk.module.member.domain.MemberRepository;
