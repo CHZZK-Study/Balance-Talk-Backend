@@ -7,9 +7,11 @@ import balancetalk.module.post.domain.Post;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @AllArgsConstructor
+@NoArgsConstructor
 public class CommentRequest {
 
     @Schema(description = "댓글 내용", example = "댓글 내용...")

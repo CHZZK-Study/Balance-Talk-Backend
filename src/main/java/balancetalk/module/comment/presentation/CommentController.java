@@ -4,6 +4,7 @@ import balancetalk.module.comment.application.CommentService;
 import balancetalk.module.comment.dto.CommentRequest;
 import balancetalk.module.comment.dto.CommentResponse;
 import balancetalk.module.comment.dto.ReplyCreateRequest;
+import balancetalk.module.report.dto.ReportRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -54,7 +55,7 @@ public class CommentController {
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/{commentId}/replies")
     @Operation(summary = "답글 작성", description = "comment-id에 해당하는 댓글에 답글을 작성한다.")
-    public String createComment(@PathVariable Long postId, @PathVariable Long commentId, @RequestBody ReplyCreateRequest request) {
+    public String createComment(@PathVariable Long commentId, @PathVariable Long postId, @RequestBody ReplyCreateRequest request) {
         commentService.createReply(postId, commentId, request);
         return "답글이 정상적으로 작성되었습니다.";
     }
@@ -62,7 +63,7 @@ public class CommentController {
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/{commentId}/likes")
     @Operation(summary = "댓글 추천", description = "comment-id에 해당하는 댓글에 추천을 누른다.")
-    public String likeComment(@PathVariable Long postId, @PathVariable Long commentId) {
+    public String likeComment(@PathVariable Long commentId, @PathVariable Long postId) {
         commentService.likeComment(postId, commentId);
         return "요청이 정상적으로 처리되었습니다.";
     }
@@ -72,5 +73,13 @@ public class CommentController {
     @Operation(summary = "댓글 추천 취소", description = "comment-id에 해당하는 댓글에 누른 추천을 취소한다.")
     public void cancelLikeComment(@PathVariable Long commentId) {
         commentService.cancelLikeComment(commentId);
+    }
+
+    @ResponseStatus(HttpStatus.OK)
+    @PostMapping("/{commentId}/report")
+    @Operation(summary = "댓글 신고", description = "comment-id에 해당하는 댓글을 신고 처리한다.")
+    public String reportComment(@PathVariable Long postId, @PathVariable Long commentId, @RequestBody ReportRequest reportRequest) {
+        commentService.reportComment(postId, commentId, reportRequest);
+        return "신고가 성공적으로 접수되었습니다.";
     }
 }

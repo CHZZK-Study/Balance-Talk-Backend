@@ -52,6 +52,12 @@ public class Comment extends BaseTimeEntity {
     @OneToMany(mappedBy = "comment")
     private List<Report> reports = new ArrayList<>();
 
+    public long reportedCount() {
+        if (reports == null) {
+            return 0;
+        }
+        return reports.size();
+    }
     public void updateContent(String content) {
         this.content = content;
     }

@@ -10,7 +10,6 @@ import lombok.NoArgsConstructor;
 @Builder
 @Data
 @AllArgsConstructor
-@NoArgsConstructor
 public class ReportRequest {
 
     @Schema(description = "신고 이유", example = "정치 게시글 / 분란성 댓글")
@@ -18,4 +17,5 @@ public class ReportRequest {
 
     @Schema(description = "신고 설명", example = "게시글 / 댓글 신고한 이유")
     private String description;
+
 }
