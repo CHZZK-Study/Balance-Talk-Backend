@@ -29,6 +29,9 @@ public class MemberResponse {
     @Schema(description = "작성한 게시글 수", example = "11")
     private int postsCount;
 
+    @Schema(description = "신고한 횟수" , example = "3")
+    private int reportsCount;
+
     @Schema(description = "작성한 게시글의 받은 추천 수", example = "119")
     private int totalPostLike;
 
@@ -42,6 +45,7 @@ public class MemberResponse {
                 //.profilePhoto(file.getPath())
                 .createdAt(member.getCreatedAt())
                 .postsCount(member.getPostCount())
+                .reportsCount(member.getReportsCount())
                 .totalPostLike(member.getPostLikes())
                 .build();
     }

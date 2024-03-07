@@ -132,6 +132,11 @@ public class Member extends BaseTimeEntity implements UserDetails {
                 .map(List::size).orElse(0);
     }
 
+    public int getReportsCount() {
+        return Optional.ofNullable(reports)
+                .map(List::size).orElse(0);
+    }
+
     public boolean hasVoted(Post post) {
         return votes.stream()
                 .anyMatch(vote -> vote.getBalanceOption().getPost().equals(post));
