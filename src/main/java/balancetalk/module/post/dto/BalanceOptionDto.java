@@ -11,7 +11,6 @@ import org.springframework.lang.Nullable;
 
 @Data
 @Builder
-@NoArgsConstructor
 @AllArgsConstructor
 public class BalanceOptionDto {
 

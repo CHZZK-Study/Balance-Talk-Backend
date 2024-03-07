@@ -11,7 +11,6 @@ import lombok.NoArgsConstructor;
 
 @Data
 @AllArgsConstructor
-@NoArgsConstructor
 public class CommentRequest {
 
     @Schema(description = "댓글 내용", example = "댓글 내용...")
