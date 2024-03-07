@@ -99,7 +99,7 @@ public class JwtTokenProvider {
         try {
             return Jwts.parserBuilder().setSigningKey(secretKey).build().parseClaimsJws(token);
         } catch (final IllegalArgumentException | MalformedJwtException e) {
-            throw new IllegalArgumentException("Token이 null이거나 Token 파싱 오류");
+            throw new IllegalArgumentException("토큰 값이 존재하지 않습니다.");
         } catch (final SignatureException e) {
             throw new IllegalArgumentException("토큰의 시크릿 키가 일치하지 않습니다.");
         } catch (final ExpiredJwtException e) {
