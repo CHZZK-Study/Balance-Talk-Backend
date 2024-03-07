@@ -29,22 +29,21 @@ public class PostController {
     @ResponseStatus(HttpStatus.OK)
     @GetMapping
     @Operation(summary = "모든 게시글 조회", description = "해당 회원이 쓴 모든 글을 조회한다.")
-    public List<PostResponse> findAllPosts(@RequestParam("member-id") Long memberId) {
+    public List<PostResponse> findAllPosts(@RequestParam Long memberId) {
         return postService.findAll(memberId);
     }
 
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/{postId}")
     @Operation(summary = "게시글 조회", description = "post-id에 해당하는 게시글을 조회한다.")
-    public PostResponse findPost(@PathVariable("postId") Long postId,
-                                 @RequestParam("member-id") Long memberId) {
+    public PostResponse findPost(@PathVariable Long postId, @RequestParam Long memberId) {
         return postService.findById(postId, memberId);
     }
 
     @ResponseStatus(HttpStatus.CREATED)
     @DeleteMapping("/{postId}")
     @Operation(summary = "게시글 삭제", description = "post-id에 해당하는 게시글을 삭제한다.")
-    public String deletePost(@PathVariable("postId") Long postId) {
+    public String deletePost(@PathVariable Long postId) {
         postService.deleteById(postId);
         return "요청이 정상적으로 처리되었습니다.";
     }
@@ -52,7 +51,7 @@ public class PostController {
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/{postId}/likes")
     @Operation(summary = "게시글 추천", description = "post-id에 해당하는 게시글에 추천을 누른다.")
-    public String likePost(@PathVariable("postId") Long postId) {
+    public String likePost(@PathVariable Long postId) {
         postService.likePost(postId);
         return "요청이 정상적으로 처리되었습니다.";
     }
@@ -60,7 +59,7 @@ public class PostController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping("/{postId}/likes")
     @Operation(summary = "게시글 추천 취소", description = "post-id에 해당하는 게시글에 누른 추천을 취소한다.")
-    public String cancelLikePost(@PathVariable("postId") Long postId) {
+    public String cancelLikePost(@PathVariable Long postId) {
         postService.cancelLikePost(postId);
         return "요청이 정상적으로 처리되었습니다.";
     }
@@ -68,7 +67,7 @@ public class PostController {
     @ResponseStatus(HttpStatus.OK)
     @PostMapping("/{postId}/report")
     @Operation(summary = "게시글 신고", description = "post-id에 해당하는 게시글을 신고 처리한다.")
-    public String reportPost(@PathVariable("postId") Long postId, @RequestBody ReportRequest request) {
+    public String reportPost(@PathVariable Long postId, @RequestBody ReportRequest request) {
         postService.reportPost(postId, request);
         return "신고가 성공적으로 접수되었습니다.";
     }

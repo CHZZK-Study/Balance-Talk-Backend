@@ -39,7 +39,7 @@ public class MemberController {
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/{memberId}")
     @Operation(summary = "단일 회원 조회", description = "memberId와 일치하는 회원 정보를 조회한다.")
-    public MemberResponse findMemberInfo(@PathVariable("memberId") Long memberId) {
+    public MemberResponse findMemberInfo(@PathVariable Long memberId) {
         return memberService.findById(memberId);
     }
 
