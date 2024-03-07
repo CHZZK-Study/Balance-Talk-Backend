@@ -13,6 +13,9 @@ import balancetalk.module.post.domain.*;
 import balancetalk.module.post.dto.BalanceOptionDto;
 import balancetalk.module.post.dto.PostRequest;
 import balancetalk.module.post.dto.PostResponse;
+import balancetalk.module.report.domain.Report;
+import balancetalk.module.report.domain.ReportRepository;
+import balancetalk.module.report.dto.ReportRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -30,6 +33,7 @@ public class PostService {
     private final PostRepository postRepository;
     private final MemberRepository memberRepository;
     private final PostLikeRepository postLikeRepository;
+    private final ReportRepository reportRepository;
     private final FileRepository fileRepository;
     private final RedisService redisService;
 
@@ -125,5 +129,21 @@ public class PostService {
     private Post getCurrentPost(Long postId) {
         return postRepository.findById(postId)
                 .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_POST));
+    }
+
+    public void reportPost(Long postId, ReportRequest reportRequest) {
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_POST));
+        Member member = getCurrentMember(memberRepository);
+        if (post.getMember().equals(member)) {
+            throw new BalanceTalkException(FORBIDDEN_OWN_REPORT);
+        }
+        Report report = Report.builder()
+                .content(reportRequest.getDescription())
+                .reporter(member)
+                .post(post)
+                .category(reportRequest.getCategory())
+                .build();
+        reportRepository.save(report);
     }
 }

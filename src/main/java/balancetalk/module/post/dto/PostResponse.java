@@ -29,6 +29,9 @@ public class PostResponse {
     @Schema(description = "게시글 추천수", example = "15")
     private long likesCount;
 
+    @Schema(description = "신고 횟수" , example = "3")
+    private long reportedCount;
+
     @Schema(description = "추천 여부", example = "true")
     private boolean myLike;
 
@@ -57,6 +60,7 @@ public class PostResponse {
                 .views(post.getViews())
                 .likesCount(post.likesCount())
                 .myLike(member.hasLiked(post))
+                .reportedCount(post.reportedCount())
                 .myBookmark(member.hasBookmarked(post))
                 .category(post.getCategory())
                 .balanceOptions(getBalanceOptions(post))

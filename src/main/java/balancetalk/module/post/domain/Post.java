@@ -83,6 +83,13 @@ public class Post extends BaseTimeEntity {
         }
         return likes.size();
     }
+
+    public long reportedCount() {
+        if (reports == null) {
+            return 0;
+        }
+        return reports.size();
+    }
     
     @PrePersist
     public void init() {

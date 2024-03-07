@@ -3,6 +3,7 @@ package balancetalk.module.post.presentation;
 import balancetalk.module.post.application.PostService;
 import balancetalk.module.post.dto.PostRequest;
 import balancetalk.module.post.dto.PostResponse;
+import balancetalk.module.report.dto.ReportRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -51,7 +52,7 @@ public class PostController {
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/{postId}/likes")
     @Operation(summary = "게시글 추천", description = "post-id에 해당하는 게시글에 추천을 누른다.")
-    public String likePost(@PathVariable Long postId) {
+    public String likePost(@PathVariable("postId") Long postId) {
         postService.likePost(postId);
         return "요청이 정상적으로 처리되었습니다.";
     }
@@ -59,8 +60,16 @@ public class PostController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping("/{postId}/likes")
     @Operation(summary = "게시글 추천 취소", description = "post-id에 해당하는 게시글에 누른 추천을 취소한다.")
-    public String cancelLikePost(@PathVariable Long postId) {
+    public String cancelLikePost(@PathVariable("postId") Long postId) {
         postService.cancelLikePost(postId);
         return "요청이 정상적으로 처리되었습니다.";
+    }
+
+    @ResponseStatus(HttpStatus.OK)
+    @PostMapping("/{postId}/report")
+    @Operation(summary = "게시글 신고", description = "post-id에 해당하는 게시글을 신고 처리한다.")
+    public String reportPost(@PathVariable("postId") Long postId, @RequestBody ReportRequest request) {
+        postService.reportPost(postId, request);
+        return "신고가 성공적으로 접수되었습니다.";
     }
 }
