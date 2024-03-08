@@ -117,10 +117,17 @@ public class MemberService {
         }
     }
 
+    public void verifyNickname(String nickname) {
+        if (memberRepository.existsByNickname(nickname)) {
+            throw new BalanceTalkException(ErrorCode.ALREADY_REGISTERED_NICKNAME);
+        }
+    }
+
     private Member extractMember(HttpServletRequest request) {
         String token = jwtTokenProvider.resolveToken(request);
         String email = jwtTokenProvider.getPayload(token);
         return memberRepository.findByEmail(email)
                 .orElseThrow(() -> new BalanceTalkException(ErrorCode.NOT_FOUND_MEMBER));
     }
+
 }
