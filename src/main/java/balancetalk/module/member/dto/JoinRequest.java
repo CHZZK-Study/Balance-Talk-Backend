@@ -29,9 +29,6 @@ public class JoinRequest {
     @Schema(description = "회원 비밀번호", example = "Test1234test!")
     private String password;
 
-    @Schema(description = "회원 역할", example = "USER")
-    private Role role;
-
     // TODO: profilePhoto 추가
 
     public Member toEntity() {
@@ -39,7 +36,7 @@ public class JoinRequest {
                 .nickname(nickname)
                 .email(email)
                 .password(password)
-                .role(role)
+                .role(Role.USER)
                 .build();
     }
 }
