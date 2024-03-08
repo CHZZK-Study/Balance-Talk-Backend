@@ -37,5 +37,4 @@ public class NoticeResponse {
                 .createdBy(notice.getMember().getNickname())
                 .build();
     }
-
 }
