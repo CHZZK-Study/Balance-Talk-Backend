@@ -73,7 +73,6 @@ class MemberServiceTest {
                 .email("member@gmail.com")
                 .password("Test1234!")
                 .nickname("멤버1")
-                .role(Role.USER)
                 .build();
         loginRequest = LoginRequest.builder()
                 .email(joinRequest.getEmail())
@@ -114,16 +113,14 @@ class MemberServiceTest {
         // given
         when(memberRepository.findByEmail(loginRequest.getEmail())).thenReturn(Optional.ofNullable(member));
         when(passwordEncoder.matches(eq(loginRequest.getPassword()), eq(joinRequest.getPassword()))).thenReturn(true);
-        when(jwtTokenProvider.reissueToken(any())).thenReturn(new TokenDto("Bearer", accessToken, refreshToken));
+        when(jwtTokenProvider.reissueToken(any())).thenReturn(new TokenDto(accessToken, refreshToken));
 
         // when
-        LoginResponse result = memberService.login(loginRequest);
+        TokenDto result = memberService.login(loginRequest);
 
         // then
-        assertThat(result.getTokenDto().getRefreshToken()).isEqualTo(refreshToken);
-        assertThat(result.getTokenDto().getAccessToken()).isEqualTo(accessToken);
-        assertThat(result.getEmail()).isEqualTo(loginRequest.getEmail());
-        assertThat(result.getPassword()).isEqualTo(loginRequest.getPassword());
+        assertThat(result.getAccessToken()).isEqualTo(accessToken);
+        assertThat(result.getRefreshToken()).isEqualTo(refreshToken);
     }
 
     @Test
