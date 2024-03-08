@@ -32,7 +32,7 @@ public class MemberController {
     @ResponseStatus(HttpStatus.OK)
     @PostMapping("/login")
     @Operation(summary = "로그인", description = "회원 가입 한 이메일과 패스워드를 사용하여 로그인 한다.")
-    public LoginResponse login(@Valid @RequestBody LoginRequest loginRequest) {
+    public TokenDto login(@Valid @RequestBody LoginRequest loginRequest) {
         return memberService.login(loginRequest);
     }
 
