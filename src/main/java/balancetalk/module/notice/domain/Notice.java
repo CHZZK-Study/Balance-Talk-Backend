@@ -1,4 +1,4 @@
-package balancetalk.module;
+package balancetalk.module.notice.domain;
 
 import balancetalk.module.file.domain.File;
 import balancetalk.module.member.domain.Member;

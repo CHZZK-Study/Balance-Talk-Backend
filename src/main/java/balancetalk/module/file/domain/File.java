@@ -1,6 +1,6 @@
 package balancetalk.module.file.domain;
 
-import balancetalk.module.Notice;
+import balancetalk.module.notice.domain.Notice;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
