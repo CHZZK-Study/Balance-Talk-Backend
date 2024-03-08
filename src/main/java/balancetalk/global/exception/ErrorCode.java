@@ -25,12 +25,15 @@ public enum ErrorCode {
     INVALID_JWT_TOKEN(BAD_REQUEST, "유효하지 않은 토큰입니다."),
     EXCEED_MAX_DEPTH(BAD_REQUEST, "답글에 답글을 달 수 없습니다."),
     INVALID_REFRESH_TOKEN(BAD_REQUEST, "유효하지 않은 리프레시 토큰입니다."),
+    EXCEED_TITLE_LENGTH(BAD_REQUEST, "제목은 1자 이상 100자 이하로 입력해주세요."),
+    EXCEED_NOTICE_CONTENT_LENGTH(BAD_REQUEST, "공지사항 내용은 1자 이상 2000자 이하로 입력해주세요."),
 
     // 401
     MISMATCHED_EMAIL_OR_PASSWORD(UNAUTHORIZED, "이메일 또는 비밀번호가 잘못되었습니다."),
     AUTHENTICATION_ERROR(UNAUTHORIZED, "인증 오류가 발생했습니다."),
     BAD_CREDENTIAL_ERROR(UNAUTHORIZED, "로그인에 실패했습니다."),
     UNAUTHORIZED_LOGOUT(UNAUTHORIZED, "로그아웃을 위해서는 인증이 필요합니다."),
+    UNAUTHORIZED_CREATE_NOTICE(UNAUTHORIZED, "공지사항 작성 권한이 없습니다."),
 
     // 403
     FORBIDDEN_POST_DELETE(FORBIDDEN, "해당 게시글은 삭제 권한이 없습니다."),
