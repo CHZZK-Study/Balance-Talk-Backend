@@ -19,6 +19,9 @@ public class NoticeResponse {
     @Schema(description = "게시글 제목", example = "게시글 제목")
     private String title;
 
+    @Schema(description = "게시글 내용", example = "게시글 내용")
+    private String content;
+
     @Schema(description = "게시글 작성일", example = "2022-02-12")
     private LocalDateTime createdAt;
 
@@ -29,6 +32,7 @@ public class NoticeResponse {
         return NoticeResponse.builder()
                 .id(notice.getId())
                 .title(notice.getTitle())
+                .content(notice.getContent())
                 .createdAt(notice.getCreatedAt())
                 .createdBy(notice.getMember().getNickname())
                 .build();
