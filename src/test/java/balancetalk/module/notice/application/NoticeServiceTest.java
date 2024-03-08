@@ -15,10 +15,14 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 
+import java.util.Collections;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -50,7 +54,7 @@ class NoticeServiceTest {
         SecurityContextHolder.setContext(securityContext);
 
         // 여기에 추가
-        when(authentication.getName()).thenReturn(adminEmail);
+        lenient().when(authentication.getName()).thenReturn(adminEmail);
     }
 
     @Test
@@ -68,6 +72,44 @@ class NoticeServiceTest {
         assertNotNull(noticeResponse);
         assertEquals(noticeRequest.getTitle(), noticeResponse.getTitle());
         assertEquals(noticeRequest.getContent(), noticeResponse.getContent());
+    }
+
+    @Test
+    @DisplayName("전체 공지 조회 성공")
+    void getAllNotices_Success() {
+        // given
+        NoticeRequest noticeRequest = new NoticeRequest("공지사항 제목", "공지사항 내용");
+        Page<Notice> page = new PageImpl<>(Collections.singletonList(noticeRequest.toEntity(adminMember)));
+        when(noticeRepository.findAll(any(PageRequest.class))).thenReturn(page);
+
+        // when
+        Page<NoticeResponse> result = noticeService.findAllNotices(PageRequest.of(0, 10));
+
+        // then
+        assertFalse(result.isEmpty());
+        assertEquals(1, result.getContent().size());
+    }
+
+    @Test
+    @DisplayName("특정 공지 조회 성공")
+    void findNoticeById_Success() {
+        // given
+        Long noticeId = 1L;
+        Notice notice = Notice.builder()
+                .id(noticeId)
+                .title("특정 공지")
+                .content("내용")
+                .member(adminMember)
+                .build();
+        when(noticeRepository.findById(noticeId)).thenReturn(Optional.of(notice));
+
+        // when
+        NoticeResponse result = noticeService.findNoticeById(noticeId);
+
+        // then
+        assertNotNull(result);
+        assertEquals(noticeId, result.getId());
+        assertEquals("특정 공지", result.getTitle());
     }
 
     @Test
@@ -112,4 +154,14 @@ class NoticeServiceTest {
         assertThrows(BalanceTalkException.class, () -> noticeService.createNotice(emptyContentRequest));
     }
 
+    @Test
+    @DisplayName("특정 공지 조회 실패 - 공지사항 존재하지 않음")
+    void findNoticeById_NotFound_Fail() {
+        // given
+        Long invalidNoticeId = 999L;
+        when(noticeRepository.findById(invalidNoticeId)).thenReturn(Optional.empty());
+
+        // when & then
+        assertThrows(BalanceTalkException.class, () -> noticeService.findNoticeById(invalidNoticeId));
+    }
 }
