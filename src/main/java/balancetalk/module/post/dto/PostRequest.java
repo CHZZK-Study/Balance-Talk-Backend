@@ -31,14 +31,15 @@ public class PostRequest {
     @Schema(description = "게시글 제목", example = "게시글 제목")
     private String title;
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss", timezone = "Asia/Seoul")
-    @Schema(description = "투료 종료 기한", example = "2024-03-16 08:27:17.391706\t")
+    @JsonFormat(pattern = "yyyy/MM/dd HH:mm:ss")
+    @Schema(description = "투료 종료 기한", example = "2024/12/25 15:30:00", type = "string")
     private LocalDateTime deadline;
 
     @Schema(description = "게시글 카테고리", example = "CASUAL")
     private PostCategory category;
 
-    @Schema(description = "선택지 옵션 리스트", example = "[{\"title\": \"선택지 제목1\", \"description\": \"선택지 내용1\"}, {\"title\": \"선택지 제목2\", \"description\": \"선택지 내용2\"}]")
+    @Schema(description = "선택지 옵션 리스트", example = "[{\"title\": \"선택지 제목1\", \"description\": \"선택지 내용1\" , \"storedFileName\": null}," +
+            "{\"title\": \"선택지 제목2\", \"description\": \"선택지 내용2\", \"storedFileName\": null}]")
     private List<BalanceOptionDto> balanceOptions;
 
     @Schema(description = "태그 리스트", example = "[\"태그1\", \"태그2\", \"태그3\"]")

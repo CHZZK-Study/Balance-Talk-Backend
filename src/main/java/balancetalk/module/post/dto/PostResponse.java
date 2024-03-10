@@ -3,6 +3,7 @@ package balancetalk.module.post.dto;
 import balancetalk.module.member.domain.Member;
 import balancetalk.module.post.domain.Post;
 import balancetalk.module.post.domain.PostCategory;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 import java.time.LocalDateTime;
@@ -20,7 +21,8 @@ public class PostResponse {
     @Schema(description = "게시글 제목", example = "게시글 제목")
     private String title;
 
-    @Schema(description = "투료 종료 기한", example = "2024-03-16 08:27:17.391706\t")
+    @JsonFormat(pattern = "yyyy/MM/dd HH:mm:ss")
+    @Schema(description = "투료 종료 기한", example = "2024-12-25T15:30:00")
     private LocalDateTime deadline;
 
     @Schema(description = "게시글 조회수", example = "126")
@@ -42,7 +44,8 @@ public class PostResponse {
 
     private List<PostTagDto> postTags;
 
-    @Schema(description = "게시글 작성일", example = "2022-02-12")
+    @JsonFormat(pattern = "yyyy/MM/dd HH:mm:ss")
+    @Schema(description = "게시글 작성일", example = "2023-12-25T15:30:00")
     private LocalDateTime createdAt;
 
     @Schema(description = "게시글 작성자", example = "작성자 닉네임")
