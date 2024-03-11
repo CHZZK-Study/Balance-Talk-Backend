@@ -24,6 +24,8 @@ import balancetalk.module.vote.domain.VoteRepository;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -69,7 +71,10 @@ class CommentServiceTest {
 
          lenient().when(authentication.getName()).thenReturn(authenticatedEmail);
     }
-
+    @AfterEach
+    void clear() {
+        SecurityContextHolder.clearContext();
+    }
 
     @Test
     @DisplayName("댓글 생성 성공")
