@@ -7,14 +7,12 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 import static balancetalk.global.exception.ErrorCode.EXCEED_NOTICE_CONTENT_LENGTH;
 import static balancetalk.global.exception.ErrorCode.EXCEED_TITLE_LENGTH;
 
 @Data
 @Builder
-@NoArgsConstructor
 @AllArgsConstructor
 public class NoticeRequest {
 
