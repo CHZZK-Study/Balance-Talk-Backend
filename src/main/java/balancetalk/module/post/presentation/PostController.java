@@ -36,7 +36,7 @@ public class PostController {
     @GetMapping("/{postId}")
     @Operation(summary = "게시글 조회", description = "post-id에 해당하는 게시글을 조회한다.")
     public PostResponse findPost(@PathVariable("postId") Long postId,
-                                 @RequestHeader("Authorization") String token) {
+                                 @RequestHeader(value = "Authorization", required = false) String token) {
         return postService.findById(postId, token);
     }
 
