@@ -4,8 +4,6 @@ import balancetalk.global.common.BaseTimeEntity;
 import balancetalk.module.file.domain.File;
 import balancetalk.module.member.domain.Member;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
 import lombok.*;
 
 import java.util.ArrayList;
@@ -23,13 +21,9 @@ public class Notice extends BaseTimeEntity {
     @Column(name = "notice_id")
     private Long id;
 
-    @NotBlank
-    @Size(max = 50)
     @Column(nullable = false, length = 50)
     private String title;
 
-    @NotBlank
-    @Size(max = 2000)
     @Column(nullable = false, length = 2000)
     private String content;
 
