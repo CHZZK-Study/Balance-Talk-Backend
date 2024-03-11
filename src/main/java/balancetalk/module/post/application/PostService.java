@@ -62,7 +62,7 @@ public class PostService {
                 .toList();
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public List<PostResponse> findAll(String token) {
         // TODO: 검색, 정렬, 마감 기능 추가
         List<Post> posts = postRepository.findAll();
