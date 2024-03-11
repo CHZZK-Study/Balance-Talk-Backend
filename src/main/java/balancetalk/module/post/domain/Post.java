@@ -97,4 +97,8 @@ public class Post extends BaseTimeEntity {
     public boolean hasDeadlineExpired() {
         return deadline.isBefore(LocalDateTime.now());
     }
+
+    public void increaseViews() {
+        views++;
+    }
 }

@@ -9,6 +9,7 @@ import balancetalk.module.file.domain.File;
 import balancetalk.module.file.domain.FileRepository;
 import balancetalk.module.member.domain.Member;
 import balancetalk.module.member.domain.MemberRepository;
+import balancetalk.module.member.domain.Role;
 import balancetalk.module.post.domain.*;
 import balancetalk.module.post.dto.BalanceOptionDto;
 import balancetalk.module.post.dto.PostRequest;
@@ -61,7 +62,7 @@ public class PostService {
                 .toList();
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     public List<PostResponse> findAll(String token) {
         // TODO: 검색, 정렬, 마감 기능 추가
         List<Post> posts = postRepository.findAll();
@@ -76,13 +77,17 @@ public class PostService {
                 .collect(Collectors.toList());
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     public PostResponse findById(Long postId, String token) {
         Post post = getCurrentPost(postId);
         if (token == null) {
+            post.increaseViews();
             return PostResponse.fromEntity(post, false, false);
         }
         Member member = getCurrentMember(memberRepository);
+        if (member.getRole() == Role.USER) {
+             post.increaseViews();
+        }
         return PostResponse.fromEntity(post, member.hasLiked(post), member.hasBookmarked(post));
     }
 
