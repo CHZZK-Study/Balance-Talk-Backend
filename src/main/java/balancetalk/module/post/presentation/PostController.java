@@ -28,16 +28,16 @@ public class PostController {
     @ResponseStatus(HttpStatus.OK)
     @GetMapping
     @Operation(summary = "모든 게시글 조회", description = "해당 회원이 쓴 모든 글을 조회한다.")
-    public List<PostResponse> findAllPosts(@RequestParam("member-id") Long memberId) {
-        return postService.findAll(memberId);
+    public List<PostResponse> findAllPosts(@RequestHeader(value = "Authorization", required = false) String token) {
+        return postService.findAll(token);
     }
 
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/{postId}")
     @Operation(summary = "게시글 조회", description = "post-id에 해당하는 게시글을 조회한다.")
     public PostResponse findPost(@PathVariable("postId") Long postId,
-                                 @RequestParam("member-id") Long memberId) {
-        return postService.findById(postId, memberId);
+                                 @RequestHeader("Authorization") String token) {
+        return postService.findById(postId, token);
     }
 
     @ResponseStatus(HttpStatus.CREATED)
