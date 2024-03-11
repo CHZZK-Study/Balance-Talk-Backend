@@ -8,6 +8,7 @@ import balancetalk.module.notice.domain.Notice;
 import balancetalk.module.notice.domain.NoticeRepository;
 import balancetalk.module.notice.dto.NoticeRequest;
 import balancetalk.module.notice.dto.NoticeResponse;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -55,6 +56,11 @@ class NoticeServiceTest {
 
         // 여기에 추가
         lenient().when(authentication.getName()).thenReturn(adminEmail);
+    }
+
+    @AfterEach
+    void clear() {
+        SecurityContextHolder.clearContext();
     }
 
     @Test
