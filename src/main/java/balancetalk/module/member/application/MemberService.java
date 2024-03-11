@@ -41,28 +41,18 @@ public class MemberService {
     }
 
     @Transactional
-    public LoginResponse login(final LoginRequest loginRequest) {
+    public TokenDto login(final LoginRequest loginRequest) {
         Member member = memberRepository.findByEmail(loginRequest.getEmail())
                 .orElseThrow(() -> new BalanceTalkException(ErrorCode.MISMATCHED_EMAIL_OR_PASSWORD));
         if (!passwordEncoder.matches(loginRequest.getPassword(), member.getPassword())) {
             throw new BalanceTalkException(ErrorCode.MISMATCHED_EMAIL_OR_PASSWORD);
         }
 
-        try {
-            Authentication authentication = authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword())
-            );
-            String refreshToken = jwtTokenProvider.createRefreshToken(authentication);
-            TokenDto tokenDto = jwtTokenProvider.reissueToken(refreshToken); // 만료되었다면, 재발급
-            return LoginResponse.builder()
-                    .email(member.getEmail())
-                    .password(member.getPassword())
-                    .role(member.getRole())
-                    .tokenDto(tokenDto)
-                    .build();
-        } catch (BadCredentialsException e) {
-            throw new BadCredentialsException("credential 오류!!");
-        }
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword())
+        );
+        String refreshToken = jwtTokenProvider.createRefreshToken(authentication);
+        return jwtTokenProvider.reissueToken(refreshToken); // 만료되었다면, 재발급
     }
 
     @Transactional(readOnly = true)

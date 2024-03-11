@@ -9,13 +9,8 @@ import balancetalk.module.post.domain.PostLike;
 import balancetalk.module.report.domain.Report;
 import balancetalk.module.vote.domain.Vote;
 import balancetalk.global.common.BaseTimeEntity;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.*;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;

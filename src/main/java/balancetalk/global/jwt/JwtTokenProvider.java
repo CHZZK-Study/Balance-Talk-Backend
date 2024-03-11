@@ -136,7 +136,6 @@ public class JwtTokenProvider {
             throw new BalanceTalkException(ErrorCode.INVALID_REFRESH_TOKEN);
         }
         TokenDto tokenDto = new TokenDto(
-                "Bearer",
                 createAccessToken(authentication),
                 createRefreshToken(authentication)
         );
