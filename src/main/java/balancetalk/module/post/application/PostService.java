@@ -9,6 +9,7 @@ import balancetalk.module.file.domain.File;
 import balancetalk.module.file.domain.FileRepository;
 import balancetalk.module.member.domain.Member;
 import balancetalk.module.member.domain.MemberRepository;
+import balancetalk.module.member.domain.Role;
 import balancetalk.module.post.domain.*;
 import balancetalk.module.post.dto.BalanceOptionDto;
 import balancetalk.module.post.dto.PostRequest;
@@ -17,7 +18,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -34,12 +34,12 @@ public class PostService {
     private final RedisService redisService;
 
     public PostResponse save(final PostRequest request) {
-        Member member = getMember(request);
-        if (redisService.getValues(member.getEmail()) == null) {
+        Member writer = getCurrentMember(memberRepository);
+        if (redisService.getValues(writer.getEmail()) == null) {
             throw new BalanceTalkException(FORBIDDEN_POST_CREATE);
         }
         List<File> images = getImages(request);
-        Post post = request.toEntity(member, images);
+        Post post = request.toEntity(writer, images);
 
         List<BalanceOption> options = post.getOptions();
         for (BalanceOption option : options) {
@@ -50,12 +50,7 @@ public class PostService {
             postTag.addPost(post);
         }
 
-        return PostResponse.fromEntity(postRepository.save(post), member);
-    }
-
-    private Member getMember(PostRequest postRequestDto) {
-        return memberRepository.findById(postRequestDto.getMemberId())
-                .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_MEMBER));
+        return PostResponse.fromEntity(postRepository.save(post), false, false);
     }
 
     private List<File> getImages(PostRequest postRequestDto) {
@@ -68,23 +63,32 @@ public class PostService {
     }
 
     @Transactional(readOnly = true)
-    public List<PostResponse> findAll(Long memberId) {
+    public List<PostResponse> findAll(String token) {
         // TODO: 검색, 정렬, 마감 기능 추가
         List<Post> posts = postRepository.findAll();
-        Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_MEMBER));
+        if (token == null) {
+            return posts.stream()
+                    .map(post -> PostResponse.fromEntity(post, false, false))
+                    .collect(Collectors.toList());
+        }
+        Member member = getCurrentMember(memberRepository);
         return posts.stream()
-                .map(post -> PostResponse.fromEntity(post, member))
+                .map(post -> PostResponse.fromEntity(post, member.hasLiked(post), member.hasBookmarked(post)))
                 .collect(Collectors.toList());
     }
 
-    @Transactional(readOnly = true)
-    public PostResponse findById(Long postId, Long memberId) {
+    @Transactional
+    public PostResponse findById(Long postId, String token) {
         Post post = getCurrentPost(postId);
-        Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_MEMBER));
-
-        return PostResponse.fromEntity(post, member);
+        if (token == null) {
+            post.increaseViews();
+            return PostResponse.fromEntity(post, false, false);
+        }
+        Member member = getCurrentMember(memberRepository);
+        if (member.getRole() == Role.USER) {
+             post.increaseViews();
+        }
+        return PostResponse.fromEntity(post, member.hasLiked(post), member.hasBookmarked(post));
     }
 
     @Transactional

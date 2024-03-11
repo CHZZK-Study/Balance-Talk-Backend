@@ -1,6 +1,5 @@
 package balancetalk.module.post.dto;
 
-import balancetalk.module.member.domain.Member;
 import balancetalk.module.post.domain.Post;
 import balancetalk.module.post.domain.PostCategory;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -49,15 +48,15 @@ public class PostResponse {
     private String createdBy;
 
     // todo: ProfilePhoto 추가
-    public static PostResponse fromEntity(Post post, Member member) {
+    public static PostResponse fromEntity(Post post, boolean myLike, boolean myBookmark) {
         return PostResponse.builder()
                 .id(post.getId())
                 .title(post.getTitle())
                 .deadline(post.getDeadline())
                 .views(post.getViews())
                 .likesCount(post.likesCount())
-                .myLike(member.hasLiked(post))
-                .myBookmark(member.hasBookmarked(post))
+                .myLike(myLike)
+                .myBookmark(myBookmark)
                 .category(post.getCategory())
                 .balanceOptions(getBalanceOptions(post))
                 .postTags(getPostTags(post))
