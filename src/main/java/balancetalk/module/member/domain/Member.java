@@ -3,7 +3,7 @@ package balancetalk.module.member.domain;
 import balancetalk.module.bookmark.domain.Bookmark;
 import balancetalk.module.comment.domain.Comment;
 import balancetalk.module.comment.domain.CommentLike;
-import balancetalk.module.Notice;
+import balancetalk.module.notice.domain.Notice;
 import balancetalk.module.post.domain.Post;
 import balancetalk.module.post.domain.PostLike;
 import balancetalk.module.report.domain.Report;
@@ -20,7 +20,6 @@ import jakarta.validation.constraints.*;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Entity
 @Builder
