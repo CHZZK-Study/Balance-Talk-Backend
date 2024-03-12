@@ -32,7 +32,7 @@ public enum ErrorCode {
     MISMATCHED_EMAIL_OR_PASSWORD(UNAUTHORIZED, "이메일 또는 비밀번호가 잘못되었습니다."),
     AUTHENTICATION_ERROR(UNAUTHORIZED, "인증 오류가 발생했습니다."),
     BAD_CREDENTIAL_ERROR(UNAUTHORIZED, "로그인에 실패했습니다."),
-    UNAUTHORIZED_LOGOUT(UNAUTHORIZED, "로그아웃을 위해서는 인증이 필요합니다."),
+    LOGIN_REQUIRED(UNAUTHORIZED, "로그인 하시길 바랍니다."),
     UNAUTHORIZED_CREATE_NOTICE(UNAUTHORIZED, "공지사항 작성 권한이 없습니다."),
     VERIFY_CODE_MISMATCH(UNAUTHORIZED, "인증 번호가 일치하지 않습니다."),
     EXPIRED_JWT_TOKEN(UNAUTHORIZED, "만료된 토큰 입니다."),
