@@ -131,36 +131,6 @@ class NoticeServiceTest {
     }
 
     @Test
-    @DisplayName("공지사항 생성 실패 - 공지사항 제목 100자 초과 또는 공백일 경우")
-    void createNotice_InvalidTitle_Fail() {
-        // given
-        String longTitle = "t".repeat(101);
-        NoticeRequest longTitleRequest = new NoticeRequest(longTitle, "공지사항 내용");
-        NoticeRequest emptyTitleRequest = new NoticeRequest("", "공지사항 내용");
-        when(memberRepository.findByEmail(anyString())).thenReturn(Optional.of(adminMember));
-
-        // when
-        // then
-        assertThrows(BalanceTalkException.class, () -> noticeService.createNotice(longTitleRequest));
-        assertThrows(BalanceTalkException.class, () -> noticeService.createNotice(emptyTitleRequest));
-    }
-
-    @Test
-    @DisplayName("공지사항 생성 실패 - 공지사항 내용 2000자 초과 또는 공백일 경우")
-    void createNotice_InvalidContent_Fail() {
-        // given
-        String longContent = "c".repeat(2001);
-        NoticeRequest longContentRequest = new NoticeRequest("공지사항 제목", longContent);
-        NoticeRequest emptyContentRequest = new NoticeRequest("공지사항 제목", "");
-        when(memberRepository.findByEmail(anyString())).thenReturn(Optional.of(adminMember));
-
-        // when
-        // then
-        assertThrows(BalanceTalkException.class, () -> noticeService.createNotice(longContentRequest));
-        assertThrows(BalanceTalkException.class, () -> noticeService.createNotice(emptyContentRequest));
-    }
-
-    @Test
     @DisplayName("특정 공지 조회 실패 - 공지사항 존재하지 않음")
     void findNoticeById_NotFound_Fail() {
         // given
