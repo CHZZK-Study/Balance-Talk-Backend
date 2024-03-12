@@ -14,8 +14,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import static balancetalk.global.exception.ErrorCode.NOT_FOUND_NOTICE;
-import static balancetalk.global.exception.ErrorCode.UNAUTHORIZED_CREATE_NOTICE;
+import static balancetalk.global.exception.ErrorCode.*;
 import static balancetalk.global.utils.SecurityUtils.getCurrentMember;
 import static balancetalk.module.member.domain.Role.ADMIN;
 
@@ -31,7 +30,7 @@ public class NoticeService {
     public NoticeResponse createNotice(final NoticeRequest request) {
         Member member = getCurrentMember(memberRepository);
         if (!member.getRole().equals(ADMIN)) {
-            throw new BalanceTalkException(UNAUTHORIZED_CREATE_NOTICE);
+            throw new BalanceTalkException(FORBIDDEN_CREATE_NOTICE);
         }
 
         Notice notice = request.toEntity(member);
@@ -49,5 +48,27 @@ public class NoticeService {
     public NoticeResponse findNoticeById(Long id) {
         return NoticeResponse.fromEntity(noticeRepository.findById(id)
                 .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_NOTICE)));
+    }
+
+    @Transactional
+    public NoticeResponse updateNotice(Long id, NoticeRequest request) {
+        Notice notice = noticeRepository.findById(id)
+                .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_NOTICE));
+        if (!getCurrentMember(memberRepository).getRole().equals(ADMIN)) {
+            throw new BalanceTalkException(FORBIDDEN_UPDATE_NOTICE);
+        }
+        notice.updateTitle(request.getTitle());
+        notice.updateContent(request.getContent());
+        return NoticeResponse.fromEntity(noticeRepository.save(notice));
+    }
+
+    @Transactional
+    public void deleteNotice(Long id) {
+        Notice notice = noticeRepository.findById(id)
+                .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_NOTICE));
+        if (!getCurrentMember(memberRepository).getRole().equals(ADMIN)) {
+            throw new BalanceTalkException(FORBIDDEN_DELETE_NOTICE);
+        }
+        noticeRepository.delete(notice);
     }
 }
