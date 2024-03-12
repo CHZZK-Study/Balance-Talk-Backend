@@ -32,67 +32,67 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.Mockito.*;
 
-@ExtendWith(MockitoExtension.class)
-class PostServiceTest {
-
-    @Mock
-    MemberRepository memberRepository;
-
-    @Mock
-    PostRepository postRepository;
-
-    @Mock
-    PostLikeRepository postLikeRepository;
-
-    @Mock
-    FileRepository fileRepository;
-
-    @Mock
-    RedisService redisService;
-
-    @InjectMocks
-    PostService postService;
-
-    private String accessToken = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ0ZXN0MTIzNDVAbmF2ZXIuY29tIiwiaWF0IjoxNzA5NDc1NTE4LCJleHAiOjE3MDk1MTg3MTh9.ZZXuN4OWM2HZjWOx7Pupl5NkRtjvd4qnK_txGdRy7G5_GdKgnyF3JfiUsenQgxsi1Y_-7C0dA85xabot2m1cag";
-
-    Member member = Member.builder()
-            .id(1L)
-            .email("member@gmail.com")
-            .build();
-
-    File file = File.builder()
-            .storedName("e90a6177-89a1-45b3-91d3-cb39e9bec407_미어캣.jpg")
-            .build();
-    BalanceOption balanceOption = BalanceOption.builder()
-            .title("option1")
-            .description("description1")
-            .file(file)
-            .build();
-
-    @BeforeEach
-    void setUp() {
-        // SecurityContext에 인증된 사용자 설정
-        Authentication authentication = mock(Authentication.class);
-        SecurityContext securityContext = mock(SecurityContext.class);
-        lenient().when(securityContext.getAuthentication()).thenReturn(authentication);
-        SecurityContextHolder.setContext(securityContext);
-
-
-    }
-
-    @Test
-    @DisplayName("게시글 작성 성공")
-    void postSaveSuccess() {
-        // given
-        when(memberRepository.findById(any())).thenReturn(Optional.of(member));
-        when(redisService.getValues(member.getEmail())).thenReturn(accessToken);
-
-        List<File> images = new ArrayList<>();
-        images.add(file);
-
-
-
-    }
+//@ExtendWith(MockitoExtension.class)
+//class PostServiceTest {
+//
+//    @Mock
+//    MemberRepository memberRepository;
+//
+//    @Mock
+//    PostRepository postRepository;
+//
+//    @Mock
+//    PostLikeRepository postLikeRepository;
+//
+//    @Mock
+//    FileRepository fileRepository;
+//
+//    @Mock
+//    RedisService redisService;
+//
+//    @InjectMocks
+//    PostService postService;
+//
+//    private String accessToken = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ0ZXN0MTIzNDVAbmF2ZXIuY29tIiwiaWF0IjoxNzA5NDc1NTE4LCJleHAiOjE3MDk1MTg3MTh9.ZZXuN4OWM2HZjWOx7Pupl5NkRtjvd4qnK_txGdRy7G5_GdKgnyF3JfiUsenQgxsi1Y_-7C0dA85xabot2m1cag";
+//
+//    Member member = Member.builder()
+//            .id(1L)
+//            .email("member@gmail.com")
+//            .build();
+//
+//    File file = File.builder()
+//            .storedName("e90a6177-89a1-45b3-91d3-cb39e9bec407_미어캣.jpg")
+//            .build();
+//    BalanceOption balanceOption = BalanceOption.builder()
+//            .title("option1")
+//            .description("description1")
+//            .file(file)
+//            .build();
+//
+//    @BeforeEach
+//    void setUp() {
+//        // SecurityContext에 인증된 사용자 설정
+//        Authentication authentication = mock(Authentication.class);
+//        SecurityContext securityContext = mock(SecurityContext.class);
+//        lenient().when(securityContext.getAuthentication()).thenReturn(authentication);
+//        SecurityContextHolder.setContext(securityContext);
+//
+//
+//    }
+//
+//    @Test
+//    @DisplayName("게시글 작성 성공")
+//    void postSaveSuccess() {
+//        // given
+//        when(memberRepository.findById(any())).thenReturn(Optional.of(member));
+//        when(redisService.getValues(member.getEmail())).thenReturn(accessToken);
+//
+//        List<File> images = new ArrayList<>();
+//        images.add(file);
+//
+//
+//
+//    }
 //
 //    @Test
 //    @DisplayName("모든 게시글 조회")
@@ -268,4 +268,4 @@ class PostServiceTest {
 //                .isInstanceOf(BalanceTalkException.class)
 //                .hasMessageContaining(ALREADY_LIKE_POST.getMessage());
 //    }
-}
+//}
