@@ -107,6 +107,7 @@ class NoticeServiceTest {
                 .content("내용")
                 .member(adminMember)
                 .build();
+
         when(noticeRepository.findById(noticeId)).thenReturn(Optional.of(notice));
 
         // when
@@ -116,6 +117,55 @@ class NoticeServiceTest {
         assertNotNull(result);
         assertEquals(noticeId, result.getId());
         assertEquals("특정 공지", result.getTitle());
+    }
+
+    @Test
+    @DisplayName("공지사항 수정 성공")
+    void updateNotice_Success() {
+        // given
+        Long noticeId = 1L;
+        Notice originalNotice = Notice.builder()
+                .id(noticeId)
+                .title("기존 제목")
+                .content("기존 내용")
+                .member(adminMember)
+                .build();
+
+        when(memberRepository.findByEmail(adminEmail)).thenReturn(Optional.of(adminMember));
+        when(noticeRepository.findById(noticeId)).thenReturn(Optional.of(originalNotice));
+        when(noticeRepository.save(any(Notice.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        NoticeRequest updateRequest = new NoticeRequest("새 제목", "새 내용");
+
+        // when
+        NoticeResponse updatedNotice = noticeService.updateNotice(noticeId, updateRequest);
+
+        // then
+        assertEquals("새 제목", updatedNotice.getTitle());
+        assertEquals("새 내용", updatedNotice.getContent());
+    }
+
+    @Test
+    @DisplayName("공지사항 삭제 성공")
+    void deleteNoticeById_Success() {
+        // given
+        Long noticeId = 1L;
+        Notice notice = Notice.builder()
+                .id(noticeId)
+                .title("특정 공지")
+                .content("내용")
+                .member(adminMember)
+                .build();
+
+        when(memberRepository.findByEmail(adminEmail)).thenReturn(Optional.of(adminMember));
+        when(noticeRepository.findById(noticeId)).thenReturn(Optional.of(notice));
+        doNothing().when(noticeRepository).delete(any(Notice.class));
+
+        // when
+        noticeService.deleteNotice(noticeId);
+
+        // then
+        verify(noticeRepository).delete(notice);
     }
 
     @Test
@@ -139,5 +189,29 @@ class NoticeServiceTest {
 
         // when & then
         assertThrows(BalanceTalkException.class, () -> noticeService.findNoticeById(invalidNoticeId));
+    }
+
+    @Test
+    @DisplayName("공지사항 수정 실패 - 존재하지 않는 공지사항")
+    void updateNotice_NotFound_Fail() {
+        // given
+        Long invalidNoticeId = 999L;
+        when(noticeRepository.findById(invalidNoticeId)).thenReturn(Optional.empty());
+        NoticeRequest updateRequest = new NoticeRequest("제목", "내용");
+
+        // when & then
+        assertThrows(BalanceTalkException.class, () -> noticeService.updateNotice(invalidNoticeId, updateRequest));
+    }
+
+    // 특정 공지사항이 존재하지 않을 경우 삭제 시 예외 발생
+    @Test
+    @DisplayName("공지사항 삭제 실패 - 존재하지 않는 공지사항")
+    void deleteNoticeById_NotFound_Fail() {
+        // given
+        Long invalidNoticeId = 999L;
+        when(noticeRepository.findById(invalidNoticeId)).thenReturn(Optional.empty());
+
+        // when & then
+        assertThrows(BalanceTalkException.class, () -> noticeService.deleteNotice(invalidNoticeId));
     }
 }
