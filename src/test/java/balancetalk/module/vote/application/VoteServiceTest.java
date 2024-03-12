@@ -19,6 +19,8 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -59,6 +61,11 @@ class VoteServiceTest {
         SecurityContextHolder.setContext(securityContext);
 
         lenient().when(authentication.getName()).thenReturn(AUTHENTICATED_EMAIL);
+    }
+
+    @AfterEach
+    void clear() {
+        SecurityContextHolder.clearContext();
     }
 
     @Test
