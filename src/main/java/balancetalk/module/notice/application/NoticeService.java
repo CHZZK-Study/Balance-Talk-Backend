@@ -1,6 +1,8 @@
 package balancetalk.module.notice.application;
 
 import balancetalk.global.exception.BalanceTalkException;
+import balancetalk.module.file.domain.File;
+import balancetalk.module.file.domain.FileRepository;
 import balancetalk.module.member.domain.Member;
 import balancetalk.module.member.domain.MemberRepository;
 import balancetalk.module.notice.domain.Notice;
@@ -14,6 +16,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+
 import static balancetalk.global.exception.ErrorCode.*;
 import static balancetalk.global.utils.SecurityUtils.getCurrentMember;
 import static balancetalk.module.member.domain.Role.ADMIN;
@@ -25,6 +31,7 @@ public class NoticeService {
 
     private final NoticeRepository noticeRepository;
     private final MemberRepository memberRepository;
+    private final FileRepository fileRepository;
 
     @Transactional
     public NoticeResponse createNotice(final NoticeRequest request) {
@@ -33,7 +40,8 @@ public class NoticeService {
             throw new BalanceTalkException(FORBIDDEN_CREATE_NOTICE);
         }
 
-        Notice notice = request.toEntity(member);
+        List<File> files = getFiles(request);
+        Notice notice = request.toEntity(member, files);
 
         return NoticeResponse.fromEntity(noticeRepository.save(notice));
     }
@@ -70,5 +78,14 @@ public class NoticeService {
             throw new BalanceTalkException(FORBIDDEN_DELETE_NOTICE);
         }
         noticeRepository.delete(notice);
+    }
+
+    private List<File> getFiles(NoticeRequest request) {
+        return Optional.ofNullable(request.getStoredFileNames()).orElseGet(Collections::emptyList)
+                .stream()
+                .filter(fileName -> fileName != null && !fileName.isEmpty())
+                .map(fileName -> fileRepository.findByStoredName(fileName)
+                        .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_FILE)))
+                .toList();
     }
 }
