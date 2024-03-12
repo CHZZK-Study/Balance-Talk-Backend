@@ -6,8 +6,6 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 
-import static org.springframework.http.HttpStatus.*;
-
 @Getter
 @RequiredArgsConstructor
 public enum ErrorCode {
@@ -34,7 +32,6 @@ public enum ErrorCode {
     AUTHENTICATION_ERROR(UNAUTHORIZED, "인증 오류가 발생했습니다."),
     BAD_CREDENTIAL_ERROR(UNAUTHORIZED, "로그인에 실패했습니다."),
     UNAUTHORIZED_LOGOUT(UNAUTHORIZED, "로그아웃을 위해서는 인증이 필요합니다."),
-    UNAUTHORIZED_CREATE_NOTICE(UNAUTHORIZED, "공지사항 작성 권한이 없습니다."),
 
     // 403
     FORBIDDEN_POST_DELETE(FORBIDDEN, "해당 게시글은 삭제 권한이 없습니다."),
@@ -43,6 +40,9 @@ public enum ErrorCode {
     FORBIDDEN_MEMBER_DELETE(FORBIDDEN, "사용자 탈퇴 권한이 없습니다."),
     FORBIDDEN_BOOKMARK_DELETE(FORBIDDEN, "북마크 삭제 권한이 없습니다."),
     FORBIDDEN_POST_CREATE(FORBIDDEN, "글쓰기 권한이 없습니다."),
+    FORBIDDEN_CREATE_NOTICE(FORBIDDEN, "공지사항 작성 권한이 없습니다."),
+    FORBIDDEN_UPDATE_NOTICE(FORBIDDEN, "공지사항 수정 권한이 없습니다."),
+    FORBIDDEN_DELETE_NOTICE(FORBIDDEN, "공지사항 삭제 권한이 없습니다."),
 
     // 404
     NOT_FOUND_POST(NOT_FOUND, "존재하지 않는 게시글입니다."),
