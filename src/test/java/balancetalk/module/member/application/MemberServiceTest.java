@@ -8,6 +8,7 @@ import balancetalk.module.member.domain.MemberRepository;
 import balancetalk.module.member.domain.Role;
 import balancetalk.module.member.dto.*;
 import jakarta.servlet.http.HttpServletRequest;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -84,6 +85,11 @@ class MemberServiceTest {
                 .password(joinRequest.getPassword())
                 .nickname("멤버1")
                 .build();
+    }
+
+    @AfterEach
+    void clear() {
+        SecurityContextHolder.clearContext();
     }
 
 
