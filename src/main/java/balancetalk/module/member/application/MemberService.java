@@ -73,12 +73,18 @@ public class MemberService {
     @Transactional
     public void updateNickname(final String newNickname, HttpServletRequest request) {
         Member member = extractMember(request);
+        if (member.getNickname().equals(newNickname)) {
+            throw new BalanceTalkException(ErrorCode.NO_CHANGE_NICKNAME);
+        }
         member.updateNickname(newNickname);
     }
 
     @Transactional
     public void updatePassword(final String newPassword, HttpServletRequest request) {
         Member member = extractMember(request);
+        if (passwordEncoder.matches(newPassword, member.getPassword())){
+            throw new BalanceTalkException(ErrorCode.NO_CHANGE_PASSWORD);
+        }
         member.updatePassword(passwordEncoder.encode(newPassword));
     }
 
