@@ -7,7 +7,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
@@ -29,16 +28,16 @@ public class PostController {
     @ResponseStatus(HttpStatus.OK)
     @GetMapping
     @Operation(summary = "모든 게시글 조회", description = "해당 회원이 쓴 모든 글을 조회한다.")
-    public List<PostResponse> findAllPosts(@RequestParam("member-id") Long memberId) {
-        return postService.findAll(memberId);
+    public List<PostResponse> findAllPosts(@RequestHeader(value = "Authorization", required = false) String token) {
+        return postService.findAll(token);
     }
 
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/{postId}")
     @Operation(summary = "게시글 조회", description = "post-id에 해당하는 게시글을 조회한다.")
     public PostResponse findPost(@PathVariable("postId") Long postId,
-                                 @RequestParam("member-id") Long memberId) {
-        return postService.findById(postId, memberId);
+                                 @RequestHeader(value = "Authorization", required = false) String token) {
+        return postService.findById(postId, token);
     }
 
     @ResponseStatus(HttpStatus.CREATED)
@@ -52,16 +51,16 @@ public class PostController {
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/{postId}/likes")
     @Operation(summary = "게시글 추천", description = "post-id에 해당하는 게시글에 추천을 누른다.")
-    public String likePost(@PathVariable Long postId, @RequestBody Long memberId) {
-        postService.likePost(postId, memberId);
+    public String likePost(@PathVariable Long postId) {
+        postService.likePost(postId);
         return "요청이 정상적으로 처리되었습니다.";
     }
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping("/{postId}/likes")
     @Operation(summary = "게시글 추천 취소", description = "post-id에 해당하는 게시글에 누른 추천을 취소한다.")
-    public String cancelLikePost(@PathVariable Long postId, @RequestBody Long memberId) {
-        postService.cancelLikePost(postId, memberId);
+    public String cancelLikePost(@PathVariable Long postId) {
+        postService.cancelLikePost(postId);
         return "요청이 정상적으로 처리되었습니다.";
     }
 }

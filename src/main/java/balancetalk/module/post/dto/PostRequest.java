@@ -8,10 +8,15 @@ import balancetalk.module.post.domain.PostCategory;
 import balancetalk.module.post.domain.PostTag;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
-import java.util.stream.IntStream;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Data
@@ -26,14 +31,15 @@ public class PostRequest {
     @Schema(description = "게시글 제목", example = "게시글 제목")
     private String title;
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss", timezone = "Asia/Seoul")
-    @Schema(description = "투료 종료 기한", example = "2024-03-16 08:27:17.391706\t")
+    @JsonFormat(pattern = "yyyy/MM/dd HH:mm:ss")
+    @Schema(description = "투료 종료 기한", example = "2024/12/25 15:30:00", type = "string")
     private LocalDateTime deadline;
 
     @Schema(description = "게시글 카테고리", example = "CASUAL")
     private PostCategory category;
 
-    @Schema(description = "선택지 옵션 리스트", example = "[{\"title\": \"선택지 제목1\", \"description\": \"선택지 내용1\"}, {\"title\": \"선택지 제목2\", \"description\": \"선택지 내용2\"}]")
+    @Schema(description = "선택지 옵션 리스트", example = "[{\"title\": \"선택지 제목1\", \"description\": \"선택지 내용1\" , \"storedFileName\": null}," +
+            "{\"title\": \"선택지 제목2\", \"description\": \"선택지 내용2\", \"storedFileName\": null}]")
     private List<BalanceOptionDto> balanceOptions;
 
     @Schema(description = "태그 리스트", example = "[\"태그1\", \"태그2\", \"태그3\"]")
@@ -51,9 +57,19 @@ public class PostRequest {
     }
 
     private List<BalanceOption> getBalanceOptions(List<File> images) {
-        return IntStream.range(0, balanceOptions.size())
-                .mapToObj(i -> balanceOptions.get(i).toEntity(images.get(i)))
-                .collect(Collectors.toList());
+        if (images.isEmpty()) {
+            return balanceOptions.stream()
+                    .map(balanceOptionDto -> balanceOptionDto.toEntity(null))
+                    .collect(Collectors.toList());
+        } else {
+            Map<String, File> fileNameToFileMap = images.stream()
+                    .collect(Collectors.toMap(File::getStoredName, Function.identity()));
+
+            return balanceOptions.stream()
+                    .map(balanceOptionDto -> balanceOptionDto.toEntity(fileNameToFileMap.getOrDefault(balanceOptionDto.getStoredFileName(),
+                            null)))
+                    .collect(Collectors.toList());
+        }
     }
 
     private List<PostTag> getPostTags() {

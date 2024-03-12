@@ -14,9 +14,6 @@ public class CommentRequest {
 
     @Schema(description = "댓글 내용", example = "댓글 내용...")
     private String content;
-
-    @Schema(description = "회원 id", example = "1")
-    private Long memberId;
   
     @Schema(description = "선택지 id", example = "23")
     private Long selectedOptionId;

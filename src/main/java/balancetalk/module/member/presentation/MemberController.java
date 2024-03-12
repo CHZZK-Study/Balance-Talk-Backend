@@ -24,15 +24,15 @@ public class MemberController {
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/join")
     @Operation(summary = "회원 가입", description = "닉네임, 이메일, 비밀번호를 입력하여 회원 가입을 한다.")
-    public String join(@Valid @RequestBody JoinRequest joinDto) {
-        memberService.join(joinDto);
+    public String join(@Valid @RequestBody JoinRequest joinRequest) {
+        memberService.join(joinRequest);
         return "회원가입이 정상적으로 처리되었습니다.";
     }
 
     @ResponseStatus(HttpStatus.OK)
     @PostMapping("/login")
     @Operation(summary = "로그인", description = "회원 가입 한 이메일과 패스워드를 사용하여 로그인 한다.")
-    public LoginResponse login(@Valid @RequestBody LoginRequest loginRequest) {
+    public TokenDto login(@Valid @RequestBody LoginRequest loginRequest) {
         return memberService.login(loginRequest);
     }
 
@@ -80,5 +80,13 @@ public class MemberController {
     public String logout() {
         memberService.logout();
         return "로그아웃이 정상적으로 처리되었습니다.";
+    }
+
+    @ResponseStatus(HttpStatus.OK)
+    @GetMapping("/duplicate")
+    @Operation(summary = "닉네임 중복 검증", description = "중복된 닉네임이 존재하는지 체크한다.")
+    public String verifyNickname(@RequestParam String nickname) {
+        memberService.verifyNickname(nickname);
+        return "사용 가능한 닉네임 입니다.";
     }
 }

@@ -3,19 +3,14 @@ package balancetalk.module.member.domain;
 import balancetalk.module.bookmark.domain.Bookmark;
 import balancetalk.module.comment.domain.Comment;
 import balancetalk.module.comment.domain.CommentLike;
-import balancetalk.module.Notice;
+import balancetalk.module.notice.domain.Notice;
 import balancetalk.module.post.domain.Post;
 import balancetalk.module.post.domain.PostLike;
 import balancetalk.module.report.domain.Report;
 import balancetalk.module.vote.domain.Vote;
 import balancetalk.global.common.BaseTimeEntity;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.*;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -56,7 +51,7 @@ public class Member extends BaseTimeEntity implements UserDetails {
     @NotNull
     @Enumerated(value = EnumType.STRING)
     @Column(nullable = false)
-    private Role role = Role.USER;
+    private Role role;
 
     @OneToMany(mappedBy = "member")
     private List<Post> posts = new ArrayList<>();

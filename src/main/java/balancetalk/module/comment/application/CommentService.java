@@ -17,6 +17,7 @@ import balancetalk.module.post.domain.PostRepository;
 import balancetalk.module.vote.domain.Vote;
 import balancetalk.module.vote.domain.VoteRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,6 +26,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static balancetalk.global.exception.ErrorCode.*;
+import static balancetalk.global.utils.SecurityUtils.getCurrentMember;
 
 @Service
 @Transactional
@@ -37,11 +39,14 @@ public class CommentService {
     private final CommentLikeRepository commentLikeRepository;
     private final VoteRepository voteRepository;
 
+    @Value("${comments.max-depth}")
+    private int maxDepth;
+
     public Comment createComment(CommentRequest request, Long postId) {
-        Member member = validateMemberId(request);
+        Member member = getCurrentMember(memberRepository);
         Post post = validatePostId(postId);
         BalanceOption balanceOption = validateBalanceOptionId(request, post);
-        voteRepository.findByMemberIdAndBalanceOption_PostId(request.getMemberId(), postId)
+        voteRepository.findByMemberIdAndBalanceOption_PostId(member.getId(), postId)
                 .orElseThrow(() -> new BalanceTalkException(ErrorCode.NOT_FOUND_VOTE));
 
         Comment comment = request.toEntity(member, post);
@@ -49,7 +54,7 @@ public class CommentService {
     }
 
     @Transactional(readOnly = true)
-    public List<CommentResponse> findAll(Long postId) { // TODO: 탈퇴한 회원의 정보는 어떻게 표시되는가?
+    public List<CommentResponse> findAll(Long postId) {
         validatePostId(postId);
 
         List<Comment> comments = commentRepository.findByPostId(postId);
@@ -66,15 +71,35 @@ public class CommentService {
         return responses;
     }
 
-    public Comment updateComment(Long commentId, String content) {
+    public Comment updateComment(Long commentId, Long postId, String content) {
         Comment comment = validateCommentId(commentId);
+        validatePostId(postId);
+
+        if (!getCurrentMember(memberRepository).equals(comment.getMember())) {
+            throw new BalanceTalkException(FORBIDDEN_COMMENT_MODIFY);
+        }
+
+        if (!comment.getPost().getId().equals(postId)) {
+            throw new BalanceTalkException(NOT_FOUND_COMMENT_AT_THAT_POST);
+        }
 
         comment.updateContent(content);
         return comment;
     }
 
-    public void deleteComment(Long commentId) {
-        validateCommentId(commentId);
+    public void deleteComment(Long commentId, Long postId) {
+        Comment comment = validateCommentId(commentId);
+        Member commentMember = commentRepository.findById(commentId).get().getMember();
+        validatePostId(postId);
+
+        if (!getCurrentMember(memberRepository).equals(commentMember)) {
+            throw new BalanceTalkException(FORBIDDEN_COMMENT_DELETE);
+        }
+
+        if (!comment.getPost().getId().equals(postId)) {
+            throw new BalanceTalkException(NOT_FOUND_COMMENT_AT_THAT_POST);
+        }
+
         commentRepository.deleteById(commentId);
     }
 
@@ -86,23 +111,17 @@ public class CommentService {
         Comment parentComment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_COMMENT));
 
-        Member member = memberRepository.findById(request.getMemberId())
-                .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_MEMBER));
-
+        Member member = getCurrentMember(memberRepository);
 
         // 부모 댓글과 연결된 게시글이 맞는지 확인
         if (!parentComment.getPost().equals(post)) {
             throw new BalanceTalkException(NOT_FOUND_PARENT_COMMENT);
         }
 
+        validateDepth(parentComment);
+
         Comment reply = request.toEntity(member, post, parentComment);
         return commentRepository.save(reply);
-    }
-
-
-    private Member validateMemberId(CommentRequest request) { // TODO: validate 메서드 분리 재고
-        return memberRepository.findById(request.getMemberId())
-                .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_MEMBER));
     }
 
     private Post validatePostId(Long postId) {
@@ -121,12 +140,27 @@ public class CommentService {
         return commentRepository.findById(commentId)
                 .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_COMMENT));
     }
-      
-    public Long likeComment(Long postId, Long commentId, Long memberId) {
+
+    private void validateDepth(Comment parentComment) {
+        int depth = calculateDepth(parentComment);
+        if (depth >= maxDepth) {
+            throw new BalanceTalkException(EXCEED_MAX_DEPTH);
+        }
+    }
+
+    private int calculateDepth(Comment comment) {
+        int depth = 0;
+        while (comment.getParent() != null) {
+            depth++;
+            comment = comment.getParent();
+        }
+        return depth;
+    }
+
+    public Long likeComment(Long postId, Long commentId) {
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_COMMENT));
-        Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new BalanceTalkException(ErrorCode.NOT_FOUND_MEMBER));
+        Member member = getCurrentMember(memberRepository);
 
         if (commentLikeRepository.existsByMemberAndComment(member, comment)) {
             throw new BalanceTalkException(ErrorCode.ALREADY_LIKE_COMMENT);
@@ -141,11 +175,10 @@ public class CommentService {
         return comment.getId();
     }
 
-    public void cancelLikeComment(Long commentId, Long memberId) {
+    public void cancelLikeComment(Long commentId) {
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_COMMENT));
-        Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new BalanceTalkException(ErrorCode.NOT_FOUND_MEMBER));
+        Member member = getCurrentMember(memberRepository);
 
         commentLikeRepository.deleteByMemberAndComment(member, comment);
     }

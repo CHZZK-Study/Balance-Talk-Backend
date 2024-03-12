@@ -23,7 +23,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class MailService {
 
-    private static final String senderEmail = "bootsprng@gmail.com";
+    private static final String SENDER_EMAIL = "bootsprng@gmail.com";
 
     private final JavaMailSender javaMailSender;
     private final RedisService redisService;
@@ -32,17 +32,13 @@ public class MailService {
     @Value("${spring.mail.auth-code-expiration-millis}")
     private long authCodeExpirationMillis;
 
-    private String createNumber(){
-        return UUID.randomUUID().toString().substring(0, 6);
-    }
-
     public MimeMessage createMail(EmailRequest request){
         String authCode = createNumber();
 
         MimeMessage message = javaMailSender.createMimeMessage();
 
         try {
-            message.setFrom(senderEmail);
+            message.setFrom(SENDER_EMAIL);
             message.setRecipients(MimeMessage.RecipientType.TO, request.getEmail());
             message.setSubject("이메일 인증");
             String body = "";
@@ -55,6 +51,10 @@ public class MailService {
         }
         redisService.setValues(request.getEmail(), authCode, Duration.ofMillis(authCodeExpirationMillis));
         return message;
+    }
+
+    private String createNumber(){
+        return UUID.randomUUID().toString().substring(0, 6);
     }
 
     public void sendMail(EmailRequest request){

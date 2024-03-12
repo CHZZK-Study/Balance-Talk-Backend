@@ -64,7 +64,6 @@ public class Post extends BaseTimeEntity {
     @OneToMany(mappedBy = "post")
     private List<Comment> comments = new ArrayList<>();
 
-
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
     private List<PostTag> postTags = new ArrayList<>();
 
@@ -97,5 +96,9 @@ public class Post extends BaseTimeEntity {
 
     public boolean hasDeadlineExpired() {
         return deadline.isBefore(LocalDateTime.now());
+    }
+
+    public void increaseViews() {
+        views++;
     }
 }
