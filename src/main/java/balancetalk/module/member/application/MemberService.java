@@ -36,6 +36,12 @@ public class MemberService {
     @Transactional
     public Long join(final JoinRequest joinRequest) {
         joinRequest.setPassword(passwordEncoder.encode(joinRequest.getPassword()));
+        if (memberRepository.existsByNickname(joinRequest.getNickname())) {
+            throw new BalanceTalkException(ErrorCode.ALREADY_REGISTERED_NICKNAME);
+        }
+        if (memberRepository.existsByEmail(joinRequest.getEmail())) {
+            throw new BalanceTalkException(ErrorCode.ALREADY_REGISTERED_EMAIL);
+        }
         Member member = joinRequest.toEntity();
         return memberRepository.save(member).getId();
     }
@@ -72,6 +78,7 @@ public class MemberService {
 
     @Transactional
     public void updateNickname(final String newNickname, HttpServletRequest request) {
+        isUserLoggedIn();
         Member member = extractMember(request);
         if (member.getNickname().equals(newNickname)) {
             throw new BalanceTalkException(ErrorCode.NO_CHANGE_NICKNAME);
@@ -81,6 +88,7 @@ public class MemberService {
 
     @Transactional
     public void updatePassword(final String newPassword, HttpServletRequest request) {
+        isUserLoggedIn();
         Member member = extractMember(request);
         if (passwordEncoder.matches(newPassword, member.getPassword())){
             throw new BalanceTalkException(ErrorCode.NO_CHANGE_PASSWORD);
@@ -90,6 +98,7 @@ public class MemberService {
 
     @Transactional
     public void delete(final LoginRequest loginRequest, HttpServletRequest request) {
+        isUserLoggedIn();
         Member member = extractMember(request);
         if (!member.getEmail().equals(loginRequest.getEmail())) {
             throw new BalanceTalkException(ErrorCode.FORBIDDEN_MEMBER_DELETE);
@@ -103,20 +112,23 @@ public class MemberService {
 
     @Transactional
     public void logout(){
-        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        if (principal instanceof UserDetails) {
-            String username = ((UserDetails) principal).getUsername();
-            if (redisService.getValues(username) == null) {
-                throw new BalanceTalkException(ErrorCode.UNAUTHORIZED_LOGOUT);
-            }
-            redisService.deleteValues(username);
-        }
+        String username = isUserLoggedIn();
+        redisService.deleteValues(username);
     }
 
     public void verifyNickname(String nickname) {
         if (memberRepository.existsByNickname(nickname)) {
             throw new BalanceTalkException(ErrorCode.ALREADY_REGISTERED_NICKNAME);
         }
+    }
+
+    private String isUserLoggedIn() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+        if (redisService.getValues(username) == null) {
+            throw new BalanceTalkException(ErrorCode.LOGIN_REQUIRED);
+        }
+        return username;
     }
 
     private Member extractMember(HttpServletRequest request) {
