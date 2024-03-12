@@ -51,7 +51,7 @@ public class Member extends BaseTimeEntity implements UserDetails {
     @NotNull
     @Enumerated(value = EnumType.STRING)
     @Column(nullable = false)
-    private Role role = Role.USER;
+    private Role role;
 
     @OneToMany(mappedBy = "member")
     private List<Post> posts = new ArrayList<>();

@@ -1,6 +1,7 @@
 package balancetalk.module.member.application;
 
 import balancetalk.global.exception.BalanceTalkException;
+import balancetalk.global.exception.ErrorCode;
 import balancetalk.global.jwt.JwtTokenProvider;
 import balancetalk.global.redis.application.RedisService;
 import balancetalk.module.member.domain.Member;
@@ -23,6 +24,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import java.util.List;
@@ -340,5 +342,31 @@ class MemberServiceTest {
         assertThatThrownBy(() -> memberService.logout())
                 .isInstanceOf(BalanceTalkException.class)
                 .hasMessage("로그아웃을 위해서는 인증이 필요합니다.");
+    }
+
+    @Test
+    @DisplayName("닉네임 중복 검증 테스트 - 성공")
+    void nickNameDuplicateVerifyTest_Success() {
+        // given
+        String verifyName = "체크할닉네임";
+        when(memberRepository.existsByNickname(verifyName)).thenReturn(false);
+
+        // when
+        memberService.verifyNickname(verifyName);
+
+        // then
+        assertNotEquals(verifyName, member.getNickname());
+    }
+    @Test
+    @DisplayName("닉네임 중복 검증 테스트 - 실패")
+    void nickNameDuplicateVerifyTest_Fail() {
+        // given
+        String verifyName = "멤버1";
+        when(memberRepository.existsByNickname(verifyName)).thenReturn(true);
+
+        // when & then
+        assertThatThrownBy(() -> memberService.verifyNickname(verifyName))
+                .isInstanceOf(BalanceTalkException.class)
+                .hasMessage(ErrorCode.ALREADY_REGISTERED_NICKNAME.getMessage());
     }
 }

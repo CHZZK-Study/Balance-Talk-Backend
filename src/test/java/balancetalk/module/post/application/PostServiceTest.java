@@ -1,80 +1,98 @@
 package balancetalk.module.post.application;
 
+import balancetalk.global.redis.application.RedisService;
+import balancetalk.module.file.domain.File;
+import balancetalk.module.file.domain.FileRepository;
+import balancetalk.module.member.domain.Member;
+import balancetalk.module.member.domain.MemberRepository;
+import balancetalk.module.post.domain.*;
+import balancetalk.module.post.dto.BalanceOptionDto;
+import balancetalk.module.post.dto.PostRequest;
+import balancetalk.module.post.dto.PostResponse;
+import balancetalk.module.post.dto.PostTagDto;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.IntStream;
+
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.mockito.Mockito.*;
 
-//@ExtendWith(MockitoExtension.class)
-//class PostServiceTest {
-//
-//    @Mock
-//    MemberRepository memberRepository;
-//
-//    @Mock
-//    PostRepository postRepository;
-//
-//    @Mock
-//    PostLikeRepository postLikeRepository;
-//
-//    @InjectMocks
-//    PostService postService;
-//
-//    @Test
-//    @DisplayName("게시글 작성 테스트")
-//    void createPost_success() {
-//        // given
-//        Member member = Member.builder()
-//                .id(1L)
-//                .build();
-//
-//        FileResponse fileDto = FileResponse.builder()
-//                .uploadName("파일1")
-//                .path("../")
-//                .type(FileType.JPEG)
-//                .size(236L)
-//                .build();
-//
-//        List<PostTagDto> postTagDto = List.of(
-//                PostTagDto.builder()
-//                        .tagName("태그1")
-//                        .build(),
-//                PostTagDto.builder()
-//                        .tagName("태그2")
-//                        .build());
-//
-//        List<BalanceOptionDto> balanceOptionDto = List.of(
-//                BalanceOptionDto.builder()
-//                        .title("제목1")
-//                        .description("섦명 내용")
-//                        .file(fileDto)
-//                        .build(),
-//                BalanceOptionDto.builder()
-//                        .title("제목1")
-//                        .description("섦명 내용")
-//                        .file(fileDto)
-//                        .build());
-//
-//        PostRequestDto postRequestDto = PostRequestDto.builder()
-//                .memberId(member.getId())
-//                .title("게시글 생성 테스트")
-//                .balanceOptions(balanceOptionDto)
-//                .tags(postTagDto)
-//                .build();
-//
-//        Post post = postRequestDto.toEntity(member);
-//
-//
-//        when(memberRepository.findById(1L)).thenReturn(Optional.of(member));
-//        // 생성된 post 객체를 반환하게 설정
-//        when(postRepository.save(any())).thenReturn(post);
-//
-//        // when
-//        Post result = postService.save(postRequestDto);
-//
-//        // then
-//        assertThat(result.getMember().getId()).isEqualTo(member.getId());
-//
-//    }
+@ExtendWith(MockitoExtension.class)
+class PostServiceTest {
+
+    @Mock
+    MemberRepository memberRepository;
+
+    @Mock
+    PostRepository postRepository;
+
+    @Mock
+    PostLikeRepository postLikeRepository;
+
+    @Mock
+    FileRepository fileRepository;
+
+    @Mock
+    RedisService redisService;
+
+    @InjectMocks
+    PostService postService;
+
+    private String accessToken = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ0ZXN0MTIzNDVAbmF2ZXIuY29tIiwiaWF0IjoxNzA5NDc1NTE4LCJleHAiOjE3MDk1MTg3MTh9.ZZXuN4OWM2HZjWOx7Pupl5NkRtjvd4qnK_txGdRy7G5_GdKgnyF3JfiUsenQgxsi1Y_-7C0dA85xabot2m1cag";
+
+    Member member = Member.builder()
+            .id(1L)
+            .email("member@gmail.com")
+            .build();
+
+    File file = File.builder()
+            .storedName("e90a6177-89a1-45b3-91d3-cb39e9bec407_미어캣.jpg")
+            .build();
+    BalanceOption balanceOption = BalanceOption.builder()
+            .title("option1")
+            .description("description1")
+            .file(file)
+            .build();
+
+    @BeforeEach
+    void setUp() {
+        // SecurityContext에 인증된 사용자 설정
+        Authentication authentication = mock(Authentication.class);
+        SecurityContext securityContext = mock(SecurityContext.class);
+        lenient().when(securityContext.getAuthentication()).thenReturn(authentication);
+        SecurityContextHolder.setContext(securityContext);
+
+
+    }
+
+    @Test
+    @DisplayName("게시글 작성 성공")
+    void postSaveSuccess() {
+        // given
+        when(memberRepository.findById(any())).thenReturn(Optional.of(member));
+        when(redisService.getValues(member.getEmail())).thenReturn(accessToken);
+
+        List<File> images = new ArrayList<>();
+        images.add(file);
+
+
+
+    }
 //
 //    @Test
 //    @DisplayName("모든 게시글 조회")
@@ -250,4 +268,4 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 //                .isInstanceOf(BalanceTalkException.class)
 //                .hasMessageContaining(ALREADY_LIKE_POST.getMessage());
 //    }
-//}
+}
