@@ -34,7 +34,6 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
             SecurityContextHolder.clearContext();
             throw new BalanceTalkException(ErrorCode.REDIS_CONNECTION_FAIL);
         } catch (ExpiredJwtException e) {
-            log.error(e.getMessage());
             throw new BalanceTalkException(ErrorCode.EXPIRED_JWT_TOKEN);
         }
         chain.doFilter(request, response);
