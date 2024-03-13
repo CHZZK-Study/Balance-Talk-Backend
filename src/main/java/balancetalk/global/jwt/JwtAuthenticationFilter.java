@@ -24,17 +24,13 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         String token = jwtTokenProvider.resolveToken((HttpServletRequest) request);
-
         try {
             if (token != null && jwtTokenProvider.validateToken(token)) {
                 Authentication auth = jwtTokenProvider.getAuthentication(token);
                 SecurityContextHolder.getContext().setAuthentication(auth);
             }
-        } catch (RedisConnectionFailureException e) {
-            SecurityContextHolder.clearContext();
-            throw new BalanceTalkException(ErrorCode.REDIS_CONNECTION_FAIL);
-        } catch (ExpiredJwtException e) {
-            throw new BalanceTalkException(ErrorCode.EXPIRED_JWT_TOKEN);
+        } catch (Exception e) {
+            request.setAttribute("exception" , e.getMessage());
         }
         chain.doFilter(request, response);
     }

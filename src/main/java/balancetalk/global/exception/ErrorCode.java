@@ -26,7 +26,8 @@ public enum ErrorCode {
     PAGE_NUMBER_ZERO(BAD_REQUEST, "페이지 번호는 0보다 커야합니다."),
     PAGE_SIZE_ZERO(BAD_REQUEST, "페이지 사이즈는 0보다 커야합니다."),
     EXCEED_VALIDATION_LENGTH(BAD_REQUEST, "입력값이 제약 조건에 맞지 않습니다."),
-    INVALID_JWT_TOKEN(BAD_REQUEST, "토큰 값이 존재하지 않습니다."),
+    EMPTY_JWT_TOKEN(BAD_REQUEST, "토큰 값이 존재하지 않습니다."),
+
 
     // 401
     MISMATCHED_EMAIL_OR_PASSWORD(UNAUTHORIZED, "이메일 또는 비밀번호가 잘못되었습니다."),
@@ -36,6 +37,7 @@ public enum ErrorCode {
     UNAUTHORIZED_CREATE_NOTICE(UNAUTHORIZED, "공지사항 작성 권한이 없습니다."),
     VERIFY_CODE_MISMATCH(UNAUTHORIZED, "인증 번호가 일치하지 않습니다."),
     EXPIRED_JWT_TOKEN(UNAUTHORIZED, "만료된 토큰 입니다."),
+    INVALID_JWT_TOKEN(UNAUTHORIZED, "유효하지 않은 토큰입니다"),
 
 
     // 403
@@ -59,6 +61,7 @@ public enum ErrorCode {
     NOT_FOUND_PARENT_COMMENT(NOT_FOUND, "존재하지 않는 원 댓글입니다."),
     NOT_FOUND_COMMENT_AT_THAT_POST(NOT_FOUND, "해당 게시글에 존재하지 않는 댓글입니다."),
     NOT_FOUND_NOTICE(NOT_FOUND, "존재하지 않는 공지사항입니다."),
+
 
     // 409
     ALREADY_VOTE(CONFLICT, "이미 투표한 게시글입니다."),
