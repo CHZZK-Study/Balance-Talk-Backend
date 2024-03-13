@@ -18,9 +18,9 @@ import balancetalk.module.vote.domain.Vote;
 import balancetalk.module.vote.domain.VoteRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -54,10 +54,10 @@ public class CommentService {
     }
 
     @Transactional(readOnly = true)
-    public List<CommentResponse> findAll(Long postId) {
+    public List<CommentResponse> findAllComments(Long postId, Pageable pageable) {
         validatePostId(postId);
 
-        List<Comment> comments = commentRepository.findByPostId(postId);
+        List<Comment> comments = commentRepository.findAllByPostId(postId, pageable);
         List<CommentResponse> responses = new ArrayList<>();
 
         for (Comment comment : comments) {

@@ -20,11 +20,9 @@ import balancetalk.module.post.domain.Post;
 import balancetalk.module.post.domain.PostRepository;
 import balancetalk.module.vote.domain.Vote;
 import balancetalk.module.vote.domain.VoteRepository;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -120,12 +118,12 @@ class CommentServiceTest {
                 Comment.builder().id(2L).content("댓글 2").member(mockMember).post(mockPost).likes(new ArrayList<>()).build()
         );
 
-        when(commentRepository.findByPostId(postId)).thenReturn(comments);
+        when(commentRepository.findAllByPostId(postId, null)).thenReturn(comments);
         when(postRepository.findById(postId)).thenReturn(Optional.of(mockPost));
         when(voteRepository.findByMemberIdAndBalanceOption_PostId(memberId, postId)).thenReturn(Optional.of(vote));
 
         // when
-        List<CommentResponse> responses = commentService.findAll(postId);
+        List<CommentResponse> responses = commentService.findAllComments(postId, null);
 
         // then
         assertThat(responses).hasSize(comments.size());
@@ -262,7 +260,7 @@ class CommentServiceTest {
         // when
 
         // then
-        assertThatThrownBy(() -> commentService.findAll(postId))
+        assertThatThrownBy(() -> commentService.findAllComments(postId, null))
                 .isInstanceOf(BalanceTalkException.class)
                 .hasMessageContaining("존재하지 않는 게시글입니다.");
     }
