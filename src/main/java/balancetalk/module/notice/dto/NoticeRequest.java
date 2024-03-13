@@ -32,16 +32,11 @@ public class NoticeRequest {
             " \"4df23447-2355-45h2-8783-7f6gd2ceb848_강아지.jpg\"]")
     private List<String> storedFileNames;
 
-    public Notice toEntity(Member member, @Nullable List<File> files) {
-        Notice.NoticeBuilder builder = Notice.builder()
-                .title(title)
-                .content(content)
-                .member(member);
-
-        if (files != null) {
-            builder.files(files);
-        }
-
-        return builder.build();
+    public Notice toEntity(Member member) {
+        return Notice.builder()
+                .title(this.title)
+                .content(this.content)
+                .member(member)
+                .build();
     }
 }

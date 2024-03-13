@@ -33,21 +33,14 @@ public class NoticeResponse {
     @Schema(description = "게시글 작성자", example = "작성자 닉네임")
     private String createdBy;
 
-    public static NoticeResponse fromEntity(Notice notice) {
-        NoticeResponse.NoticeResponseBuilder builder = NoticeResponse.builder()
+    public static NoticeResponse fromEntity(Notice notice, List<String> storedFileNames) {
+        return NoticeResponse.builder()
                 .id(notice.getId())
                 .title(notice.getTitle())
                 .content(notice.getContent())
                 .createdAt(notice.getCreatedAt())
-                .createdBy(notice.getMember().getNickname());
-
-        if (!notice.getFiles().isEmpty()) {
-            List<String> files = notice.getFiles().stream()
-                    .map(File::getStoredName)
-                    .toList();
-            builder.storedFileNames(files);
-        }
-
-        return builder.build();
+                .createdBy(notice.getMember().getNickname())
+                .storedFileNames(storedFileNames)
+                .build();
     }
 }
