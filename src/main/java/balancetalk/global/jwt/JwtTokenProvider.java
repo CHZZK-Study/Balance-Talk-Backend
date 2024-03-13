@@ -5,6 +5,7 @@ import balancetalk.global.exception.ErrorCode;
 import balancetalk.global.redis.application.RedisService;
 import balancetalk.module.member.dto.TokenDto;
 import io.jsonwebtoken.*;
+import io.jsonwebtoken.security.SignatureException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -100,6 +101,8 @@ public class JwtTokenProvider {
         } catch (ExpiredJwtException e) {
             throw new BalanceTalkException(ErrorCode.EXPIRED_JWT_TOKEN);
         } catch (IllegalArgumentException | MalformedJwtException e) {
+            throw new BalanceTalkException(ErrorCode.EMPTY_JWT_TOKEN);
+        } catch (SignatureException e) {
             throw new BalanceTalkException(ErrorCode.INVALID_JWT_TOKEN);
         }
     }
