@@ -29,7 +29,7 @@ public class CommentResponse {
     private Long selectedOptionId;
 
     @Schema(description = "댓글 추천 수", example = "24")
-    private int likeCount;
+    private int likesCount;
 
     @Schema(description = "댓글 생성 날짜")
     private LocalDateTime createdAt;
@@ -44,7 +44,7 @@ public class CommentResponse {
                 .memberName(comment.getMember().getNickname())
                 .postId(comment.getPost().getId())
                 .selectedOptionId(balanceOptionId)
-                .likeCount(comment.getLikes().size())
+                .likesCount(comment.getLikes().size())
                 .createdAt(comment.getCreatedAt())
                 .lastModifiedAt(comment.getLastModifiedAt())
                 .build();
