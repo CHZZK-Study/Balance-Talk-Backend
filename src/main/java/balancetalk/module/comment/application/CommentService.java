@@ -18,6 +18,7 @@ import balancetalk.module.vote.domain.Vote;
 import balancetalk.module.vote.domain.VoteRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -54,21 +55,20 @@ public class CommentService {
     }
 
     @Transactional(readOnly = true)
-    public List<CommentResponse> findAllComments(Long postId, Pageable pageable) {
+    public Page<CommentResponse> findAllComments(Long postId, Pageable pageable) {
         validatePostId(postId);
 
-        List<Comment> comments = commentRepository.findAllByPostId(postId, pageable);
-        List<CommentResponse> responses = new ArrayList<>();
+        Page<Comment> comments = commentRepository.findAllByPostId(postId, pageable);
 
-        for (Comment comment : comments) {
-            Optional<Vote> voteForComment = voteRepository.findByMemberIdAndBalanceOption_PostId(comment.getMember().getId(), postId);
+        return comments.map(comment -> {
+            Optional<Vote> voteForComment = voteRepository.findByMemberIdAndBalanceOption_PostId(
+                    comment.getMember().getId(), postId);
 
             Long balanceOptionId = voteForComment.map(Vote::getBalanceOption).map(BalanceOption::getId)
                     .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_BALANCE_OPTION));
-            CommentResponse response = CommentResponse.fromEntity(comment, balanceOptionId);
-            responses.add(response);
-        }
-        return responses;
+
+            return CommentResponse.fromEntity(comment, balanceOptionId);
+        });
     }
 
     public Comment updateComment(Long commentId, Long postId, String content) {

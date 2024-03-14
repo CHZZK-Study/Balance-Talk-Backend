@@ -7,6 +7,7 @@ import balancetalk.module.comment.dto.ReplyCreateRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -31,7 +32,7 @@ public class CommentController {
     @ResponseStatus(HttpStatus.OK)
     @GetMapping
     @Operation(summary = "댓글 목록 조회", description = "post-id에 해당하는 게시글에 있는 모든 댓글을 조회한다.")
-    public List<CommentResponse> findAllCommentsByPostId(@PathVariable Long postId, Pageable pageable) {
+    public Page<CommentResponse> findAllCommentsByPostId(@PathVariable Long postId, Pageable pageable) {
         return commentService.findAllComments(postId, pageable);
     }
 
