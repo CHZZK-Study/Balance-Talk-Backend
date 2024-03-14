@@ -36,6 +36,9 @@ public class PostResponse {
     @Schema(description = "북마크 여부", example = "false")
     private boolean myBookmark;
 
+    @Schema(description = "투표 여부", example = "true")
+    private boolean myVote;
+
     @Schema(description = "게시글 카테고리", example = "CASUAL")
     private PostCategory category;
 
@@ -51,7 +54,7 @@ public class PostResponse {
     private String createdBy;
 
     // todo: ProfilePhoto 추가
-    public static PostResponse fromEntity(Post post, boolean myLike, boolean myBookmark) {
+    public static PostResponse fromEntity(Post post, boolean myLike, boolean myBookmark, boolean myVote) {
         return PostResponse.builder()
                 .id(post.getId())
                 .title(post.getTitle())
@@ -60,6 +63,7 @@ public class PostResponse {
                 .likesCount(post.likesCount())
                 .myLike(myLike)
                 .myBookmark(myBookmark)
+                .myVote(myVote)
                 .category(post.getCategory())
                 .balanceOptions(getBalanceOptions(post))
                 .postTags(getPostTags(post))

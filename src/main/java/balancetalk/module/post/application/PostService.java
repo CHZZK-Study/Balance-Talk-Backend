@@ -50,7 +50,7 @@ public class PostService {
             postTag.addPost(post);
         }
 
-        return PostResponse.fromEntity(postRepository.save(post), false, false);
+        return PostResponse.fromEntity(postRepository.save(post), false, false, false);
     }
 
     private List<File> getImages(PostRequest postRequestDto) {
@@ -68,12 +68,15 @@ public class PostService {
         List<Post> posts = postRepository.findAll();
         if (token == null) {
             return posts.stream()
-                    .map(post -> PostResponse.fromEntity(post, false, false))
+                    .map(post -> PostResponse.fromEntity(post, false, false, false))
                     .collect(Collectors.toList());
         }
         Member member = getCurrentMember(memberRepository);
         return posts.stream()
-                .map(post -> PostResponse.fromEntity(post, member.hasLiked(post), member.hasBookmarked(post)))
+                .map(post -> PostResponse.fromEntity(post,
+                        member.hasLiked(post),
+                        member.hasBookmarked(post),
+                        member.hasVoted(post)))
                 .collect(Collectors.toList());
     }
 
@@ -82,13 +85,13 @@ public class PostService {
         Post post = getCurrentPost(postId);
         if (token == null) {
             post.increaseViews();
-            return PostResponse.fromEntity(post, false, false);
+            return PostResponse.fromEntity(post, false, false, false);
         }
         Member member = getCurrentMember(memberRepository);
         if (member.getRole() == Role.USER) {
              post.increaseViews();
         }
-        return PostResponse.fromEntity(post, member.hasLiked(post), member.hasBookmarked(post));
+        return PostResponse.fromEntity(post, member.hasLiked(post), member.hasBookmarked(post), member.hasVoted(post));
     }
 
     @Transactional
