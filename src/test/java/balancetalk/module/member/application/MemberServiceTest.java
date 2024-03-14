@@ -341,7 +341,7 @@ class MemberServiceTest {
         // when & then
         assertThatThrownBy(() -> memberService.logout())
                 .isInstanceOf(BalanceTalkException.class)
-                .hasMessage(ErrorCode.LOGIN_REQUIRED.getMessage());
+                .hasMessage(ErrorCode.AUTHENTICATION_REQUIRED.getMessage());
     }
 
     @Test
