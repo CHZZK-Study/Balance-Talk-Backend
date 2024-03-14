@@ -16,6 +16,8 @@ import balancetalk.module.post.dto.PostRequest;
 import balancetalk.module.post.dto.PostResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
@@ -26,12 +28,14 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Transactional
 public class PostService {
+    private static final int BEST_POSTS_SIZE = 5;
 
     private final PostRepository postRepository;
     private final MemberRepository memberRepository;
     private final PostLikeRepository postLikeRepository;
     private final FileRepository fileRepository;
     private final RedisService redisService;
+
 
     public PostResponse save(final PostRequest request) {
         Member writer = getCurrentMember(memberRepository);
@@ -66,18 +70,10 @@ public class PostService {
     public List<PostResponse> findAll(String token) {
         // TODO: 검색, 정렬, 마감 기능 추가
         List<Post> posts = postRepository.findAll();
-        if (token == null) {
-            return posts.stream()
-                    .map(post -> PostResponse.fromEntity(post, false, false))
-                    .collect(Collectors.toList());
-        }
-        Member member = getCurrentMember(memberRepository);
-        return posts.stream()
-                .map(post -> PostResponse.fromEntity(post, member.hasLiked(post), member.hasBookmarked(post)))
-                .collect(Collectors.toList());
+        return getPostResponses(token, posts);
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public PostResponse findById(Long postId, String token) {
         Post post = getCurrentPost(postId);
         if (token == null) {
@@ -129,5 +125,24 @@ public class PostService {
     private Post getCurrentPost(Long postId) {
         return postRepository.findById(postId)
                 .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_POST));
+    }
+
+    @Transactional(readOnly = true)
+    public List<PostResponse> findBestPosts(String token) {
+        PageRequest limit = PageRequest.of(0, BEST_POSTS_SIZE);
+        List<Post> posts = postRepository.findBestPosts(limit);
+        return getPostResponses(token, posts);
+    }
+
+    private List<PostResponse> getPostResponses(String token, List<Post> posts) {
+        if (token == null) {
+            return posts.stream()
+                    .map(post -> PostResponse.fromEntity(post, false, false))
+                    .collect(Collectors.toList());
+        }
+        Member member = getCurrentMember(memberRepository);
+        return posts.stream()
+                .map(post -> PostResponse.fromEntity(post, member.hasLiked(post), member.hasBookmarked(post)))
+                .collect(Collectors.toList());
     }
 }
