@@ -78,7 +78,6 @@ public class MemberService {
 
     @Transactional
     public void updateNickname(final String newNickname, HttpServletRequest request) {
-        isUserLoggedIn();
         Member member = extractMember(request);
         if (member.getNickname().equals(newNickname)) {
             throw new BalanceTalkException(ErrorCode.NO_CHANGE_NICKNAME);
@@ -88,7 +87,6 @@ public class MemberService {
 
     @Transactional
     public void updatePassword(final String newPassword, HttpServletRequest request) {
-        isUserLoggedIn();
         Member member = extractMember(request);
         if (passwordEncoder.matches(newPassword, member.getPassword())){
             throw new BalanceTalkException(ErrorCode.NO_CHANGE_PASSWORD);
@@ -98,7 +96,6 @@ public class MemberService {
 
     @Transactional
     public void delete(final LoginRequest loginRequest, HttpServletRequest request) {
-        isUserLoggedIn();
         Member member = extractMember(request);
         if (!member.getEmail().equals(loginRequest.getEmail())) {
             throw new BalanceTalkException(ErrorCode.FORBIDDEN_MEMBER_DELETE);
@@ -112,7 +109,8 @@ public class MemberService {
 
     @Transactional
     public void logout(){
-        String username = isUserLoggedIn();
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
         redisService.deleteValues(username);
     }
 
@@ -120,15 +118,6 @@ public class MemberService {
         if (memberRepository.existsByNickname(nickname)) {
             throw new BalanceTalkException(ErrorCode.ALREADY_REGISTERED_NICKNAME);
         }
-    }
-
-    private String isUserLoggedIn() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String username = authentication.getName();
-        if (redisService.getValues(username) == null) {
-            throw new BalanceTalkException(ErrorCode.LOGIN_REQUIRED);
-        }
-        return username;
     }
 
     private Member extractMember(HttpServletRequest request) {
