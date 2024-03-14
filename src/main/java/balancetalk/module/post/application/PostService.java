@@ -21,7 +21,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -65,18 +64,14 @@ public class PostService {
     }
 
     @Transactional(readOnly = true)
-    public List<PostResponse> findAll(String token, Pageable pageable) {
+    public Page<PostResponse> findAll(String token, Pageable pageable) {
         // TODO: 검색, 마감 기능 추가
         Page<Post> posts = postRepository.findAll(pageable);
         if (token == null) {
-            return posts.stream()
-                    .map(post -> PostResponse.fromEntity(post, false, false))
-                    .collect(Collectors.toList());
+            return posts.map(post -> PostResponse.fromEntity(post, false, false));
         }
         Member member = getCurrentMember(memberRepository);
-        return posts.stream()
-                .map(post -> PostResponse.fromEntity(post, member.hasLiked(post), member.hasBookmarked(post)))
-                .collect(Collectors.toList());
+        return posts.map(post -> PostResponse.fromEntity(post, member.hasLiked(post), member.hasBookmarked(post)));
     }
 
     @Transactional

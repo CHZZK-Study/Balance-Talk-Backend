@@ -6,10 +6,10 @@ import balancetalk.module.post.dto.PostResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -29,7 +29,7 @@ public class PostController {
     @ResponseStatus(HttpStatus.OK)
     @GetMapping
     @Operation(summary = "모든 게시글 조회", description = "해당 회원이 쓴 모든 글을 조회한다.")
-    public List<PostResponse> findAllPosts(@RequestHeader(value = "Authorization", required = false) String token,
+    public Page<PostResponse> findAllPosts(@RequestHeader(value = "Authorization", required = false) String token,
                                            Pageable pageable) {
         return postService.findAll(token, pageable);
     }
