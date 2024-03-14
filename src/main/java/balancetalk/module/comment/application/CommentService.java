@@ -55,6 +55,7 @@ public class CommentService {
 
     @Transactional(readOnly = true)
     public List<CommentResponse> findAll(Long postId) {
+        Member member = getCurrentMember(memberRepository);
         validatePostId(postId);
 
         List<Comment> comments = commentRepository.findByPostId(postId);
@@ -65,7 +66,8 @@ public class CommentService {
 
             Long balanceOptionId = voteForComment.map(Vote::getBalanceOption).map(BalanceOption::getId)
                     .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_BALANCE_OPTION));
-            CommentResponse response = CommentResponse.fromEntity(comment, balanceOptionId);
+            boolean myLike = commentLikeRepository.existsByMemberAndComment(member, comment);
+            CommentResponse response = CommentResponse.fromEntity(comment, balanceOptionId, myLike);
             responses.add(response);
         }
         return responses;
@@ -157,7 +159,7 @@ public class CommentService {
         return depth;
     }
 
-    public Long likeComment(Long postId, Long commentId) {
+    public Long likeComment(Long commentId) {
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_COMMENT));
         Member member = getCurrentMember(memberRepository);
