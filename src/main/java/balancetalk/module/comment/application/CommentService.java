@@ -55,7 +55,13 @@ public class CommentService {
 
     @Transactional(readOnly = true)
     public List<CommentResponse> findAll(Long postId) {
-        Member member = getCurrentMember(memberRepository);
+        Member currentMember = null;
+        boolean myLike = false;
+        try {
+            currentMember = getCurrentMember(memberRepository);
+        } catch (BalanceTalkException e) {
+            // 비로그인 상태에서 댓글 조회 시
+        }
         validatePostId(postId);
 
         List<Comment> comments = commentRepository.findByPostId(postId);
@@ -66,7 +72,9 @@ public class CommentService {
 
             Long balanceOptionId = voteForComment.map(Vote::getBalanceOption).map(BalanceOption::getId)
                     .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_BALANCE_OPTION));
-            boolean myLike = commentLikeRepository.existsByMemberAndComment(member, comment);
+            if (currentMember != null) {
+                myLike = commentLikeRepository.existsByMemberAndComment(currentMember, comment);
+            }
             CommentResponse response = CommentResponse.fromEntity(comment, balanceOptionId, myLike);
             responses.add(response);
         }
