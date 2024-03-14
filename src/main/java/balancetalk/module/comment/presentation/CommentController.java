@@ -62,8 +62,8 @@ public class CommentController {
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/{commentId}/likes")
     @Operation(summary = "댓글 추천", description = "comment-id에 해당하는 댓글에 추천을 누른다.")
-    public String likeComment(@PathVariable Long postId, @PathVariable Long commentId) {
-        commentService.likeComment(postId, commentId);
+    public String likeComment(@PathVariable Long commentId) {
+        commentService.likeComment(commentId);
         return "요청이 정상적으로 처리되었습니다.";
     }
 

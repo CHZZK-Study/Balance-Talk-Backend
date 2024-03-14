@@ -280,7 +280,7 @@ class CommentServiceTest {
         when(memberRepository.findByEmail(authenticatedEmail)).thenReturn(Optional.of(member));
 
         // when
-        Long likedCommentId = commentService.likeComment(1L, comment.getId());
+        Long likedCommentId = commentService.likeComment( comment.getId());
 
         // then
         assertThat(likedCommentId).isEqualTo(comment.getId());
@@ -301,7 +301,7 @@ class CommentServiceTest {
                 .thenThrow(new BalanceTalkException(ErrorCode.ALREADY_LIKE_COMMENT));
 
         // when, then
-        assertThatThrownBy(() -> commentService.likeComment(1L, comment.getId()))
+        assertThatThrownBy(() -> commentService.likeComment(comment.getId()))
                 .isInstanceOf(BalanceTalkException.class)
                 .hasMessageContaining(ErrorCode.ALREADY_LIKE_COMMENT.getMessage());
     }
