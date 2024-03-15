@@ -80,7 +80,7 @@ public class MemberService {
     public void updateNickname(final String newNickname, HttpServletRequest request) {
         Member member = extractMember(request);
         if (member.getNickname().equals(newNickname)) {
-            throw new BalanceTalkException(ErrorCode.NO_CHANGE_NICKNAME);
+            throw new BalanceTalkException(ErrorCode.SAME_NICKNAME);
         }
         member.updateNickname(newNickname);
     }
@@ -89,7 +89,7 @@ public class MemberService {
     public void updatePassword(final String newPassword, HttpServletRequest request) {
         Member member = extractMember(request);
         if (passwordEncoder.matches(newPassword, member.getPassword())){
-            throw new BalanceTalkException(ErrorCode.NO_CHANGE_PASSWORD);
+            throw new BalanceTalkException(ErrorCode.SAME_PASSWORD);
         }
         member.updatePassword(passwordEncoder.encode(newPassword));
     }
