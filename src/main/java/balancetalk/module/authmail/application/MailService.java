@@ -68,13 +68,13 @@ public class MailService {
         String redisValue = redisService.getValues(request.getEmail());
         Optional.ofNullable(redisValue)
                 .filter(code -> code.equals(request.getVerificationCode()))
-                .orElseThrow(() -> new BalanceTalkException(ErrorCode.AUTHORIZATION_CODE_MISMATCH));
+                .orElseThrow(() -> new BalanceTalkException(ErrorCode.VERIFY_CODE_MISMATCH));
     }
 
     private void validateEmail(String email) {
         Optional<Member> member = memberRepository.findByEmail(email);
         if (member.isPresent()) {
-            throw new BalanceTalkException(ErrorCode.DUPLICATE_EMAIL);
+            throw new BalanceTalkException(ErrorCode.ALREADY_REGISTERED_EMAIL);
         }
     }
 }

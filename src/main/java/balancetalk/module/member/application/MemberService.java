@@ -36,6 +36,12 @@ public class MemberService {
     @Transactional
     public Long join(final JoinRequest joinRequest) {
         joinRequest.setPassword(passwordEncoder.encode(joinRequest.getPassword()));
+        if (memberRepository.existsByNickname(joinRequest.getNickname())) {
+            throw new BalanceTalkException(ErrorCode.ALREADY_REGISTERED_NICKNAME);
+        }
+        if (memberRepository.existsByEmail(joinRequest.getEmail())) {
+            throw new BalanceTalkException(ErrorCode.ALREADY_REGISTERED_EMAIL);
+        }
         Member member = joinRequest.toEntity();
         return memberRepository.save(member).getId();
     }
@@ -73,12 +79,18 @@ public class MemberService {
     @Transactional
     public void updateNickname(final String newNickname, HttpServletRequest request) {
         Member member = extractMember(request);
+        if (member.getNickname().equals(newNickname)) {
+            throw new BalanceTalkException(ErrorCode.SAME_NICKNAME);
+        }
         member.updateNickname(newNickname);
     }
 
     @Transactional
     public void updatePassword(final String newPassword, HttpServletRequest request) {
         Member member = extractMember(request);
+        if (passwordEncoder.matches(newPassword, member.getPassword())){
+            throw new BalanceTalkException(ErrorCode.SAME_PASSWORD);
+        }
         member.updatePassword(passwordEncoder.encode(newPassword));
     }
 
@@ -97,14 +109,9 @@ public class MemberService {
 
     @Transactional
     public void logout(){
-        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        if (principal instanceof UserDetails) {
-            String username = ((UserDetails) principal).getUsername();
-            if (redisService.getValues(username) == null) {
-                throw new BalanceTalkException(ErrorCode.UNAUTHORIZED_LOGOUT);
-            }
-            redisService.deleteValues(username);
-        }
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+        redisService.deleteValues(username);
     }
 
     public void verifyNickname(String nickname) {
