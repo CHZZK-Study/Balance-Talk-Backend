@@ -16,8 +16,14 @@ import balancetalk.module.post.dto.PostRequest;
 import balancetalk.module.post.dto.PostResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.RequestParam;
+
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -89,6 +95,17 @@ public class PostService {
              post.increaseViews();
         }
         return PostResponse.fromEntity(post, member.hasLiked(post), member.hasBookmarked(post));
+    }
+
+    @Transactional(readOnly = true)
+    public List<PostResponse> findPostsByCurrentUser(int page, int size) {
+        Member currentMember = getCurrentMember(memberRepository);
+        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
+        Page<Post> postsPage = postRepository.findByMemberEmail(currentMember.getEmail(), pageable);
+
+        return postsPage.stream()
+                .map(post -> PostResponse.fromEntity(post, false, false))
+                .collect(Collectors.toList());
     }
 
     @Transactional
