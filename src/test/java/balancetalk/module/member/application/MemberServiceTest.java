@@ -4,6 +4,7 @@ import balancetalk.global.exception.BalanceTalkException;
 import balancetalk.global.exception.ErrorCode;
 import balancetalk.global.jwt.JwtTokenProvider;
 import balancetalk.global.redis.application.RedisService;
+import balancetalk.module.file.domain.File;
 import balancetalk.module.member.domain.Member;
 import balancetalk.module.member.domain.MemberRepository;
 import balancetalk.module.member.domain.Role;
@@ -202,7 +203,7 @@ class MemberServiceTest {
 
         // when
         joinRequest.setNickname(newNickname);
-        member = joinRequest.toEntity();
+        member = joinRequest.toEntity(null);
         memberService.updateNickname(newNickname, request);
 
         // then
@@ -236,7 +237,7 @@ class MemberServiceTest {
 
         // when
         joinRequest.setPassword(newPassword);
-        member = joinRequest.toEntity();
+        member = joinRequest.toEntity(null);
         memberService.updatePassword(newPassword, request);
 
         // then
