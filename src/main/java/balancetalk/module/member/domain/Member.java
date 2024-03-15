@@ -3,6 +3,7 @@ package balancetalk.module.member.domain;
 import balancetalk.module.bookmark.domain.Bookmark;
 import balancetalk.module.comment.domain.Comment;
 import balancetalk.module.comment.domain.CommentLike;
+import balancetalk.module.file.domain.File;
 import balancetalk.module.notice.domain.Notice;
 import balancetalk.module.post.domain.Post;
 import balancetalk.module.post.domain.PostLike;
@@ -76,6 +77,10 @@ public class Member extends BaseTimeEntity implements UserDetails {
 
     @OneToMany(mappedBy = "reporter")
     private List<Report> reports = new ArrayList<>(); // 신고한 기록
+
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "file_id")
+    private File profilePhoto;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
