@@ -16,12 +16,10 @@ import balancetalk.module.post.dto.PostRequest;
 import balancetalk.module.post.dto.PostResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -53,7 +51,7 @@ public class PostService {
             postTag.addPost(post);
         }
 
-        return PostResponse.fromEntity(postRepository.save(post), false, false);
+        return PostResponse.fromEntity(postRepository.save(post), false, false, false);
     }
 
     private List<File> getImages(PostRequest postRequestDto) {
@@ -77,13 +75,13 @@ public class PostService {
         Post post = getCurrentPost(postId);
         if (token == null) {
             post.increaseViews();
-            return PostResponse.fromEntity(post, false, false);
+            return PostResponse.fromEntity(post, false, false, false);
         }
         Member member = getCurrentMember(memberRepository);
         if (member.getRole() == Role.USER) {
              post.increaseViews();
         }
-        return PostResponse.fromEntity(post, member.hasLiked(post), member.hasBookmarked(post));
+        return PostResponse.fromEntity(post, member.hasLiked(post), member.hasBookmarked(post), member.hasVoted(post));
     }
 
     @Transactional

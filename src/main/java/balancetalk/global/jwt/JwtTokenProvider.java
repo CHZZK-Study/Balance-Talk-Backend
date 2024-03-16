@@ -5,6 +5,7 @@ import balancetalk.global.exception.ErrorCode;
 import balancetalk.global.redis.application.RedisService;
 import balancetalk.module.member.dto.TokenDto;
 import io.jsonwebtoken.*;
+import io.jsonwebtoken.security.SignatureException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -78,52 +79,37 @@ public class JwtTokenProvider {
         UserDetails userDetails = userDetailsService.loadUserByUsername(userPrincipal);
 
         return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
-
     }
 
-    // http 헤더로부터 bearer 토큰 가져옴
     public String resolveToken(HttpServletRequest request) {
         String bearerToken = request.getHeader("Authorization");
         if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
-            return bearerToken.substring(7); // 실제 토큰만 추출
+            return bearerToken.substring(7);
         }
         return null;
     }
 
-
     public String getPayload(String token) {
-        return tokenToJws(token).getBody().getSubject();
+        validateToken(token);
+        return Jwts.parserBuilder().setSigningKey(secretKey).build().parseClaimsJws(token).getBody().getSubject();
     }
 
-    private Jws<Claims> tokenToJws(final String token) {
-        try {
-            return Jwts.parserBuilder().setSigningKey(secretKey).build().parseClaimsJws(token);
-        } catch (final IllegalArgumentException | MalformedJwtException e) {
-            throw new IllegalArgumentException("Token이 null이거나 Token 파싱 오류");
-        } catch (final SignatureException e) {
-            throw new IllegalArgumentException("토큰의 시크릿 키가 일치하지 않습니다.");
-        } catch (final ExpiredJwtException e) {
-            throw new IllegalArgumentException("만료된 토큰 입니다.");
-        }
-    }
-
-    // 토큰 유효성, 만료일자 확인
     public boolean validateToken(String token) {
         try {
             Jws<Claims> claims = Jwts.parserBuilder().setSigningKey(secretKey).build().parseClaimsJws(token);
             return true;
         } catch (ExpiredJwtException e) {
-            log.error(e.getMessage());
-            throw new IllegalArgumentException("토큰 만료");
-        } catch (JwtException e) {
-            log.error(e.getMessage());
-            throw new IllegalArgumentException("유효하지 않은 JWT");
+            throw new BalanceTalkException(ErrorCode.EXPIRED_JWT_TOKEN);
+        } catch (IllegalArgumentException | MalformedJwtException e) {
+            throw new BalanceTalkException(ErrorCode.EMPTY_JWT_TOKEN);
+        } catch (SignatureException e) {
+            throw new BalanceTalkException(ErrorCode.INVALID_JWT_TOKEN);
         }
     }
 
     private void validateAuthentication(Authentication authentication) {
         if (authentication == null) {
-            throw new IllegalArgumentException("유저 정보가 존재하지 않습니다.");
+            throw new BalanceTalkException(ErrorCode.NOT_FOUND_MEMBER);
         }
     }
 
