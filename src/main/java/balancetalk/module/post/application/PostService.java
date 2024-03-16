@@ -36,7 +36,6 @@ public class PostService {
     private final FileRepository fileRepository;
     private final RedisService redisService;
 
-
     public PostResponse save(final PostRequest request) {
         Member writer = getCurrentMember(memberRepository);
         if (redisService.getValues(writer.getEmail()) == null) {
