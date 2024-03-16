@@ -2,7 +2,6 @@ package balancetalk.module.comment.application;
 
 import balancetalk.global.exception.BalanceTalkException;
 import balancetalk.global.exception.ErrorCode;
-import balancetalk.global.utils.SecurityUtils;
 import balancetalk.module.comment.domain.Comment;
 import balancetalk.module.comment.domain.CommentLike;
 import balancetalk.module.comment.domain.CommentLikeRepository;
@@ -204,7 +203,7 @@ public class CommentService {
                     memberRepository.findMemberIdsBySelectedOptionId(option.getId());
 
             List<Comment> bestComments = commentRepository.findBestCommentsByPostId(postId,
-                    memberIdsBySelectedOptionId, 2, PageRequest.of(0, BEST_COMMENTS_SIZE));
+                    memberIdsBySelectedOptionId, MIN_COUNT_FOR_BEST_COMMENT, PageRequest.of(0, BEST_COMMENTS_SIZE));
 
             if (token == null) {
                 responses.addAll(bestComments.stream()
