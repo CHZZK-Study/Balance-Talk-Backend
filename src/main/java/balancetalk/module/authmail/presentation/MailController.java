@@ -21,8 +21,8 @@ public class MailController {
     @ResponseStatus(HttpStatus.OK)
     @PostMapping("/request")
     @Operation(summary = "인증 번호 발송", description = "해당 이메일 주소로 인증 번호를 발송한다.")
-    public String sendTempCode(@Valid @RequestBody EmailRequest request) {
-        mailService.sendTempCode(request);
+    public String sendAuthenticationNumber(@Valid @RequestBody EmailRequest request) {
+        mailService.sendAuthenticationNumber(request);
         return "인증 번호가 발송되었습니다.";
     }
 

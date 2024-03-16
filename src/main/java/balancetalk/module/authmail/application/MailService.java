@@ -17,17 +17,26 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.security.SecureRandom;
 import java.time.Duration;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class MailService {
 
     private static final String TEMP = "temp ";
     private static final String SENDER_EMAIL = "bootsprng@gmail.com";
+    private static final int AUTH_NUMBER_MIN = 0;
+    private static final int AUTH_NUMBER_MAX = 6;
+    private static final int RANDOM_GENERATOR_MIN = 33;
+    private static final int RANDOM_GENERATOR_MAX = 126;
+    private static final int RANDOM_GENERATOR_LENGTH = 10;
 
     private final JavaMailSender javaMailSender;
     private final RedisService redisService;
@@ -37,7 +46,33 @@ public class MailService {
     @Value("${spring.mail.auth-code-expiration-millis}")
     private long authCodeExpirationMillis;
 
-    public MimeMessage createTempCode(EmailRequest request){
+    public void sendAuthenticationNumber(EmailRequest request){
+        Optional<Member> member = memberRepository.findByEmail(request.getEmail());
+        if (member.isPresent()) {
+            throw new BalanceTalkException(ErrorCode.ALREADY_REGISTERED_EMAIL);
+        }
+        MimeMessage message = createTempCode(request);
+        javaMailSender.send(message);
+    }
+
+    public void verifyCode(EmailVerification request) {
+        String key = TEMP + request.getEmail();
+        Optional<Member> member = memberRepository.findByEmail(key);
+        if (member.isPresent()) {
+            throw new BalanceTalkException(ErrorCode.ALREADY_REGISTERED_EMAIL);
+        }
+        String redisValue = redisService.getValues(key);
+        Optional.ofNullable(redisValue)
+                .filter(code -> code.equals(request.getVerificationCode()))
+                .orElseThrow(() -> new BalanceTalkException(ErrorCode.AUTHORIZATION_CODE_MISMATCH));
+    }
+
+    public void sendTempPassword(EmailRequest request) {
+        MimeMessage message = createTempPassword(request);
+        javaMailSender.send(message);
+    }
+
+    private MimeMessage createTempCode(EmailRequest request){
         String authCode = createNumber();
         MimeMessage message = javaMailSender.createMimeMessage();
         try {
@@ -58,7 +93,7 @@ public class MailService {
         return message;
     }
 
-    public MimeMessage createTempPassword(EmailRequest request) {
+    private MimeMessage createTempPassword(EmailRequest request) {
         String tempPwd = createTempPassword();
         MimeMessage message = javaMailSender.createMimeMessage();
         try {
@@ -79,58 +114,26 @@ public class MailService {
         return message;
     }
 
-    @Transactional
     public void updateTempPassword(String tempPwd, EmailRequest request) {
         String encodedTempPwd = passwordEncoder.encode(tempPwd);
-        Member member = memberRepository.findByEmail(request.getEmail()).get();
+        Member member = memberRepository.findByEmail(request.getEmail())
+                .orElseThrow(() -> new BalanceTalkException(ErrorCode.NOT_FOUND_MEMBER));
         member.updatePassword(encodedTempPwd);
-        memberRepository.save(member);
     }
 
-    public void sendTempCode(EmailRequest request){
-        validateEmail(request.getEmail());
-        MimeMessage message = createTempCode(request);
-        javaMailSender.send(message);
-    }
-
-    public void sendTempPassword(EmailRequest request) {
-        if (!memberRepository.existsByEmail(request.getEmail())) {
-            throw new BalanceTalkException(ErrorCode.NOT_FOUND_MEMBER);
-        }
-        MimeMessage message = createTempPassword(request);
-        javaMailSender.send(message);
-    }
-
-    public void verifyCode(EmailVerification request) {
-        String key = TEMP + request.getEmail();
-        validateEmail(key);
-        String redisValue = redisService.getValues(key);
-        Optional.ofNullable(redisValue)
-                .filter(code -> code.equals(request.getVerificationCode()))
-                .orElseThrow(() -> new BalanceTalkException(ErrorCode.AUTHORIZATION_CODE_MISMATCH));
-    }
-
-
-    private void validateEmail(String email) {
-        Optional<Member> member = memberRepository.findByEmail(email);
-        if (member.isPresent()) {
-            throw new BalanceTalkException(ErrorCode.ALREADY_REGISTERED_EMAIL);
-        }
-    }
     private String createNumber(){
-        return UUID.randomUUID().toString().substring(0, 6);
+        return UUID.randomUUID().toString().substring(AUTH_NUMBER_MIN, AUTH_NUMBER_MAX);
     }
 
     private String createTempPassword() {
-        char[] charSet = new char[] { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F',
-                'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'};
-        String tempPwd = "";
-
-        int idx = 0;
-        for (int i=0; i<10; i++) {
-            idx = (int) (charSet.length * Math.random());
-            tempPwd += charSet[idx];
+        SecureRandom secureRandom = new SecureRandom();
+        String charNSpecialChar = IntStream.rangeClosed(RANDOM_GENERATOR_MIN, RANDOM_GENERATOR_MAX)
+                .mapToObj(i -> String.valueOf((char) i))
+                .collect(Collectors.joining());
+        StringBuilder builder = new StringBuilder();
+        for(int i = 0; i < RANDOM_GENERATOR_LENGTH; i++) {
+            builder.append(charNSpecialChar.charAt(secureRandom.nextInt(charNSpecialChar.length())));
         }
-        return tempPwd;
+        return builder.toString();
     }
 }

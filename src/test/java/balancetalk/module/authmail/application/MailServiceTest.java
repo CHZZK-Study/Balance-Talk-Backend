@@ -55,35 +55,7 @@ class MailServiceTest {
     private static final String TEMP = "temp ";
     private final String KEY = TEMP + email;
 
-//    @BeforeEach
-//    void setUp() {
-//        // SecurityContext에 인증된 사용자 설정
-//        Authentication authentication = mock(Authentication.class);
-//        SecurityContext securityContext = mock(SecurityContext.class);
-//        when(securityContext.getAuthentication()).thenReturn(authentication);
-//        SecurityContextHolder.setContext(securityContext);
-//
-//        when(authentication.getName()).thenReturn(authenticatedEmail);
-//    }
-//    @AfterEach
-//    void clear() {
-//        SecurityContextHolder.clearContext();
-//    }
 
-    @Test
-    @DisplayName("이메일 인증 형식이 올바르게 생성되는지 테스트")
-    void createEmailFormat() {
-        // Given
-        EmailRequest request = new EmailRequest(email);
-        MimeMessage mockMimeMessage = mock(MimeMessage.class);
-        when(javaMailSender.createMimeMessage()).thenReturn(mockMimeMessage);
-
-        // When
-        MimeMessage mimeMessage = mailService.createTempCode(request);
-
-        // then
-        assertEquals(mimeMessage, mockMimeMessage);
-    }
 
     @Test
     @DisplayName("Redis에 저장된 유저 이메일로 올바르게 인증 번호가 조회되는지 테스트")
@@ -124,7 +96,7 @@ class MailServiceTest {
         EmailRequest requestDto = new EmailRequest(duplicateEmail);
 
         // when, then
-        assertThatThrownBy(() -> mailService.sendTempCode(requestDto))
+        assertThatThrownBy(() -> mailService.sendAuthenticationNumber(requestDto))
                 .isInstanceOf(BalanceTalkException.class)
                 .hasMessage(ErrorCode.ALREADY_REGISTERED_EMAIL.getMessage());
     }
@@ -142,7 +114,6 @@ class MailServiceTest {
         String encodedTempwd = "$2a$10$RPc7MUUZlaZMX1DRWTYY9u4ecXKps2hkxOIAJt2jP88u40QT.IUSa";
         when(memberRepository.findByEmail(email)).thenReturn(Optional.of(member));
         when(passwordEncoder.encode(tempPwd)).thenReturn(encodedTempwd);
-        when(memberRepository.save(any(Member.class))).thenReturn(member);
 
         // when
         mailService.updateTempPassword(tempPwd, request);
