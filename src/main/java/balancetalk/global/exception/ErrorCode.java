@@ -70,7 +70,8 @@ public enum ErrorCode {
 
 
     // 500
-    REDIS_CONNECTION_FAIL(INTERNAL_SERVER_ERROR, "Redis 연결에 실패했습니다.");
+    REDIS_CONNECTION_FAIL(INTERNAL_SERVER_ERROR, "Redis 연결에 실패했습니다."),
+    FAIL_SEND_EMAIL(INTERNAL_SERVER_ERROR, "이메일 발송에 실패했습니다");
 
     private final HttpStatus httpStatus;
     private final String message;

@@ -50,7 +50,7 @@ public class MailService {
             body += "<h3>" + "감사합니다." + "</h3>";
             message.setText(body,"UTF-8", "html");
         } catch (MessagingException e) {
-            e.printStackTrace();
+            throw new BalanceTalkException(ErrorCode.FAIL_SEND_EMAIL);
         }
         // 로그인 할 때 유저 이메일을 key로 토큰이 저장되기 때문에 key 중복
         String key = TEMP + request.getEmail();
@@ -74,7 +74,7 @@ public class MailService {
             message.setText(body,"UTF-8", "html");
             updateTempPassword(tempPwd, request);
         } catch (MessagingException e) {
-            throw new RuntimeException(e);
+            throw new BalanceTalkException(ErrorCode.FAIL_SEND_EMAIL);
         }
         return message;
     }
