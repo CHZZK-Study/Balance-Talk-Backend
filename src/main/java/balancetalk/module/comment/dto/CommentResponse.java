@@ -37,9 +37,13 @@ public class CommentResponse {
     @Schema(description = "댓글 수정 날짜")
     private LocalDateTime lastModifiedAt;
 
+    @Schema(description = "게시글 제목", example = "게시글 제목...")
+    private String postTitle;
+
     public static CommentResponse fromEntity(Comment comment, Long balanceOptionId) {
         return CommentResponse.builder()
                 .id(comment.getId())
+                .postTitle(comment.getPost().getTitle())
                 .content(comment.getContent())
                 .memberName(comment.getMember().getNickname())
                 .postId(comment.getPost().getId())

@@ -98,7 +98,7 @@ public class PostService {
     }
 
     @Transactional(readOnly = true)
-    public List<PostResponse> findPostsByCurrentUser(int page, int size) {
+    public List<PostResponse> findPostsByCurrentMember(int page, int size) {
         Member currentMember = getCurrentMember(memberRepository);
         Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
         Page<Post> postsPage = postRepository.findByMemberEmail(currentMember.getEmail(), pageable);
