@@ -81,6 +81,7 @@ class MailServiceTest {
         assertThatThrownBy(() -> mailService.verifyCode(request))
                 .isInstanceOf(BalanceTalkException.class)
                 .hasMessage(ErrorCode.AUTHORIZATION_CODE_MISMATCH.getMessage());
+
     }
 
     @Test

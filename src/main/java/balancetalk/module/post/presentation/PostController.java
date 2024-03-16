@@ -6,9 +6,10 @@ import balancetalk.module.post.dto.PostResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -28,8 +29,9 @@ public class PostController {
     @ResponseStatus(HttpStatus.OK)
     @GetMapping
     @Operation(summary = "모든 게시글 조회", description = "해당 회원이 쓴 모든 글을 조회한다.")
-    public List<PostResponse> findAllPosts(@RequestHeader(value = "Authorization", required = false) String token) {
-        return postService.findAll(token);
+    public Page<PostResponse> findAllPosts(@RequestHeader(value = "Authorization", required = false) String token,
+                                           Pageable pageable) {
+        return postService.findAll(token, pageable);
     }
 
     @ResponseStatus(HttpStatus.OK)
@@ -38,6 +40,13 @@ public class PostController {
     public PostResponse findPost(@PathVariable("postId") Long postId,
                                  @RequestHeader(value = "Authorization", required = false) String token) {
         return postService.findById(postId, token);
+    }
+
+    @ResponseStatus(HttpStatus.OK)
+    @GetMapping("/best")
+    @Operation(summary = "인기 게시글 조회", description = "월별 추천 수가 가장 많은 게시글 5개를 조회한다.")
+    public List<PostResponse> findBestPosts(@RequestHeader(value = "Authorization", required = false) String token) {
+        return postService.findBestPosts(token);
     }
 
     @ResponseStatus(HttpStatus.CREATED)

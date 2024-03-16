@@ -133,6 +133,7 @@ public class MailService {
         StringBuilder builder = new StringBuilder();
         for(int i = 0; i < RANDOM_GENERATOR_LENGTH; i++) {
             builder.append(charNSpecialChar.charAt(secureRandom.nextInt(charNSpecialChar.length())));
+
         }
         return builder.toString();
     }
