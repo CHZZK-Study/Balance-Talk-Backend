@@ -1,6 +1,7 @@
 package balancetalk.module.authmail.application;
 
 import balancetalk.global.exception.BalanceTalkException;
+import balancetalk.global.exception.ErrorCode;
 import balancetalk.global.redis.application.RedisService;
 import balancetalk.module.authmail.dto.EmailRequest;
 import balancetalk.module.authmail.dto.EmailVerification;
@@ -76,7 +77,7 @@ class MailServiceTest {
         // when, then
         assertThatThrownBy(() -> mailService.verifyCode(request))
                 .isInstanceOf(BalanceTalkException.class)
-                .hasMessage("인증 번호가 일치하지 않습니다.");
+                .hasMessage(ErrorCode.VERIFY_CODE_MISMATCH.getMessage());
     }
 
     @Test
@@ -94,6 +95,6 @@ class MailServiceTest {
         // when, then
         assertThatThrownBy(() -> mailService.sendMail(requestDto))
                 .isInstanceOf(BalanceTalkException.class)
-                .hasMessage("이미 존재하는 이메일 입니다. 다른 이메일을 입력해주세요");
+                .hasMessage(ErrorCode.ALREADY_REGISTERED_EMAIL.getMessage());
     }
 }

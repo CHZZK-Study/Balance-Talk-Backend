@@ -12,7 +12,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
@@ -24,9 +23,6 @@ import java.util.stream.Collectors;
 @NoArgsConstructor
 @AllArgsConstructor
 public class PostRequest {
-
-    @Schema(description = "게시글을 작성한 회원 id", example = "1")
-    private Long memberId;
 
     @Schema(description = "게시글 제목", example = "게시글 제목")
     private String title;
