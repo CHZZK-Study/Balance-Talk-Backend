@@ -11,7 +11,7 @@ import balancetalk.module.member.domain.Member;
 import balancetalk.module.member.domain.MemberRepository;
 import balancetalk.module.member.domain.Role;
 import balancetalk.module.post.domain.*;
-import balancetalk.module.post.dto.BalanceOptionDto;
+import balancetalk.module.post.dto.BalanceOptionRequest;
 import balancetalk.module.post.dto.PostRequest;
 import balancetalk.module.post.dto.PostResponse;
 import lombok.RequiredArgsConstructor;
@@ -39,6 +39,7 @@ public class PostService {
         if (redisService.getValues(writer.getEmail()) == null) {
             throw new BalanceTalkException(FORBIDDEN_POST_CREATE);
         }
+
         List<File> images = getImages(request);
         Post post = request.toEntity(writer, images);
 
@@ -54,11 +55,11 @@ public class PostService {
         return PostResponse.fromEntity(postRepository.save(post), false, false);
     }
 
-    private List<File> getImages(PostRequest postRequestDto) {
-        List<BalanceOptionDto> balanceOptions = postRequestDto.getBalanceOptions();
+    private List<File> getImages(PostRequest postRequest) {
+        List<BalanceOptionRequest> balanceOptions = postRequest.getBalanceOptions();
         return balanceOptions.stream()
-                .filter(optionDto -> optionDto.getStoredFileName() != null && !optionDto.getStoredFileName().isEmpty())
-                .map(optionDto -> fileRepository.findByStoredName(optionDto.getStoredFileName())
+                .filter(optionDto -> optionDto.getStoredImageName() != null && !optionDto.getStoredImageName().isEmpty())
+                .map(optionDto -> fileRepository.findByStoredName(optionDto.getStoredImageName())
                         .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_FILE)))
                 .toList();
     }

@@ -45,4 +45,8 @@ public class File {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "notice_id")
     private Notice notice;
+
+    public String getUrl() {
+        return path + storedName;
+    }
 }
