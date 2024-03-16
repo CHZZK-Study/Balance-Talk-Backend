@@ -5,6 +5,7 @@ import balancetalk.module.post.dto.PostRequest;
 import balancetalk.module.post.dto.PostResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
