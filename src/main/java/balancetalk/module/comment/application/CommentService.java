@@ -2,6 +2,7 @@ package balancetalk.module.comment.application;
 
 import balancetalk.global.exception.BalanceTalkException;
 import balancetalk.global.exception.ErrorCode;
+import balancetalk.global.utils.SecurityUtils;
 import balancetalk.module.comment.domain.Comment;
 import balancetalk.module.comment.domain.CommentLike;
 import balancetalk.module.comment.domain.CommentLikeRepository;
@@ -59,7 +60,7 @@ public class CommentService {
     }
 
     @Transactional(readOnly = true)
-    public Page<CommentResponse> findAllComments(Long postId, Pageable pageable) {
+    public Page<CommentResponse> findAllComments(Long postId, String token, Pageable pageable) {
         validatePostId(postId);
 
         Page<Comment> comments = commentRepository.findAllByPostId(postId, pageable);
@@ -71,7 +72,12 @@ public class CommentService {
             Long balanceOptionId = voteForComment.map(Vote::getBalanceOption).map(BalanceOption::getId)
                     .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_BALANCE_OPTION));
 
-            return CommentResponse.fromEntity(comment, balanceOptionId);
+            if (token == null) {
+                return CommentResponse.fromEntity(comment, balanceOptionId, false);
+            } else {
+                Member member = getCurrentMember(memberRepository);
+                return CommentResponse.fromEntity(comment, balanceOptionId, member.hasLikedComment(comment));
+            }
         });
     }
 
@@ -188,7 +194,7 @@ public class CommentService {
     }
 
     @Transactional(readOnly = true)
-    public List<CommentResponse> findBestComments(Long postId) {
+    public List<CommentResponse> findBestComments(Long postId, String token) {
         Post post = validatePostId(postId);
         List<BalanceOption> options = post.getOptions();
 
@@ -198,10 +204,18 @@ public class CommentService {
                     memberRepository.findMemberIdsBySelectedOptionId(option.getId());
 
             List<Comment> bestComments = commentRepository.findBestCommentsByPostId(postId,
-                    memberIdsBySelectedOptionId, MIN_COUNT_FOR_BEST_COMMENT, PageRequest.of(0, BEST_COMMENTS_SIZE));
+                    memberIdsBySelectedOptionId, 2, PageRequest.of(0, BEST_COMMENTS_SIZE));
 
-            responses.addAll(bestComments.stream()
-                    .map(comment -> CommentResponse.fromEntity(comment, option.getId())).toList());
+            if (token == null) {
+                responses.addAll(bestComments.stream()
+                        .map(comment -> CommentResponse.fromEntity(comment, option.getId(), false)).toList());
+            } else {
+                Member member = getCurrentMember(memberRepository);
+                responses.addAll(bestComments.stream()
+                        .map(comment ->
+                                CommentResponse.fromEntity(comment, option.getId(), member.hasLikedComment(comment)))
+                        .toList());
+            }
         }
 
         return responses;

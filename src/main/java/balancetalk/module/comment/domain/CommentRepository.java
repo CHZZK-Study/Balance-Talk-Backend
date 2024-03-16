@@ -10,8 +10,7 @@ import org.springframework.data.repository.query.Param;
 public interface CommentRepository extends JpaRepository<Comment, Long> {
     Page<Comment> findAllByPostId(Long postId, Pageable pageable);
 
-    @Query("select c "
-            + "from Comment c left join c.likes l "
+    @Query("select c from Comment c left join c.likes l "
             + "where c.post.id = :postId and c.member.id in :memberIds "
             + "group by c.id "
             + "having count(l) >= :minCountForBest "

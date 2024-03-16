@@ -32,15 +32,17 @@ public class CommentController {
     @ResponseStatus(HttpStatus.OK)
     @GetMapping
     @Operation(summary = "댓글 목록 조회", description = "post-id에 해당하는 게시글에 있는 모든 댓글을 조회한다.")
-    public Page<CommentResponse> findAllCommentsByPostId(@PathVariable Long postId, Pageable pageable) {
-        return commentService.findAllComments(postId, pageable);
+    public Page<CommentResponse> findAllCommentsByPostId(@PathVariable Long postId, Pageable pageable,
+                                                         @RequestHeader(value = "Authorization", required = false) String token) {
+        return commentService.findAllComments(postId, token, pageable);
     }
 
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/best")
     @Operation(summary = "인기 댓글 조회", description = "추천 수가 가장 많은 댓글을 각 선택지별로 3개씩 조회한다.")
-    public List<CommentResponse> findBestComments(@PathVariable Long postId) {
-        return commentService.findBestComments(postId);
+    public List<CommentResponse> findBestComments(@PathVariable Long postId,
+                                                  @RequestHeader(value = "Authorization", required = false) String token) {
+        return commentService.findBestComments(postId, token);
     }
 
     @ResponseStatus(HttpStatus.OK)
