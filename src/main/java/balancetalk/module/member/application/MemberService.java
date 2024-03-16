@@ -4,6 +4,8 @@ import balancetalk.global.exception.BalanceTalkException;
 import balancetalk.global.exception.ErrorCode;
 import balancetalk.global.jwt.JwtTokenProvider;
 import balancetalk.global.redis.application.RedisService;
+import balancetalk.module.file.domain.File;
+import balancetalk.module.file.domain.FileRepository;
 import balancetalk.module.member.domain.Member;
 import balancetalk.module.member.domain.MemberRepository;
 import balancetalk.module.member.dto.*;
@@ -22,6 +24,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static balancetalk.global.exception.ErrorCode.NOT_FOUND_FILE;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -30,21 +34,23 @@ public class MemberService {
     private final JwtTokenProvider jwtTokenProvider;
     private final AuthenticationManager authenticationManager;
     private final MemberRepository memberRepository;
+    private final FileRepository fileRepository;
     private final PasswordEncoder passwordEncoder;
     private final RedisService redisService;
 
     @Transactional
     public Long join(final JoinRequest joinRequest) {
         joinRequest.setPassword(passwordEncoder.encode(joinRequest.getPassword()));
-        if (memberRepository.existsByNickname(joinRequest.getNickname())) {
-            throw new BalanceTalkException(ErrorCode.ALREADY_REGISTERED_NICKNAME);
+        File profilePhoto = null;
+        if (joinRequest.getProfilePhoto() != null && !joinRequest.getProfilePhoto().isEmpty()) {
+            profilePhoto = fileRepository.findByStoredName(joinRequest.getProfilePhoto())
+                    .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_FILE));
         }
-        if (memberRepository.existsByEmail(joinRequest.getEmail())) {
-            throw new BalanceTalkException(ErrorCode.ALREADY_REGISTERED_EMAIL);
-        }
-        Member member = joinRequest.toEntity();
+
+        Member member = joinRequest.toEntity(profilePhoto);
         return memberRepository.save(member).getId();
     }
+
 
     @Transactional
     public TokenDto login(final LoginRequest loginRequest) {

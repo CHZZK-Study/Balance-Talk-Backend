@@ -202,7 +202,7 @@ class MemberServiceTest {
 
         // when
         joinRequest.setNickname(newNickname);
-        member = joinRequest.toEntity();
+        member = joinRequest.toEntity(null);
         memberService.updateNickname(newNickname, request);
 
         // then
@@ -236,7 +236,7 @@ class MemberServiceTest {
 
         // when
         joinRequest.setPassword(newPassword);
-        member = joinRequest.toEntity();
+        member = joinRequest.toEntity(null);
         memberService.updatePassword(newPassword, request);
 
         // then
