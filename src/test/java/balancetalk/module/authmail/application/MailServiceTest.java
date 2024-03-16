@@ -47,7 +47,7 @@ class MailServiceTest {
         when(javaMailSender.createMimeMessage()).thenReturn(mockMimeMessage);
 
         // When
-        MimeMessage mimeMessage = mailService.createMail(request);
+        MimeMessage mimeMessage = mailService.createTempCode(request);
 
         // then
         assertEquals(mimeMessage, mockMimeMessage);
@@ -92,7 +92,7 @@ class MailServiceTest {
         EmailRequest requestDto = new EmailRequest(duplicateEmail);
 
         // when, then
-        assertThatThrownBy(() -> mailService.sendMail(requestDto))
+        assertThatThrownBy(() -> mailService.sendTempCode(requestDto))
                 .isInstanceOf(BalanceTalkException.class)
                 .hasMessage("이미 존재하는 이메일 입니다. 다른 이메일을 입력해주세요");
     }
