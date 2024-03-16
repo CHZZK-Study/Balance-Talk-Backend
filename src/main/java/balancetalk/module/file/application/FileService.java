@@ -21,7 +21,10 @@ import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
 @Service
 @RequiredArgsConstructor
-public class FileUploadService {
+public class FileService {
+
+    private static final String UPLOAD_PATH
+            = "https://balance-talk-static-files.s3.ap-northeast-2.amazonaws.com/balance-talk-images/balance-option/";
 
     private final S3Client s3Client;
     private final FileRepository fileRepository;
@@ -31,15 +34,14 @@ public class FileUploadService {
 
     @Transactional
     public FileResponse uploadImage(MultipartFile multipartFile) {
-        String uploadDir = "balance-talk-images/balance-option/";
         String originalName = multipartFile.getOriginalFilename();
         String storedName = String.format("%s_%s", UUID.randomUUID(), originalName);
         long contentLength = multipartFile.getSize();
         FileType fileType = convertMimeTypeToFileType(multipartFile.getContentType());
 
         try (InputStream inputStream = multipartFile.getInputStream()) {
-            putObjectToS3(uploadDir + storedName, inputStream, contentLength);
-            File file = fileRepository.save(createFile(originalName, storedName, uploadDir, fileType, contentLength));
+            putObjectToS3(UPLOAD_PATH + storedName, inputStream, contentLength);
+            File file = fileRepository.save(createFile(originalName, storedName, UPLOAD_PATH, fileType, contentLength));
 
             return FileResponse.fromEntity(file);
         } catch (IOException e) {
