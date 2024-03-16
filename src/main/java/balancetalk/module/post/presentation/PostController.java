@@ -42,6 +42,13 @@ public class PostController {
         return postService.findById(postId, token);
     }
 
+    @ResponseStatus(HttpStatus.OK)
+    @GetMapping("/best")
+    @Operation(summary = "인기 게시글 조회", description = "월별 추천 수가 가장 많은 게시글 5개를 조회한다.")
+    public List<PostResponse> findBestPosts(@RequestHeader(value = "Authorization", required = false) String token) {
+        return postService.findBestPosts(token);
+    }
+
     @ResponseStatus(HttpStatus.CREATED)
     @DeleteMapping("/{postId}")
     @Operation(summary = "게시글 삭제", description = "post-id에 해당하는 게시글을 삭제한다.")
