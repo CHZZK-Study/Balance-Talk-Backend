@@ -145,4 +145,9 @@ public class Member extends BaseTimeEntity implements UserDetails {
         return postLikes.stream()
                 .anyMatch(like -> like.getPost().equals(post));
     }
+
+    public boolean hasLikedComment(Comment comment) {
+        return commentLikes.stream()
+                .anyMatch(like -> like.getComment().equals(comment));
+    }
 }
