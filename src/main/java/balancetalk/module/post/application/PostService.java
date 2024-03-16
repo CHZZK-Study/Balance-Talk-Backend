@@ -14,9 +14,12 @@ import balancetalk.module.post.domain.*;
 import balancetalk.module.post.dto.BalanceOptionDto;
 import balancetalk.module.post.dto.PostRequest;
 import balancetalk.module.post.dto.PostResponse;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
@@ -64,10 +67,17 @@ public class PostService {
     }
 
     @Transactional(readOnly = true)
-    public List<PostResponse> findAll(String token) {
+    public Page<PostResponse> findAll(String token, Pageable pageable) {
         // TODO: 검색, 정렬, 마감 기능 추가
-        List<Post> posts = postRepository.findAll();
-        return getPostResponses(token, posts);
+        Page<Post> posts = postRepository.findAll(pageable);
+        if (token == null) {
+            return posts.map(post -> PostResponse.fromEntity(post, false, false, false));
+        }
+        Member member = getCurrentMember(memberRepository);
+        return posts.map(post -> PostResponse.fromEntity(post,
+                member.hasLiked(post),
+                member.hasBookmarked(post),
+                member.hasVoted(post)));
     }
 
     @Transactional(readOnly = true)
@@ -128,18 +138,17 @@ public class PostService {
     public List<PostResponse> findBestPosts(String token) {
         PageRequest limit = PageRequest.of(0, BEST_POSTS_SIZE);
         List<Post> posts = postRepository.findBestPosts(limit);
-        return getPostResponses(token, posts);
-    }
-
-    private List<PostResponse> getPostResponses(String token, List<Post> posts) {
         if (token == null) {
             return posts.stream()
-                    .map(post -> PostResponse.fromEntity(post, false, false))
+                    .map(post -> PostResponse.fromEntity(post, false, false, false))
                     .collect(Collectors.toList());
         }
         Member member = getCurrentMember(memberRepository);
         return posts.stream()
-                .map(post -> PostResponse.fromEntity(post, member.hasLiked(post), member.hasBookmarked(post)))
+                .map(post -> PostResponse.fromEntity(post,
+                        member.hasLiked(post),
+                        member.hasBookmarked(post),
+                        member.hasVoted(post)))
                 .collect(Collectors.toList());
     }
 }
