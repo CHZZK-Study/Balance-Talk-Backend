@@ -32,7 +32,7 @@ public class SecurityConfig {
             // swagger
             "/swagger-ui/**", "/v3/api-docs/**",
             "/members/duplicate",
-            "/posts", "/posts/{postId}", "/posts/{postId}/vote", "/posts/{postId}/comments",
+            "/posts", "/posts/{postId}", "/posts/{postId}/vote", "/posts/{postId}/comments/**",
             "/notices", "/notices/{noticeId}"
     };
 
