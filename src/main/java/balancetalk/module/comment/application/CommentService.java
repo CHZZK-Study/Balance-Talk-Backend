@@ -76,15 +76,11 @@ public class CommentService {
     }
 
     @Transactional(readOnly = true)
-    public List<CommentResponse> findAllByCurrentMember(int page, int size) {
+    public Page<CommentResponse> findAllByCurrentMember(Pageable pageable) {
         Member currentMember = getCurrentMember(memberRepository);
-        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
 
-        Page<Comment> commentsPage = commentRepository.findByMemberEmail(currentMember.getEmail(), pageable);
-
-        return commentsPage.getContent().stream()
-                .map(comment -> CommentResponse.fromEntity(comment, null)) // balanceOptionId가 필요 없는 응답 제공
-                .toList();
+        return commentRepository.findAllByMemberEmail(currentMember.getEmail(), pageable)
+                .map(comment -> CommentResponse.fromEntity(comment, null));
     }
 
     public Comment updateComment(Long commentId, Long postId, String content) {

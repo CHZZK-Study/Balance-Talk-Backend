@@ -10,6 +10,10 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -32,8 +36,8 @@ public class MyPageController {
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/history/posts")
     @Operation(summary = "모든 게시글 조회", description = "해당 회원이 쓴 모든 글을 조회한다.")
-    public List<PostResponse> findAllPosts(@RequestParam(value = "page", defaultValue = "1") int page,
-                                          @RequestParam(required = false, value = "size", defaultValue = "10") int size) {
+    public Page<PostResponse> findAllPosts(@RequestParam(value = "page", defaultValue = "1") int page,
+                                           @RequestParam(required = false, value = "size", defaultValue = "10") int size) {
 
         if (page <= 0) {
             throw new BalanceTalkException(PAGE_NUMBER_ZERO);
@@ -42,13 +46,14 @@ public class MyPageController {
             throw new BalanceTalkException(PAGE_SIZE_ZERO);
         }
 
-        return postService.findPostsByCurrentMember(page - 1, size);
+        Pageable pageable = PageRequest.of(page - 1, size, Sort.by("createdAt").descending());
+        return postService.findPostsByCurrentMember(pageable);
     }
 
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/history/comments")
     @Operation(summary = "모든 댓글 조회", description = "해당 회원이 쓴 모든 댓글을 조회한다.")
-    public List<CommentResponse> findAllComments(@RequestParam(value = "page", defaultValue = "1") int page,
+    public Page<CommentResponse> findAllComments(@RequestParam(value = "page", defaultValue = "1") int page,
             @RequestParam(required = false, value = "size", defaultValue = "10") int size) {
 
         if (page <= 0) {
@@ -58,11 +63,12 @@ public class MyPageController {
             throw new BalanceTalkException(PAGE_SIZE_ZERO);
         }
 
-        return commentService.findAllByCurrentMember(page - 1, size);
+        Pageable pageable = PageRequest.of(page - 1, size, Sort.by("createdAt").descending());
+        return commentService.findAllByCurrentMember(pageable);
     }
 
     @GetMapping("/history/votedPosts")
-    public List<VotedPostResponse> findAllVotedPosts(
+    public Page<VotedPostResponse> findAllVotedPosts(
             @RequestParam(value = "page", defaultValue = "1") int page,
             @RequestParam(required = false, value = "size", defaultValue = "10") int size) {
 
@@ -73,7 +79,8 @@ public class MyPageController {
             throw new BalanceTalkException(PAGE_SIZE_ZERO);
         }
 
-        return postService.findVotedPostsByCurrentMember(page - 1, size);
+        Pageable pageable = PageRequest.of(page - 1, size, Sort.by("createdAt").descending());
+        return postService.findVotedPostsByCurrentMember(pageable);
     }
 
 }

@@ -25,7 +25,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -102,25 +101,19 @@ public class PostService {
     }
 
     @Transactional(readOnly = true)
-    public List<PostResponse> findPostsByCurrentMember(int page, int size) {
+    public Page<PostResponse> findPostsByCurrentMember(Pageable pageable) {
         Member currentMember = getCurrentMember(memberRepository);
-        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
-        Page<Post> postsPage = postRepository.findByMemberEmail(currentMember.getEmail(), pageable);
 
-        return postsPage.stream()
-                .map(post -> PostResponse.fromEntity(post, false, false))
-                .collect(Collectors.toList());
+        return postRepository.findAllByMemberId(currentMember.getId(), pageable)
+                .map(post -> PostResponse.fromEntity(post, currentMember.hasLiked(post), currentMember.hasBookmarked(post)));
     }
 
     @Transactional(readOnly = true)
-    public List<VotedPostResponse> findVotedPostsByCurrentMember(int page, int size) {
+    public Page<VotedPostResponse> findVotedPostsByCurrentMember(Pageable pageable) {
         Member currentMember = getCurrentMember(memberRepository);
-        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
-        Page<Vote> votesPage = voteRepository.findByMemberEmail(currentMember.getEmail(), pageable);
 
-        return votesPage.getContent().stream()
-                .map(vote -> VotedPostResponse.fromVoteAndPost(vote, vote.getBalanceOption().getPost()))
-                .toList();
+        return voteRepository.findAllByMemberEmail(currentMember.getEmail(), pageable)
+                .map(vote -> VotedPostResponse.fromVoteAndPost(vote, vote.getBalanceOption().getPost()));
     }
 
 
