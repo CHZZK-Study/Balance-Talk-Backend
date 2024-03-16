@@ -16,7 +16,7 @@ public class VotedPostResponse {
     private LocalDateTime createdAt;
     private String postTitle;
 
-    public static VotedPostResponse fromVoteAndPost(Vote vote, Post post) {
+    public static VotedPostResponse fromEntity(Vote vote, Post post) {
         return VotedPostResponse.builder()
                 .balanceOptionTitle(vote.getBalanceOption().getTitle())
                 .createdAt(vote.getCreatedAt())

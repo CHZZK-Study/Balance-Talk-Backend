@@ -13,14 +13,11 @@ import balancetalk.module.member.domain.MemberRepository;
 import balancetalk.module.member.domain.Role;
 import balancetalk.module.post.domain.*;
 import balancetalk.module.post.dto.*;
-import balancetalk.module.vote.domain.Vote;
 import balancetalk.module.vote.domain.VoteRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -112,7 +109,7 @@ public class PostService {
         Member currentMember = getCurrentMember(memberRepository);
 
         return voteRepository.findAllByMemberId(currentMember.getId(), pageable)
-                .map(vote -> VotedPostResponse.fromVoteAndPost(vote, vote.getBalanceOption().getPost()));
+                .map(vote -> VotedPostResponse.fromEntity(vote, vote.getBalanceOption().getPost()));
     }
 
     @Transactional(readOnly = true)
