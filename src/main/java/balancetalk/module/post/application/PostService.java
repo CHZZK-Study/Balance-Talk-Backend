@@ -5,16 +5,14 @@ import static balancetalk.global.utils.SecurityUtils.getCurrentMember;
 
 import balancetalk.global.exception.BalanceTalkException;
 import balancetalk.global.redis.application.RedisService;
+import balancetalk.module.bookmark.domain.BookmarkRepository;
 import balancetalk.module.file.domain.File;
 import balancetalk.module.file.domain.FileRepository;
 import balancetalk.module.member.domain.Member;
 import balancetalk.module.member.domain.MemberRepository;
 import balancetalk.module.member.domain.Role;
 import balancetalk.module.post.domain.*;
-import balancetalk.module.post.dto.BalanceOptionDto;
-import balancetalk.module.post.dto.PostRequest;
-import balancetalk.module.post.dto.PostResponse;
-import balancetalk.module.post.dto.VotedPostResponse;
+import balancetalk.module.post.dto.*;
 import balancetalk.module.vote.domain.Vote;
 import balancetalk.module.vote.domain.VoteRepository;
 import lombok.RequiredArgsConstructor;
@@ -40,6 +38,7 @@ public class PostService {
     private final PostLikeRepository postLikeRepository;
     private final FileRepository fileRepository;
     private final VoteRepository voteRepository;
+    private final BookmarkRepository bookmarkRepository;
     private final RedisService redisService;
 
     public PostResponse save(final PostRequest request) {
@@ -101,7 +100,7 @@ public class PostService {
     }
 
     @Transactional(readOnly = true)
-    public Page<PostResponse> findPostsByCurrentMember(Pageable pageable) {
+    public Page<PostResponse> findAllByCurrentMember(Pageable pageable) {
         Member currentMember = getCurrentMember(memberRepository);
 
         return postRepository.findAllByMemberId(currentMember.getId(), pageable)
@@ -109,11 +108,19 @@ public class PostService {
     }
 
     @Transactional(readOnly = true)
-    public Page<VotedPostResponse> findVotedPostsByCurrentMember(Pageable pageable) {
+    public Page<VotedPostResponse> findAllVotedByCurrentMember(Pageable pageable) {
         Member currentMember = getCurrentMember(memberRepository);
 
-        return voteRepository.findAllByMemberEmail(currentMember.getEmail(), pageable)
+        return voteRepository.findAllByMemberId(currentMember.getId(), pageable)
                 .map(vote -> VotedPostResponse.fromVoteAndPost(vote, vote.getBalanceOption().getPost()));
+    }
+
+    @Transactional(readOnly = true)
+    public Page<BookmarkedPostResponse> findAllBookmarkedByCurrentMember(Pageable pageable) {
+        Member currentMember = getCurrentMember(memberRepository);
+
+        return bookmarkRepository.findAllByMemberId(currentMember.getId(), pageable)
+                .map(BookmarkedPostResponse::fromEntity);
     }
 
 

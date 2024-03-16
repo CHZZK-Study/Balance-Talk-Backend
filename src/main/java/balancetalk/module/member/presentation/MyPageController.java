@@ -4,6 +4,7 @@ import balancetalk.global.exception.BalanceTalkException;
 import balancetalk.module.comment.application.CommentService;
 import balancetalk.module.comment.dto.CommentResponse;
 import balancetalk.module.post.application.PostService;
+import balancetalk.module.post.dto.BookmarkedPostResponse;
 import balancetalk.module.post.dto.PostResponse;
 import balancetalk.module.post.dto.VotedPostResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -16,8 +17,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 import static balancetalk.global.exception.ErrorCode.PAGE_NUMBER_ZERO;
 import static balancetalk.global.exception.ErrorCode.PAGE_SIZE_ZERO;
@@ -36,32 +35,24 @@ public class MyPageController {
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/history/posts")
     @Operation(summary = "모든 게시글 조회", description = "해당 회원이 쓴 모든 글을 조회한다.")
-    public Page<PostResponse> findAllPosts(@RequestParam(value = "page", defaultValue = "1") int page,
-                                           @RequestParam(required = false, value = "size", defaultValue = "10") int size) {
+    public Page<PostResponse> findAllPosts(
+            @RequestParam(value = "page", defaultValue = "1") int page,
+            @RequestParam(required = false, value = "size", defaultValue = "10") int size) {
 
-        if (page <= 0) {
-            throw new BalanceTalkException(PAGE_NUMBER_ZERO);
-        }
-        if (size <= 0) {
-            throw new BalanceTalkException(PAGE_SIZE_ZERO);
-        }
+        validatePageNumberAndSize(page, size);
 
         Pageable pageable = PageRequest.of(page - 1, size, Sort.by("createdAt").descending());
-        return postService.findPostsByCurrentMember(pageable);
+        return postService.findAllByCurrentMember(pageable);
     }
 
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/history/comments")
     @Operation(summary = "모든 댓글 조회", description = "해당 회원이 쓴 모든 댓글을 조회한다.")
-    public Page<CommentResponse> findAllComments(@RequestParam(value = "page", defaultValue = "1") int page,
+    public Page<CommentResponse> findAllComments(
+            @RequestParam(value = "page", defaultValue = "1") int page,
             @RequestParam(required = false, value = "size", defaultValue = "10") int size) {
 
-        if (page <= 0) {
-            throw new BalanceTalkException(PAGE_NUMBER_ZERO);
-        }
-        if (size <= 0) {
-            throw new BalanceTalkException(PAGE_SIZE_ZERO);
-        }
+        validatePageNumberAndSize(page, size);
 
         Pageable pageable = PageRequest.of(page - 1, size, Sort.by("createdAt").descending());
         return commentService.findAllByCurrentMember(pageable);
@@ -72,15 +63,29 @@ public class MyPageController {
             @RequestParam(value = "page", defaultValue = "1") int page,
             @RequestParam(required = false, value = "size", defaultValue = "10") int size) {
 
+        validatePageNumberAndSize(page, size);
+
+        Pageable pageable = PageRequest.of(page - 1, size, Sort.by("createdAt").descending());
+        return postService.findAllVotedByCurrentMember(pageable);
+    }
+
+    @GetMapping("/history/bookmarks")
+    public Page<BookmarkedPostResponse> findAllBookmarkedPosts(
+            @RequestParam(value = "page", defaultValue = "1") int page,
+            @RequestParam(required = false, value = "size", defaultValue = "10") int size) {
+
+        validatePageNumberAndSize(page, size);
+
+        Pageable pageable = PageRequest.of(page - 1, size, Sort.by("createdAt").descending());
+        return postService.findAllBookmarkedByCurrentMember(pageable);
+    }
+
+    private void validatePageNumberAndSize(int page, int size) {
         if (page <= 0) {
             throw new BalanceTalkException(PAGE_NUMBER_ZERO);
         }
         if (size <= 0) {
             throw new BalanceTalkException(PAGE_SIZE_ZERO);
         }
-
-        Pageable pageable = PageRequest.of(page - 1, size, Sort.by("createdAt").descending());
-        return postService.findVotedPostsByCurrentMember(pageable);
     }
-
 }

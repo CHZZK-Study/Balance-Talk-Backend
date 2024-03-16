@@ -9,5 +9,5 @@ import java.util.Optional;
 public interface VoteRepository extends JpaRepository<Vote, Long> {
     Optional<Vote> findByMemberIdAndBalanceOption_PostId(Long memberId, Long postId);
 
-    Page<Vote> findAllByMemberEmail(String Email, Pageable pageable);
+    Page<Vote> findAllByMemberId(Long memberId, Pageable pageable);
 }
