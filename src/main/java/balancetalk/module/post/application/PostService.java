@@ -14,6 +14,9 @@ import balancetalk.module.post.domain.*;
 import balancetalk.module.post.dto.BalanceOptionDto;
 import balancetalk.module.post.dto.PostRequest;
 import balancetalk.module.post.dto.PostResponse;
+import balancetalk.module.post.dto.VotedPostResponse;
+import balancetalk.module.vote.domain.Vote;
+import balancetalk.module.vote.domain.VoteRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -37,6 +40,7 @@ public class PostService {
     private final MemberRepository memberRepository;
     private final PostLikeRepository postLikeRepository;
     private final FileRepository fileRepository;
+    private final VoteRepository voteRepository;
     private final RedisService redisService;
 
     public PostResponse save(final PostRequest request) {
@@ -107,6 +111,18 @@ public class PostService {
                 .map(post -> PostResponse.fromEntity(post, false, false))
                 .collect(Collectors.toList());
     }
+
+    @Transactional(readOnly = true)
+    public List<VotedPostResponse> findVotedPostsByCurrentMember(int page, int size) {
+        Member currentMember = getCurrentMember(memberRepository);
+        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
+        Page<Vote> votesPage = voteRepository.findByMemberEmail(currentMember.getEmail(), pageable);
+
+        return votesPage.getContent().stream()
+                .map(vote -> VotedPostResponse.fromVoteAndPost(vote, vote.getBalanceOption().getPost()))
+                .toList();
+    }
+
 
     @Transactional
     public void deleteById(Long postId) {
