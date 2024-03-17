@@ -39,7 +39,7 @@ public class SecurityConfig {
     private static final String[] PUBLIC_POST = {
             "/members/join", "/members/login",
             "/email/request", "/email/verify",
-            "/posts/{postId}/vote"
+            "/posts/{postId}/vote", "/files/image/upload"
     };
 
     private static final String[] PUBLIC_PUT = {
