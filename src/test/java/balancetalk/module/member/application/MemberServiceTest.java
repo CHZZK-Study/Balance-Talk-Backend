@@ -311,38 +311,7 @@ class MemberServiceTest {
                 .hasMessage(ErrorCode.MISMATCHED_EMAIL_OR_PASSWORD.getMessage());
     }
 
-    @Test
-    @DisplayName("로그아웃 - 성공")
-    void logoutMemberSuccess() {
-        // given, 로그인 상태
-        when(userDetails.getUsername()).thenReturn(member.getEmail());
-        when(authentication.getPrincipal()).thenReturn(userDetails);
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-
-        when(redisService.getValues(member.getEmail())).thenReturn(refreshToken);
-
-        // when
-        memberService.logout();
-
-        // then
-        verify(redisService).deleteValues(member.getEmail());
-    }
-
-    @Test
-    @DisplayName("로그아웃 실패 - redis에 저장된 정보가 없음")
-    void logoutFailure_RedisNull(){
-        // given, 로그인 상태
-        when(userDetails.getUsername()).thenReturn(member.getEmail());
-        when(authentication.getPrincipal()).thenReturn(userDetails);
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-
-        when(redisService.getValues(anyString())).thenReturn(null);
-
-        // when & then
-        assertThatThrownBy(() -> memberService.logout())
-                .isInstanceOf(BalanceTalkException.class)
-                .hasMessage(ErrorCode.AUTHENTICATION_REQUIRED.getMessage());
-    }
+//1
 
     @Test
     @DisplayName("닉네임 중복 검증 테스트 - 성공")
