@@ -19,6 +19,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -87,6 +88,14 @@ class MemberServiceTest {
                 .password(joinRequest.getPassword())
                 .nickname("멤버1")
                 .build();
+
+        // SecurityContext에 인증된 사용자 설정
+        Authentication authentication = mock(Authentication.class);
+        SecurityContext securityContext = mock(SecurityContext.class);
+        lenient().when(securityContext.getAuthentication()).thenReturn(authentication);
+        SecurityContextHolder.setContext(securityContext);
+
+        lenient().when(authentication.getName()).thenReturn(member.getEmail());
     }
 
     @AfterEach
@@ -311,7 +320,28 @@ class MemberServiceTest {
                 .hasMessage(ErrorCode.MISMATCHED_EMAIL_OR_PASSWORD.getMessage());
     }
 
-//1
+    @Test
+    @DisplayName("로그아웃 - 성공")
+    void logoutMemberSuccess() {
+        // given,
+        lenient().when(redisService.getValues(member.getEmail())).thenReturn(refreshToken);
+        // when
+        memberService.logout();
+        // then
+        verify(redisService).deleteValues(member.getEmail());
+    }
+
+    @Test
+    @DisplayName("로그아웃 실패 - redis에 저장된 정보가 없음")
+    void logoutFailure_RedisNull(){
+        // given
+        when(SecurityContextHolder.getContext().getAuthentication()).thenReturn(null);
+
+        // when & then
+        assertThatThrownBy(() -> memberService.logout())
+                .isInstanceOf(BalanceTalkException.class)
+                .hasMessage(ErrorCode.AUTHENTICATION_REQUIRED.getMessage());
+    }
 
     @Test
     @DisplayName("닉네임 중복 검증 테스트 - 성공")

@@ -116,6 +116,9 @@ public class MemberService {
     @Transactional
     public void logout(){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null) {
+            throw new BalanceTalkException(ErrorCode.AUTHENTICATION_REQUIRED);
+        }
         String username = authentication.getName();
         redisService.deleteValues(username);
     }
