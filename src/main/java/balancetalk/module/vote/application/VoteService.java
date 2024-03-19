@@ -1,9 +1,9 @@
 package balancetalk.module.vote.application;
 
 import static balancetalk.global.exception.ErrorCode.*;
+import static balancetalk.global.utils.SecurityUtils.*;
 
 import balancetalk.global.exception.BalanceTalkException;
-import balancetalk.global.utils.SecurityUtils;
 import balancetalk.module.member.domain.Member;
 import balancetalk.module.member.domain.MemberRepository;
 import balancetalk.module.post.domain.BalanceOption;
@@ -59,7 +59,7 @@ public class VoteService {
     }
 
     private Vote voteForMember(VoteRequest voteRequest, Post post, BalanceOption balanceOption) {
-        Member member = SecurityUtils.getCurrentMember(memberRepository);
+        Member member = getCurrentMember(memberRepository);
 
         if (member.hasVoted(post)) {
             throw new BalanceTalkException(ALREADY_VOTE);
@@ -96,7 +96,7 @@ public class VoteService {
             throw new BalanceTalkException(UNMODIFIABLE_VOTE);
         }
         BalanceOption newSelectedOption = getBalanceOption(voteRequest);
-        Member member = SecurityUtils.getCurrentMember(memberRepository);
+        Member member = getCurrentMember(memberRepository);
         Vote participatedVote = getParticipatedVote(post, member);
 
         return participatedVote.changeBalanceOption(newSelectedOption);
