@@ -52,7 +52,7 @@ public class PostResponse {
     private List<PostTagDto> postTags;
 
     @Schema(description = "전체 투표 수", example = "15")
-    private int totalVotes;
+    private int totalVoteCount;
 
     @JsonFormat(pattern = "yyyy/MM/dd HH:mm:ss")
     @Schema(description = "게시글 작성일", example = "2023-12-25T15:30:00")
@@ -75,7 +75,7 @@ public class PostResponse {
                 .category(post.getCategory())
                 .balanceOptions(getBalanceOptions(post))
                 .postTags(getPostTags(post))
-                .totalVotes(getTotalVotes(post))
+                .totalVoteCount(getTotalVotes(post))
                 .createdAt(post.getCreatedAt())
                 .createdBy(post.getMember().getNickname())
                 .build();
