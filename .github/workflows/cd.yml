@@ -48,7 +48,7 @@ jobs:
             ${{ secrets.SSH_PRIVATE_KEY }}
 
       - name: SCP transfer
-        run: scp balance-talk-0.0.1-SNAPSHOT.jar $ubuntu@{{ secrets.SERVER_IP }}
+        run: scp balance-talk-0.0.1-SNAPSHOT.jar ubuntu@${{ secrets.SERVER_IP }}
 
       - name: Execute remote commands
         run: |
