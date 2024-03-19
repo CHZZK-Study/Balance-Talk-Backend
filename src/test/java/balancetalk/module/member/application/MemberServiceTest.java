@@ -130,7 +130,7 @@ class MemberServiceTest {
         // given
         when(memberRepository.findByEmail(loginRequest.getEmail())).thenReturn(Optional.ofNullable(member));
         when(passwordEncoder.matches(eq(loginRequest.getPassword()), eq(joinRequest.getPassword()))).thenReturn(true);
-        when(jwtTokenProvider.reissueToken(any())).thenReturn(new TokenDto(accessToken, refreshToken));
+        when(jwtTokenProvider.reissueToken(any() , anyLong())).thenReturn(new TokenDto(accessToken, refreshToken));
 
         // when
         TokenDto result = memberService.login(loginRequest);
