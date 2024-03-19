@@ -6,8 +6,6 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 
-import static org.springframework.http.HttpStatus.*;
-
 @Getter
 @RequiredArgsConstructor
 public enum ErrorCode {
@@ -40,7 +38,6 @@ public enum ErrorCode {
     EXPIRED_JWT_TOKEN(UNAUTHORIZED, "만료된 토큰 입니다."),
     INVALID_JWT_TOKEN(UNAUTHORIZED, "유효하지 않은 토큰입니다"),
 
-
     // 403
     FORBIDDEN_POST_DELETE(FORBIDDEN, "해당 게시글은 삭제 권한이 없습니다."),
     FORBIDDEN_COMMENT_MODIFY(FORBIDDEN, "해당 댓글은 수정 권한이 없습니다."),
@@ -48,6 +45,9 @@ public enum ErrorCode {
     FORBIDDEN_MEMBER_DELETE(FORBIDDEN, "사용자 탈퇴 권한이 없습니다."),
     FORBIDDEN_BOOKMARK_DELETE(FORBIDDEN, "북마크 삭제 권한이 없습니다."),
     FORBIDDEN_POST_CREATE(FORBIDDEN, "글쓰기 권한이 없습니다."),
+    FORBIDDEN_CREATE_NOTICE(FORBIDDEN, "공지사항 작성 권한이 없습니다."),
+    FORBIDDEN_UPDATE_NOTICE(FORBIDDEN, "공지사항 수정 권한이 없습니다."),
+    FORBIDDEN_DELETE_NOTICE(FORBIDDEN, "공지사항 삭제 권한이 없습니다."),
 
     // 404
     NOT_FOUND_POST(NOT_FOUND, "존재하지 않는 게시글입니다."),
