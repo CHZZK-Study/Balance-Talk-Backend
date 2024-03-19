@@ -261,7 +261,7 @@ class CommentServiceTest {
         // when
 
         // then
-        assertThatThrownBy(() -> commentService.findAllComments(postId, null))
+        assertThatThrownBy(() -> commentService.findAllComments(postId, null, null))
                 .isInstanceOf(BalanceTalkException.class)
                 .hasMessageContaining("존재하지 않는 게시글입니다.");
     }

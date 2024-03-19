@@ -325,10 +325,8 @@ class MemberServiceTest {
     void logoutMemberSuccess() {
         // given,
         lenient().when(redisService.getValues(member.getEmail())).thenReturn(refreshToken);
-
         // when
         memberService.logout();
-
         // then
         verify(redisService).deleteValues(member.getEmail());
     }
