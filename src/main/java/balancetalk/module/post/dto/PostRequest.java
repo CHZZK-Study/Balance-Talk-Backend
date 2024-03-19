@@ -8,10 +8,7 @@ import balancetalk.module.post.domain.PostCategory;
 import balancetalk.module.post.domain.PostTag;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.Future;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -43,6 +40,7 @@ public class PostRequest {
     @Schema(description = "게시글 카테고리", example = "CASUAL")
     private PostCategory category;
 
+    @NotEmpty
     @Schema(description = "선택지 옵션 리스트", example = "[{\"title\": \"선택지 제목1\", \"description\": \"선택지 내용1\" , \"storedFileName\": null}," +
             "{\"title\": \"선택지 제목2\", \"description\": \"선택지 내용2\", \"storedFileName\": null}]")
     private List<BalanceOptionDto> balanceOptions;

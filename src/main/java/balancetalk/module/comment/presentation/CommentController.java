@@ -7,6 +7,7 @@ import balancetalk.module.comment.dto.ReplyCreateRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -24,7 +25,7 @@ public class CommentController {
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
     @Operation(summary = "댓글 작성", description = "post-id에 해당하는 게시글에 댓글을 작성한다.")
-    public String createComment(@PathVariable Long postId, @RequestBody CommentRequest request) {
+    public String createComment(@PathVariable Long postId, @Valid @RequestBody CommentRequest request) {
         commentService.createComment(request, postId);
         return "댓글이 정상적으로 작성되었습니다.";
     }
