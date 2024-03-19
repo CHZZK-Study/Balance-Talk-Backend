@@ -26,6 +26,7 @@ public enum ErrorCode {
     PAGE_NUMBER_ZERO(BAD_REQUEST, "페이지 번호는 0보다 커야합니다."),
     PAGE_SIZE_ZERO(BAD_REQUEST, "페이지 사이즈는 0보다 커야합니다."),
     EXCEED_VALIDATION_LENGTH(BAD_REQUEST, "입력값이 제약 조건에 맞지 않습니다."),
+    AUTHORIZATION_CODE_MISMATCH(BAD_REQUEST, "인증 번호가 일치하지 않습니다."),
     EMPTY_JWT_TOKEN(BAD_REQUEST, "토큰 값이 존재하지 않습니다."),
 
 
@@ -69,13 +70,13 @@ public enum ErrorCode {
     ALREADY_LIKE_POST(CONFLICT, "이미 추천을 누른 게시글입니다."),
     ALREADY_CANCEL_LIKE_POST(CONFLICT, "이미 추천 취소를 누른 게시글입니다"),
     ALREADY_REGISTERED_NICKNAME(CONFLICT, "이미 등록된 닉네임입니다."),
-    ALREADY_REGISTERED_EMAIL(CONFLICT, "이미 존재하는 이메일 입니다. 다른 이메일을 입력해주세요."),
+    ALREADY_REGISTERED_EMAIL(CONFLICT, "이미 등록된 이메일입니다."),
     SAME_NICKNAME(CONFLICT, "변경하려는 닉네임이 현재와 동일합니다. 다른 닉네임을 입력해주세요."),
     SAME_PASSWORD(CONFLICT, "변경하려는 비밀번호가 현재와 동일합니다. 다른 비밀번호를 입력해주세요."),
 
-
     // 500
-    REDIS_CONNECTION_FAIL(INTERNAL_SERVER_ERROR, "Redis 연결에 실패했습니다.");
+    REDIS_CONNECTION_FAIL(INTERNAL_SERVER_ERROR, "Redis 연결에 실패했습니다."),
+    FAIL_SEND_EMAIL(INTERNAL_SERVER_ERROR, "이메일 발송에 실패했습니다");
 
     private final HttpStatus httpStatus;
     private final String message;
