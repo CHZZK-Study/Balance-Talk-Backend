@@ -96,6 +96,10 @@ public class PostResponse {
     }
 
     private static Long getSelectedOptionId(Post post, Member member) {
+        if (member == null) {
+            return null;
+        }
+
         return post.getOptions().stream()
                 .filter(option -> Optional.ofNullable(option.getVotes())
                         .orElseGet(Collections::emptyList)

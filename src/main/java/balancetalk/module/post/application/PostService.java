@@ -70,11 +70,11 @@ public class PostService {
     public Page<PostResponse> findAll(String token, Pageable pageable) {
         // TODO: 검색, 정렬, 마감 기능 추가
         Page<Post> posts = postRepository.findAll(pageable);
-        Member member = getCurrentMember(memberRepository);
 
         if (token == null) {
-            return posts.map(post -> PostResponse.fromEntity(post, member, false, false, false));
+            return posts.map(post -> PostResponse.fromEntity(post, null, false, false, false));
         }
+        Member member = getCurrentMember(memberRepository);
 
         return posts.map(post -> PostResponse.fromEntity(post,
                 member,
@@ -86,12 +86,13 @@ public class PostService {
     @Transactional(readOnly = true)
     public PostResponse findById(Long postId, String token) {
         Post post = getCurrentPost(postId);
-        Member member = getCurrentMember(memberRepository);
 
         if (token == null) {
             post.increaseViews();
-            return PostResponse.fromEntity(post, member, false, false, false);
+            return PostResponse.fromEntity(post, null, false, false, false);
         }
+
+        Member member = getCurrentMember(memberRepository);
 
         if (member.getRole() == Role.USER) {
              post.increaseViews();
@@ -143,13 +144,14 @@ public class PostService {
     public List<PostResponse> findBestPosts(String token) {
         PageRequest limit = PageRequest.of(0, BEST_POSTS_SIZE);
         List<Post> posts = postRepository.findBestPosts(limit);
-        Member member = getCurrentMember(memberRepository);
 
         if (token == null) {
             return posts.stream()
-                    .map(post -> PostResponse.fromEntity(post, member, false, false, false))
+                    .map(post -> PostResponse.fromEntity(post, null, false, false, false))
                     .collect(Collectors.toList());
         }
+
+        Member member = getCurrentMember(memberRepository);
 
         return posts.stream()
                 .map(post -> PostResponse.fromEntity(post,
