@@ -9,6 +9,9 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.lang.Nullable;
 
+import java.util.List;
+import java.util.Optional;
+
 @Data
 @Builder
 @NoArgsConstructor
@@ -27,6 +30,9 @@ public class BalanceOptionDto {
     @Schema(description = "DB에 저장되는 이미지 이름", example = "4df23447-2355-45h2-8783-7f6gd2ceb848_고양이.jpg")
     private String storedFileName;
 
+    @Schema(description = "선택지 득표 수", example = "15")
+    private int votesCount;
+
     public BalanceOption toEntity(@Nullable File image) {
         BalanceOption.BalanceOptionBuilder builder = BalanceOption.builder()
                 .title(title)
@@ -38,10 +44,16 @@ public class BalanceOptionDto {
     }
 
     public static BalanceOptionDto fromEntity(BalanceOption balanceOption) {
+        int votesCount = Optional.ofNullable(balanceOption.getVotes())
+                .map(List::size)
+                .orElse(0);
+
         BalanceOptionDtoBuilder builder = BalanceOptionDto.builder()
                 .balanceOptionId(balanceOption.getId())
                 .title(balanceOption.getTitle())
-                .description(balanceOption.getDescription());
+                .description(balanceOption.getDescription())
+                .votesCount(votesCount);
+
         if (balanceOption.getFile() != null) {
             builder.storedFileName(balanceOption.getFile().getStoredName());
         }
