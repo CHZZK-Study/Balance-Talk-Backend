@@ -54,7 +54,7 @@ public class PostService {
             postTag.addPost(post);
         }
 
-        return PostResponse.fromEntity(postRepository.save(post), false, false, false);
+        return PostResponse.fromEntity(postRepository.save(post), writer, false, false, false);
     }
 
     private List<File> getImages(PostRequest postRequestDto) {
@@ -70,11 +70,14 @@ public class PostService {
     public Page<PostResponse> findAll(String token, Pageable pageable) {
         // TODO: 검색, 정렬, 마감 기능 추가
         Page<Post> posts = postRepository.findAll(pageable);
-        if (token == null) {
-            return posts.map(post -> PostResponse.fromEntity(post, false, false, false));
-        }
         Member member = getCurrentMember(memberRepository);
+
+        if (token == null) {
+            return posts.map(post -> PostResponse.fromEntity(post, member, false, false, false));
+        }
+
         return posts.map(post -> PostResponse.fromEntity(post,
+                member,
                 member.hasLiked(post),
                 member.hasBookmarked(post),
                 member.hasVoted(post)));
@@ -83,15 +86,17 @@ public class PostService {
     @Transactional(readOnly = true)
     public PostResponse findById(Long postId, String token) {
         Post post = getCurrentPost(postId);
+        Member member = getCurrentMember(memberRepository);
+
         if (token == null) {
             post.increaseViews();
-            return PostResponse.fromEntity(post, false, false, false);
+            return PostResponse.fromEntity(post, member, false, false, false);
         }
-        Member member = getCurrentMember(memberRepository);
+
         if (member.getRole() == Role.USER) {
              post.increaseViews();
         }
-        return PostResponse.fromEntity(post, member.hasLiked(post), member.hasBookmarked(post), member.hasVoted(post));
+        return PostResponse.fromEntity(post, member, member.hasLiked(post), member.hasBookmarked(post), member.hasVoted(post));
     }
 
     @Transactional
@@ -138,14 +143,17 @@ public class PostService {
     public List<PostResponse> findBestPosts(String token) {
         PageRequest limit = PageRequest.of(0, BEST_POSTS_SIZE);
         List<Post> posts = postRepository.findBestPosts(limit);
+        Member member = getCurrentMember(memberRepository);
+
         if (token == null) {
             return posts.stream()
-                    .map(post -> PostResponse.fromEntity(post, false, false, false))
+                    .map(post -> PostResponse.fromEntity(post, member, false, false, false))
                     .collect(Collectors.toList());
         }
-        Member member = getCurrentMember(memberRepository);
+
         return posts.stream()
                 .map(post -> PostResponse.fromEntity(post,
+                        member,
                         member.hasLiked(post),
                         member.hasBookmarked(post),
                         member.hasVoted(post)))
