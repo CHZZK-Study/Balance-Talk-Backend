@@ -9,16 +9,13 @@ import balancetalk.module.file.domain.FileRepository;
 import balancetalk.module.member.domain.Member;
 import balancetalk.module.member.domain.MemberRepository;
 import balancetalk.module.member.dto.*;
-import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,7 +35,6 @@ public class MemberService {
     private final FileRepository fileRepository;
     private final PasswordEncoder passwordEncoder;
     private final RedisService redisService;
-
     @Transactional
     public Long join(final JoinRequest joinRequest) {
         if (memberRepository.existsByEmail(joinRequest.getEmail())) {
@@ -108,12 +104,19 @@ public class MemberService {
     }
 
     @Transactional
+    public void updateImage(Long fileId, HttpServletRequest request) {
+        Member member = extractMember(request);
+        File file = fileRepository.findById(fileId)
+                .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_FILE));
+        member.updateImage(file);
+    }
+
+    @Transactional
     public void delete(final LoginRequest loginRequest, HttpServletRequest request) {
         Member member = extractMember(request);
         if (!member.getEmail().equals(loginRequest.getEmail())) {
             throw new BalanceTalkException(ErrorCode.FORBIDDEN_MEMBER_DELETE);
         }
-
         if (!passwordEncoder.matches(loginRequest.getPassword(), member.getPassword())) {
             throw new BalanceTalkException(ErrorCode.MISMATCHED_EMAIL_OR_PASSWORD);
         }

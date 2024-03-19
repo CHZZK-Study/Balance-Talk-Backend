@@ -121,6 +121,10 @@ public class Member extends BaseTimeEntity implements UserDetails {
         this.password = password;
     }
 
+    public void updateImage(File profilePhoto) {
+        this.profilePhoto = profilePhoto;
+    }
+
     public int getPostCount() {
         return Optional.ofNullable(posts)
                 .map(List::size).orElse(0);
