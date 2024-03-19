@@ -22,8 +22,5 @@ public class MethodArgumentException {
         errors.put("message" , errorMessage);
         log.info("errorMessage={}", errorMessage);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors);
-//        ErrorResponse errorResponse = ErrorResponse.from(ErrorCode.EXCEED_VALIDATION_LENGTH);
-//        log.error("exception message = {}", e.getMessage());
-//        return ResponseEntity.status(errorResponse.getHttpStatus()).body(errorResponse);
     }
 }
