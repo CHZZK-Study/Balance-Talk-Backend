@@ -60,6 +60,7 @@ public class MemberController {
     @PutMapping("/nickname")
     @Operation(summary = "회원 닉네임 수정", description = "회원 닉네임을 수정한다.")
     public String updateNickname(@Valid @NotBlank @RequestBody @Size(min = 2, max = 10)String newNickname, HttpServletRequest request) {
+        // TODO: RequestBody 빈 값일 때 에러체킹 x
         memberService.updateNickname(newNickname, request);
         return "회원 닉네임이 변경되었습니다.";
     }
@@ -70,6 +71,7 @@ public class MemberController {
     public String updatePassword(@RequestBody @Size(min = 10, max = 20)
                                      @Pattern(regexp = "^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d@$!%*#?&]{10,20}$")
                                      String newPassword, HttpServletRequest request) {
+        // TODO: RequestBody 빈 값일 때 에러체킹 x
         memberService.updatePassword(newPassword, request);
         return "회원 비밀번호가 변경되었습니다.";
     }
