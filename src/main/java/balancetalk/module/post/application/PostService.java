@@ -14,18 +14,22 @@ import balancetalk.module.post.domain.*;
 import balancetalk.module.post.dto.BalanceOptionDto;
 import balancetalk.module.post.dto.PostRequest;
 import balancetalk.module.post.dto.PostResponse;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional
 public class PostService {
+    private static final int BEST_POSTS_SIZE = 5;
 
     private final PostRepository postRepository;
     private final MemberRepository memberRepository;
@@ -50,7 +54,7 @@ public class PostService {
             postTag.addPost(post);
         }
 
-        return PostResponse.fromEntity(postRepository.save(post), false, false);
+        return PostResponse.fromEntity(postRepository.save(post), false, false, false);
     }
 
     private List<File> getImages(PostRequest postRequestDto) {
@@ -63,32 +67,31 @@ public class PostService {
     }
 
     @Transactional(readOnly = true)
-    public List<PostResponse> findAll(String token) {
+    public Page<PostResponse> findAll(String token, Pageable pageable) {
         // TODO: 검색, 정렬, 마감 기능 추가
-        List<Post> posts = postRepository.findAll();
+        Page<Post> posts = postRepository.findAll(pageable);
         if (token == null) {
-            return posts.stream()
-                    .map(post -> PostResponse.fromEntity(post, false, false))
-                    .collect(Collectors.toList());
+            return posts.map(post -> PostResponse.fromEntity(post, false, false, false));
         }
         Member member = getCurrentMember(memberRepository);
-        return posts.stream()
-                .map(post -> PostResponse.fromEntity(post, member.hasLiked(post), member.hasBookmarked(post)))
-                .collect(Collectors.toList());
+        return posts.map(post -> PostResponse.fromEntity(post,
+                member.hasLiked(post),
+                member.hasBookmarked(post),
+                member.hasVoted(post)));
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public PostResponse findById(Long postId, String token) {
         Post post = getCurrentPost(postId);
         if (token == null) {
             post.increaseViews();
-            return PostResponse.fromEntity(post, false, false);
+            return PostResponse.fromEntity(post, false, false, false);
         }
         Member member = getCurrentMember(memberRepository);
         if (member.getRole() == Role.USER) {
              post.increaseViews();
         }
-        return PostResponse.fromEntity(post, member.hasLiked(post), member.hasBookmarked(post));
+        return PostResponse.fromEntity(post, member.hasLiked(post), member.hasBookmarked(post), member.hasVoted(post));
     }
 
     @Transactional
@@ -129,5 +132,23 @@ public class PostService {
     private Post getCurrentPost(Long postId) {
         return postRepository.findById(postId)
                 .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_POST));
+    }
+
+    @Transactional(readOnly = true)
+    public List<PostResponse> findBestPosts(String token) {
+        PageRequest limit = PageRequest.of(0, BEST_POSTS_SIZE);
+        List<Post> posts = postRepository.findBestPosts(limit);
+        if (token == null) {
+            return posts.stream()
+                    .map(post -> PostResponse.fromEntity(post, false, false, false))
+                    .collect(Collectors.toList());
+        }
+        Member member = getCurrentMember(memberRepository);
+        return posts.stream()
+                .map(post -> PostResponse.fromEntity(post,
+                        member.hasLiked(post),
+                        member.hasBookmarked(post),
+                        member.hasVoted(post)))
+                .collect(Collectors.toList());
     }
 }

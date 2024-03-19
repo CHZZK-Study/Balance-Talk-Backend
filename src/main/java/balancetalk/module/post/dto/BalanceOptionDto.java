@@ -15,6 +15,9 @@ import org.springframework.lang.Nullable;
 @AllArgsConstructor
 public class BalanceOptionDto {
 
+    @Schema(description = "선택지 id", example = "1")
+    private Long balanceOptionId;
+
     @Schema(description = "선택지 제목", example = "선택지 제목1")
     private String title;
 
@@ -36,6 +39,7 @@ public class BalanceOptionDto {
 
     public static BalanceOptionDto fromEntity(BalanceOption balanceOption) {
         BalanceOptionDtoBuilder builder = BalanceOptionDto.builder()
+                .balanceOptionId(balanceOption.getId())
                 .title(balanceOption.getTitle())
                 .description(balanceOption.getDescription());
         if (balanceOption.getFile() != null) {

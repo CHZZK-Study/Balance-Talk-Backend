@@ -8,8 +8,6 @@
 name: Java CI with Gradle
 
 on:
-  push:
-    branches: [ "dev" ]
   pull_request:
     branches: [ "dev" ]
 
@@ -40,13 +38,6 @@ jobs:
 
     - name: Build with Gradle Wrapper
       run: ./gradlew build
-
-    
-    - name: Publish Test Results
-      uses: EnricoMi/publish-unit-test-result-action@v2
-      if: always()
-      with:
-        files: '**build/test-results/test/TEST-*.xml'
 
     # NOTE: The Gradle Wrapper is the default and recommended way to run Gradle (https://docs.gradle.org/current/userguide/gradle_wrapper.html).
     # If your project does not have the Gradle Wrapper configured, you can use the following configuration to run Gradle with a specified version.
