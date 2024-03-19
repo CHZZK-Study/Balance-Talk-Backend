@@ -21,7 +21,7 @@ public class FileController {
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping(value = "/image/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(summary = "파일 업로드", description = "파일을 업로드 한다.")
-    public FileResponse uploadImage(@RequestPart("file") MultipartFile file) {
+    public FileResponse uploadImage(@RequestPart(value = "file") MultipartFile file) {
         return fileUploadService.uploadImage(file);
     }
 }

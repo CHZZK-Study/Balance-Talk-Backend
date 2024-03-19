@@ -65,7 +65,7 @@ public class CommentController {
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/{commentId}/replies")
     @Operation(summary = "답글 작성", description = "comment-id에 해당하는 댓글에 답글을 작성한다.")
-    public String createComment(@PathVariable Long postId, @PathVariable Long commentId, @RequestBody ReplyCreateRequest request) {
+    public String createComment(@PathVariable Long postId, @PathVariable Long commentId, @Valid @RequestBody ReplyCreateRequest request) {
         commentService.createReply(postId, commentId, request);
         return "답글이 정상적으로 작성되었습니다.";
     }
