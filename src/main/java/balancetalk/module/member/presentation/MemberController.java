@@ -77,6 +77,14 @@ public class MemberController {
     }
 
     @ResponseStatus(HttpStatus.OK)
+    @PutMapping("/image")
+    @Operation(summary = "회원 이미지 변경", description = "회원 프로필 이미지를 변경한다.")
+    public String updateImage(@RequestParam Long fileId, HttpServletRequest request) {
+        memberService.updateImage(fileId, request);
+        return "회원 이미지가 변경되었습니다.";
+    }
+
+    @ResponseStatus(HttpStatus.OK)
     @DeleteMapping
     @Operation(summary = "회원 삭제", description = "회원 정보를 삭제한다.")
     public String deleteMember(@Valid @RequestBody LoginRequest loginRequest, HttpServletRequest request) {
