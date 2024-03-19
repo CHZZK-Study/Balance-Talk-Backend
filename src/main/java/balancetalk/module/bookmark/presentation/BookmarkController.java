@@ -11,8 +11,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@Tag(name = "bookmark", description = "게시글 북마크 API")
-@RequestMapping("/bookmark")
+@RequestMapping("/bookmarks")
 @Tag(name = "bookmark", description = "게시글 북마크 API")
 public class BookmarkController {
 
