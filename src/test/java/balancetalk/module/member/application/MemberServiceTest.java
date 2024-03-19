@@ -4,9 +4,10 @@ import balancetalk.global.exception.BalanceTalkException;
 import balancetalk.global.exception.ErrorCode;
 import balancetalk.global.jwt.JwtTokenProvider;
 import balancetalk.global.redis.application.RedisService;
+import balancetalk.module.file.domain.File;
+import balancetalk.module.file.domain.FileRepository;
 import balancetalk.module.member.domain.Member;
 import balancetalk.module.member.domain.MemberRepository;
-import balancetalk.module.member.domain.Role;
 import balancetalk.module.member.dto.*;
 import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.AfterEach;
@@ -58,6 +59,9 @@ class MemberServiceTest {
     @Mock
     AuthenticationManager authenticationManager;
 
+    @Mock
+    FileRepository fileRepository;
+
     @InjectMocks
     MemberService memberService;
 
@@ -66,6 +70,8 @@ class MemberServiceTest {
     private JoinRequest joinRequest;
 
     private LoginRequest loginRequest;
+
+    private File file;
 
     private String accessToken = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ0ZXN0MTIzNDVAbmF2ZXIuY29tIiwiaWF0IjoxNzA5NDc1NTE4LCJleHAiOjE3MDk1MTg3MTh9.ZZXuN4OWM2HZjWOx7Pupl5NkRtjvd4qnK_txGdRy7G5_GdKgnyF3JfiUsenQgxsi1Y_-7C0dA85xabot2m1cag";
     private String refreshToken = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ0ZXN0MTIzNDVAbmF2ZXIuY29tIiwiaWF0IjoxNzA5NDc1NTE4LCJleHAiOjE3MTAwODAzMTh9.l87QBtVI5JJxpW0oiSWpZKX7JUESFgpZlLhW2R_cIsmf7GCEO1advBDN0csJP_PJ_bpPhQxjTd8pn0K33wBAog";
@@ -82,11 +88,15 @@ class MemberServiceTest {
                 .email(joinRequest.getEmail())
                 .password(joinRequest.getPassword())
                 .build();
+        file = File.builder()
+                .id(1L)
+                .build();
         member = Member.builder()
                 .id(1L)
                 .email(joinRequest.getEmail())
                 .password(joinRequest.getPassword())
                 .nickname("멤버1")
+                .profilePhoto(file)
                 .build();
 
         // SecurityContext에 인증된 사용자 설정
@@ -367,5 +377,24 @@ class MemberServiceTest {
         assertThatThrownBy(() -> memberService.verifyNickname(verifyName))
                 .isInstanceOf(BalanceTalkException.class)
                 .hasMessage(ErrorCode.ALREADY_REGISTERED_NICKNAME.getMessage());
+    }
+
+    @Test
+    @DisplayName("회원 프로필 이미지 수정 성공")
+    void changeMemberProfilePhoto() {
+        // given
+        File updateFile = File.builder()
+                .id(2L)
+                .build();
+        when(jwtTokenProvider.resolveToken(request)).thenReturn(accessToken);
+        when(jwtTokenProvider.getPayload(accessToken)).thenReturn(member.getEmail());
+        when(memberRepository.findByEmail(member.getEmail())).thenReturn(Optional.of(member));
+        when(fileRepository.findById(any())).thenReturn(Optional.of(updateFile));
+
+        // when
+        memberService.updateImage(2L, request);
+
+        // then
+        assertThat(member.getProfilePhoto().getId()).isEqualTo(2L);
     }
 }
