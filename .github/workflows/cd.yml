@@ -42,6 +42,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+            token: ${{ secrets.SUBMODULE_TOKEN }}
+            submodules: recursive
       - name: SSH to EC2
         uses: appleboy/ssh-action@master
         with:
@@ -51,9 +56,7 @@ jobs:
           script: |
             sudo fuser -k 80/tcp
             cd Balance-Talk-Backend
-            git pull --recurse-submodules
-            git config --global credential.helper store
-            echo "https://x-access-token:${{ secrets.SUBMODULE_TOKEN }}@github.com" > ~/.git-credentials
+            git pull
             ./gradlew build
             cd build/libs
             sudo nohup java -jar balance-talk-0.0.1-SNAPSHOT.jar &
