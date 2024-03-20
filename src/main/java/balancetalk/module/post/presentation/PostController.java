@@ -50,6 +50,14 @@ public class PostController {
         return postService.findBestPosts(token);
     }
 
+    @ResponseStatus(HttpStatus.OK)
+    @GetMapping("/search")
+    @Operation(summary = "게시글 제목 검색 기능", description = "키워드에 맞는 모든 게시글을 조회한다.")
+    public List<PostResponse> findPostsByTitle(@RequestHeader(value = "Authorization", required = false) String token,
+                                               @RequestParam String keyword, Pageable pageable) {
+        return postService.findPostsByTitle(token, keyword, pageable);
+    }
+
     @ResponseStatus(HttpStatus.CREATED)
     @DeleteMapping("/{postId}")
     @Operation(summary = "게시글 삭제", description = "post-id에 해당하는 게시글을 삭제한다.")
