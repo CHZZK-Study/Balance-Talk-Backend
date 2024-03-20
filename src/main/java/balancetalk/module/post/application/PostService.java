@@ -152,8 +152,8 @@ public class PostService {
     }
 
     @Transactional(readOnly = true)
-    public List<PostResponse> findPostsByTitle(String token, String keyword, Pageable pageable) {
-        Page<Post> posts = postRepository.findByTitleContaining(keyword, pageable);
+    public List<PostResponse> findPostsByTitle(String token, String keyword) {
+        List<Post> posts = postRepository.findByTitleContaining(keyword);
         if (token == null) {
             return posts.stream()
                     .map(post -> PostResponse.fromEntity(post, false, false, false))
@@ -169,8 +169,8 @@ public class PostService {
     }
 
     @Transactional(readOnly = true)
-    public List<PostResponse> findPostsByTag(String token, String tagName, Pageable pageable) {
-        Page<Post> posts = postRepository.findByPostTagsContaining(tagName, pageable);
+    public List<PostResponse> findPostsByTag(String token, String tagName) {
+        List<Post> posts = postRepository.findByPostTagsContaining(tagName);
         if (token == null) {
             return posts.stream()
                     .map(post -> PostResponse.fromEntity(post, false, false, false))
