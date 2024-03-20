@@ -31,13 +31,16 @@ public class CommentResponse {
     @Schema(description = "댓글 추천 수", example = "24")
     private int likesCount;
 
+    @Schema(description = "추천 여부", example = "true")
+    private boolean myLike;
+
     @Schema(description = "댓글 생성 날짜")
     private LocalDateTime createdAt;
 
     @Schema(description = "댓글 수정 날짜")
     private LocalDateTime lastModifiedAt;
 
-    public static CommentResponse fromEntity(Comment comment, Long balanceOptionId) {
+    public static CommentResponse fromEntity(Comment comment, Long balanceOptionId, boolean myLike) {
         return CommentResponse.builder()
                 .id(comment.getId())
                 .content(comment.getContent())
@@ -45,6 +48,7 @@ public class CommentResponse {
                 .postId(comment.getPost().getId())
                 .selectedOptionId(balanceOptionId)
                 .likesCount(comment.getLikes().size())
+                .myLike(myLike)
                 .createdAt(comment.getCreatedAt())
                 .lastModifiedAt(comment.getLastModifiedAt())
                 .build();

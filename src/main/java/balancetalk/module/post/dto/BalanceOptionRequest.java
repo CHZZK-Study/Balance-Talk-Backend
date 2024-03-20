@@ -16,6 +16,9 @@ import org.springframework.lang.Nullable;
 @AllArgsConstructor
 public class BalanceOptionRequest {
 
+    @Schema(description = "선택지 id", example = "1")
+    private Long balanceOptionId;
+
     @Schema(description = "선택지 제목", example = "선택지 제목1")
     private String title;
 
@@ -37,6 +40,7 @@ public class BalanceOptionRequest {
 
     public static BalanceOptionRequest fromEntity(BalanceOption balanceOption) {
         BalanceOptionRequestBuilder builder = BalanceOptionRequest.builder()
+                .balanceOptionId(balanceOption.getId())
                 .title(balanceOption.getTitle())
                 .description(balanceOption.getDescription());
         if (balanceOption.getFile() != null) {

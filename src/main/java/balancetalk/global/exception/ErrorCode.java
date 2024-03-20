@@ -6,8 +6,6 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 
-import static org.springframework.http.HttpStatus.*;
-
 @Getter
 @RequiredArgsConstructor
 public enum ErrorCode {
@@ -26,6 +24,7 @@ public enum ErrorCode {
     PAGE_NUMBER_ZERO(BAD_REQUEST, "페이지 번호는 0보다 커야합니다."),
     PAGE_SIZE_ZERO(BAD_REQUEST, "페이지 사이즈는 0보다 커야합니다."),
     EXCEED_VALIDATION_LENGTH(BAD_REQUEST, "입력값이 제약 조건에 맞지 않습니다."),
+    AUTHORIZATION_CODE_MISMATCH(BAD_REQUEST, "인증 번호가 일치하지 않습니다."),
     EMPTY_JWT_TOKEN(BAD_REQUEST, "토큰 값이 존재하지 않습니다."),
 
 
@@ -39,7 +38,6 @@ public enum ErrorCode {
     EXPIRED_JWT_TOKEN(UNAUTHORIZED, "만료된 토큰 입니다."),
     INVALID_JWT_TOKEN(UNAUTHORIZED, "유효하지 않은 토큰입니다"),
 
-
     // 403
     FORBIDDEN_POST_DELETE(FORBIDDEN, "해당 게시글은 삭제 권한이 없습니다."),
     FORBIDDEN_COMMENT_MODIFY(FORBIDDEN, "해당 댓글은 수정 권한이 없습니다."),
@@ -47,6 +45,9 @@ public enum ErrorCode {
     FORBIDDEN_MEMBER_DELETE(FORBIDDEN, "사용자 탈퇴 권한이 없습니다."),
     FORBIDDEN_BOOKMARK_DELETE(FORBIDDEN, "북마크 삭제 권한이 없습니다."),
     FORBIDDEN_POST_CREATE(FORBIDDEN, "글쓰기 권한이 없습니다."),
+    FORBIDDEN_CREATE_NOTICE(FORBIDDEN, "공지사항 작성 권한이 없습니다."),
+    FORBIDDEN_UPDATE_NOTICE(FORBIDDEN, "공지사항 수정 권한이 없습니다."),
+    FORBIDDEN_DELETE_NOTICE(FORBIDDEN, "공지사항 삭제 권한이 없습니다."),
 
     // 404
     NOT_FOUND_POST(NOT_FOUND, "존재하지 않는 게시글입니다."),
@@ -69,13 +70,13 @@ public enum ErrorCode {
     ALREADY_LIKE_POST(CONFLICT, "이미 추천을 누른 게시글입니다."),
     ALREADY_CANCEL_LIKE_POST(CONFLICT, "이미 추천 취소를 누른 게시글입니다"),
     ALREADY_REGISTERED_NICKNAME(CONFLICT, "이미 등록된 닉네임입니다."),
-    ALREADY_REGISTERED_EMAIL(CONFLICT, "이미 존재하는 이메일 입니다. 다른 이메일을 입력해주세요."),
+    ALREADY_REGISTERED_EMAIL(CONFLICT, "이미 등록된 이메일입니다."),
     SAME_NICKNAME(CONFLICT, "변경하려는 닉네임이 현재와 동일합니다. 다른 닉네임을 입력해주세요."),
     SAME_PASSWORD(CONFLICT, "변경하려는 비밀번호가 현재와 동일합니다. 다른 비밀번호를 입력해주세요."),
 
-
     // 500
-    REDIS_CONNECTION_FAIL(INTERNAL_SERVER_ERROR, "Redis 연결에 실패했습니다.");
+    REDIS_CONNECTION_FAIL(INTERNAL_SERVER_ERROR, "Redis 연결에 실패했습니다."),
+    FAIL_SEND_EMAIL(INTERNAL_SERVER_ERROR, "이메일 발송에 실패했습니다");
 
     private final HttpStatus httpStatus;
     private final String message;

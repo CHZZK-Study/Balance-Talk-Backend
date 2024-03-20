@@ -32,14 +32,14 @@ public class SecurityConfig {
             // swagger
             "/swagger-ui/**", "/v3/api-docs/**",
             "/members/duplicate",
-            "/posts", "/posts/{postId}", "/posts/{postId}/vote", "/posts/{postId}/comments",
+            "/posts", "/posts/{postId}", "/posts/{postId}/vote", "/posts/{postId}/comments/**",
             "/notices", "/notices/{noticeId}"
     };
 
     private static final String[] PUBLIC_POST = {
             "/members/join", "/members/login",
             "/email/request", "/email/verify",
-            "/posts/{postId}/vote"
+            "/posts/{postId}/vote", "/files/image/upload"
     };
 
     private static final String[] PUBLIC_PUT = {

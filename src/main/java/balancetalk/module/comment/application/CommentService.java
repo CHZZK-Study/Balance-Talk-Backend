@@ -16,9 +16,12 @@ import balancetalk.module.post.domain.Post;
 import balancetalk.module.post.domain.PostRepository;
 import balancetalk.module.vote.domain.Vote;
 import balancetalk.module.vote.domain.VoteRepository;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,6 +34,9 @@ import static balancetalk.global.utils.SecurityUtils.getCurrentMember;
 @Transactional
 @RequiredArgsConstructor
 public class CommentService {
+
+    private static final int BEST_COMMENTS_SIZE = 3;
+    private static final int MIN_COUNT_FOR_BEST_COMMENT = 15;
 
     private final CommentRepository commentRepository;
     private final MemberRepository memberRepository;
@@ -53,7 +59,7 @@ public class CommentService {
     }
 
     @Transactional(readOnly = true)
-    public Page<CommentResponse> findAllComments(Long postId, Pageable pageable) {
+    public Page<CommentResponse> findAllComments(Long postId, String token, Pageable pageable) {
         validatePostId(postId);
 
         Page<Comment> comments = commentRepository.findAllByPostId(postId, pageable);
@@ -65,7 +71,12 @@ public class CommentService {
             Long balanceOptionId = voteForComment.map(Vote::getBalanceOption).map(BalanceOption::getId)
                     .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_BALANCE_OPTION));
 
-            return CommentResponse.fromEntity(comment, balanceOptionId);
+            if (token == null) {
+                return CommentResponse.fromEntity(comment, balanceOptionId, false);
+            } else {
+                Member member = getCurrentMember(memberRepository);
+                return CommentResponse.fromEntity(comment, balanceOptionId, member.hasLikedComment(comment));
+            }
         });
     }
 
@@ -179,5 +190,33 @@ public class CommentService {
         Member member = getCurrentMember(memberRepository);
 
         commentLikeRepository.deleteByMemberAndComment(member, comment);
+    }
+
+    @Transactional(readOnly = true)
+    public List<CommentResponse> findBestComments(Long postId, String token) {
+        Post post = validatePostId(postId);
+        List<BalanceOption> options = post.getOptions();
+
+        List<CommentResponse> responses = new ArrayList<>();
+        for (BalanceOption option : options) {
+            List<Long> memberIdsBySelectedOptionId =
+                    memberRepository.findMemberIdsBySelectedOptionId(option.getId());
+
+            List<Comment> bestComments = commentRepository.findBestCommentsByPostId(postId,
+                    memberIdsBySelectedOptionId, MIN_COUNT_FOR_BEST_COMMENT, PageRequest.of(0, BEST_COMMENTS_SIZE));
+
+            if (token == null) {
+                responses.addAll(bestComments.stream()
+                        .map(comment -> CommentResponse.fromEntity(comment, option.getId(), false)).toList());
+            } else {
+                Member member = getCurrentMember(memberRepository);
+                responses.addAll(bestComments.stream()
+                        .map(comment ->
+                                CommentResponse.fromEntity(comment, option.getId(), member.hasLikedComment(comment)))
+                        .toList());
+            }
+        }
+
+        return responses;
     }
 }
