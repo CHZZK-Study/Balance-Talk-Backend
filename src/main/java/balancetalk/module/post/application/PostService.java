@@ -167,4 +167,21 @@ public class PostService {
                         member.hasVoted(post)))
                 .collect(Collectors.toList());
     }
+
+    @Transactional(readOnly = true)
+    public List<PostResponse> findPostsByTag(String token, String tagName, Pageable pageable) {
+        Page<Post> posts = postRepository.findByPostTagsContaining(tagName, pageable);
+        if (token == null) {
+            return posts.stream()
+                    .map(post -> PostResponse.fromEntity(post, false, false, false))
+                    .collect(Collectors.toList());
+        }
+        Member member = getCurrentMember(memberRepository);
+        return posts.stream()
+                .map(post -> PostResponse.fromEntity(post,
+                        member.hasLiked(post),
+                        member.hasBookmarked(post),
+                        member.hasVoted(post)))
+                .collect(Collectors.toList());
+    }
 }

@@ -51,11 +51,19 @@ public class PostController {
     }
 
     @ResponseStatus(HttpStatus.OK)
-    @GetMapping("/search")
+    @GetMapping("/title")
     @Operation(summary = "게시글 제목 검색 기능", description = "키워드에 맞는 모든 게시글을 조회한다.")
     public List<PostResponse> findPostsByTitle(@RequestHeader(value = "Authorization", required = false) String token,
                                                @RequestParam String keyword, Pageable pageable) {
         return postService.findPostsByTitle(token, keyword, pageable);
+    }
+
+    @ResponseStatus(HttpStatus.OK)
+    @GetMapping("/tag")
+    @Operation(summary = "게시글 태그 검색 기능", description = "태그에 맞는 모든 게시글을 조회한다.")
+    public List<PostResponse> findPostsByTag(@RequestHeader(value = "Authorization", required = false) String token,
+                                               @RequestParam String tagName, Pageable pageable) {
+        return postService.findPostsByTag(token, tagName, pageable);
     }
 
     @ResponseStatus(HttpStatus.CREATED)
