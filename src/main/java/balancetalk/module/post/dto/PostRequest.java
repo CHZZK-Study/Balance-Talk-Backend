@@ -34,9 +34,12 @@ public class PostRequest {
     @Schema(description = "게시글 카테고리", example = "CASUAL")
     private PostCategory category;
 
-    @Schema(description = "선택지 옵션 리스트", example = "[{\"title\": \"선택지 제목1\", \"description\": \"선택지 내용1\" , \"storedFileName\": null}," +
-            "{\"title\": \"선택지 제목2\", \"description\": \"선택지 내용2\", \"storedFileName\": null}]")
-    private List<BalanceOptionDto> balanceOptions;
+    @Schema(description = "선택지 옵션 리스트", example =
+            "[{\"title\": \"선택지 제목1\", \"description\": \"선택지 내용1\" , "
+            + "\"storedFileName\": 4df23447-2355-45h2-8783-7f6gd2ceb848_강아지.jpg}," +
+            "{\"title\": \"선택지 제목2\", \"description\": \"선택지 내용2\", "
+            + "\"storedFileName\": 4df23447-2355-45h2-8783-7f6gd2ceb848_고양이.jpg}]")
+    private List<BalanceOptionRequest> balanceOptions;
 
     @Schema(description = "태그 리스트", example = "[\"태그1\", \"태그2\", \"태그3\"]")
     private List<PostTagDto> tags;
@@ -55,15 +58,16 @@ public class PostRequest {
     private List<BalanceOption> getBalanceOptions(List<File> images) {
         if (images.isEmpty()) {
             return balanceOptions.stream()
-                    .map(balanceOptionDto -> balanceOptionDto.toEntity(null))
+                    .map(balanceOption -> balanceOption.toEntity(null))
                     .collect(Collectors.toList());
         } else {
             Map<String, File> fileNameToFileMap = images.stream()
                     .collect(Collectors.toMap(File::getStoredName, Function.identity()));
 
             return balanceOptions.stream()
-                    .map(balanceOptionDto -> balanceOptionDto.toEntity(fileNameToFileMap.getOrDefault(balanceOptionDto.getStoredFileName(),
-                            null)))
+                    .map(balanceOption ->
+                            balanceOption.toEntity(
+                                    fileNameToFileMap.getOrDefault(balanceOption.getStoredImageName(), null)))
                     .collect(Collectors.toList());
         }
     }

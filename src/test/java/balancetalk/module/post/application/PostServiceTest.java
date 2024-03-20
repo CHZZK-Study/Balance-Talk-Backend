@@ -1,36 +1,8 @@
 package balancetalk.module.post.application;
 
-import balancetalk.global.redis.application.RedisService;
-import balancetalk.module.file.domain.File;
-import balancetalk.module.file.domain.FileRepository;
-import balancetalk.module.member.domain.Member;
-import balancetalk.module.member.domain.MemberRepository;
-import balancetalk.module.post.domain.*;
-import balancetalk.module.post.dto.BalanceOptionDto;
-import balancetalk.module.post.dto.PostRequest;
-import balancetalk.module.post.dto.PostResponse;
-import balancetalk.module.post.dto.PostTagDto;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.IntStream;
-
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.mockito.Mockito.*;
 
 //@ExtendWith(MockitoExtension.class)
 //class PostServiceTest {
