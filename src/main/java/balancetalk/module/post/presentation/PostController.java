@@ -6,6 +6,8 @@ import balancetalk.module.post.dto.PostResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
+
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -23,7 +25,7 @@ public class PostController {
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
     @Operation(summary = "게시글 생성" , description = "로그인 상태인 회원이 게시글을 작성한다.")
-    public PostResponse createPost(@RequestBody final PostRequest postRequestDto) {
+    public PostResponse createPost(@Valid @RequestBody final PostRequest postRequestDto) {
         return postService.save(postRequestDto);
     }
 

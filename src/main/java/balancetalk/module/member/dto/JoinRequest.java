@@ -4,9 +4,7 @@ import balancetalk.module.file.domain.File;
 import balancetalk.module.member.domain.Member;
 import balancetalk.module.member.domain.Role;
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -18,9 +16,14 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class JoinRequest {
 
+    @NotBlank
+    @Size(min = 2, max = 10)
     @Schema(description = "회원 닉네임", example = "닉네임")
     private String nickname;
 
+    @NotNull
+    @Size(max = 30)
+    @Email(regexp = "^[a-zA-Z0-9._%+-]{1,20}@[a-zA-Z0-9.-]{1,10}\\.[a-zA-Z]{2,}$")
     @Schema(description = "회원 이메일", example = "test1234@naver.com")
     private String email;
 
