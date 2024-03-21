@@ -23,7 +23,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
-
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -139,6 +138,40 @@ public class PostService {
     public List<PostResponse> findBestPosts(String token) {
         PageRequest limit = PageRequest.of(0, BEST_POSTS_SIZE);
         List<Post> posts = postRepository.findBestPosts(limit);
+        if (token == null) {
+            return posts.stream()
+                    .map(post -> PostResponse.fromEntity(post, false, false, false))
+                    .collect(Collectors.toList());
+        }
+        Member member = getCurrentMember(memberRepository);
+        return posts.stream()
+                .map(post -> PostResponse.fromEntity(post,
+                        member.hasLiked(post),
+                        member.hasBookmarked(post),
+                        member.hasVoted(post)))
+                .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public List<PostResponse> findPostsByTitle(String token, String keyword) {
+        List<Post> posts = postRepository.findByTitleContaining(keyword);
+        if (token == null) {
+            return posts.stream()
+                    .map(post -> PostResponse.fromEntity(post, false, false, false))
+                    .collect(Collectors.toList());
+        }
+        Member member = getCurrentMember(memberRepository);
+        return posts.stream()
+                .map(post -> PostResponse.fromEntity(post,
+                        member.hasLiked(post),
+                        member.hasBookmarked(post),
+                        member.hasVoted(post)))
+                .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public List<PostResponse> findPostsByTag(String token, String tagName) {
+        List<Post> posts = postRepository.findByPostTagsContaining(tagName);
         if (token == null) {
             return posts.stream()
                     .map(post -> PostResponse.fromEntity(post, false, false, false))

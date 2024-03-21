@@ -1,56 +1,160 @@
 package balancetalk.module.post.application;
 
+import balancetalk.global.redis.application.RedisService;
+import balancetalk.module.file.domain.File;
+import balancetalk.module.file.domain.FileRepository;
+import balancetalk.module.member.domain.Member;
+import balancetalk.module.member.domain.MemberRepository;
+import balancetalk.module.post.domain.*;
+import balancetalk.module.post.dto.BalanceOptionDto;
+import balancetalk.module.post.dto.PostRequest;
+import balancetalk.module.post.dto.PostResponse;
+import balancetalk.module.post.dto.PostTagDto;
+import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+
+import static org.assertj.core.api.Assertions.*;
+
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
-//@ExtendWith(MockitoExtension.class)
-//class PostServiceTest {
-//
-//    @Mock
-//    MemberRepository memberRepository;
-//
-//    @Mock
-//    PostRepository postRepository;
-//
-//    @Mock
-//    PostLikeRepository postLikeRepository;
-//
-//    @Mock
-//    FileRepository fileRepository;
-//
-//    @Mock
-//    RedisService redisService;
-//
-//    @InjectMocks
-//    PostService postService;
-//
-//    private String accessToken = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ0ZXN0MTIzNDVAbmF2ZXIuY29tIiwiaWF0IjoxNzA5NDc1NTE4LCJleHAiOjE3MDk1MTg3MTh9.ZZXuN4OWM2HZjWOx7Pupl5NkRtjvd4qnK_txGdRy7G5_GdKgnyF3JfiUsenQgxsi1Y_-7C0dA85xabot2m1cag";
-//
-//    Member member = Member.builder()
-//            .id(1L)
-//            .email("member@gmail.com")
-//            .build();
-//
-//    File file = File.builder()
-//            .storedName("e90a6177-89a1-45b3-91d3-cb39e9bec407_미어캣.jpg")
-//            .build();
-//    BalanceOption balanceOption = BalanceOption.builder()
-//            .title("option1")
-//            .description("description1")
-//            .file(file)
-//            .build();
-//
-//    @BeforeEach
-//    void setUp() {
-//        // SecurityContext에 인증된 사용자 설정
-//        Authentication authentication = mock(Authentication.class);
-//        SecurityContext securityContext = mock(SecurityContext.class);
-//        lenient().when(securityContext.getAuthentication()).thenReturn(authentication);
-//        SecurityContextHolder.setContext(securityContext);
-//
-//
-//    }
+@ExtendWith(MockitoExtension.class)
+class PostServiceTest {
+
+    @Mock
+    MemberRepository memberRepository;
+
+    @Mock
+    PostRepository postRepository;
+
+    @Mock
+    PostLikeRepository postLikeRepository;
+
+    @Mock
+    FileRepository fileRepository;
+
+    @Mock
+    RedisService redisService;
+
+    @InjectMocks
+    PostService postService;
+
+    private String accessToken = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ0ZXN0MTIzNDVAbmF2ZXIuY29tIiwiaWF0IjoxNzA5NDc1NTE4LCJleHAiOjE3MDk1MTg3MTh9.ZZXuN4OWM2HZjWOx7Pupl5NkRtjvd4qnK_txGdRy7G5_GdKgnyF3JfiUsenQgxsi1Y_-7C0dA85xabot2m1cag";
+
+    Member member = Member.builder()
+            .id(1L)
+            .email("member@gmail.com")
+            .build();
+
+    File file = File.builder()
+            .storedName("e90a6177-89a1-45b3-91d3-cb39e9bec407_미어캣.jpg")
+            .build();
+
+    BalanceOption balanceOption = BalanceOption.builder()
+            .title("option1")
+            .description("description1")
+            .file(file)
+            .build();
+
+    Tag tag1 = Tag.builder()
+            .name("태그1")
+            .build();
+    Tag tag2 = Tag.builder()
+            .name("태그2")
+            .build();
+    PostTag postTag1 = PostTag.builder()
+            .tag(tag1)
+            .build();
+    PostTag postTag2 = PostTag.builder()
+            .tag(tag2)
+            .build();
+    Post post1 = Post.builder()
+            .id(1L)
+            .title("고양이")
+            .category(PostCategory.CASUAL)
+            .member(member)
+            .options(List.of(balanceOption))
+            .views(0L)
+            .postTags(List.of(postTag1, postTag2))
+            .build();
+
+    Post post2 = Post.builder()
+            .id(2L)
+            .title("미어캣")
+            .category(PostCategory.DISCUSSION)
+            .member(member)
+            .options(List.of(balanceOption))
+            .views(23L)
+            .postTags(List.of(postTag1))
+            .build();
+    @BeforeEach
+    void setUp() {
+        // SecurityContext에 인증된 사용자 설정
+        Authentication authentication = mock(Authentication.class);
+        SecurityContext securityContext = mock(SecurityContext.class);
+        lenient().when(securityContext.getAuthentication()).thenReturn(authentication);
+        SecurityContextHolder.setContext(securityContext);
+    }
+
+    @AfterEach
+    void clear() {
+        SecurityContextHolder.clearContext();
+    }
+
+    @Test
+    @DisplayName("게시글 제목으로 검색")
+    void searchPostsByTitle() {
+        // given
+        String keyword = "미어";
+        when(postRepository.findByTitleContaining(keyword)).thenReturn(List.of(post2));
+        lenient().when(memberRepository.findByEmail(any())).thenReturn(Optional.ofNullable(member));
+
+        // when
+        List<PostResponse> result = postService.findPostsByTitle(null, keyword);
+
+        // then
+        assertEquals(1, result.size());
+        assertThat(result.get(0).getTitle()).contains(keyword);
+    }
+
+    @Test
+    @DisplayName("게시글 태그로 검색")
+    void searchPostsByTag() {
+        // given
+        String tagName = "태그1";
+        when(postRepository.findByPostTagsContaining(tagName)).thenReturn(List.of(post1));
+        lenient().when(memberRepository.findByEmail(any())).thenReturn(Optional.ofNullable(member));
+
+        // when
+        List<PostResponse> result = postService.findPostsByTag(null, tagName);
+
+        // then
+        assertEquals(1, result.size());
+        List<PostTagDto> tags = result.get(0).getPostTags();
+        assertThat(tags)
+                .extracting(PostTagDto::getTagName)
+                .contains(tagName);
+    }
 //
 //    @Test
 //    @DisplayName("게시글 작성 성공")
@@ -240,4 +344,4 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 //                .isInstanceOf(BalanceTalkException.class)
 //                .hasMessageContaining(ALREADY_LIKE_POST.getMessage());
 //    }
-//}
+}
