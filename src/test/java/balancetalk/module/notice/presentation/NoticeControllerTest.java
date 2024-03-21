@@ -1,32 +1,34 @@
-// package balancetalk.module.notice.presentation;
+package balancetalk.module.notice.presentation;
 
-// import balancetalk.module.notice.dto.NoticeRequest;
-// import com.fasterxml.jackson.databind.ObjectMapper;
-// import org.junit.jupiter.api.BeforeEach;
-// import org.junit.jupiter.api.DisplayName;
-// import org.junit.jupiter.api.Test;
-// import org.junit.jupiter.api.extension.ExtendWith;
-// import org.springframework.beans.factory.annotation.Autowired;
-// import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-// import org.springframework.boot.test.context.SpringBootTest;
-// import org.springframework.http.MediaType;
-// import org.springframework.security.test.context.support.WithMockUser;
-// import org.springframework.test.context.junit.jupiter.SpringExtension;
-// import org.springframework.test.web.servlet.MockMvc;
+import balancetalk.module.notice.dto.NoticeRequest;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.test.web.servlet.MockMvc;
 
 // import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 // import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 // import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 // import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-// @ExtendWith(SpringExtension.class)
-// @SpringBootTest
-// @AutoConfigureMockMvc
-// @WithMockUser
-// class NoticeControllerTest {
 
-//     @Autowired
-//     private MockMvc mockMvc;
+@ExtendWith(SpringExtension.class)
+@SpringBootTest
+@AutoConfigureMockMvc
+@WithMockUser
+class NoticeControllerTest {
+/*
+    @Autowired
+    private MockMvc mockMvc;
 
 //     private ObjectMapper objectMapper;
 
@@ -80,11 +82,12 @@
 //                 .title("유효한 제목")
 //                 .content(longContent)
 //                 .build();
+        mockMvc.perform(post("/notices")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message").value("입력값이 제약 조건에 맞지 않습니다."));
+    }
 
-//         mockMvc.perform(post("/notices")
-//                         .contentType(MediaType.APPLICATION_JSON)
-//                         .content(objectMapper.writeValueAsString(request)))
-//                 .andExpect(status().isBadRequest())
-//                 .andExpect(jsonPath("$.message").value("입력값이 제약 조건에 맞지 않습니다."));
-//     }
-// }
+ */
+}

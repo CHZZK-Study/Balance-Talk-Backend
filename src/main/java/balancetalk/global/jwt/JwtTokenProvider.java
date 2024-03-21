@@ -39,9 +39,11 @@ public class JwtTokenProvider {
     /**
      * Access 토큰 생성
      */
-    public String createAccessToken(Authentication authentication) {
+    public String createAccessToken(Authentication authentication, Long memberId) {
         validateAuthentication(authentication);
-        Claims claims = Jwts.claims().setSubject(authentication.getName());
+        Claims claims = Jwts.claims();
+        claims.put("memberId", memberId);
+        claims.setSubject(authentication.getName());
         Date now = new Date();
         Date expireDate = new Date(now.getTime() + accessExpirationTime);
 
@@ -56,9 +58,11 @@ public class JwtTokenProvider {
     /**
      * Refresh 토큰 생성
      */
-    public String createRefreshToken(Authentication authentication) {
+    public String createRefreshToken(Authentication authentication, Long memberId) {
         validateAuthentication(authentication);
-        Claims claims = Jwts.claims().setSubject(authentication.getName());
+        Claims claims = Jwts.claims();
+        claims.put("memberId", memberId);
+        claims.setSubject(authentication.getName());
         Date now = new Date();
         Date expireDate = new Date(now.getTime() + refreshExpirationTime);
 
@@ -94,6 +98,12 @@ public class JwtTokenProvider {
         return Jwts.parserBuilder().setSigningKey(secretKey).build().parseClaimsJws(token).getBody().getSubject();
     }
 
+    public Long getMemberId(String token) {
+        validateToken(token);
+        Claims claims = Jwts.parserBuilder().setSigningKey(secretKey).build().parseClaimsJws(token).getBody();
+        return claims.get("memberId", Long.class);
+    }
+
     public boolean validateToken(String token) {
         try {
             Jws<Claims> claims = Jwts.parserBuilder().setSigningKey(secretKey).build().parseClaimsJws(token);
@@ -113,7 +123,7 @@ public class JwtTokenProvider {
         }
     }
 
-    public TokenDto reissueToken(String refreshToken) {
+    public TokenDto reissueToken(String refreshToken, Long memberId) {
         validateToken(refreshToken);
         Authentication authentication = getAuthentication(refreshToken);
         // redis에 저장된 RefreshToken 값을 가져옴
@@ -122,8 +132,8 @@ public class JwtTokenProvider {
             throw new BalanceTalkException(ErrorCode.INVALID_REFRESH_TOKEN);
         }
         TokenDto tokenDto = new TokenDto(
-                createAccessToken(authentication),
-                createRefreshToken(authentication)
+                createAccessToken(authentication, memberId),
+                createRefreshToken(authentication, memberId)
         );
         return tokenDto;
     }
