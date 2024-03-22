@@ -80,6 +80,14 @@ public class CommentService {
         });
     }
 
+    @Transactional(readOnly = true)
+    public Page<CommentResponse> findAllByCurrentMember(Pageable pageable) {
+        Member currentMember = getCurrentMember(memberRepository);
+
+        return commentRepository.findAllByMemberEmail(currentMember.getEmail(), pageable)
+                .map(comment -> CommentResponse.fromEntity(comment, null, false));
+    }
+
     public Comment updateComment(Long commentId, Long postId, String content) {
         Comment comment = validateCommentId(commentId);
         validatePostId(postId);

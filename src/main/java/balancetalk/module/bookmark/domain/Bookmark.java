@@ -1,5 +1,6 @@
 package balancetalk.module.bookmark.domain;
 
+import balancetalk.global.common.BaseTimeEntity;
 import balancetalk.module.member.domain.Member;
 import balancetalk.module.post.domain.Post;
 import jakarta.persistence.*;
@@ -10,7 +11,7 @@ import lombok.*;
 @Getter
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Bookmark {
+public class Bookmark extends BaseTimeEntity {
 
     @Id
     @GeneratedValue

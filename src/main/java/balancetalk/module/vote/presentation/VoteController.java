@@ -9,6 +9,7 @@ import java.util.List;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,7 +25,7 @@ public class VoteController {
     @PostMapping
     @Operation(summary = "선택지 투표", description = "post-id에 해당하는 게시글에서 마음에 드는 선택지에 투표한다.")
     @ApiResponse(responseCode = "201", description = "투표가 정상적으로 처리되었습니다.")
-    public String createVote(@PathVariable Long postId, @RequestBody VoteRequest voteRequest) {
+    public String createVote(@PathVariable Long postId, final @Valid @RequestBody VoteRequest voteRequest) {
         voteService.createVote(postId, voteRequest);
         return "투표가 정상적으로 처리되었습니다.";
     }
