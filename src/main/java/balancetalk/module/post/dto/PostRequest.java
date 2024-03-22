@@ -8,6 +8,7 @@ import balancetalk.module.post.domain.PostCategory;
 import balancetalk.module.post.domain.PostTag;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -24,13 +25,18 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class PostRequest {
 
+    @NotBlank
+    @Size(max = 50)
     @Schema(description = "게시글 제목", example = "게시글 제목")
     private String title;
 
+    @NotNull
+    @Future
     @JsonFormat(pattern = "yyyy/MM/dd HH:mm:ss")
     @Schema(description = "투료 종료 기한", example = "2024/12/25 15:30:00", type = "string")
     private LocalDateTime deadline;
 
+    @NotNull
     @Schema(description = "게시글 카테고리", example = "CASUAL")
     private PostCategory category;
 
