@@ -1,11 +1,14 @@
 package balancetalk.module.comment.dto;
 
 import balancetalk.module.comment.domain.Comment;
+import balancetalk.module.file.domain.File;
+import balancetalk.module.member.domain.Member;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 @Data
 @AllArgsConstructor
@@ -39,6 +42,9 @@ public class CommentResponse {
     @Schema(description = "댓글 수정 날짜")
     private LocalDateTime lastModifiedAt;
 
+    @Schema(description = "댓글 작성자 프로필 사진 경로", example = "https://balance-talk-static-files4df23447-2355-45h2-8783-7f6gd2ceb848_프로필.jpg")
+    private String profileImageUrl;
+  
     @Schema(description = "게시글 제목", example = "게시글 제목...")
     private String postTitle;
 
@@ -54,6 +60,13 @@ public class CommentResponse {
                 .myLike(myLike)
                 .createdAt(comment.getCreatedAt())
                 .lastModifiedAt(comment.getLastModifiedAt())
+                .profileImageUrl(getProfileImageUrl(comment.getMember()))
                 .build();
+    }
+
+    private static String getProfileImageUrl(Member member) {
+        return Optional.ofNullable(member.getProfilePhoto())
+                .map(File::getUrl)
+                .orElse(null);
     }
 }

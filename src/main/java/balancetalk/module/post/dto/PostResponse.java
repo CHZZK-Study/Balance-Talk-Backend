@@ -1,5 +1,6 @@
 package balancetalk.module.post.dto;
 
+import balancetalk.module.file.domain.File;
 import balancetalk.module.member.domain.Member;
 import balancetalk.module.post.domain.BalanceOption;
 import balancetalk.module.post.domain.Post;
@@ -68,7 +69,9 @@ public class PostResponse {
     @Schema(description = "게시글 작성자", example = "작성자 닉네임")
     private String createdBy;
 
-    // todo: ProfilePhoto 추가
+    @Schema(description = "게시글 작성자 프로필 사진 경로", example = "https://balance-talk-static-files4df23447-2355-45h2-8783-7f6gd2ceb848_프로필.jpg")
+    private String profileImageUrl;
+
     public static PostResponse fromEntity(Post post, Member member, boolean myLike, boolean myBookmark, boolean myVote) {
         return PostResponse.builder()
                 .id(post.getId())
@@ -86,6 +89,7 @@ public class PostResponse {
                 .totalVotesCount(getTotalVotes(post))
                 .createdAt(post.getCreatedAt())
                 .createdBy(post.getMember().getNickname())
+                .profileImageUrl(getProfileImageUrl(post.getMember()))
                 .build();
     }
 
@@ -100,6 +104,11 @@ public class PostResponse {
                 .map(BalanceOptionResponse::fromEntity)
                 .collect(Collectors.toList());
     }
+
+    private static String getProfileImageUrl(Member member) {
+        return Optional.ofNullable(member.getProfilePhoto())
+                .map(File::getUrl)
+                .orElse(null);
 
     private static Long getSelectedOptionId(Post post, Member member) {
         if (member == null) {
