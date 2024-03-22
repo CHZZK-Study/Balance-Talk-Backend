@@ -47,4 +47,5 @@ jobs:
           aws deploy create-deployment \
           --deployment-config-name CodeDeployDefault.AllAtOnce \
           --application-name balance-talk-code-deploy \
-          --deployment-group-name balance-talk-server,bundleType=zip,key=$GITHUB_SHA.zip
+          --deployment-group-name balance-talk-server \
+          --s3-location bucket=balance-talk-deploy,bundleType=zip,key=$GITHUB_SHA.zip
