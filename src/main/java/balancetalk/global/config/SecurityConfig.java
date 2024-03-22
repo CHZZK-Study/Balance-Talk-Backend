@@ -7,6 +7,7 @@ import balancetalk.global.jwt.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -24,6 +25,26 @@ public class SecurityConfig {
     private final JwtTokenProvider jwtTokenProvider;
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
     private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
+
+    private static final String[] PUBLIC_GET = {
+            // h2 database
+            "/h2-console/**",
+            // swagger
+            "/swagger-ui/**", "/v3/api-docs/**",
+            "/members/duplicate",
+            "/posts", "/posts/{postId}", "/posts/{postId}/vote", "/posts/{postId}/comments/**",
+            "/notices", "/notices/{noticeId}"
+    };
+
+    private static final String[] PUBLIC_POST = {
+            "/members/join", "/members/login",
+            "/email/request", "/email/verify",
+            "/posts/{postId}/vote", "/files/image/upload"
+    };
+
+    private static final String[] PUBLIC_PUT = {
+            "/posts/{postId}/vote"
+    };
 
     @Bean
     public BCryptPasswordEncoder passwordEncoder() {
@@ -48,7 +69,9 @@ public class SecurityConfig {
                 // 세션 사용 X (jwt 사용)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(request -> request
-                        .requestMatchers("/**", "/h2-console/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, PUBLIC_GET).permitAll()
+                        .requestMatchers(HttpMethod.POST, PUBLIC_POST).permitAll()
+                        .requestMatchers(HttpMethod.PUT, PUBLIC_PUT).permitAll()
                         .anyRequest().authenticated()
                 )
                 // jwtFilter 먼저 적용

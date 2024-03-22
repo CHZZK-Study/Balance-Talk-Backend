@@ -19,6 +19,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -87,6 +88,14 @@ class MemberServiceTest {
                 .password(joinRequest.getPassword())
                 .nickname("멤버1")
                 .build();
+
+        // SecurityContext에 인증된 사용자 설정
+        Authentication authentication = mock(Authentication.class);
+        SecurityContext securityContext = mock(SecurityContext.class);
+        lenient().when(securityContext.getAuthentication()).thenReturn(authentication);
+        SecurityContextHolder.setContext(securityContext);
+
+        lenient().when(authentication.getName()).thenReturn(member.getEmail());
     }
 
     @AfterEach
@@ -121,7 +130,7 @@ class MemberServiceTest {
         // given
         when(memberRepository.findByEmail(loginRequest.getEmail())).thenReturn(Optional.ofNullable(member));
         when(passwordEncoder.matches(eq(loginRequest.getPassword()), eq(joinRequest.getPassword()))).thenReturn(true);
-        when(jwtTokenProvider.reissueToken(any())).thenReturn(new TokenDto(accessToken, refreshToken));
+        when(jwtTokenProvider.reissueToken(any() , anyLong())).thenReturn(new TokenDto(accessToken, refreshToken));
 
         // when
         TokenDto result = memberService.login(loginRequest);
@@ -137,7 +146,7 @@ class MemberServiceTest {
         loginRequest.setPassword("wrongPassword!");
         assertThatThrownBy(() -> memberService.login(loginRequest))
                 .isInstanceOf(BalanceTalkException.class)
-                .hasMessage("이메일 또는 비밀번호가 잘못되었습니다.");
+                .hasMessage(ErrorCode.MISMATCHED_EMAIL_OR_PASSWORD.getMessage());
     }
 
     @Test
@@ -146,7 +155,7 @@ class MemberServiceTest {
         loginRequest.setEmail("wrongEmail@gmail.com");
         assertThatThrownBy(() -> memberService.login(loginRequest))
                 .isInstanceOf(BalanceTalkException.class)
-                .hasMessage("이메일 또는 비밀번호가 잘못되었습니다.");
+                .hasMessage(ErrorCode.MISMATCHED_EMAIL_OR_PASSWORD.getMessage());
     }
 
     @Test
@@ -169,7 +178,7 @@ class MemberServiceTest {
         when(memberRepository.findById(2L)).thenReturn(Optional.empty());
         assertThatThrownBy(() -> memberService.findById(2L))
                 .isInstanceOf(BalanceTalkException.class)
-                .hasMessage("존재하지 않는 회원입니다.");
+                .hasMessage(ErrorCode.NOT_FOUND_MEMBER.getMessage());
     }
 
     @Test
@@ -202,7 +211,7 @@ class MemberServiceTest {
 
         // when
         joinRequest.setNickname(newNickname);
-        member = joinRequest.toEntity();
+        member = joinRequest.toEntity(null);
         memberService.updateNickname(newNickname, request);
 
         // then
@@ -221,7 +230,7 @@ class MemberServiceTest {
         // when & then
         assertThatThrownBy(() -> memberService.updateNickname(newNickname, request))
                 .isInstanceOf(BalanceTalkException.class)
-                .hasMessage("존재하지 않는 회원입니다.");
+                .hasMessage(ErrorCode.NOT_FOUND_MEMBER.getMessage());
     }
 
     @Test
@@ -236,7 +245,7 @@ class MemberServiceTest {
 
         // when
         joinRequest.setPassword(newPassword);
-        member = joinRequest.toEntity();
+        member = joinRequest.toEntity(null);
         memberService.updatePassword(newPassword, request);
 
         // then
@@ -256,7 +265,7 @@ class MemberServiceTest {
         // when & then
         assertThatThrownBy(() -> memberService.updatePassword(newPassword, request))
                 .isInstanceOf(BalanceTalkException.class)
-                .hasMessage("존재하지 않는 회원입니다.");
+                .hasMessage(ErrorCode.NOT_FOUND_MEMBER.getMessage());
     }
 
     @Test
@@ -292,7 +301,7 @@ class MemberServiceTest {
         // when & then
         assertThatThrownBy(() -> memberService.delete(loginRequest, request))
                 .isInstanceOf(BalanceTalkException.class)
-                .hasMessage("사용자 탈퇴 권한이 없습니다.");
+                .hasMessage(ErrorCode.FORBIDDEN_MEMBER_DELETE.getMessage());
     }
 
     @Test
@@ -308,22 +317,16 @@ class MemberServiceTest {
         // when
         assertThatThrownBy(() -> memberService.delete(loginRequest, request))
                 .isInstanceOf(BalanceTalkException.class)
-                .hasMessage("이메일 또는 비밀번호가 잘못되었습니다.");
+                .hasMessage(ErrorCode.MISMATCHED_EMAIL_OR_PASSWORD.getMessage());
     }
 
     @Test
     @DisplayName("로그아웃 - 성공")
     void logoutMemberSuccess() {
-        // given, 로그인 상태
-        when(userDetails.getUsername()).thenReturn(member.getEmail());
-        when(authentication.getPrincipal()).thenReturn(userDetails);
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-
-        when(redisService.getValues(member.getEmail())).thenReturn(refreshToken);
-
+        // given,
+        lenient().when(redisService.getValues(member.getEmail())).thenReturn(refreshToken);
         // when
         memberService.logout();
-
         // then
         verify(redisService).deleteValues(member.getEmail());
     }
@@ -331,17 +334,13 @@ class MemberServiceTest {
     @Test
     @DisplayName("로그아웃 실패 - redis에 저장된 정보가 없음")
     void logoutFailure_RedisNull(){
-        // given, 로그인 상태
-        when(userDetails.getUsername()).thenReturn(member.getEmail());
-        when(authentication.getPrincipal()).thenReturn(userDetails);
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-
-        when(redisService.getValues(anyString())).thenReturn(null);
+        // given
+        when(SecurityContextHolder.getContext().getAuthentication()).thenReturn(null);
 
         // when & then
         assertThatThrownBy(() -> memberService.logout())
                 .isInstanceOf(BalanceTalkException.class)
-                .hasMessage("로그아웃을 위해서는 인증이 필요합니다.");
+                .hasMessage(ErrorCode.AUTHENTICATION_REQUIRED.getMessage());
     }
 
     @Test

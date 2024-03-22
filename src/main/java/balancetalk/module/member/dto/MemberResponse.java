@@ -1,5 +1,6 @@
 package balancetalk.module.member.dto;
 
+import balancetalk.module.file.domain.File;
 import balancetalk.module.member.domain.Member;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
@@ -7,6 +8,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 @Data
 @Builder
@@ -36,10 +38,14 @@ public class MemberResponse {
     private int level;
 
     public static MemberResponse fromEntity(Member member) {
+        String profilePhotoName = Optional.ofNullable(member.getProfilePhoto())
+                .map(File::getStoredName)
+                .orElse(null);
+
         return MemberResponse.builder()
                 .id(member.getId())
                 .nickname(member.getNickname())
-                //.profilePhoto(file.getPath())
+                .profilePhoto(profilePhotoName)
                 .createdAt(member.getCreatedAt())
                 .postsCount(member.getPostCount())
                 .totalPostLike(member.getPostLikes())

@@ -56,4 +56,17 @@ public class NoticeController {
         return noticeService.findNoticeById(noticeId);
     }
 
+    @PutMapping("/{noticeId}")
+    @ResponseStatus(HttpStatus.OK)
+    @Operation(summary = "공지사항 수정", description = "기존 공지사항을 수정한다.")
+    public NoticeResponse updateNotice(@PathVariable Long noticeId, @Valid @RequestBody NoticeRequest noticeRequest) {
+        return noticeService.updateNotice(noticeId, noticeRequest);
+    }
+
+    @DeleteMapping("/{noticeId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @Operation(summary = "공지사항 삭제", description = "특정 공지사항을 삭제한다.")
+    public void deleteNotice(@PathVariable Long noticeId) {
+        noticeService.deleteNotice(noticeId);
+    }
 }

@@ -10,6 +10,8 @@ import balancetalk.module.post.dto.BalanceOptionDto;
 import balancetalk.module.post.dto.PostRequest;
 import balancetalk.module.post.dto.PostResponse;
 import balancetalk.module.post.dto.PostTagDto;
+import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -17,20 +19,24 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+
+import static org.assertj.core.api.Assertions.*;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class PostServiceTest {
@@ -63,12 +69,44 @@ class PostServiceTest {
     File file = File.builder()
             .storedName("e90a6177-89a1-45b3-91d3-cb39e9bec407_미어캣.jpg")
             .build();
+
     BalanceOption balanceOption = BalanceOption.builder()
             .title("option1")
             .description("description1")
             .file(file)
             .build();
 
+    Tag tag1 = Tag.builder()
+            .name("태그1")
+            .build();
+    Tag tag2 = Tag.builder()
+            .name("태그2")
+            .build();
+    PostTag postTag1 = PostTag.builder()
+            .tag(tag1)
+            .build();
+    PostTag postTag2 = PostTag.builder()
+            .tag(tag2)
+            .build();
+    Post post1 = Post.builder()
+            .id(1L)
+            .title("고양이")
+            .category(PostCategory.CASUAL)
+            .member(member)
+            .options(List.of(balanceOption))
+            .views(0L)
+            .postTags(List.of(postTag1, postTag2))
+            .build();
+
+    Post post2 = Post.builder()
+            .id(2L)
+            .title("미어캣")
+            .category(PostCategory.DISCUSSION)
+            .member(member)
+            .options(List.of(balanceOption))
+            .views(23L)
+            .postTags(List.of(postTag1))
+            .build();
     @BeforeEach
     void setUp() {
         // SecurityContext에 인증된 사용자 설정
@@ -76,23 +114,61 @@ class PostServiceTest {
         SecurityContext securityContext = mock(SecurityContext.class);
         lenient().when(securityContext.getAuthentication()).thenReturn(authentication);
         SecurityContextHolder.setContext(securityContext);
+    }
 
-
+    @AfterEach
+    void clear() {
+        SecurityContextHolder.clearContext();
     }
 
     @Test
-    @DisplayName("게시글 작성 성공")
-    void postSaveSuccess() {
+    @DisplayName("게시글 제목으로 검색")
+    void searchPostsByTitle() {
         // given
-        when(memberRepository.findById(any())).thenReturn(Optional.of(member));
-        when(redisService.getValues(member.getEmail())).thenReturn(accessToken);
+        String keyword = "미어";
+        when(postRepository.findByTitleContaining(keyword)).thenReturn(List.of(post2));
+        lenient().when(memberRepository.findByEmail(any())).thenReturn(Optional.ofNullable(member));
 
-        List<File> images = new ArrayList<>();
-        images.add(file);
+        // when
+        List<PostResponse> result = postService.findPostsByTitle(null, keyword);
 
-
-
+        // then
+        assertEquals(1, result.size());
+        assertThat(result.get(0).getTitle()).contains(keyword);
     }
+
+    @Test
+    @DisplayName("게시글 태그로 검색")
+    void searchPostsByTag() {
+        // given
+        String tagName = "태그1";
+        when(postRepository.findByPostTagsContaining(tagName)).thenReturn(List.of(post1));
+        lenient().when(memberRepository.findByEmail(any())).thenReturn(Optional.ofNullable(member));
+
+        // when
+        List<PostResponse> result = postService.findPostsByTag(null, tagName);
+
+        // then
+        assertEquals(1, result.size());
+        List<PostTagDto> tags = result.get(0).getPostTags();
+        assertThat(tags)
+                .extracting(PostTagDto::getTagName)
+                .contains(tagName);
+    }
+//
+//    @Test
+//    @DisplayName("게시글 작성 성공")
+//    void postSaveSuccess() {
+//        // given
+//        when(memberRepository.findById(any())).thenReturn(Optional.of(member));
+//        when(redisService.getValues(member.getEmail())).thenReturn(accessToken);
+//
+//        List<File> images = new ArrayList<>();
+//        images.add(file);
+//
+//
+//
+//    }
 //
 //    @Test
 //    @DisplayName("모든 게시글 조회")
