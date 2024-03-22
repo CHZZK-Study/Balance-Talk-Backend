@@ -58,6 +58,8 @@ public class MyPageController {
         return commentService.findAllByCurrentMember(pageable);
     }
 
+    @ResponseStatus(HttpStatus.OK)
+    @Operation(summary = "투표한 게시글 조회", description = "해당 회원이 투표한 모든 글을 조회한다.")
     @GetMapping("/history/votedPosts")
     public Page<VotedPostResponse> findAllVotedPosts(
             @RequestParam(value = "page", defaultValue = "1") int page,
@@ -69,6 +71,8 @@ public class MyPageController {
         return postService.findAllVotedByCurrentMember(pageable);
     }
 
+    @ResponseStatus(HttpStatus.OK)
+    @Operation(summary = "북마크한 게시글 조회", description = "해당 회원이 북마크한 모든 글을 조회한다.")
     @GetMapping("/history/bookmarks")
     public Page<BookmarkedPostResponse> findAllBookmarkedPosts(
             @RequestParam(value = "page", defaultValue = "1") int page,
