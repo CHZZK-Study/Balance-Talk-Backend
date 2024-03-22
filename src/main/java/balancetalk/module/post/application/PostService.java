@@ -7,6 +7,7 @@ import static balancetalk.global.utils.SecurityUtils.getCurrentMember;
 
 import balancetalk.global.exception.BalanceTalkException;
 import balancetalk.global.redis.application.RedisService;
+import balancetalk.module.bookmark.domain.BookmarkRepository;
 import balancetalk.module.file.domain.File;
 import balancetalk.module.file.domain.FileRepository;
 import balancetalk.module.member.domain.Member;
@@ -25,6 +26,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
 
 @Slf4j
@@ -38,6 +40,8 @@ public class PostService {
     private final MemberRepository memberRepository;
     private final PostLikeRepository postLikeRepository;
     private final FileRepository fileRepository;
+    private final VoteRepository voteRepository;
+    private final BookmarkRepository bookmarkRepository;
     private final RedisService redisService;
 
     public PostResponse save(final PostRequest request) {
@@ -99,15 +103,29 @@ public class PostService {
     }
 
     @Transactional(readOnly = true)
-    public List<PostResponse> findPostsByCurrentMember(int page, int size) {
+    public Page<PostResponse> findAllByCurrentMember(Pageable pageable) {
         Member currentMember = getCurrentMember(memberRepository);
-        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
-        Page<Post> postsPage = postRepository.findByMemberEmail(currentMember.getEmail(), pageable);
 
-        return postsPage.stream()
-                .map(post -> PostResponse.fromEntity(post, false, false, false))
-                .collect(Collectors.toList());
+        return postRepository.findAllByMemberId(currentMember.getId(), pageable)
+                .map(post -> PostResponse.fromEntity(post, currentMember.hasLiked(post), currentMember.hasBookmarked(post)));
     }
+
+    @Transactional(readOnly = true)
+    public Page<VotedPostResponse> findAllVotedByCurrentMember(Pageable pageable) {
+        Member currentMember = getCurrentMember(memberRepository);
+
+        return voteRepository.findAllByMemberId(currentMember.getId(), pageable)
+                .map(vote -> VotedPostResponse.fromEntity(vote, vote.getBalanceOption().getPost()));
+    }
+
+    @Transactional(readOnly = true)
+    public Page<BookmarkedPostResponse> findAllBookmarkedByCurrentMember(Pageable pageable) {
+        Member currentMember = getCurrentMember(memberRepository);
+
+        return bookmarkRepository.findAllByMemberId(currentMember.getId(), pageable)
+                .map(BookmarkedPostResponse::fromEntity);
+    }
+
 
     @Transactional
     public void deleteById(Long postId) {
