@@ -21,8 +21,8 @@ public class MailController {
     @ResponseStatus(HttpStatus.OK)
     @PostMapping("/request")
     @Operation(summary = "인증 번호 발송", description = "해당 이메일 주소로 인증 번호를 발송한다.")
-    public String sendMail(@Valid @RequestBody EmailRequest request) {
-        mailService.sendMail(request);
+    public String sendAuthenticationNumber(@Valid @RequestBody EmailRequest request) {
+        mailService.sendAuthenticationNumber(request);
         return "인증 번호가 발송되었습니다.";
     }
 
@@ -32,5 +32,13 @@ public class MailController {
     public String verifyCode(@Valid @RequestBody EmailVerification request) {
         mailService.verifyCode(request);
         return "인증이 완료 되었습니다.";
+    }
+
+    @ResponseStatus(HttpStatus.OK)
+    @GetMapping("/password")
+    @Operation(summary = "비밀 번호 찾기", description = "가입된 회원 이메일로 임시 비밀번호를 발송한다.")
+    public String sendTempPassword(@Valid @RequestBody EmailRequest request) {
+        mailService.sendTempPassword(request);
+        return "임시 비밀번호가 발송되었습니다.";
     }
 }

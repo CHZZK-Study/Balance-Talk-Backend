@@ -4,6 +4,8 @@ import balancetalk.global.exception.BalanceTalkException;
 import balancetalk.global.exception.ErrorCode;
 import balancetalk.global.jwt.JwtTokenProvider;
 import balancetalk.global.redis.application.RedisService;
+import balancetalk.module.file.domain.File;
+import balancetalk.module.file.domain.FileRepository;
 import balancetalk.module.member.domain.Member;
 import balancetalk.module.member.domain.MemberRepository;
 import balancetalk.module.member.dto.*;
@@ -11,16 +13,16 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static balancetalk.global.exception.ErrorCode.*;
 
 @Slf4j
 @Service
@@ -30,15 +32,29 @@ public class MemberService {
     private final JwtTokenProvider jwtTokenProvider;
     private final AuthenticationManager authenticationManager;
     private final MemberRepository memberRepository;
+    private final FileRepository fileRepository;
     private final PasswordEncoder passwordEncoder;
     private final RedisService redisService;
 
     @Transactional
     public Long join(final JoinRequest joinRequest) {
+        if (memberRepository.existsByEmail(joinRequest.getEmail())) {
+            throw new BalanceTalkException(ALREADY_REGISTERED_EMAIL);
+        }
+        if (memberRepository.existsByNickname(joinRequest.getNickname())) {
+            throw new BalanceTalkException(ALREADY_REGISTERED_NICKNAME);
+        }
         joinRequest.setPassword(passwordEncoder.encode(joinRequest.getPassword()));
-        Member member = joinRequest.toEntity();
+        File profilePhoto = null;
+        if (joinRequest.getProfilePhoto() != null && !joinRequest.getProfilePhoto().isEmpty()) {
+            profilePhoto = fileRepository.findByStoredName(joinRequest.getProfilePhoto())
+                    .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_FILE));
+        }
+
+        Member member = joinRequest.toEntity(profilePhoto);
         return memberRepository.save(member).getId();
     }
+
 
     @Transactional
     public TokenDto login(final LoginRequest loginRequest) {
@@ -51,8 +67,8 @@ public class MemberService {
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword())
         );
-        String refreshToken = jwtTokenProvider.createRefreshToken(authentication);
-        return jwtTokenProvider.reissueToken(refreshToken); // 만료되었다면, 재발급
+        String refreshToken = jwtTokenProvider.createRefreshToken(authentication, member.getId());
+        return jwtTokenProvider.reissueToken(refreshToken, member.getId()); // 만료되었다면, 재발급
     }
 
     @Transactional(readOnly = true)
@@ -73,12 +89,18 @@ public class MemberService {
     @Transactional
     public void updateNickname(final String newNickname, HttpServletRequest request) {
         Member member = extractMember(request);
+        if (member.getNickname().equals(newNickname)) {
+            throw new BalanceTalkException(ErrorCode.SAME_NICKNAME);
+        }
         member.updateNickname(newNickname);
     }
 
     @Transactional
     public void updatePassword(final String newPassword, HttpServletRequest request) {
         Member member = extractMember(request);
+        if (passwordEncoder.matches(newPassword, member.getPassword())){
+            throw new BalanceTalkException(ErrorCode.SAME_PASSWORD);
+        }
         member.updatePassword(passwordEncoder.encode(newPassword));
     }
 
@@ -97,14 +119,12 @@ public class MemberService {
 
     @Transactional
     public void logout(){
-        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        if (principal instanceof UserDetails) {
-            String username = ((UserDetails) principal).getUsername();
-            if (redisService.getValues(username) == null) {
-                throw new BalanceTalkException(ErrorCode.UNAUTHORIZED_LOGOUT);
-            }
-            redisService.deleteValues(username);
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null) {
+            throw new BalanceTalkException(ErrorCode.AUTHENTICATION_REQUIRED);
         }
+        String username = authentication.getName();
+        redisService.deleteValues(username);
     }
 
     public void verifyNickname(String nickname) {

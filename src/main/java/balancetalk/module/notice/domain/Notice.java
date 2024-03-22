@@ -33,4 +33,12 @@ public class Notice extends BaseTimeEntity {
 
     @OneToMany(mappedBy = "notice")
     private List<File> files = new ArrayList<>();
+
+    public void updateTitle(String title) {
+        this.title = title;
+    }
+
+    public void updateContent(String content) {
+        this.content = content;
+    }
 }
