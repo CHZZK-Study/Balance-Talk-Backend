@@ -23,6 +23,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.Optional;
@@ -78,6 +79,14 @@ public class CommentService {
                 return CommentResponse.fromEntity(comment, balanceOptionId, member.hasLikedComment(comment));
             }
         });
+    }
+
+    @Transactional(readOnly = true)
+    public Page<CommentResponse> findAllByCurrentMember(Pageable pageable) {
+        Member currentMember = getCurrentMember(memberRepository);
+
+        return commentRepository.findAllByMemberEmail(currentMember.getEmail(), pageable)
+                .map(comment -> CommentResponse.fromEntity(comment, null));
     }
 
     public Comment updateComment(Long commentId, Long postId, String content) {

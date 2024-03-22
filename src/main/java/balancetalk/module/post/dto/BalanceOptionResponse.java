@@ -3,7 +3,6 @@ package balancetalk.module.post.dto;
 import balancetalk.module.file.domain.File;
 import balancetalk.module.post.domain.BalanceOption;
 import balancetalk.module.post.domain.BalanceOption.BalanceOptionBuilder;
-import balancetalk.module.post.dto.BalanceOptionRequest.BalanceOptionRequestBuilder;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
