@@ -1,5 +1,3 @@
-postService
-
 package balancetalk.module.post.application;
 
 import static balancetalk.global.exception.ErrorCode.*;
@@ -15,8 +13,11 @@ import balancetalk.module.member.domain.MemberRepository;
 import balancetalk.module.member.domain.Role;
 import balancetalk.module.post.domain.*;
 import balancetalk.module.post.dto.BalanceOptionRequest;
+import balancetalk.module.post.dto.BookmarkedPostResponse;
 import balancetalk.module.post.dto.PostRequest;
 import balancetalk.module.post.dto.PostResponse;
+import balancetalk.module.post.dto.VotedPostResponse;
+import balancetalk.module.vote.domain.VoteRepository;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -107,7 +108,8 @@ public class PostService {
         Member currentMember = getCurrentMember(memberRepository);
 
         return postRepository.findAllByMemberId(currentMember.getId(), pageable)
-                .map(post -> PostResponse.fromEntity(post, currentMember.hasLiked(post), currentMember.hasBookmarked(post)));
+                .map(post -> PostResponse.fromEntity(post, currentMember.hasLiked(post),
+                        currentMember.hasBookmarked(post), currentMember.hasVoted(post)));
     }
 
     @Transactional(readOnly = true)
