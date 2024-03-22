@@ -114,7 +114,7 @@ public class PostService {
         Member currentMember = getCurrentMember(memberRepository);
 
         return postRepository.findAllByMemberId(currentMember.getId(), pageable)
-                .map(post -> PostResponse.fromEntity(post, currentMember.hasLiked(post),
+                .map(post -> PostResponse.fromEntity(post, currentMember, currentMember.hasLiked(post),
                         currentMember.hasBookmarked(post), currentMember.hasVoted(post)));
     }
 
@@ -202,12 +202,13 @@ public class PostService {
         List<Post> posts = postRepository.findByTitleContaining(keyword);
         if (token == null) {
             return posts.stream()
-                    .map(post -> PostResponse.fromEntity(post, false, false, false))
+                    .map(post -> PostResponse.fromEntity(post, null, false, false, false))
                     .collect(Collectors.toList());
         }
         Member member = getCurrentMember(memberRepository);
         return posts.stream()
                 .map(post -> PostResponse.fromEntity(post,
+                        member,
                         member.hasLiked(post),
                         member.hasBookmarked(post),
                         member.hasVoted(post)))
@@ -219,12 +220,13 @@ public class PostService {
         List<Post> posts = postRepository.findByPostTagsContaining(tagName);
         if (token == null) {
             return posts.stream()
-                    .map(post -> PostResponse.fromEntity(post, false, false, false))
+                    .map(post -> PostResponse.fromEntity(post, null, false, false, false))
                     .collect(Collectors.toList());
         }
         Member member = getCurrentMember(memberRepository);
         return posts.stream()
                 .map(post -> PostResponse.fromEntity(post,
+                        member,
                         member.hasLiked(post),
                         member.hasBookmarked(post),
                         member.hasVoted(post)))

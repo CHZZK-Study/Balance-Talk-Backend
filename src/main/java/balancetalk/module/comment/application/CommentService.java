@@ -86,7 +86,7 @@ public class CommentService {
         Member currentMember = getCurrentMember(memberRepository);
 
         return commentRepository.findAllByMemberEmail(currentMember.getEmail(), pageable)
-                .map(comment -> CommentResponse.fromEntity(comment, null));
+                .map(comment -> CommentResponse.fromEntity(comment, null, false));
     }
 
     public Comment updateComment(Long commentId, Long postId, String content) {

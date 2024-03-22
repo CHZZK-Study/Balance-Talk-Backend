@@ -6,8 +6,6 @@ import balancetalk.module.file.domain.FileRepository;
 import balancetalk.module.member.domain.Member;
 import balancetalk.module.member.domain.MemberRepository;
 import balancetalk.module.post.domain.*;
-import balancetalk.module.post.dto.BalanceOptionDto;
-import balancetalk.module.post.dto.PostRequest;
 import balancetalk.module.post.dto.PostResponse;
 import balancetalk.module.post.dto.PostTagDto;
 import org.assertj.core.api.Assertions;
@@ -37,6 +35,10 @@ import static org.assertj.core.api.Assertions.*;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class PostServiceTest {

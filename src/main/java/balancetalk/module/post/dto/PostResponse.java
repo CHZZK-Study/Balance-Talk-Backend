@@ -72,8 +72,9 @@ public class PostResponse {
     @Schema(description = "게시글 작성자 프로필 사진 경로", example = "https://balance-talk-static-files4df23447-2355-45h2-8783-7f6gd2ceb848_프로필.jpg")
     private String profileImageUrl;
 
-    public static PostResponse fromEntity(Post post, Member member, boolean myLike, boolean myBookmark, boolean myVote) {
-      return PostResponse.builder()
+    public static PostResponse fromEntity(Post post, Member member, boolean myLike, boolean myBookmark,
+                                          boolean myVote) {
+        return PostResponse.builder()
                 .id(post.getId())
                 .title(post.getTitle())
                 .deadline(post.getDeadline())
@@ -109,6 +110,7 @@ public class PostResponse {
         return Optional.ofNullable(member.getProfilePhoto())
                 .map(File::getUrl)
                 .orElse(null);
+    }
 
     private static Long getSelectedOptionId(Post post, Member member) {
         if (member == null) {
@@ -123,12 +125,13 @@ public class PostResponse {
                 .findFirst()
                 .map(BalanceOption::getId)
                 .orElse(null);
-  
-    private static int getTotalVotes(Post post) {
-        return Optional.ofNullable(post.getOptions())
-                .map(options -> options.stream()
-                        .mapToInt(option -> Optional.ofNullable(option.getVotes()).map(List::size).orElse(0))
-                        .sum())
-                .orElse(0);
+    }
+
+        private static int getTotalVotes (Post post){
+            return Optional.ofNullable(post.getOptions())
+                    .map(options -> options.stream()
+                            .mapToInt(option -> Optional.ofNullable(option.getVotes()).map(List::size).orElse(0))
+                            .sum())
+                    .orElse(0);
     }
 }
