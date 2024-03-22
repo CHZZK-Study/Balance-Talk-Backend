@@ -23,6 +23,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.Optional;
@@ -78,6 +79,18 @@ public class CommentService {
                 return CommentResponse.fromEntity(comment, balanceOptionId, member.hasLikedComment(comment));
             }
         });
+    }
+
+    @Transactional(readOnly = true)
+    public List<CommentResponse> findAllByCurrentMember(int page, int size) {
+        Member currentMember = getCurrentMember(memberRepository);
+        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
+
+        Page<Comment> commentsPage = commentRepository.findByMemberEmail(currentMember.getEmail(), pageable);
+
+        return commentsPage.getContent().stream()
+                .map(comment -> CommentResponse.fromEntity(comment, null, false)) // balanceOptionId가 필요 없는 응답 제공
+                .toList();
     }
 
     public Comment updateComment(Long commentId, Long postId, String content) {

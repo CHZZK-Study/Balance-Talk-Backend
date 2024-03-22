@@ -1,3 +1,5 @@
+postService
+
 package balancetalk.module.post.application;
 
 import static balancetalk.global.exception.ErrorCode.*;
@@ -20,9 +22,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -92,6 +96,17 @@ public class PostService {
              post.increaseViews();
         }
         return PostResponse.fromEntity(post, member.hasLiked(post), member.hasBookmarked(post), member.hasVoted(post));
+    }
+
+    @Transactional(readOnly = true)
+    public List<PostResponse> findPostsByCurrentMember(int page, int size) {
+        Member currentMember = getCurrentMember(memberRepository);
+        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
+        Page<Post> postsPage = postRepository.findByMemberEmail(currentMember.getEmail(), pageable);
+
+        return postsPage.stream()
+                .map(post -> PostResponse.fromEntity(post, false, false, false))
+                .collect(Collectors.toList());
     }
 
     @Transactional
