@@ -1,6 +1,7 @@
 #!/bin/bash
-DEPLOY_LOG_PATH="$PROJECT_PATH/log/deploy.log"
-DEPLOY_ERR_LOG_PATH="$PROJECT_PATH/log/deploy_err.log"
+DEPLOY_LOG_PATH="$PROJECT_PATH/logs/deploy.log"
+DEPLOY_ERR_LOG_PATH="$PROJECT_PATH/logs/deploy_err.log"
+APPLICATION_LOG_PATH="$PROJECT_PATH/logs/application.log"
 PROJECT_PATH="/home/ubuntu/balance_talk"
 JAR_PATH="$PROJECT_PATH/build/libs/*.jar"
 BUILD_JAR=$(ls $JAR_PATH)
