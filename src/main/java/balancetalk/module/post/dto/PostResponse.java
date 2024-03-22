@@ -73,7 +73,7 @@ public class PostResponse {
     private String profileImageUrl;
 
     public static PostResponse fromEntity(Post post, Member member, boolean myLike, boolean myBookmark, boolean myVote) {
-        return PostResponse.builder()
+      return PostResponse.builder()
                 .id(post.getId())
                 .title(post.getTitle())
                 .deadline(post.getDeadline())
