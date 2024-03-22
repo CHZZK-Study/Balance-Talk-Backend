@@ -2,6 +2,7 @@ package balancetalk.module.post.dto;
 
 import balancetalk.module.file.domain.File;
 import balancetalk.module.post.domain.BalanceOption;
+import balancetalk.module.post.domain.BalanceOption.BalanceOptionBuilder;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -13,10 +14,7 @@ import org.springframework.lang.Nullable;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class BalanceOptionDto {
-
-    @Schema(description = "선택지 id", example = "1")
-    private Long balanceOptionId;
+public class BalanceOptionResponse {
 
     @Schema(description = "선택지 제목", example = "선택지 제목1")
     private String title;
@@ -24,11 +22,12 @@ public class BalanceOptionDto {
     @Schema(description = "선택지 내용", example = "선택지 내용1")
     private String description;
 
-    @Schema(description = "DB에 저장되는 이미지 이름", example = "4df23447-2355-45h2-8783-7f6gd2ceb848_고양이.jpg")
-    private String storedFileName;
+    @Schema(description = "이미지 URL",
+            example = "https://balance-talk-static-files4df23447-2355-45h2-8783-7f6gd2ceb848_고양이.jpg")
+    private String imageUrl;
 
     public BalanceOption toEntity(@Nullable File image) {
-        BalanceOption.BalanceOptionBuilder builder = BalanceOption.builder()
+        BalanceOptionBuilder builder = BalanceOption.builder()
                 .title(title)
                 .description(description);
         if (image != null) {
@@ -37,13 +36,12 @@ public class BalanceOptionDto {
         return builder.build();
     }
 
-    public static BalanceOptionDto fromEntity(BalanceOption balanceOption) {
-        BalanceOptionDtoBuilder builder = BalanceOptionDto.builder()
-                .balanceOptionId(balanceOption.getId())
+    public static BalanceOptionResponse fromEntity(BalanceOption balanceOption) {
+        BalanceOptionResponseBuilder builder = BalanceOptionResponse.builder()
                 .title(balanceOption.getTitle())
                 .description(balanceOption.getDescription());
         if (balanceOption.getFile() != null) {
-            builder.storedFileName(balanceOption.getFile().getStoredName());
+            builder.imageUrl(balanceOption.getFile().getUrl());
         }
         return builder.build();
     }

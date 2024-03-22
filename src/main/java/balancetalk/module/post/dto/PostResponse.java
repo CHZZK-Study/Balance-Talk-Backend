@@ -49,12 +49,17 @@ public class PostResponse {
     @Schema(description = "게시글 카테고리", example = "CASUAL")
     private PostCategory category;
 
-    @Schema(description = "선택지 옵션 리스트", example = "[{\"title\": \"선택지 제목1\", \"description\": \"선택지 내용1\" , \"storedFileName\": null}," +
-            "{\"title\": \"선택지 제목2\", \"description\": \"선택지 내용2\", \"storedFileName\": null}]")
-    private List<BalanceOptionDto> balanceOptions;
+    @Schema(description = "선택지 옵션 리스트", example =
+            "[{\"title\": \"선택지 제목1\", \"description\": \"선택지 내용1\" , \"storedFileName\": null}," +
+                    "{\"title\": \"선택지 제목2\", \"description\": \"선택지 내용2\", "
+                    + "\"imageUrl\": https://balance-talk-static-files/4df23447-2355-45h2-8783-7f6gd2ceb848_고양이.jpg}]")
+    private List<BalanceOptionResponse> balanceOptions;
 
     @Schema(description = "태그 리스트", example = "[\"태그1\", \"태그2\", \"태그3\"]")
     private List<PostTagDto> postTags;
+
+    @Schema(description = "전체 투표 수", example = "15")
+    private int totalVotesCount;
 
     @JsonFormat(pattern = "yyyy/MM/dd HH:mm:ss")
     @Schema(description = "게시글 작성일", example = "2023-12-25T15:30:00")
@@ -78,6 +83,7 @@ public class PostResponse {
                 .category(post.getCategory())
                 .balanceOptions(getBalanceOptions(post))
                 .postTags(getPostTags(post))
+                .totalVotesCount(getTotalVotes(post))
                 .createdAt(post.getCreatedAt())
                 .createdBy(post.getMember().getNickname())
                 .build();
@@ -89,9 +95,9 @@ public class PostResponse {
                 .collect(Collectors.toList());
     }
 
-    private static List<BalanceOptionDto> getBalanceOptions(Post post) {
+    private static List<BalanceOptionResponse> getBalanceOptions(Post post) {
         return post.getOptions().stream()
-                .map(BalanceOptionDto::fromEntity)
+                .map(BalanceOptionResponse::fromEntity)
                 .collect(Collectors.toList());
     }
 
@@ -108,5 +114,12 @@ public class PostResponse {
                 .findFirst()
                 .map(BalanceOption::getId)
                 .orElse(null);
+  
+    private static int getTotalVotes(Post post) {
+        return Optional.ofNullable(post.getOptions())
+                .map(options -> options.stream()
+                        .mapToInt(option -> Optional.ofNullable(option.getVotes()).map(List::size).orElse(0))
+                        .sum())
+                .orElse(0);
     }
 }

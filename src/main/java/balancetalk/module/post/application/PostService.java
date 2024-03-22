@@ -5,23 +5,29 @@ import static balancetalk.global.utils.SecurityUtils.getCurrentMember;
 
 import balancetalk.global.exception.BalanceTalkException;
 import balancetalk.global.redis.application.RedisService;
+import balancetalk.module.bookmark.domain.BookmarkRepository;
 import balancetalk.module.file.domain.File;
 import balancetalk.module.file.domain.FileRepository;
 import balancetalk.module.member.domain.Member;
 import balancetalk.module.member.domain.MemberRepository;
 import balancetalk.module.member.domain.Role;
 import balancetalk.module.post.domain.*;
-import balancetalk.module.post.dto.BalanceOptionDto;
+import balancetalk.module.post.dto.BalanceOptionRequest;
+import balancetalk.module.post.dto.BookmarkedPostResponse;
 import balancetalk.module.post.dto.PostRequest;
 import balancetalk.module.post.dto.PostResponse;
+import balancetalk.module.post.dto.VotedPostResponse;
+import balancetalk.module.vote.domain.VoteRepository;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
 
 @Slf4j
@@ -35,6 +41,8 @@ public class PostService {
     private final MemberRepository memberRepository;
     private final PostLikeRepository postLikeRepository;
     private final FileRepository fileRepository;
+    private final VoteRepository voteRepository;
+    private final BookmarkRepository bookmarkRepository;
     private final RedisService redisService;
 
     public PostResponse save(final PostRequest request) {
@@ -42,6 +50,7 @@ public class PostService {
         if (redisService.getValues(writer.getEmail()) == null) {
             throw new BalanceTalkException(FORBIDDEN_POST_CREATE);
         }
+
         List<File> images = getImages(request);
         Post post = request.toEntity(writer, images);
 
@@ -57,11 +66,11 @@ public class PostService {
         return PostResponse.fromEntity(postRepository.save(post), writer, false, false, false);
     }
 
-    private List<File> getImages(PostRequest postRequestDto) {
-        List<BalanceOptionDto> balanceOptions = postRequestDto.getBalanceOptions();
+    private List<File> getImages(PostRequest postRequest) {
+        List<BalanceOptionRequest> balanceOptions = postRequest.getBalanceOptions();
         return balanceOptions.stream()
-                .filter(optionDto -> optionDto.getStoredFileName() != null && !optionDto.getStoredFileName().isEmpty())
-                .map(optionDto -> fileRepository.findByStoredName(optionDto.getStoredFileName())
+                .filter(optionDto -> optionDto.getStoredImageName() != null && !optionDto.getStoredImageName().isEmpty())
+                .map(optionDto -> fileRepository.findByStoredName(optionDto.getStoredImageName())
                         .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_FILE)))
                 .toList();
     }
@@ -99,6 +108,32 @@ public class PostService {
         }
         return PostResponse.fromEntity(post, member, member.hasLiked(post), member.hasBookmarked(post), member.hasVoted(post));
     }
+
+    @Transactional(readOnly = true)
+    public Page<PostResponse> findAllByCurrentMember(Pageable pageable) {
+        Member currentMember = getCurrentMember(memberRepository);
+
+        return postRepository.findAllByMemberId(currentMember.getId(), pageable)
+                .map(post -> PostResponse.fromEntity(post, currentMember.hasLiked(post),
+                        currentMember.hasBookmarked(post), currentMember.hasVoted(post)));
+    }
+
+    @Transactional(readOnly = true)
+    public Page<VotedPostResponse> findAllVotedByCurrentMember(Pageable pageable) {
+        Member currentMember = getCurrentMember(memberRepository);
+
+        return voteRepository.findAllByMemberId(currentMember.getId(), pageable)
+                .map(vote -> VotedPostResponse.fromEntity(vote, vote.getBalanceOption().getPost()));
+    }
+
+    @Transactional(readOnly = true)
+    public Page<BookmarkedPostResponse> findAllBookmarkedByCurrentMember(Pageable pageable) {
+        Member currentMember = getCurrentMember(memberRepository);
+
+        return bookmarkRepository.findAllByMemberId(currentMember.getId(), pageable)
+                .map(BookmarkedPostResponse::fromEntity);
+    }
+
 
     @Transactional
     public void deleteById(Long postId) {
@@ -156,6 +191,40 @@ public class PostService {
         return posts.stream()
                 .map(post -> PostResponse.fromEntity(post,
                         member,
+                        member.hasLiked(post),
+                        member.hasBookmarked(post),
+                        member.hasVoted(post)))
+                .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public List<PostResponse> findPostsByTitle(String token, String keyword) {
+        List<Post> posts = postRepository.findByTitleContaining(keyword);
+        if (token == null) {
+            return posts.stream()
+                    .map(post -> PostResponse.fromEntity(post, false, false, false))
+                    .collect(Collectors.toList());
+        }
+        Member member = getCurrentMember(memberRepository);
+        return posts.stream()
+                .map(post -> PostResponse.fromEntity(post,
+                        member.hasLiked(post),
+                        member.hasBookmarked(post),
+                        member.hasVoted(post)))
+                .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public List<PostResponse> findPostsByTag(String token, String tagName) {
+        List<Post> posts = postRepository.findByPostTagsContaining(tagName);
+        if (token == null) {
+            return posts.stream()
+                    .map(post -> PostResponse.fromEntity(post, false, false, false))
+                    .collect(Collectors.toList());
+        }
+        Member member = getCurrentMember(memberRepository);
+        return posts.stream()
+                .map(post -> PostResponse.fromEntity(post,
                         member.hasLiked(post),
                         member.hasBookmarked(post),
                         member.hasVoted(post)))

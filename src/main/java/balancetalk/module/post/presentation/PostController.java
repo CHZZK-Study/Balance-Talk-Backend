@@ -6,6 +6,8 @@ import balancetalk.module.post.dto.PostResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
+
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -23,7 +25,7 @@ public class PostController {
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
     @Operation(summary = "게시글 생성" , description = "로그인 상태인 회원이 게시글을 작성한다.")
-    public PostResponse createPost(@RequestBody final PostRequest postRequestDto) {
+    public PostResponse createPost(@Valid @RequestBody final PostRequest postRequestDto) {
         return postService.save(postRequestDto);
     }
 
@@ -48,6 +50,22 @@ public class PostController {
     @Operation(summary = "인기 게시글 조회", description = "월별 추천 수가 가장 많은 게시글 5개를 조회한다.")
     public List<PostResponse> findBestPosts(@RequestHeader(value = "Authorization", required = false) String token) {
         return postService.findBestPosts(token);
+    }
+
+    @ResponseStatus(HttpStatus.OK)
+    @GetMapping("/title")
+    @Operation(summary = "게시글 제목 검색 기능", description = "키워드에 맞는 모든 게시글을 조회한다.")
+    public List<PostResponse> findPostsByTitle(@RequestHeader(value = "Authorization", required = false) String token,
+                                               @RequestParam String keyword) {
+        return postService.findPostsByTitle(token, keyword);
+    }
+
+    @ResponseStatus(HttpStatus.OK)
+    @GetMapping("/tag")
+    @Operation(summary = "게시글 태그 검색 기능", description = "태그에 맞는 모든 게시글을 조회한다.")
+    public List<PostResponse> findPostsByTag(@RequestHeader(value = "Authorization", required = false) String token,
+                                               @RequestParam String tagName) {
+        return postService.findPostsByTag(token, tagName);
     }
 
     @ResponseStatus(HttpStatus.CREATED)
