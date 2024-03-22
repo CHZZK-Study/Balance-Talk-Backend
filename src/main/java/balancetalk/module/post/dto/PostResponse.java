@@ -50,10 +50,8 @@ public class PostResponse {
     @Schema(description = "게시글 카테고리", example = "CASUAL")
     private PostCategory category;
 
-    @Schema(description = "선택지 옵션 리스트", example =
-            "[{\"title\": \"선택지 제목1\", \"description\": \"선택지 내용1\" , \"storedFileName\": null}," +
-                    "{\"title\": \"선택지 제목2\", \"description\": \"선택지 내용2\", "
-                    + "\"imageUrl\": https://balance-talk-static-files/4df23447-2355-45h2-8783-7f6gd2ceb848_고양이.jpg}]")
+    @Schema(description = "선택지 옵션 리스트", example = "[{\"title\": \"선택지 제목1\", \"description\": \"선택지 내용1\" , \"storedFileName\": null}," +
+            "{\"title\": \"선택지 제목2\", \"description\": \"선택지 내용2\", \"storedFileName\": null}]")
     private List<BalanceOptionResponse> balanceOptions;
 
     @Schema(description = "태그 리스트", example = "[\"태그1\", \"태그2\", \"태그3\"]")
