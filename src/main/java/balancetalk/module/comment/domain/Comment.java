@@ -55,4 +55,11 @@ public class Comment extends BaseTimeEntity {
     public void updateContent(String content) {
         this.content = content;
     }
+
+    public long reportedCount() {
+        if (reports == null) {
+            return 0;
+        }
+        return reports.size();
+    }
 }

@@ -36,6 +36,9 @@ public class CommentResponse {
     @Schema(description = "댓글 추천 수", example = "24")
     private int likesCount;
 
+    @Schema(description = "댓글 신고 수", example = "3")
+    private long reportedCount;
+
     @Schema(description = "추천 여부", example = "true")
     private boolean myLike;
 
@@ -61,6 +64,7 @@ public class CommentResponse {
                 .selectedOptionId(balanceOptionId)
                 .parentCommentId(getParentCommentId(comment))
                 .likesCount(comment.getLikes().size())
+                .reportedCount(comment.reportedCount())
                 .myLike(myLike)
                 .createdAt(comment.getCreatedAt())
                 .lastModifiedAt(comment.getLastModifiedAt())
