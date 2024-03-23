@@ -39,7 +39,7 @@ public class MemberController {
     @ResponseStatus(HttpStatus.OK)
     @PostMapping("/login")
     @Operation(summary = "로그인", description = "회원 가입 한 이메일과 패스워드를 사용하여 로그인 한다.")
-    public String login(@Valid @RequestBody LoginRequest loginRequest, HttpServletResponse response) {
+    public TokenDto login(@Valid @RequestBody LoginRequest loginRequest, HttpServletResponse response) {
         return memberService.login(loginRequest, response);
     }
 
@@ -100,5 +100,12 @@ public class MemberController {
                                      @Size(min = 2, max = 10)String nickname) {
         memberService.verifyNickname(nickname);
         return "사용 가능한 닉네임 입니다.";
+    }
+
+    @ResponseStatus(HttpStatus.CREATED)
+    @GetMapping("/reissue")
+    @Operation(summary = "액세스 토큰 재발급", description = "리프레시 토큰을 통해서 만료된 액세스 토큰을 재발급 받는다.")
+    public String reissueAccessToken(HttpServletRequest request) {
+        return memberService.reissueAccessToken(request);
     }
 }
