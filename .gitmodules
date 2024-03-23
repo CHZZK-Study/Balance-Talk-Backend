@@ -1,3 +1,3 @@
 [submodule "src/main/resources/config"]
 	path = src/main/resources/config
-	url = https://github.com/CHZZK-Study/config.git
+	url = git@github.com:CHZZK-Study/config.git

@@ -16,6 +16,9 @@ import org.springframework.lang.Nullable;
 @AllArgsConstructor
 public class BalanceOptionResponse {
 
+    @Schema(description = "선택지 id", example = "1")
+    private Long balanceOptionId;
+
     @Schema(description = "선택지 제목", example = "선택지 제목1")
     private String title;
 

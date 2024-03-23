@@ -51,7 +51,6 @@ public class CommentResponse {
     @Schema(description = "게시글 제목", example = "게시글 제목...")
     private String postTitle;
 
-
     public static CommentResponse fromEntity(Comment comment, Long balanceOptionId, boolean myLike) {
         return CommentResponse.builder()
                 .id(comment.getId())

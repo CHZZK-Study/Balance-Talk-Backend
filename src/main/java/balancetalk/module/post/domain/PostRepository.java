@@ -16,6 +16,7 @@ public interface PostRepository extends JpaRepository<Post, Long> {
             + "group by p.id "
             + "order by count(l) desc, p.views desc")
     List<Post> findBestPosts(Pageable pageable);
+
     List<Post> findByTitleContaining(String keyword);
 
     @Query(value = "SELECT * " +
