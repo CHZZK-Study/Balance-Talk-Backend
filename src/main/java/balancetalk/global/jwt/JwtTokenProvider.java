@@ -6,6 +6,7 @@ import balancetalk.global.redis.application.RedisService;
 import balancetalk.module.member.dto.TokenDto;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.SignatureException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -58,10 +59,9 @@ public class JwtTokenProvider {
     /**
      * Refresh 토큰 생성
      */
-    public String createRefreshToken(Authentication authentication, Long memberId) {
+    public String createRefreshToken(Authentication authentication) {
         validateAuthentication(authentication);
         Claims claims = Jwts.claims();
-        claims.put("memberId", memberId);
         claims.setSubject(authentication.getName());
         Date now = new Date();
         Date expireDate = new Date(now.getTime() + refreshExpirationTime);
@@ -75,6 +75,18 @@ public class JwtTokenProvider {
         // redis에 refresh token 저장
         redisService.setValues(authentication.getName(), refreshToken, Duration.ofMillis(refreshExpirationTime));
         return refreshToken;
+    }
+
+    public Cookie createCookie(Authentication authentication) {
+        String cookieName = "refreshToken";
+        String refreshToken = createRefreshToken(authentication);
+        Cookie cookie = new Cookie(cookieName, refreshToken);
+
+        cookie.setHttpOnly(true);
+        cookie.setSecure(true);
+        cookie.setPath("/");
+        cookie.setMaxAge(60 * 60 * 24); // accessToken 유효
+        return cookie;
     }
 
     // 토큰으로부터 클레임을 만들고, User 객체를 생성해서 Authentication 객체 반환
@@ -123,6 +135,8 @@ public class JwtTokenProvider {
         }
     }
 
+    //public TokenDto returnToken()
+
     public TokenDto reissueToken(String refreshToken, Long memberId) {
         validateToken(refreshToken);
         Authentication authentication = getAuthentication(refreshToken);
@@ -133,7 +147,7 @@ public class JwtTokenProvider {
         }
         TokenDto tokenDto = new TokenDto(
                 createAccessToken(authentication, memberId),
-                createRefreshToken(authentication, memberId)
+                createRefreshToken(authentication)
         );
         return tokenDto;
     }
