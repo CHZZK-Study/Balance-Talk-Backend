@@ -41,6 +41,7 @@ public class BalanceOptionResponse {
 
     public static BalanceOptionResponse fromEntity(BalanceOption balanceOption) {
         BalanceOptionResponseBuilder builder = BalanceOptionResponse.builder()
+                .balanceOptionId(balanceOption.getId())
                 .title(balanceOption.getTitle())
                 .description(balanceOption.getDescription());
         if (balanceOption.getFile() != null) {
