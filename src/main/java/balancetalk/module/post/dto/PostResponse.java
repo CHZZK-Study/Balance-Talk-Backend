@@ -26,7 +26,7 @@ public class PostResponse {
     private String title;
 
     @JsonFormat(pattern = "yyyy/MM/dd HH:mm:ss")
-    @Schema(description = "투료 종료 기한", example = "2024-12-25T15:30:00")
+    @Schema(description = "투료 종료 기한", example = "2024/12/25 15:30:00")
     private LocalDateTime deadline;
 
     @Schema(description = "게시글 조회수", example = "126")
@@ -34,6 +34,9 @@ public class PostResponse {
 
     @Schema(description = "게시글 추천수", example = "15")
     private long likesCount;
+
+    @Schema(description = "신고 횟수" , example = "3")
+    private long reportedCount;
 
     @Schema(description = "추천 여부", example = "true")
     private boolean myLike;
@@ -76,6 +79,7 @@ public class PostResponse {
                 .views(post.getViews())
                 .likesCount(post.likesCount())
                 .myLike(myLike)
+                .reportedCount(post.reportedCount())
                 .myBookmark(myBookmark)
                 .myVote(myVote)
                 .selectedOptionId(getSelectedOptionId(post, member))

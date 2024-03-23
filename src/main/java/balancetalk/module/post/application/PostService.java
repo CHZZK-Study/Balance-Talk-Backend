@@ -17,6 +17,9 @@ import balancetalk.module.post.dto.BookmarkedPostResponse;
 import balancetalk.module.post.dto.PostRequest;
 import balancetalk.module.post.dto.PostResponse;
 import balancetalk.module.post.dto.VotedPostResponse;
+import balancetalk.module.report.domain.Report;
+import balancetalk.module.report.domain.ReportRepository;
+import balancetalk.module.report.dto.ReportRequest;
 import balancetalk.module.vote.domain.VoteRepository;
 import java.util.stream.Collectors;
 import java.util.List;
@@ -42,6 +45,7 @@ public class PostService {
     private final VoteRepository voteRepository;
     private final BookmarkRepository bookmarkRepository;
     private final RedisService redisService;
+    private final ReportRepository reportRepository;
 
     public PostResponse save(final PostRequest request) {
         Member writer = getCurrentMember(memberRepository);
@@ -230,5 +234,21 @@ public class PostService {
                         member.hasBookmarked(post),
                         member.hasVoted(post)))
                 .collect(Collectors.toList());
+    }
+
+    public void reportPost(Long postId, ReportRequest reportRequest) {
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_POST));
+        Member member = getCurrentMember(memberRepository);
+//        if (post.getMember().equals(member)) {
+//            throw new BalanceTalkException(FORBIDDEN_OWN_REPORT);
+//        }
+        Report report = Report.builder()
+                .content(reportRequest.getDescription())
+                .reporter(member)
+                .post(post)
+                .category(reportRequest.getCategory())
+                .build();
+        reportRepository.save(report);
     }
 }
