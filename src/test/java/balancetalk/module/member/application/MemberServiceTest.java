@@ -385,16 +385,17 @@ class MemberServiceTest {
         // given
         File updateFile = File.builder()
                 .id(2L)
+                .storedName("95323ff4-540c-4778-93a3-3f6aeb5121ce_test.png")
                 .build();
         when(jwtTokenProvider.resolveToken(request)).thenReturn(accessToken);
         when(jwtTokenProvider.getPayload(accessToken)).thenReturn(member.getEmail());
         when(memberRepository.findByEmail(member.getEmail())).thenReturn(Optional.of(member));
-        when(fileRepository.findById(any())).thenReturn(Optional.of(updateFile));
+        when(fileRepository.findByStoredName(anyString())).thenReturn(Optional.of(updateFile));
 
         // when
-        memberService.updateImage(2L, request);
+        memberService.updateImage(updateFile.getStoredName(), request);
 
         // then
-        assertThat(member.getProfilePhoto().getId()).isEqualTo(2L);
+        assertThat(member.getProfilePhoto().getStoredName()).isEqualTo(updateFile.getStoredName());
     }
 }

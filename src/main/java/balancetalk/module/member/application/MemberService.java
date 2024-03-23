@@ -104,9 +104,9 @@ public class MemberService {
     }
 
     @Transactional
-    public void updateImage(Long fileId, HttpServletRequest request) {
+    public void updateImage(String storedFileName, HttpServletRequest request) {
         Member member = extractMember(request);
-        File file = fileRepository.findById(fileId)
+        File file = fileRepository.findByStoredName(storedFileName)
                 .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_FILE));
         member.updateImage(file);
     }

@@ -79,8 +79,8 @@ public class MemberController {
     @ResponseStatus(HttpStatus.OK)
     @PutMapping("/image")
     @Operation(summary = "회원 이미지 변경", description = "회원 프로필 이미지를 변경한다.")
-    public String updateImage(@RequestParam Long fileId, HttpServletRequest request) {
-        memberService.updateImage(fileId, request);
+    public String updateImage(@RequestBody String storedFileName, HttpServletRequest request) {
+        memberService.updateImage(storedFileName, request);
         return "회원 이미지가 변경되었습니다.";
     }
 
