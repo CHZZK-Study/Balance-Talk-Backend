@@ -21,7 +21,6 @@ import java.util.stream.Collectors;
 
 @Data
 @Builder
-@NoArgsConstructor
 @AllArgsConstructor
 public class PostRequest {
 
