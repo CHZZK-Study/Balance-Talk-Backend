@@ -3,7 +3,6 @@ package balancetalk.global.jwt;
 import balancetalk.global.exception.BalanceTalkException;
 import balancetalk.global.exception.ErrorCode;
 import balancetalk.global.redis.application.RedisService;
-import balancetalk.module.member.dto.TokenDto;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.SignatureException;
 import jakarta.servlet.http.Cookie;
