@@ -30,7 +30,7 @@ public class VoteService {
     private final BalanceOptionRepository balanceOptionRepository;
     private final PostRepository postRepository;
 
-    public Vote createVote(Long postId, VoteRequest voteRequest) {
+    public Vote createVote(Long postId, VoteRequest voteRequest, String token) {
         Post post = getPost(postId);
         if (post.hasDeadlineExpired()) {
             throw new BalanceTalkException(EXPIRED_POST_DEADLINE);
@@ -41,11 +41,10 @@ public class VoteService {
             throw new BalanceTalkException(MISMATCHED_BALANCE_OPTION);
         }
 
-        if (voteRequest.isUser()) {
-            return voteForMember(voteRequest, post, balanceOption);
+        if (token == null) {
+            return voteForGuest(voteRequest, balanceOption);
         }
-
-        return voteForGuest(voteRequest, balanceOption);
+        return voteForMember(voteRequest, post, balanceOption);
     }
 
     private Post getPost(Long postId) {
