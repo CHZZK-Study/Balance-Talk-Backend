@@ -37,7 +37,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class PostService {
     private static final int BEST_POSTS_SIZE = 5;
-
+    private static final int BLIND_STATUS_COUNT = 5;
     private final PostRepository postRepository;
     private final MemberRepository memberRepository;
     private final PostLikeRepository postLikeRepository;
@@ -239,6 +239,11 @@ public class PostService {
     public void reportPost(Long postId, ReportRequest reportRequest) {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_POST));
+        if (post.reportedCount() == BLIND_STATUS_COUNT) {
+            post.setBlind();
+            postRepository.save(post);
+            return;
+        }
         Member member = getCurrentMember(memberRepository);
 //        if (post.getMember().equals(member)) {
 //            throw new BalanceTalkException(FORBIDDEN_OWN_REPORT);
