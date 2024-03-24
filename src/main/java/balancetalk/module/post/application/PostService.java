@@ -75,7 +75,6 @@ public class PostService {
 
     @Transactional(readOnly = true)
     public Page<PostResponse> findAll(String token, Pageable pageable) {
-        // TODO: 검색, 정렬, 마감 기능 추가
         Page<Post> posts = postRepository.findAll(pageable);
 
         if (token == null) {
