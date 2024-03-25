@@ -36,6 +36,7 @@ public class SecurityConfig {
             "/h2-console/**",
             // swagger
             "/swagger-ui/**", "/v3/api-docs/**",
+            "/email/password",
             "/members/duplicate",
             "/posts", "/posts/{postId}", "/posts/{postId}/vote", "/posts/{postId}/comments/**",
             "/notices", "/notices/{noticeId}"

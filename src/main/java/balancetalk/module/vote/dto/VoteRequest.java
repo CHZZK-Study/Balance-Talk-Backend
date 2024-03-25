@@ -13,11 +13,8 @@ import lombok.Data;
 @Builder
 public class VoteRequest {
 
-    @Schema(description = "투표한 선택지 id", example = "2")
+    @Schema(description = "투표한 선택지 id", example = "23")
     private Long selectedOptionId;
-
-    @Schema(description = "회원 여부", example = "true")
-    private boolean isUser;
 
     public Vote toEntity(BalanceOption balanceOption) {
         return Vote.builder()

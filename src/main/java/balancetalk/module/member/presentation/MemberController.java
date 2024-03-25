@@ -69,11 +69,19 @@ public class MemberController {
     @PutMapping("/password")
     @Operation(summary = "회원 비밀번호 수정", description = "회원 패스워드를 수정한다.")
     public String updatePassword(@RequestBody @Size(min = 10, max = 20)
-                                     @Pattern(regexp = "^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d@$!%*#?&]{10,20}$")
-                                     String newPassword, HttpServletRequest request) {
+                                 @Pattern(regexp = "^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d@$!%*#?&]{10,20}$")
+                                 String newPassword, HttpServletRequest request) {
         // TODO: RequestBody 빈 값일 때 에러체킹 x
         memberService.updatePassword(newPassword, request);
         return "회원 비밀번호가 변경되었습니다.";
+    }
+
+    @ResponseStatus(HttpStatus.OK)
+    @PutMapping("/image")
+    @Operation(summary = "회원 이미지 변경", description = "회원 프로필 이미지를 변경한다.")
+    public String updateImage(@RequestBody String storedFileName, HttpServletRequest request) {
+        memberService.updateImage(storedFileName, request);
+        return "회원 이미지가 변경되었습니다.";
     }
 
     @ResponseStatus(HttpStatus.OK)
@@ -96,7 +104,7 @@ public class MemberController {
     @GetMapping("/duplicate")
     @Operation(summary = "닉네임 중복 검증", description = "중복된 닉네임이 존재하는지 체크한다.")
     public String verifyNickname(@RequestParam @NotBlank
-                                     @Size(min = 2, max = 10)String nickname) {
+                                 @Size(min = 2, max = 10)String nickname) {
         memberService.verifyNickname(nickname);
         return "사용 가능한 닉네임 입니다.";
     }

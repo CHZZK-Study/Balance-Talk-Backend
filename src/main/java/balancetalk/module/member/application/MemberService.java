@@ -37,7 +37,6 @@ public class MemberService {
     private final FileRepository fileRepository;
     private final PasswordEncoder passwordEncoder;
     private final RedisService redisService;
-
     @Transactional
     public Long join(final JoinRequest joinRequest) {
         if (memberRepository.existsByEmail(joinRequest.getEmail())) {
@@ -109,12 +108,19 @@ public class MemberService {
     }
 
     @Transactional
+    public void updateImage(String storedFileName, HttpServletRequest request) {
+        Member member = extractMember(request);
+        File file = fileRepository.findByStoredName(storedFileName)
+                .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_FILE));
+        member.updateImage(file);
+    }
+
+    @Transactional
     public void delete(final LoginRequest loginRequest, HttpServletRequest request) {
         Member member = extractMember(request);
         if (!member.getEmail().equals(loginRequest.getEmail())) {
             throw new BalanceTalkException(ErrorCode.FORBIDDEN_MEMBER_DELETE);
         }
-
         if (!passwordEncoder.matches(loginRequest.getPassword(), member.getPassword())) {
             throw new BalanceTalkException(ErrorCode.MISMATCHED_EMAIL_OR_PASSWORD);
         }
