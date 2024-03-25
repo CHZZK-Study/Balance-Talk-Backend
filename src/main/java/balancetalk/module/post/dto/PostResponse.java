@@ -33,8 +33,8 @@ public class PostResponse {
     @Schema(description = "게시글 조회수", example = "126")
     private long views;
 
-    @Schema(description = "게시글 블라인드 여부", example = "NORMAL")
-    private ViewStatus viewStatus;
+//    @Schema(description = "게시글 블라인드 여부", example = "NORMAL")
+//    private ViewStatus viewStatus;
 
     @Schema(description = "게시글 추천수", example = "15")
     private long likesCount;

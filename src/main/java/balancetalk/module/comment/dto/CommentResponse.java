@@ -34,8 +34,8 @@ public class CommentResponse {
     @Schema(description = "부모 댓글 id", example = "2")
     private Long parentCommentId;
 
-    @Schema(description = "댓글 블라인드 여부", example = "NORMAL")
-    private ViewStatus viewStatus;
+//    @Schema(description = "댓글 블라인드 여부", example = "NORMAL")
+//    private ViewStatus viewStatus;
 
     @Schema(description = "댓글 추천 수", example = "24")
     private int likesCount;
