@@ -13,6 +13,7 @@ import org.hibernate.annotations.ColumnDefault;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import org.hibernate.annotations.Formula;
 
 @Entity
 @Getter
@@ -60,6 +61,9 @@ public class Post extends BaseTimeEntity {
 
     @OneToMany(mappedBy = "post")
     private List<PostLike> likes = new ArrayList<>();
+
+    @Formula("(select count(*) from post_like where post_like.post_id = post_id)")
+    private long likesCount;
 
     @OneToMany(mappedBy = "post")
     private List<Comment> comments = new ArrayList<>();

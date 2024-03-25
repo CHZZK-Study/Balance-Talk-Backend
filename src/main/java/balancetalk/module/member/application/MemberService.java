@@ -11,7 +11,9 @@ import balancetalk.module.member.domain.Member;
 import balancetalk.module.member.domain.MemberRepository;
 import balancetalk.module.member.dto.*;
 import balancetalk.module.post.domain.Post;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -51,14 +53,13 @@ public class MemberService {
             profilePhoto = fileRepository.findByStoredName(joinRequest.getProfilePhoto())
                     .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_FILE));
         }
-
         Member member = joinRequest.toEntity(profilePhoto);
         return memberRepository.save(member).getId();
     }
 
 
     @Transactional
-    public TokenDto login(final LoginRequest loginRequest) {
+    public String login(final LoginRequest loginRequest, HttpServletResponse response) {
         Member member = memberRepository.findByEmail(loginRequest.getEmail())
                 .orElseThrow(() -> new BalanceTalkException(ErrorCode.MISMATCHED_EMAIL_OR_PASSWORD));
         if (!passwordEncoder.matches(loginRequest.getPassword(), member.getPassword())) {
@@ -68,8 +69,11 @@ public class MemberService {
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword())
         );
-        String refreshToken = jwtTokenProvider.createRefreshToken(authentication, member.getId());
-        return jwtTokenProvider.reissueToken(refreshToken, member.getId()); // 만료되었다면, 재발급
+        String accessToken = jwtTokenProvider.createAccessToken(authentication, member.getId());
+        String refreshToken = jwtTokenProvider.createRefreshToken(authentication);
+        Cookie cookie = jwtTokenProvider.createCookie(refreshToken);
+        response.addCookie(cookie);
+        return accessToken;
     }
 
     @Transactional(readOnly = true)
@@ -148,4 +152,9 @@ public class MemberService {
                 .orElseThrow(() -> new BalanceTalkException(ErrorCode.NOT_FOUND_MEMBER));
     }
 
+    public String reissueAccessToken(HttpServletRequest request) {
+        String refreshToken = jwtTokenProvider.resolveToken(request);
+        Long memberId = jwtTokenProvider.getMemberId(refreshToken);
+        return jwtTokenProvider.reissueAccessToken(refreshToken, memberId);
+    }
 }

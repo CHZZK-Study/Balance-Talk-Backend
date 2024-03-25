@@ -9,6 +9,7 @@ import balancetalk.module.comment.domain.CommentRepository;
 import balancetalk.module.comment.dto.CommentRequest;
 import balancetalk.module.comment.dto.CommentResponse;
 import balancetalk.module.comment.dto.ReplyCreateRequest;
+import balancetalk.module.comment.dto.ReplyResponse;
 import balancetalk.module.member.domain.Member;
 import balancetalk.module.member.domain.MemberRepository;
 import balancetalk.module.post.domain.BalanceOption;
@@ -29,6 +30,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static balancetalk.global.exception.ErrorCode.*;
 import static balancetalk.global.utils.SecurityUtils.getCurrentMember;
@@ -66,7 +68,7 @@ public class CommentService {
     public Page<CommentResponse> findAllComments(Long postId, String token, Pageable pageable) {
         validatePostId(postId);
 
-        Page<Comment> comments = commentRepository.findAllByPostId(postId, pageable);
+        Page<Comment> comments = commentRepository.findAllByPostIdAndParentIsNull(postId, pageable);
 
         return comments.map(comment -> {
             Optional<Vote> voteForComment = voteRepository.findByMemberIdAndBalanceOption_PostId(
@@ -143,6 +145,34 @@ public class CommentService {
 
         Comment reply = request.toEntity(member, post, parentComment);
         return commentRepository.save(reply);
+    }
+
+    public List<ReplyResponse> findAllReplies(Long postId, Long parentId, String token) {
+        validatePostId(postId);
+
+        List<Comment> replies = commentRepository.findAllByPostIdAndParentId(postId, parentId);
+
+        if (token == null) {
+            return replies.stream()
+                    .map(reply -> ReplyResponse.fromEntity(reply, null, false))
+                    .collect(Collectors.toList());
+        } else {
+            Member member = getCurrentMember(memberRepository);
+
+            return replies.stream()
+                    .map(reply -> {
+                        boolean myLike = member.hasLikedComment(reply);
+
+                        Optional<Vote> voteForComment = voteRepository.findByMemberIdAndBalanceOption_PostId(
+                                reply.getMember().getId(), postId);
+
+                        Long balanceOptionId = voteForComment.map(Vote::getBalanceOption).map(BalanceOption::getId)
+                                .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_BALANCE_OPTION));
+
+                        return ReplyResponse.fromEntity(reply, balanceOptionId, myLike);
+                    })
+                    .collect(Collectors.toList());
+        }
     }
 
     private Post validatePostId(Long postId) {
