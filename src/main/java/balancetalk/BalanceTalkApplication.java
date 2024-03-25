@@ -7,7 +7,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
-@OpenAPIDefinition(servers = {@Server(url = "http://api.balancetalk.kro.kr", description = "Default Server URL")})
+@OpenAPIDefinition(servers = {@Server(url = "/", description = "Default Server URL")})
 @EnableJpaAuditing
 @SpringBootApplication(exclude = SecurityAutoConfiguration.class)
 public class BalanceTalkApplication {
