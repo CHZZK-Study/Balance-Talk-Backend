@@ -62,4 +62,8 @@ public class Comment extends BaseTimeEntity {
         }
         return reports.size();
     }
+
+    public void setBlind() {
+        this.viewStatus = ViewStatus.BLIND;
+    }
 }

@@ -39,6 +39,7 @@ import static balancetalk.global.utils.SecurityUtils.getCurrentMember;
 public class CommentService {
 
     private static final int BEST_COMMENTS_SIZE = 3;
+    private static final int BLIND_STATUS_COUNT = 5;
     private static final int MIN_COUNT_FOR_BEST_COMMENT = 15;
 
     private final CommentRepository commentRepository;
@@ -233,6 +234,10 @@ public class CommentService {
 
     public void reportComment(Long postId, Long commentId, ReportRequest reportRequest) {
         Comment comment = validateCommentId(commentId);
+        if (comment.reportedCount() == BLIND_STATUS_COUNT) {
+            comment.setBlind();
+            return;
+        }
         Member member = getCurrentMember(memberRepository);
 //        if (comment.getMember().equals(member)) {
 //            throw new BalanceTalkException(FORBIDDEN_OWN_REPORT);
