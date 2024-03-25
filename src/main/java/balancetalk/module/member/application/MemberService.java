@@ -4,11 +4,13 @@ import balancetalk.global.exception.BalanceTalkException;
 import balancetalk.global.exception.ErrorCode;
 import balancetalk.global.jwt.JwtTokenProvider;
 import balancetalk.global.redis.application.RedisService;
+import balancetalk.module.comment.domain.Comment;
 import balancetalk.module.file.domain.File;
 import balancetalk.module.file.domain.FileRepository;
 import balancetalk.module.member.domain.Member;
 import balancetalk.module.member.domain.MemberRepository;
 import balancetalk.module.member.dto.*;
+import balancetalk.module.post.domain.Post;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -139,6 +141,12 @@ public class MemberService {
         }
     }
 
+    @Transactional(readOnly = true)
+    public long getReportedCounts(Long id) {
+        Member member = memberRepository.findById(id)
+                .orElseThrow(() -> new BalanceTalkException(ErrorCode.NOT_FOUND_MEMBER));
+        return member.reportedCount();
+    }
     private Member extractMember(HttpServletRequest request) {
         String token = jwtTokenProvider.resolveToken(request);
         String email = jwtTokenProvider.getPayload(token);

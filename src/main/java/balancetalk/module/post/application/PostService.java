@@ -241,7 +241,6 @@ public class PostService {
                 .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_POST));
         if (post.reportedCount() == BLIND_STATUS_COUNT) {
             post.setBlind();
-            postRepository.save(post);
             return;
         }
         Member member = getCurrentMember(memberRepository);
