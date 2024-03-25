@@ -107,11 +107,4 @@ public class MemberController {
         memberService.verifyNickname(nickname);
         return "사용 가능한 닉네임 입니다.";
     }
-
-    @ResponseStatus(HttpStatus.OK)
-    @GetMapping("/reported/{id}")
-    @Operation(summary = "회원 신고 당한 횟수 조회", description = "회원이 신고 당한 횟수를 조회한다.")
-    public long getReportedCounts(@PathVariable Long id) {
-        return memberService.getReportedCounts(id);
-    }
 }
