@@ -98,12 +98,6 @@ public class Post extends BaseTimeEntity {
         return deadline.isBefore(LocalDateTime.now());
     }
 
-    public long reportedCount() {
-        if (reports == null) {
-            return 0;
-        }
-        return reports.size();
-    }
     public void increaseViews() {
         views++;
     }
