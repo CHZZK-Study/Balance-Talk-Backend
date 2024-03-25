@@ -89,7 +89,8 @@ public class SecurityConfig {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.addAllowedOriginPattern("http://localhost:8080");
         configuration.addAllowedOriginPattern("http://localhost:3000"); // 프론트 쪽에서 허용
-        configuration.addExposedHeader("Authorization"); // 헤더값이 필요한지? 의문
+        configuration.addExposedHeader("Authorization");
+        configuration.addExposedHeader("refreshToken");
         configuration.setAllowedMethods(Arrays.asList("GET","POST","PUT","PATCH","DELETE"));
         configuration.setAllowCredentials(true);
         configuration.setMaxAge(MAX_AGE_SEC);
