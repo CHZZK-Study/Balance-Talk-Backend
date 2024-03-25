@@ -12,6 +12,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
 @Builder
 public class VoteRequest {
 
