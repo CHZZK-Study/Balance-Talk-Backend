@@ -21,7 +21,7 @@ public enum ErrorCode {
     FILE_SIZE_EXCEEDED(BAD_REQUEST, "파일 크기가 초과되었습니다."),
     EXCEED_MAX_DEPTH(BAD_REQUEST, "답글에 답글을 달 수 없습니다."),
     INVALID_REFRESH_TOKEN(BAD_REQUEST, "유효하지 않은 리프레시 토큰입니다."),
-    PAGE_NUMBER_ZERO(BAD_REQUEST, "페이지 번호는 0보다 커야합니다."),
+    PAGE_NUMBER_ZERO(BAD_REQUEST, "페이지 번호는 0부터 시작합니다."),
     PAGE_SIZE_ZERO(BAD_REQUEST, "페이지 사이즈는 0보다 커야합니다."),
     EXCEED_VALIDATION_LENGTH(BAD_REQUEST, "입력값이 제약 조건에 맞지 않습니다."),
     AUTHORIZATION_CODE_MISMATCH(BAD_REQUEST, "인증 번호가 일치하지 않습니다."),

@@ -35,17 +35,17 @@ public class NoticeController {
     @ResponseStatus(HttpStatus.OK)
     @GetMapping
     @Operation(summary = "전체 공지사항 조회" , description = "작성된 모든 공지사항을 페이지네이션을 이용해 조회한다.")
-    public Page<NoticeResponse> findAllNotices(@RequestParam(value = "page", defaultValue = "1") int page,
+    public Page<NoticeResponse> findAllNotices(@RequestParam(value = "page", defaultValue = "0") int page,
                                                @RequestParam(required = false, value = "size", defaultValue = "13") int size) {
 
-        if (page <= 0) {
+        if (page < 0) {
             throw new BalanceTalkException(PAGE_NUMBER_ZERO);
         }
         if (size <= 0) {
             throw new BalanceTalkException(PAGE_SIZE_ZERO);
         }
 
-        Pageable pageable = PageRequest.of(page - 1, size);
+        Pageable pageable = PageRequest.of(page, size);
         return noticeService.findAllNotices(pageable);
     }
 
