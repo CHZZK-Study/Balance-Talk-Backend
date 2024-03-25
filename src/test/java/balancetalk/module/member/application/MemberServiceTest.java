@@ -10,6 +10,7 @@ import balancetalk.module.member.domain.Member;
 import balancetalk.module.member.domain.MemberRepository;
 import balancetalk.module.member.dto.*;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -19,6 +20,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -55,6 +57,9 @@ class MemberServiceTest {
 
     @Mock
     Authentication authentication;
+
+    @Mock
+    HttpServletResponse response;
 
     @Mock
     AuthenticationManager authenticationManager;
@@ -140,21 +145,22 @@ class MemberServiceTest {
         // given
         when(memberRepository.findByEmail(loginRequest.getEmail())).thenReturn(Optional.ofNullable(member));
         when(passwordEncoder.matches(eq(loginRequest.getPassword()), eq(joinRequest.getPassword()))).thenReturn(true);
-        when(jwtTokenProvider.reissueToken(any() , anyLong())).thenReturn(new TokenDto(accessToken, refreshToken));
 
+        when(authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(member.getEmail(), member.getPassword()))).thenReturn(authentication);
+        when(jwtTokenProvider.createAccessToken(authentication, member.getId())).thenReturn(accessToken);
+        when(jwtTokenProvider.createRefreshToken(authentication)).thenReturn(refreshToken);
         // when
-        TokenDto result = memberService.login(loginRequest);
+        String result = memberService.login(loginRequest, response);
 
         // then
-        assertThat(result.getAccessToken()).isEqualTo(accessToken);
-        assertThat(result.getRefreshToken()).isEqualTo(refreshToken);
+        assertThat(result).isEqualTo(accessToken);
     }
 
     @Test
     @DisplayName("로그인 테스트 실패 - 비밀번호 다름")
     void loginFailureWhenWrongPassword() {
         loginRequest.setPassword("wrongPassword!");
-        assertThatThrownBy(() -> memberService.login(loginRequest))
+        assertThatThrownBy(() -> memberService.login(loginRequest, response))
                 .isInstanceOf(BalanceTalkException.class)
                 .hasMessage(ErrorCode.MISMATCHED_EMAIL_OR_PASSWORD.getMessage());
     }
@@ -163,7 +169,7 @@ class MemberServiceTest {
     @DisplayName("로그인 테스트 실패 - 이메일 다름")
     void loginFailureWhenWrongEmail() {
         loginRequest.setEmail("wrongEmail@gmail.com");
-        assertThatThrownBy(() -> memberService.login(loginRequest))
+        assertThatThrownBy(() -> memberService.login(loginRequest, response))
                 .isInstanceOf(BalanceTalkException.class)
                 .hasMessage(ErrorCode.MISMATCHED_EMAIL_OR_PASSWORD.getMessage());
     }
