@@ -43,6 +43,7 @@ public class MyPageResponse {
     @JsonFormat(pattern = "yyyy/MM/dd HH:mm:ss")
     @Schema(description = "댓글 작성 날짜", example = "2023-12-25T15:30:00")
     private LocalDateTime commentCreatedAt;
+
     public static MyPageResponse fromEntity(Post post) {
         return MyPageResponse.builder()
                 .postTitle(post.getTitle())
