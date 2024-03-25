@@ -5,6 +5,7 @@ import balancetalk.module.member.dto.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
@@ -37,8 +38,8 @@ public class MemberController {
     @ResponseStatus(HttpStatus.OK)
     @PostMapping("/login")
     @Operation(summary = "로그인", description = "회원 가입 한 이메일과 패스워드를 사용하여 로그인 한다.")
-    public TokenDto login(@Valid @RequestBody LoginRequest loginRequest) {
-        return memberService.login(loginRequest);
+    public String login(@Valid @RequestBody LoginRequest loginRequest, HttpServletResponse response) {
+        return memberService.login(loginRequest, response);
     }
 
     @ResponseStatus(HttpStatus.OK)
@@ -106,5 +107,12 @@ public class MemberController {
                                  @Size(min = 2, max = 10)String nickname) {
         memberService.verifyNickname(nickname);
         return "사용 가능한 닉네임 입니다.";
+    }
+
+    @ResponseStatus(HttpStatus.CREATED)
+    @GetMapping("/reissue")
+    @Operation(summary = "액세스 토큰 재발급", description = "리프레시 토큰을 통해서 만료된 액세스 토큰을 재발급 받는다.")
+    public String reissueAccessToken(HttpServletRequest request) {
+        return memberService.reissueAccessToken(request);
     }
 }
