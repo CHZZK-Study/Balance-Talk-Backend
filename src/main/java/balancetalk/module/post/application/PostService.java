@@ -19,16 +19,14 @@ import balancetalk.module.post.dto.PostResponse;
 import balancetalk.module.post.dto.VotedPostResponse;
 import balancetalk.module.vote.domain.VoteRepository;
 import java.util.stream.Collectors;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 @Slf4j
 @Service
@@ -106,7 +104,8 @@ public class PostService {
         if (member.getRole() == Role.USER) {
              post.increaseViews();
         }
-        return PostResponse.fromEntity(post, member, member.hasLiked(post), member.hasBookmarked(post), member.hasVoted(post));
+        return PostResponse.fromEntity(post, member, member.hasLiked(post), member.hasBookmarked(post),
+                member.hasVoted(post));
     }
 
     @Transactional(readOnly = true)

@@ -40,7 +40,6 @@ public class PostRequest {
     @Schema(description = "게시글 카테고리", example = "CASUAL")
     private PostCategory category;
 
-
     private List<BalanceOptionRequest> balanceOptions;
 
     private List<PostTagDto> tags;
