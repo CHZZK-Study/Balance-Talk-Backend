@@ -40,7 +40,7 @@ public class BalanceOption {
     @JoinColumn(name = "post_id")
     private Post post;
 
-    @OneToMany(mappedBy = "balanceOption")
+    @OneToMany(mappedBy = "balanceOption", cascade = CascadeType.REMOVE)
     private List<Vote> votes = new ArrayList<>();
 
     public int voteCount() {
