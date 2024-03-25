@@ -64,7 +64,7 @@ public class CommentService {
     public Page<CommentResponse> findAllComments(Long postId, String token, Pageable pageable) {
         validatePostId(postId);
 
-        Page<Comment> comments = commentRepository.findAllByPostId(postId, pageable);
+        Page<Comment> comments = commentRepository.findAllByPostIdAndParentIsNull(postId, pageable);
 
         return comments.map(comment -> {
             Optional<Vote> voteForComment = voteRepository.findByMemberIdAndBalanceOption_PostId(
