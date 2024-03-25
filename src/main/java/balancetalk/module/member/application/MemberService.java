@@ -141,12 +141,6 @@ public class MemberService {
         }
     }
 
-    @Transactional(readOnly = true)
-    public long getReportedCounts(Long id) {
-        Member member = memberRepository.findById(id)
-                .orElseThrow(() -> new BalanceTalkException(ErrorCode.NOT_FOUND_MEMBER));
-        return member.reportedCount();
-    }
     private Member extractMember(HttpServletRequest request) {
         String token = jwtTokenProvider.resolveToken(request);
         String email = jwtTokenProvider.getPayload(token);

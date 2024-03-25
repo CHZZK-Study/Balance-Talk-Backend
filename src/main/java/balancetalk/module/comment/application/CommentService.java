@@ -234,10 +234,6 @@ public class CommentService {
 
     public void reportComment(Long postId, Long commentId, ReportRequest reportRequest) {
         Comment comment = validateCommentId(commentId);
-        if (comment.reportedCount() == BLIND_STATUS_COUNT) {
-            comment.setBlind();
-            return;
-        }
         Member member = getCurrentMember(memberRepository);
 //        if (comment.getMember().equals(member)) {
 //            throw new BalanceTalkException(FORBIDDEN_OWN_REPORT);

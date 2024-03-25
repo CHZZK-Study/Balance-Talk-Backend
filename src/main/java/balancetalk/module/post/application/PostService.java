@@ -239,10 +239,6 @@ public class PostService {
     public void reportPost(Long postId, ReportRequest reportRequest) {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_POST));
-        if (post.reportedCount() == BLIND_STATUS_COUNT) {
-            post.setBlind();
-            return;
-        }
         Member member = getCurrentMember(memberRepository);
 //        if (post.getMember().equals(member)) {
 //            throw new BalanceTalkException(FORBIDDEN_OWN_REPORT);

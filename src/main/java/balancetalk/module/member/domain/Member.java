@@ -154,14 +154,4 @@ public class Member extends BaseTimeEntity implements UserDetails {
         return commentLikes.stream()
                 .anyMatch(like -> like.getComment().equals(comment));
     }
-
-    public long reportedCount() {
-        long postReport = this.posts.stream()
-                .mapToLong(Post::reportedCount)
-                .sum();
-        long commentReport = this.comments.stream()
-                .mapToLong(Comment::reportedCount)
-                .sum();
-        return postReport + commentReport;
-    }
 }
