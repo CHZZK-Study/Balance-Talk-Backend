@@ -82,10 +82,4 @@ public class CommentResponse {
                 .map(File::getUrl)
                 .orElse(null);
     }
-
-    private static Long getParentCommentId(Comment comment) {
-        return Optional.ofNullable(comment.getParent())
-                .map(Comment::getId)
-                .orElse(null);
-    }
 }

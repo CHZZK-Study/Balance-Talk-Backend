@@ -5,6 +5,7 @@ import balancetalk.module.comment.dto.CommentRequest;
 import balancetalk.module.comment.dto.CommentResponse;
 import balancetalk.module.comment.dto.ReplyCreateRequest;
 import balancetalk.module.report.dto.ReportRequest;
+import balancetalk.module.comment.dto.ReplyResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
@@ -69,6 +70,14 @@ public class CommentController {
     public String createComment(@PathVariable Long postId, @PathVariable Long commentId, @Valid @RequestBody ReplyCreateRequest request) {
         commentService.createReply(postId, commentId, request);
         return "답글이 정상적으로 작성되었습니다.";
+    }
+
+    @ResponseStatus(HttpStatus.OK)
+    @GetMapping("/{commentId}/replies")
+    @Operation(summary = "답글 목록 조회", description = "post-id 하위의 comment-id에 해당하는 댓글에 있는 모든 답글을 조회한다.")
+    public List<ReplyResponse> findAllReplies(@PathVariable Long postId, @PathVariable Long commentId,
+                                              @RequestHeader(value = "Authorization", required = false) String token) {
+        return commentService.findAllReplies(postId, commentId, token);
     }
 
     @ResponseStatus(HttpStatus.CREATED)
