@@ -38,7 +38,7 @@ public class MemberController {
     @ResponseStatus(HttpStatus.OK)
     @PostMapping("/login")
     @Operation(summary = "로그인", description = "회원 가입 한 이메일과 패스워드를 사용하여 로그인 한다.")
-    public TokenDto login(@Valid @RequestBody LoginRequest loginRequest, HttpServletResponse response) {
+    public String login(@Valid @RequestBody LoginRequest loginRequest, HttpServletResponse response) {
         return memberService.login(loginRequest, response);
     }
 

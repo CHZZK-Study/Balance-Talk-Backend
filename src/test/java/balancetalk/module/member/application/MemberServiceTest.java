@@ -139,11 +139,10 @@ class MemberServiceTest {
         when(jwtTokenProvider.createAccessToken(authentication, member.getId())).thenReturn(accessToken);
         when(jwtTokenProvider.createRefreshToken(authentication)).thenReturn(refreshToken);
         // when
-        TokenDto result = memberService.login(loginRequest, response);
+        String result = memberService.login(loginRequest, response);
 
         // then
-        assertThat(result.getAccessToken()).isEqualTo(accessToken);
-        assertThat(result.getRefreshToken()).isEqualTo(refreshToken);
+        assertThat(result).isEqualTo(accessToken);
     }
 
     @Test

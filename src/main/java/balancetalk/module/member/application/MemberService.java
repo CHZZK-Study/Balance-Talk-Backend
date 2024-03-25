@@ -58,7 +58,7 @@ public class MemberService {
 
 
     @Transactional
-    public TokenDto login(final LoginRequest loginRequest, HttpServletResponse response) {
+    public String login(final LoginRequest loginRequest, HttpServletResponse response) {
         Member member = memberRepository.findByEmail(loginRequest.getEmail())
                 .orElseThrow(() -> new BalanceTalkException(ErrorCode.MISMATCHED_EMAIL_OR_PASSWORD));
         if (!passwordEncoder.matches(loginRequest.getPassword(), member.getPassword())) {
@@ -72,7 +72,7 @@ public class MemberService {
         String refreshToken = jwtTokenProvider.createRefreshToken(authentication);
         Cookie cookie = jwtTokenProvider.createCookie(refreshToken);
         response.addCookie(cookie);
-        return new TokenDto(accessToken, refreshToken);
+        return accessToken;
     }
 
     @Transactional(readOnly = true)
