@@ -30,9 +30,6 @@ public class CommentResponse {
     @Schema(description = "해당 댓글에 맞는 선택지 id", example = "23")
     private Long selectedOptionId;
 
-    @Schema(description = "부모 댓글 id", example = "2")
-    private Long parentCommentId;
-
     @Schema(description = "댓글 추천 수", example = "24")
     private int likesCount;
 
@@ -59,7 +56,6 @@ public class CommentResponse {
                 .memberName(comment.getMember().getNickname())
                 .postId(comment.getPost().getId())
                 .selectedOptionId(balanceOptionId)
-                .parentCommentId(getParentCommentId(comment))
                 .likesCount(comment.getLikes().size())
                 .myLike(myLike)
                 .createdAt(comment.getCreatedAt())
@@ -71,12 +67,6 @@ public class CommentResponse {
     private static String getProfileImageUrl(Member member) {
         return Optional.ofNullable(member.getProfilePhoto())
                 .map(File::getUrl)
-                .orElse(null);
-    }
-
-    private static Long getParentCommentId(Comment comment) {
-        return Optional.ofNullable(comment.getParent())
-                .map(Comment::getId)
                 .orElse(null);
     }
 }
