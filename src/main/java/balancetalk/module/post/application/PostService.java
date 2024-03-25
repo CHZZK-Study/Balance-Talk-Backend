@@ -37,7 +37,6 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class PostService {
     private static final int BEST_POSTS_SIZE = 5;
-    private static final int BLIND_STATUS_COUNT = 5;
     private final PostRepository postRepository;
     private final MemberRepository memberRepository;
     private final PostLikeRepository postLikeRepository;

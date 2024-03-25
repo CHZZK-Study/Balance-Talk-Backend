@@ -104,10 +104,6 @@ public class Post extends BaseTimeEntity {
         }
         return reports.size();
     }
-
-    public void setBlind() {
-        this.viewStatus = ViewStatus.BLIND;
-    }
     public void increaseViews() {
         views++;
     }
