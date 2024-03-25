@@ -48,13 +48,9 @@ public class CommentResponse {
     @Schema(description = "댓글 작성자 프로필 사진 경로", example = "https://balance-talk-static-files4df23447-2355-45h2-8783-7f6gd2ceb848_프로필.jpg")
     private String profileImageUrl;
 
-    @Schema(description = "게시글 제목", example = "게시글 제목...")
-    private String postTitle;
-
     public static CommentResponse fromEntity(Comment comment, Long balanceOptionId, boolean myLike) {
         return CommentResponse.builder()
                 .id(comment.getId())
-                .postTitle(comment.getPost().getTitle())
                 .content(comment.getContent())
                 .memberName(comment.getMember().getNickname())
                 .postId(comment.getPost().getId())
