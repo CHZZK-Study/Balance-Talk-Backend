@@ -98,11 +98,11 @@ public class SecurityConfig {
 //        configuration.addExposedHeader("Authorization");
 //        configuration.addExposedHeader("refreshToken");
 
-        configuration.setAllowedOrigins(List.of("http://localhost:3000", "http://localhost:8080", "http://balancetalk.kro.kr"));
-        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "HEAD"));
-        configuration.setAllowedHeaders(List.of("Authorization"));
-        configuration.setAllowCredentials(true);
-        configuration.setMaxAge(MAX_AGE_SEC);
+        configuration.addAllowedOrigin("*");
+        configuration.addAllowedMethod("*");
+        configuration.addAllowedHeader("*");
+//        configuration.setAllowCredentials(true);
+//        configuration.setMaxAge(MAX_AGE_SEC);
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;
