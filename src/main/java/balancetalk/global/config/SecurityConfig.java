@@ -82,7 +82,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, PUBLIC_GET).permitAll()
                         .requestMatchers(HttpMethod.POST, PUBLIC_POST).permitAll()
                         .requestMatchers(HttpMethod.PUT, PUBLIC_PUT).permitAll()
-                        .requestMatchers(HttpMethod.OPTIONS).permitAll()
+                        .requestMatchers(HttpMethod.OPTIONS, "**").permitAll()
                         .anyRequest().authenticated()
                 )
                 // jwtFilter 먼저 적용
