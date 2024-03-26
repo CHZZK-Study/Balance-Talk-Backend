@@ -95,6 +95,7 @@ public class SecurityConfig {
         configuration.addAllowedOriginPattern("https://balancetalk.kro.kr"); // 도메인 주소
         configuration.addExposedHeader("Authorization");
         configuration.addExposedHeader("refreshToken");
+        configuration.setAllowedHeaders(Arrays.asList("*")); // header에 모두 요청 가능
         configuration.setAllowedMethods(Arrays.asList("GET","POST","PUT","PATCH","DELETE", "OPTIONS"));
         configuration.setAllowCredentials(true);
         configuration.setMaxAge(MAX_AGE_SEC);
