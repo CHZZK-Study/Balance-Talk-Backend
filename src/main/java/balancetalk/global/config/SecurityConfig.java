@@ -94,6 +94,7 @@ public class SecurityConfig {
         configuration.addAllowedOriginPattern("http://localhost:8080");
         configuration.addAllowedOriginPattern("http://localhost:3000"); // 프론트 쪽에서 허용
         configuration.addAllowedOriginPattern("https://balancetalk.kro.kr"); // 도메인 주소
+        configuration.addAllowedOriginPattern("https://balancetalk.kro.kr/email/request"); // 도메인 주소
         configuration.addExposedHeader("Authorization");
         configuration.addExposedHeader("refreshToken");
         configuration.setAllowedHeaders(Arrays.asList("*")); // header에 모두 요청 가능
