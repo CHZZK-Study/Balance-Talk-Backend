@@ -67,7 +67,8 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(csrf -> csrf.disable())
-                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                .cors(Customizer.withDefaults())
+//                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .exceptionHandling(exception -> {
                     exception.authenticationEntryPoint(jwtAuthenticationEntryPoint);
                     exception.accessDeniedHandler(jwtAccessDeniedHandler);
@@ -91,14 +92,15 @@ public class SecurityConfig {
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.addAllowedOriginPattern("http://localhost:8080");
-        configuration.addAllowedOriginPattern("http://localhost:3000"); // 프론트 쪽에서 허용
-        configuration.addAllowedOriginPattern("https://balancetalk.kro.kr"); // 도메인 주소
-        configuration.addAllowedOriginPattern("https://balancetalk.kro.kr/email/request"); // 도메인 주소
-        configuration.addExposedHeader("Authorization");
-        configuration.addExposedHeader("refreshToken");
-        configuration.setAllowedHeaders(Arrays.asList("*")); // header에 모두 요청 가능
-        configuration.setAllowedMethods(Arrays.asList("GET","POST","PUT","PATCH","DELETE", "OPTIONS"));
+//        configuration.addAllowedOriginPattern("http://localhost:8080");
+//        configuration.addAllowedOriginPattern("http://localhost:3000"); // 프론트 쪽에서 허용
+//        configuration.addAllowedOriginPattern("http://balancetalk.kro.kr"); // 도메인 주소
+//        configuration.addExposedHeader("Authorization");
+//        configuration.addExposedHeader("refreshToken");
+
+        configuration.setAllowedOrigins(List.of("http://localhost:3000", "http://localhost:8080", "http://balancetalk.kro.kr"));
+        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "HEAD"));
+        configuration.setAllowedHeaders(List.of("Authorization"));
         configuration.setAllowCredentials(true);
         configuration.setMaxAge(MAX_AGE_SEC);
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
