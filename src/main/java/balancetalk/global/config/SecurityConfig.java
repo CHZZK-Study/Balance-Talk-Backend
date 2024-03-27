@@ -96,6 +96,7 @@ public class SecurityConfig {
         configuration.addAllowedOriginPattern("http://balancetalk.kro.kr"); // 도메인 주소
         configuration.addExposedHeader("Authorization");
         configuration.addExposedHeader("refreshToken");
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE"));
         configuration.setAllowCredentials(true);
         configuration.setMaxAge(MAX_AGE_SEC);
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
