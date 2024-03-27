@@ -79,7 +79,7 @@ public class SecurityConfig {
                 // 세션 사용 X (jwt 사용)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(request -> request
-                        .requestMatchers(HttpMethod.GET, PUBLIC_GET, "").permitAll()
+                        .requestMatchers(HttpMethod.GET, PUBLIC_GET).permitAll()
                         .requestMatchers(HttpMethod.POST, PUBLIC_POST).permitAll()
                         .requestMatchers(HttpMethod.PUT, PUBLIC_PUT).permitAll()
                         .requestMatchers(HttpMethod.OPTIONS, "**").permitAll()
