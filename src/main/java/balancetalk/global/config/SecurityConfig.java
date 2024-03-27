@@ -39,7 +39,7 @@ public class SecurityConfig {
 
             "/",
             "/email/password",
-            "/members/duplicate",
+            "/members/duplicate", "/members/reissue",
             "/posts", "/posts/{postId}", "/posts/{postId}/vote", "/posts/{postId}/comments/**",
             "/notices", "/notices/{noticeId}"
     };
