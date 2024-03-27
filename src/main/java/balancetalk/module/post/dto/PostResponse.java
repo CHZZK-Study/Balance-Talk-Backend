@@ -116,6 +116,7 @@ public class PostResponse {
                 .filter(option -> Optional.ofNullable(option.getVotes())
                         .orElseGet(Collections::emptyList)
                         .stream()
+                        .filter(vote -> vote.getMember() != null && vote.getMember().getId() != null)
                         .anyMatch(vote -> vote.getMember().getId().equals(member.getId())))
                 .findFirst()
                 .map(BalanceOption::getId)
