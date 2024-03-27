@@ -32,8 +32,6 @@ public class SecurityConfig {
     private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
 
     private static final String[] PUBLIC_GET = {
-            "/api/**",
-        
             // h2 database
             "/h2-console/**",
             // swagger
