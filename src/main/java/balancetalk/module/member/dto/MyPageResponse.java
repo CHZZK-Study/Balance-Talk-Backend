@@ -19,6 +19,9 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class MyPageResponse {
+    @Schema(description = "게시글 id", example = "1")
+    private Long postId;
+
     @Schema(description = "게시글 제목", example = "게시글 제목")
     private String postTitle;
 
@@ -46,6 +49,7 @@ public class MyPageResponse {
 
     public static MyPageResponse fromEntity(Post post) {
         return MyPageResponse.builder()
+                .postId(post.getId())
                 .postTitle(post.getTitle())
                 .postCreatedAt(post.getCreatedAt())
                 .build();
@@ -53,6 +57,7 @@ public class MyPageResponse {
 
     public static MyPageResponse fromEntity(Bookmark bookmark) {
         return MyPageResponse.builder()
+                .postId(bookmark.getPost().getId())
                 .postTitle(bookmark.getPost().getTitle())
                 .bookmarkedAt(bookmark.getCreatedAt())
                 .build();
@@ -60,6 +65,7 @@ public class MyPageResponse {
 
     public static MyPageResponse fromEntity(Vote vote, Post post) {
         return MyPageResponse.builder()
+                .postId(post.getId())
                 .balanceOptionTitle(vote.getBalanceOption().getTitle())
                 .votedAt(vote.getCreatedAt())
                 .postTitle(post.getTitle())
@@ -68,6 +74,7 @@ public class MyPageResponse {
 
     public static MyPageResponse fromEntity(Comment comment) {
         return MyPageResponse.builder()
+                .postId(comment.getPost().getId())
                 .commentContent(comment.getContent())
                 .postTitle(comment.getPost().getTitle())
                 .commentCreatedAt(comment.getCreatedAt())
