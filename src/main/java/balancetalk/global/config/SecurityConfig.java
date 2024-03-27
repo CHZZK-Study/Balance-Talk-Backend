@@ -67,8 +67,7 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(csrf -> csrf.disable())
-                .cors(Customizer.withDefaults())
-//                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .exceptionHandling(exception -> {
                     exception.authenticationEntryPoint(jwtAuthenticationEntryPoint);
                     exception.accessDeniedHandler(jwtAccessDeniedHandler);
@@ -92,17 +91,13 @@ public class SecurityConfig {
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-//        configuration.addAllowedOriginPattern("http://localhost:8080");
-//        configuration.addAllowedOriginPattern("http://localhost:3000"); // 프론트 쪽에서 허용
-//        configuration.addAllowedOriginPattern("http://balancetalk.kro.kr"); // 도메인 주소
-//        configuration.addExposedHeader("Authorization");
-//        configuration.addExposedHeader("refreshToken");
-
-        configuration.addAllowedOrigin("*");
-        configuration.addAllowedMethod("*");
-        configuration.addAllowedHeader("*");
-//        configuration.setAllowCredentials(true);
-//        configuration.setMaxAge(MAX_AGE_SEC);
+        configuration.addAllowedOriginPattern("http://localhost:8080");
+        configuration.addAllowedOriginPattern("http://localhost:3000"); // 프론트 쪽에서 허용
+        configuration.addAllowedOriginPattern("http://balancetalk.kro.kr"); // 도메인 주소
+        configuration.addExposedHeader("Authorization");
+        configuration.addExposedHeader("refreshToken");
+        configuration.setAllowCredentials(true);
+        configuration.setMaxAge(MAX_AGE_SEC);
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;
