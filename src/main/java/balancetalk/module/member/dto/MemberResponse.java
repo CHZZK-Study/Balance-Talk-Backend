@@ -11,7 +11,6 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 @Data
 @Builder
-@NoArgsConstructor
 @AllArgsConstructor
 public class MemberResponse {
 

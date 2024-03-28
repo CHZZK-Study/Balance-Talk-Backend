@@ -12,7 +12,6 @@ import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
@@ -21,7 +20,6 @@ import java.util.stream.Collectors;
 
 @Data
 @Builder
-@NoArgsConstructor
 @AllArgsConstructor
 public class PostRequest {
 
@@ -33,7 +31,7 @@ public class PostRequest {
     @NotNull
     @Future
     @JsonFormat(pattern = "yyyy/MM/dd HH:mm:ss")
-    @Schema(description = "투료 종료 기한", example = "2024/12/25 15:30:00", type = "string")
+    @Schema(description = "투료 종료 기한", example = "2024-12-25T15:30:00", type = "string")
     private LocalDateTime deadline;
 
     @NotNull

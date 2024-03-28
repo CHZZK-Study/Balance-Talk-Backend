@@ -7,7 +7,6 @@ import lombok.*;
 
 @Data
 @Builder
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 public class FileResponse {
     @Schema(description = "파일 id", example = "1")
