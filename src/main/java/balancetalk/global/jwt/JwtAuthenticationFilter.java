@@ -1,5 +1,7 @@
 package balancetalk.global.jwt;
 
+import balancetalk.global.exception.BalanceTalkException;
+import balancetalk.global.exception.ErrorCode;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletRequest;
@@ -26,8 +28,12 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
                 Authentication auth = jwtTokenProvider.getAuthentication(token);
                 SecurityContextHolder.getContext().setAuthentication(auth);
             }
+            else if (token == null) {
+                throw new BalanceTalkException(ErrorCode.EMPTY_JWT_TOKEN);
+            }
         } catch (Exception e) {
-            log.error("TokenException={}", e.getMessage());
+            log.error("error={}", e.getMessage());
+            request.setAttribute("exception", e.getMessage());
         }
         chain.doFilter(request, response);
     }
