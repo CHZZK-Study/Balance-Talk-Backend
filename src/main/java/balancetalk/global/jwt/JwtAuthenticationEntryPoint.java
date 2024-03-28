@@ -6,6 +6,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
@@ -27,8 +28,9 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
         ObjectMapper objectMapper = new ObjectMapper();
         Map<String, Object> jsonMessage = new HashMap<>();
 
-        jsonMessage.put("httpStatus", "UNAUTHORIZED");
-        jsonMessage.put("message", ErrorCode.AUTHENTICATION_REQUIRED.getMessage());
+        String errorMessage = (String) request.getAttribute("exception");
+        jsonMessage.put("httpStatus", HttpStatus.UNAUTHORIZED);
+        jsonMessage.put("message", errorMessage);
         String result = objectMapper.writeValueAsString(jsonMessage);
 
         response.getWriter().write(result);
