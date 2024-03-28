@@ -38,7 +38,6 @@ public class SecurityConfig {
             "/swagger-ui/**", "/v3/api-docs/**",
 
             "/",
-            "/email/password",
             "/members/duplicate",
             "/posts", "/posts/{postId}", "/posts/{postId}/vote", "/posts/{postId}/comments/**",
             "/notices", "/notices/{noticeId}"
@@ -46,7 +45,7 @@ public class SecurityConfig {
 
     private static final String[] PUBLIC_POST = {
             "/members/join", "/members/login",
-            "/email/request", "/email/verify",
+            "/email/request", "/email/verify", "/email/password",
             "/posts/{postId}/vote", "/files/image/upload"
     };
 
