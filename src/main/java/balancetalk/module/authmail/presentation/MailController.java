@@ -35,7 +35,7 @@ public class MailController {
     }
 
     @ResponseStatus(HttpStatus.OK)
-    @GetMapping("/password")
+    @PostMapping("/password")
     @Operation(summary = "비밀 번호 찾기", description = "가입된 회원 이메일로 임시 비밀번호를 발송한다.")
     public String sendTempPassword(@Valid @RequestBody EmailRequest request) {
         mailService.sendTempPassword(request);
