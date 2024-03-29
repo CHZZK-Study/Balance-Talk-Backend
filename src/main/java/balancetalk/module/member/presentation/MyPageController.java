@@ -32,7 +32,7 @@ public class MyPageController {
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/history/posts")
     @Operation(summary = "모든 게시글 조회", description = "해당 회원이 쓴 모든 글을 조회한다.")
-    public Page<PostResponse> findAllPosts(
+    public Page<MyPageResponse> findAllPosts(
             @RequestParam(value = "page", defaultValue = "0") int page,
             @RequestParam(required = false, value = "size", defaultValue = "10") int size) {
 
@@ -45,7 +45,7 @@ public class MyPageController {
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/history/comments")
     @Operation(summary = "모든 댓글 조회", description = "해당 회원이 쓴 모든 댓글을 조회한다.")
-    public Page<CommentResponse> findAllComments(
+    public Page<MyPageResponse> findAllComments(
             @RequestParam(value = "page", defaultValue = "0") int page,
             @RequestParam(required = false, value = "size", defaultValue = "10") int size) {
 
@@ -58,7 +58,7 @@ public class MyPageController {
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "투표한 게시글 조회", description = "해당 회원이 투표한 모든 글을 조회한다.")
     @GetMapping("/history/votedPosts")
-    public Page<VotedPostResponse> findAllVotedPosts(
+    public Page<MyPageResponse> findAllVotedPosts(
             @RequestParam(value = "page", defaultValue = "0") int page,
             @RequestParam(required = false, value = "size", defaultValue = "10") int size) {
 
@@ -71,7 +71,7 @@ public class MyPageController {
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "북마크한 게시글 조회", description = "해당 회원이 북마크한 모든 글을 조회한다.")
     @GetMapping("/history/bookmarks")
-    public Page<BookmarkedPostResponse> findAllBookmarkedPosts(
+    public Page<MyPageResponse> findAllBookmarkedPosts(
             @RequestParam(value = "page", defaultValue = "0") int page,
             @RequestParam(required = false, value = "size", defaultValue = "10") int size) {
 
