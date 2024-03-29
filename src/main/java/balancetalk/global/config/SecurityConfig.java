@@ -38,7 +38,10 @@ public class SecurityConfig {
             "/swagger-ui/**", "/v3/api-docs/**",
 
             "/",
-            "/members/duplicate",
+
+            "/email/password",
+            "/members/duplicate", "/members/reissue",
+
             "/posts", "/posts/{postId}", "/posts/{postId}/vote", "/posts/{postId}/comments/**",
             "/notices", "/notices/{noticeId}"
     };

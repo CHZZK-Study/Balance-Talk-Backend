@@ -113,7 +113,7 @@ public class MemberController {
 
     @ResponseStatus(HttpStatus.CREATED)
     @GetMapping("/reissue")
-    @Operation(summary = "액세스 토큰 재발급", description = "리프레시 토큰을 통해서 만료된 액세스 토큰을 재발급 받는다.")
+    @Operation(summary = "액세스 토큰 재발급", description = "만료된 액세스 토큰을 재발급 받는다.")
     public String reissueAccessToken(HttpServletRequest request) {
         return memberService.reissueAccessToken(request);
     }
