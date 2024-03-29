@@ -151,8 +151,16 @@ public class MemberService {
     }
 
     public String reissueAccessToken(HttpServletRequest request) {
-        String refreshToken = jwtTokenProvider.resolveToken(request);
-        Long memberId = jwtTokenProvider.getMemberId(refreshToken);
-        return jwtTokenProvider.reissueAccessToken(refreshToken, memberId);
+        Cookie[] cookies = request.getCookies();
+        for (Cookie cookie : cookies) {
+            String name = cookie.getName();
+            if (name.equals("refreshToken")) {
+                String refreshToken = cookie.getValue();
+                jwtTokenProvider.validateToken(refreshToken);
+                Long memberId = jwtTokenProvider.getMemberId(refreshToken);
+                return jwtTokenProvider.reissueAccessToken(refreshToken, memberId);
+            }
+        }
+        return null;
     }
 }

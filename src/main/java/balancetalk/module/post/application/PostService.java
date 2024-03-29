@@ -11,12 +11,9 @@ import balancetalk.module.file.domain.FileRepository;
 import balancetalk.module.member.domain.Member;
 import balancetalk.module.member.domain.MemberRepository;
 import balancetalk.module.member.domain.Role;
+import balancetalk.module.member.dto.MyPageResponse;
 import balancetalk.module.post.domain.*;
-import balancetalk.module.post.dto.BalanceOptionRequest;
-import balancetalk.module.post.dto.BookmarkedPostResponse;
-import balancetalk.module.post.dto.PostRequest;
-import balancetalk.module.post.dto.PostResponse;
-import balancetalk.module.post.dto.VotedPostResponse;
+import balancetalk.module.post.dto.*;
 import balancetalk.module.vote.domain.VoteRepository;
 import java.util.stream.Collectors;
 import java.util.List;
@@ -108,28 +105,27 @@ public class PostService {
     }
 
     @Transactional(readOnly = true)
-    public Page<PostResponse> findAllByCurrentMember(Pageable pageable) {
+    public Page<MyPageResponse> findAllByCurrentMember(Pageable pageable) {
         Member currentMember = getCurrentMember(memberRepository);
 
         return postRepository.findAllByMemberId(currentMember.getId(), pageable)
-                .map(post -> PostResponse.fromEntity(post, currentMember, currentMember.hasLiked(post),
-                        currentMember.hasBookmarked(post), currentMember.hasVoted(post)));
+                .map(MyPageResponse::fromEntity);
     }
 
     @Transactional(readOnly = true)
-    public Page<VotedPostResponse> findAllVotedByCurrentMember(Pageable pageable) {
+    public Page<MyPageResponse> findAllVotedByCurrentMember(Pageable pageable) {
         Member currentMember = getCurrentMember(memberRepository);
 
         return voteRepository.findAllByMemberId(currentMember.getId(), pageable)
-                .map(vote -> VotedPostResponse.fromEntity(vote, vote.getBalanceOption().getPost()));
+                .map(vote -> MyPageResponse.fromEntity(vote, vote.getBalanceOption().getPost()));
     }
 
     @Transactional(readOnly = true)
-    public Page<BookmarkedPostResponse> findAllBookmarkedByCurrentMember(Pageable pageable) {
+    public Page<MyPageResponse> findAllBookmarkedByCurrentMember(Pageable pageable) {
         Member currentMember = getCurrentMember(memberRepository);
 
         return bookmarkRepository.findAllByMemberId(currentMember.getId(), pageable)
-                .map(BookmarkedPostResponse::fromEntity);
+                .map(MyPageResponse::fromEntity);
     }
 
 
