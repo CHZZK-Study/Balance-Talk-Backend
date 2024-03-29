@@ -16,12 +16,17 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import java.util.Arrays;
 
 @Configuration
 @RequiredArgsConstructor
 @EnableWebSecurity
 public class SecurityConfig {
 
+    private final long MAX_AGE_SEC = 3600;
     private final JwtTokenProvider jwtTokenProvider;
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
     private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
@@ -31,7 +36,8 @@ public class SecurityConfig {
             "/h2-console/**",
             // swagger
             "/swagger-ui/**", "/v3/api-docs/**",
-            "/email/password",
+
+            "/",
             "/members/duplicate",
             "/posts", "/posts/{postId}", "/posts/{postId}/vote", "/posts/{postId}/comments/**",
             "/notices", "/notices/{noticeId}"
@@ -39,7 +45,7 @@ public class SecurityConfig {
 
     private static final String[] PUBLIC_POST = {
             "/members/join", "/members/login",
-            "/email/request", "/email/verify",
+            "/email/request", "/email/verify", "/email/password",
             "/posts/{postId}/vote", "/files/image/upload"
     };
 
@@ -60,7 +66,7 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(csrf -> csrf.disable())
-                .cors(cors -> cors.disable())
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .exceptionHandling(exception -> {
                     exception.authenticationEntryPoint(jwtAuthenticationEntryPoint);
                     exception.accessDeniedHandler(jwtAccessDeniedHandler);
@@ -78,5 +84,21 @@ public class SecurityConfig {
                 // jwtFilter 먼저 적용
                 .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class);
         return http.build();
+    }
+
+    @Bean
+    CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.addAllowedOriginPattern("http://localhost:8080");
+        configuration.addAllowedOriginPattern("http://localhost:3000"); // 프론트 쪽에서 허용
+        configuration.addAllowedOriginPattern("https://balancetalk.kro.kr"); // 도메인 주소
+        configuration.addExposedHeader("Authorization");
+        configuration.addExposedHeader("refreshToken");
+        configuration.setAllowedMethods(Arrays.asList("GET","POST","PUT","PATCH","DELETE"));
+        configuration.setAllowCredentials(true);
+        configuration.setMaxAge(MAX_AGE_SEC);
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
     }
 }

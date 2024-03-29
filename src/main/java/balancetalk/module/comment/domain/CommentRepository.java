@@ -12,7 +12,9 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
 
     Page<Comment> findAllByMemberEmail(String email, Pageable pageable);
 
-    Page<Comment> findAllByPostId(Long postId, Pageable pageable);
+    Page<Comment> findAllByPostIdAndParentIsNull(Long postId, Pageable pageable);
+
+    List<Comment> findAllByPostIdAndParentId(Long postId, Long parentId);
 
     @Query("select c from Comment c left join c.likes l "
             + "where c.post.id = :postId and c.member.id in :memberIds "

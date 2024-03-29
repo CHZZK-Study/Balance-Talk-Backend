@@ -3,9 +3,9 @@ package balancetalk.global.jwt;
 import balancetalk.global.exception.BalanceTalkException;
 import balancetalk.global.exception.ErrorCode;
 import balancetalk.global.redis.application.RedisService;
-import balancetalk.module.member.dto.TokenDto;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.SignatureException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -58,10 +58,9 @@ public class JwtTokenProvider {
     /**
      * Refresh 토큰 생성
      */
-    public String createRefreshToken(Authentication authentication, Long memberId) {
+    public String createRefreshToken(Authentication authentication) {
         validateAuthentication(authentication);
         Claims claims = Jwts.claims();
-        claims.put("memberId", memberId);
         claims.setSubject(authentication.getName());
         Date now = new Date();
         Date expireDate = new Date(now.getTime() + refreshExpirationTime);
@@ -75,6 +74,17 @@ public class JwtTokenProvider {
         // redis에 refresh token 저장
         redisService.setValues(authentication.getName(), refreshToken, Duration.ofMillis(refreshExpirationTime));
         return refreshToken;
+    }
+
+    public Cookie createCookie(String refreshToken) {
+        String cookieName = "refreshToken";
+        Cookie cookie = new Cookie(cookieName, refreshToken);
+
+        cookie.setHttpOnly(true);
+        cookie.setSecure(true);
+        cookie.setPath("/");
+        cookie.setMaxAge(60 * 60 * 24); // accessToken 유효
+        return cookie;
     }
 
     // 토큰으로부터 클레임을 만들고, User 객체를 생성해서 Authentication 객체 반환
@@ -123,7 +133,8 @@ public class JwtTokenProvider {
         }
     }
 
-    public TokenDto reissueToken(String refreshToken, Long memberId) {
+
+    public String reissueAccessToken(String refreshToken, Long memberId) {
         validateToken(refreshToken);
         Authentication authentication = getAuthentication(refreshToken);
         // redis에 저장된 RefreshToken 값을 가져옴
@@ -131,10 +142,6 @@ public class JwtTokenProvider {
         if (!redisRefreshToken.equals(refreshToken)) {
             throw new BalanceTalkException(ErrorCode.INVALID_REFRESH_TOKEN);
         }
-        TokenDto tokenDto = new TokenDto(
-                createAccessToken(authentication, memberId),
-                createRefreshToken(authentication, memberId)
-        );
-        return tokenDto;
+        return createAccessToken(authentication, memberId);
     }
 }

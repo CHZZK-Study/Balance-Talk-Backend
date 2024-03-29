@@ -2,9 +2,12 @@ package balancetalk.module.member.presentation;
 
 import balancetalk.module.member.application.MemberService;
 import balancetalk.module.member.dto.*;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiParam;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
@@ -37,8 +40,8 @@ public class MemberController {
     @ResponseStatus(HttpStatus.OK)
     @PostMapping("/login")
     @Operation(summary = "로그인", description = "회원 가입 한 이메일과 패스워드를 사용하여 로그인 한다.")
-    public TokenDto login(@Valid @RequestBody LoginRequest loginRequest) {
-        return memberService.login(loginRequest);
+    public String login(@Valid @RequestBody LoginRequest loginRequest, HttpServletResponse response) {
+        return memberService.login(loginRequest, response);
     }
 
     @ResponseStatus(HttpStatus.OK)
@@ -56,7 +59,7 @@ public class MemberController {
     }
 
     @ResponseStatus(HttpStatus.OK)
-    @PutMapping("/nickname")
+    @PutMapping(value = "/nickname", consumes = "text/plain")
     @Operation(summary = "회원 닉네임 수정", description = "회원 닉네임을 수정한다.")
     public String updateNickname(@Valid @NotBlank @RequestBody @Size(min = 2, max = 10)String newNickname, HttpServletRequest request) {
         // TODO: RequestBody 빈 값일 때 에러체킹 x
@@ -65,7 +68,7 @@ public class MemberController {
     }
 
     @ResponseStatus(HttpStatus.OK)
-    @PutMapping("/password")
+    @PutMapping(value = "/password", consumes = "text/plain")
     @Operation(summary = "회원 비밀번호 수정", description = "회원 패스워드를 수정한다.")
     public String updatePassword(@RequestBody @Size(min = 10, max = 20)
                                  @Pattern(regexp = "^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d@$!%*#?&]{10,20}$")
@@ -76,7 +79,7 @@ public class MemberController {
     }
 
     @ResponseStatus(HttpStatus.OK)
-    @PutMapping("/image")
+    @PutMapping(value = "/image", consumes = "text/plain")
     @Operation(summary = "회원 이미지 변경", description = "회원 프로필 이미지를 변경한다.")
     public String updateImage(@RequestBody String storedFileName, HttpServletRequest request) {
         memberService.updateImage(storedFileName, request);
@@ -106,5 +109,12 @@ public class MemberController {
                                  @Size(min = 2, max = 10)String nickname) {
         memberService.verifyNickname(nickname);
         return "사용 가능한 닉네임 입니다.";
+    }
+
+    @ResponseStatus(HttpStatus.CREATED)
+    @GetMapping("/reissue")
+    @Operation(summary = "액세스 토큰 재발급", description = "리프레시 토큰을 통해서 만료된 액세스 토큰을 재발급 받는다.")
+    public String reissueAccessToken(HttpServletRequest request) {
+        return memberService.reissueAccessToken(request);
     }
 }
