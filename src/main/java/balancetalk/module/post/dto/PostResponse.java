@@ -86,7 +86,7 @@ public class PostResponse {
                 .balanceOptions(getBalanceOptions(post))
                 .postTags(getPostTags(post))
                 .totalVotesCount(getTotalVotes(post))
-                .commentsCount(post.getComments().size())
+                .commentsCount(post.commentsCount())
                 .createdAt(post.getCreatedAt())
                 .createdBy(post.getMember().getNickname())
                 .profileImageUrl(getProfileImageUrl(post.getMember()))
