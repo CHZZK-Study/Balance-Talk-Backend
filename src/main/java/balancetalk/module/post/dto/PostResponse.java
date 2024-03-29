@@ -57,6 +57,9 @@ public class PostResponse {
     @Schema(description = "전체 투표 수", example = "15")
     private int totalVotesCount;
 
+    @Schema(description = "댓글 개수", example = "12")
+    private long commentsCount;
+
     @JsonFormat(pattern = "yyyy/MM/dd HH:mm:ss")
     @Schema(description = "게시글 작성일", example = "2024/03/30 11:12:37")
     private LocalDateTime createdAt;
@@ -83,6 +86,7 @@ public class PostResponse {
                 .balanceOptions(getBalanceOptions(post))
                 .postTags(getPostTags(post))
                 .totalVotesCount(getTotalVotes(post))
+                .commentsCount(post.commentsCount())
                 .createdAt(post.getCreatedAt())
                 .createdBy(post.getMember().getNickname())
                 .profileImageUrl(getProfileImageUrl(post.getMember()))

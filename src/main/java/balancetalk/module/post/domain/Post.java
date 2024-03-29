@@ -87,6 +87,13 @@ public class Post extends BaseTimeEntity {
         }
         return likes.size();
     }
+
+    public long commentsCount() {
+        if (comments == null) {
+            return 0;
+        }
+        return comments.size();
+    }
     
     @PrePersist
     public void init() {
