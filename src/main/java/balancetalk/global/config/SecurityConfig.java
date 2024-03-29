@@ -82,6 +82,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, PUBLIC_GET).permitAll()
                         .requestMatchers(HttpMethod.POST, PUBLIC_POST).permitAll()
                         .requestMatchers(HttpMethod.PUT, PUBLIC_PUT).permitAll()
+                        .requestMatchers(HttpMethod.OPTIONS, "**").permitAll()
                         .anyRequest().authenticated()
                 )
                 // jwtFilter 먼저 적용
@@ -97,7 +98,7 @@ public class SecurityConfig {
         configuration.addAllowedOriginPattern("https://balancetalk.kro.kr"); // 도메인 주소
         configuration.addExposedHeader("Authorization");
         configuration.addExposedHeader("refreshToken");
-        configuration.setAllowedMethods(Arrays.asList("GET","POST","PUT","PATCH","DELETE"));
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE"));
         configuration.setAllowCredentials(true);
         configuration.setMaxAge(MAX_AGE_SEC);
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
