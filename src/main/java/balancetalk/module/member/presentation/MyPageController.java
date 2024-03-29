@@ -2,11 +2,8 @@ package balancetalk.module.member.presentation;
 
 import balancetalk.global.exception.BalanceTalkException;
 import balancetalk.module.comment.application.CommentService;
-import balancetalk.module.comment.dto.CommentResponse;
 import balancetalk.module.post.application.PostService;
-import balancetalk.module.post.dto.BookmarkedPostResponse;
-import balancetalk.module.post.dto.PostResponse;
-import balancetalk.module.post.dto.VotedPostResponse;
+import balancetalk.module.member.dto.MyPageResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;

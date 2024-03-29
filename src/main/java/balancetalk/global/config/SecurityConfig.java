@@ -38,15 +38,17 @@ public class SecurityConfig {
             "/swagger-ui/**", "/v3/api-docs/**",
 
             "/",
+
             "/email/password",
             "/members/duplicate", "/members/reissue",
+
             "/posts", "/posts/{postId}", "/posts/{postId}/vote", "/posts/{postId}/comments/**",
             "/notices", "/notices/{noticeId}"
     };
 
     private static final String[] PUBLIC_POST = {
             "/members/join", "/members/login",
-            "/email/request", "/email/verify",
+            "/email/request", "/email/verify", "/email/password",
             "/posts/{postId}/vote", "/files/image/upload"
     };
 
@@ -92,7 +94,7 @@ public class SecurityConfig {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.addAllowedOriginPattern("http://localhost:8080");
         configuration.addAllowedOriginPattern("http://localhost:3000"); // 프론트 쪽에서 허용
-        configuration.addAllowedOriginPattern("http://balancetalk.kro.kr"); // 도메인 주소
+        configuration.addAllowedOriginPattern("https://balancetalk.kro.kr"); // 도메인 주소
         configuration.addExposedHeader("Authorization");
         configuration.addExposedHeader("refreshToken");
         configuration.setAllowedMethods(Arrays.asList("GET","POST","PUT","PATCH","DELETE"));
