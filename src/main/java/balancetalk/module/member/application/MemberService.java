@@ -126,6 +126,12 @@ public class MemberService {
         if (!passwordEncoder.matches(loginRequest.getPassword(), member.getPassword())) {
             throw new BalanceTalkException(ErrorCode.MISMATCHED_EMAIL_OR_PASSWORD);
         }
+        List<Post> posts = member.getPosts();
+        if (posts != null) {
+            for (Post post : posts) {
+                post.removeMember();
+            }
+        }
         memberRepository.deleteByEmail(member.getEmail());
     }
 
