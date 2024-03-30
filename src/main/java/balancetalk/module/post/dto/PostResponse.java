@@ -1,5 +1,6 @@
 package balancetalk.module.post.dto;
 
+import balancetalk.module.ViewStatus;
 import balancetalk.module.file.domain.File;
 import balancetalk.module.member.domain.Member;
 import balancetalk.module.post.domain.BalanceOption;
@@ -32,8 +33,14 @@ public class PostResponse {
     @Schema(description = "게시글 조회수", example = "126")
     private long views;
 
+//    @Schema(description = "게시글 블라인드 여부", example = "NORMAL")
+//    private ViewStatus viewStatus;
+
     @Schema(description = "게시글 추천수", example = "15")
     private long likesCount;
+
+//    @Schema(description = "신고 횟수" , example = "3")
+//    private long reportedCount;
 
     @Schema(description = "추천 여부", example = "true")
     private boolean myLike;
@@ -77,8 +84,10 @@ public class PostResponse {
                 .title(post.getTitle())
                 .deadline(post.getDeadline())
                 .views(post.getViews())
+//                .viewStatus(post.getViewStatus())
                 .likesCount(post.likesCount())
                 .myLike(myLike)
+//                .reportedCount(post.reportedCount())
                 .myBookmark(myBookmark)
                 .myVote(myVote)
                 .selectedOptionId(getSelectedOptionId(post, member))

@@ -3,6 +3,7 @@ package balancetalk.module.post.presentation;
 import balancetalk.module.post.application.PostService;
 import balancetalk.module.post.dto.PostRequest;
 import balancetalk.module.post.dto.PostResponse;
+import balancetalk.module.report.dto.ReportRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
@@ -91,5 +92,13 @@ public class PostController {
     public String cancelLikePost(@PathVariable Long postId) {
         postService.cancelLikePost(postId);
         return "요청이 정상적으로 처리되었습니다.";
+    }
+
+    @ResponseStatus(HttpStatus.OK)
+    @PostMapping("/{postId}/report")
+    @Operation(summary = "게시글 신고", description = "post-id에 해당하는 게시글을 신고 처리한다.")
+    public String reportPost(@PathVariable Long postId, @RequestBody ReportRequest request) {
+        postService.reportPost(postId, request);
+        return "신고가 성공적으로 접수되었습니다.";
     }
 }

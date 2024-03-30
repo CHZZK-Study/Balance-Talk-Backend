@@ -17,7 +17,6 @@ import static balancetalk.module.post.domain.BalanceOption.*;
 
 @Data
 @Builder
-@NoArgsConstructor
 @AllArgsConstructor
 public class BalanceOptionRequest {
 
