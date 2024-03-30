@@ -127,8 +127,10 @@ public class MemberService {
         }
 
         List<Post> posts = member.getPosts();
-        for (Post post : posts) {
-            post.removeMember();
+        if (posts != null) {
+            for (Post post : posts) {
+                post.removeMember();
+            }
         }
         memberRepository.deleteByEmail(member.getEmail());
     }

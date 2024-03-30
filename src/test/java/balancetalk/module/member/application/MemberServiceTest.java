@@ -295,6 +295,7 @@ class MemberServiceTest {
         when(passwordEncoder.matches(loginRequest.getPassword(), member.getPassword())).thenReturn(true);
 
         // when
+
         memberService.delete(loginRequest, request);
 
         // then
