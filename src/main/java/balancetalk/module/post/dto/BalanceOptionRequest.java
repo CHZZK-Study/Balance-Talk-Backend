@@ -2,7 +2,6 @@ package balancetalk.module.post.dto;
 
 import balancetalk.module.file.domain.File;
 import balancetalk.module.post.domain.BalanceOption;
-import balancetalk.module.post.domain.BalanceOption.BalanceOptionBuilder;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -14,9 +13,10 @@ import org.springframework.lang.Nullable;
 import java.util.List;
 import java.util.Optional;
 
+import static balancetalk.module.post.domain.BalanceOption.*;
+
 @Data
 @Builder
-@NoArgsConstructor
 @AllArgsConstructor
 public class BalanceOptionRequest {
 
