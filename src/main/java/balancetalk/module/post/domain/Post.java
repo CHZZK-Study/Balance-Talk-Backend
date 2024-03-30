@@ -94,6 +94,10 @@ public class Post extends BaseTimeEntity {
         this.viewStatus = ViewStatus.NORMAL;
     }
 
+    public void removeMember() {
+        this.member = null;
+    }
+
     public boolean notContainsBalanceOption(BalanceOption option) {
         return !options.contains(option);
     }
