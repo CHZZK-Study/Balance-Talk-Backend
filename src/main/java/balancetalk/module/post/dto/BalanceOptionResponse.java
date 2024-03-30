@@ -2,13 +2,14 @@ package balancetalk.module.post.dto;
 
 import balancetalk.module.file.domain.File;
 import balancetalk.module.post.domain.BalanceOption;
-import balancetalk.module.post.domain.BalanceOption.BalanceOptionBuilder;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.lang.Nullable;
+
+import static balancetalk.module.post.domain.BalanceOption.*;
 
 @Data
 @Builder
