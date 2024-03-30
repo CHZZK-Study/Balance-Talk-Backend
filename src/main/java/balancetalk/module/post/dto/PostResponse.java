@@ -65,7 +65,7 @@ public class PostResponse {
     private int totalVotesCount;
 
     @JsonFormat(pattern = "yyyy/MM/dd HH:mm:ss")
-    @Schema(description = "게시글 작성일", example = "2023-12-25T15:30:00")
+    @Schema(description = "게시글 작성일", example = "2024/03/30 11:12:37")
     private LocalDateTime createdAt;
 
     @Schema(description = "게시글 작성자", example = "작성자 닉네임")
