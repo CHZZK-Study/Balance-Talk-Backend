@@ -16,7 +16,6 @@ import java.util.Optional;
 
 @Data
 @Builder
-@NoArgsConstructor
 @AllArgsConstructor
 public class BalanceOptionRequest {
 

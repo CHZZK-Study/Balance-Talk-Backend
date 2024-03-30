@@ -1,5 +1,6 @@
 package balancetalk.module.comment.dto;
 
+import balancetalk.module.ViewStatus;
 import balancetalk.module.comment.domain.Comment;
 import balancetalk.module.file.domain.File;
 import balancetalk.module.member.domain.Member;
@@ -30,8 +31,14 @@ public class CommentResponse {
     @Schema(description = "해당 댓글에 맞는 선택지 id", example = "23")
     private Long selectedOptionId;
 
+//    @Schema(description = "댓글 블라인드 여부", example = "NORMAL")
+//    private ViewStatus viewStatus;
+
     @Schema(description = "댓글 추천 수", example = "24")
     private int likesCount;
+
+//    @Schema(description = "댓글 신고 수", example = "3")
+//    private long reportedCount;
 
     @Schema(description = "추천 여부", example = "true")
     private boolean myLike;
@@ -52,7 +59,9 @@ public class CommentResponse {
                 .memberName(comment.getMember().getNickname())
                 .postId(comment.getPost().getId())
                 .selectedOptionId(balanceOptionId)
+                //.viewStatus(comment.getViewStatus())
                 .likesCount(comment.getLikes().size())
+                //.reportedCount(comment.reportedCount())
                 .myLike(myLike)
                 .createdAt(comment.getCreatedAt())
                 .lastModifiedAt(comment.getLastModifiedAt())
