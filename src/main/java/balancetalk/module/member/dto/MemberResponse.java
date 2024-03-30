@@ -20,8 +20,8 @@ public class MemberResponse {
     @Schema(description = "회원 닉네임", example = "닉네임")
     private String nickname;
 
-    @Schema(description = "회원 프로필", example = "../")
-    private String profilePhoto; // TODO: File 타입으로 수정 예정
+    @Schema(description = "회원 프로필 URL", example = "https://balance-talk-static-files.s3.ap-northeast-2.amazonaws.com/balance-talk-images/balance-option/a723b360-f42f-4dc9-be69-72904b6861d9_강아지.jpeg")
+    private String profileImageUrl;
 
     @Schema(description = "가입일", example = "2024-02-16 13:37:17.391706")
     private LocalDateTime createdAt;
@@ -36,14 +36,14 @@ public class MemberResponse {
     private int level;
 
     public static MemberResponse fromEntity(Member member) {
-        String profilePhotoName = Optional.ofNullable(member.getProfilePhoto())
-                .map(File::getStoredName)
+        String profileImageUrl = Optional.ofNullable(member.getProfilePhoto())
+                .map(File::getUrl)
                 .orElse(null);
 
         return MemberResponse.builder()
                 .id(member.getId())
                 .nickname(member.getNickname())
-                .profilePhoto(profilePhotoName)
+                .profileImageUrl(profileImageUrl)
                 .createdAt(member.getCreatedAt())
                 .postsCount(member.getPostCount())
                 .totalPostLike(member.getPostLikes())

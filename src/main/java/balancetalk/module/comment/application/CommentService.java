@@ -18,6 +18,7 @@ import balancetalk.module.post.domain.PostRepository;
 import balancetalk.module.report.domain.Report;
 import balancetalk.module.report.domain.ReportRepository;
 import balancetalk.module.report.dto.ReportRequest;
+import balancetalk.module.member.dto.MyPageResponse;
 import balancetalk.module.vote.domain.Vote;
 import balancetalk.module.vote.domain.VoteRepository;
 import java.util.ArrayList;
@@ -87,11 +88,11 @@ public class CommentService {
     }
 
     @Transactional(readOnly = true)
-    public Page<CommentResponse> findAllByCurrentMember(Pageable pageable) {
+    public Page<MyPageResponse> findAllByCurrentMember(Pageable pageable) {
         Member currentMember = getCurrentMember(memberRepository);
 
         return commentRepository.findAllByMemberEmail(currentMember.getEmail(), pageable)
-                .map(comment -> CommentResponse.fromEntity(comment, null, false));
+                .map(MyPageResponse::fromEntity);
     }
 
     public Comment updateComment(Long commentId, Long postId, String content) {
