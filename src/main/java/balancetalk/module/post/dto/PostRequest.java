@@ -30,8 +30,8 @@ public class PostRequest {
 
     @NotNull
     @Future
-    @JsonFormat(pattern = "yyyy/MM/dd HH:mm:ss")
-    @Schema(description = "투료 종료 기한", example = "2024/12/25 15:30:00", type = "string")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss", timezone = "Asia/Seoul")
+    @Schema(description = "투료 종료 기한", example = "2024-12-25T15:30:00", type = "string")
     private LocalDateTime deadline;
 
     @NotNull
