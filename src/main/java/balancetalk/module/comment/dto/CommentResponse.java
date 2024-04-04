@@ -43,6 +43,9 @@ public class CommentResponse {
     @Schema(description = "추천 여부", example = "true")
     private boolean myLike;
 
+    @Schema(description = "답글 수", example = "3")
+    private int replyCount;
+
     @Schema(description = "댓글 생성 날짜")
     private LocalDateTime createdAt;
 
@@ -63,6 +66,7 @@ public class CommentResponse {
                 .likesCount(comment.getLikes().size())
                 //.reportedCount(comment.reportedCount())
                 .myLike(myLike)
+                .replyCount(comment.getReplies().size())
                 .createdAt(comment.getCreatedAt())
                 .lastModifiedAt(comment.getLastModifiedAt())
                 .profileImageUrl(getProfileImageUrl(comment.getMember()))
