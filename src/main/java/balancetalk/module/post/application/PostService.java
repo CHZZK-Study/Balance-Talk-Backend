@@ -92,7 +92,7 @@ public class PostService {
                 member.hasVoted(post)));
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     public PostResponse findById(Long postId, String token) {
         Post post = getCurrentPost(postId);
 
