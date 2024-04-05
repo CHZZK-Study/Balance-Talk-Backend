@@ -164,9 +164,6 @@ public class PostService {
     public void cancelLikePost(Long postId) {
         Post post = getCurrentPost(postId);
         Member member = getCurrentMember(memberRepository);
-        if (post.likesCount() == 0) {
-            throw new BalanceTalkException(ALREADY_CANCEL_LIKE_POST);
-        }
         postLikeRepository.deleteByMemberAndPost(member, post);
     }
 
