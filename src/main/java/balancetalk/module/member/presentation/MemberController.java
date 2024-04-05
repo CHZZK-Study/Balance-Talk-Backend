@@ -117,7 +117,7 @@ public class MemberController {
     }
 
     @ResponseStatus(HttpStatus.OK)
-    @GetMapping("/profile/{memberId}")
+    @GetMapping("/{memberId}/profile")
     public ProfileResponse memberProfile(@PathVariable("memberId") Long memberId) {
         return memberService.memberProfile(memberId);
     }
