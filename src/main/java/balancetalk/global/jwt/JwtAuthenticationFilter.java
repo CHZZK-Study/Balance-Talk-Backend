@@ -28,9 +28,6 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
                 Authentication auth = jwtTokenProvider.getAuthentication(token);
                 SecurityContextHolder.getContext().setAuthentication(auth);
             }
-            else if (token == null) {
-                throw new BalanceTalkException(ErrorCode.EMPTY_JWT_TOKEN);
-            }
         } catch (Exception e) {
             log.error("error={}", e.getMessage());
             request.setAttribute("exception", e.getMessage());
