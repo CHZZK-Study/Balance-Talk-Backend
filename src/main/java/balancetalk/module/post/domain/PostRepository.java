@@ -19,10 +19,10 @@ public interface PostRepository extends JpaRepository<Post, Long> {
 
     List<Post> findByTitleContaining(String keyword);
 
-    @Query(value = "SELECT * " +
-            "FROM post p " +
-            "NATURAL JOIN post_tag pt " +
-            "NATURAL JOIN tag t " +
-            "WHERE p.post_id = pt.post_id AND pt.tag_id = t.tag_id AND t.name = :tagName", nativeQuery = true)
+    @Query("SELECT p " +
+            "FROM Post p " +
+            "JOIN p.postTags pt " +
+            "JOIN pt.tag t " +
+            "WHERE t.name = :tagName")
     List<Post> findByPostTagsContaining(String tagName);
 }
