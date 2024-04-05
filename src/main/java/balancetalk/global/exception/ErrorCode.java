@@ -55,6 +55,7 @@ public enum ErrorCode {
     NOT_FOUND_MEMBER(NOT_FOUND, "존재하지 않는 회원입니다."),
     NOT_FOUND_VOTE(NOT_FOUND, "해당 게시글에서 투표한 기록이 존재하지 않습니다."),
     NOT_FOUND_BOOKMARK(NOT_FOUND, "해당 게시글에서 북마크한 기록이 존재하지 않습니다."),
+    NOT_FOUND_POST_LIKE(NOT_FOUND, "해당 게시글을 추천한 기록이 존재하지 않습니다. "),
     NOT_FOUND_COMMENT(NOT_FOUND, "존재하지 않는 댓글입니다."),
     NOT_FOUND_DIRECTORY(NOT_FOUND, "존재하지 않는 디렉토리입니다."),
     NOT_SUPPORTED_FILE_TYPE(NOT_FOUND, "지원하지 않는 파일 형식입니다."),

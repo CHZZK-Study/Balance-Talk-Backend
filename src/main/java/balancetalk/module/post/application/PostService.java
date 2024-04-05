@@ -152,6 +152,7 @@ public class PostService {
             throw new BalanceTalkException(ALREADY_LIKE_POST);
         }
 
+
         PostLike postLike = PostLike.builder()
                 .post(post)
                 .member(member)
@@ -164,12 +165,15 @@ public class PostService {
     public void cancelLikePost(Long postId) {
         Post post = getCurrentPost(postId);
         Member member = getCurrentMember(memberRepository);
-        if (post.likesCount() == 0) {
-            throw new BalanceTalkException(ALREADY_CANCEL_LIKE_POST);
+        if (notExistsPostLikeBy(member, post)) {
+            throw new BalanceTalkException(NOT_FOUND_POST_LIKE);
         }
         postLikeRepository.deleteByMemberAndPost(member, post);
     }
 
+    private boolean notExistsPostLikeBy(Member member, Post post) {
+        return !postLikeRepository.existsByMemberAndPost(member, post);
+    }
     private Post getCurrentPost(Long postId) {
         return postRepository.findById(postId)
                 .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_POST));
