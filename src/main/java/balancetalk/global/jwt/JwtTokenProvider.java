@@ -79,7 +79,6 @@ public class JwtTokenProvider {
     public Cookie createCookie(String refreshToken) {
         String cookieName = "refreshToken";
         Cookie cookie = new Cookie(cookieName, refreshToken);
-
         cookie.setHttpOnly(true);
         cookie.setSecure(true);
         cookie.setPath("/");
@@ -108,12 +107,6 @@ public class JwtTokenProvider {
         return Jwts.parserBuilder().setSigningKey(secretKey).build().parseClaimsJws(token).getBody().getSubject();
     }
 
-    public Long getMemberId(String token) {
-        validateToken(token);
-        Claims claims = Jwts.parserBuilder().setSigningKey(secretKey).build().parseClaimsJws(token).getBody();
-        return claims.get("memberId", Long.class);
-    }
-
     public boolean validateToken(String token) {
         try {
             Jws<Claims> claims = Jwts.parserBuilder().setSigningKey(secretKey).build().parseClaimsJws(token);
@@ -139,6 +132,10 @@ public class JwtTokenProvider {
         Authentication authentication = getAuthentication(refreshToken);
         // redis에 저장된 RefreshToken 값을 가져옴
         String redisRefreshToken = redisService.getValues(authentication.getName());
+        if (redisRefreshToken == null) {
+            throw new BalanceTalkException(ErrorCode.UNAUTHORIZED_REISSUE_TOKEN);
+        }
+
         if (!redisRefreshToken.equals(refreshToken)) {
             throw new BalanceTalkException(ErrorCode.INVALID_REFRESH_TOKEN);
         }

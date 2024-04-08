@@ -37,6 +37,7 @@ public enum ErrorCode {
     VERIFY_CODE_MISMATCH(UNAUTHORIZED, "인증 번호가 일치하지 않습니다."),
     EXPIRED_JWT_TOKEN(UNAUTHORIZED, "만료된 토큰 입니다."),
     INVALID_JWT_TOKEN(UNAUTHORIZED, "유효하지 않은 토큰입니다"),
+    UNAUTHORIZED_REISSUE_TOKEN(UNAUTHORIZED, "로그아웃 상태에서 토큰을 재발급 받을 수 없습니다."),
 
     // 403
     FORBIDDEN_POST_DELETE(FORBIDDEN, "해당 게시글은 삭제 권한이 없습니다."),
