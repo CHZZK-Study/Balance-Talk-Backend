@@ -34,7 +34,7 @@ public class ProfileResponse {
 
     public static ProfileResponse fromEntity(Member member) {
         return ProfileResponse.builder()
-                .profileImageUrl(member.getProfilePhoto().getStoredName())
+                .profileImageUrl(member.getProfilePhoto().getUrl())
                 .nickname(member.getNickname())
                 .createdAt(member.getCreatedAt())
                 .postsCount(member.getPostCount())
