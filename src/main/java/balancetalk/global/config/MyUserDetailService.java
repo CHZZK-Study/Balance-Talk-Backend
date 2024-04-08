@@ -10,9 +10,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-
-import java.util.HashSet;
-import java.util.Set;
+import java.util.Collections;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -24,10 +23,15 @@ public class MyUserDetailService implements UserDetailsService {
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         Member member = memberRepository.findByEmail(username)
                 .orElseThrow(() -> new BalanceTalkException(ErrorCode.NOT_FOUND_MEMBER));
-        Set<GrantedAuthority> grantedAuthorities = new HashSet<>();
-        return new org
-                .springframework
-                .security
-                .core.userdetails.User(member.getEmail(), member.getPassword(), grantedAuthorities);
+
+        List<GrantedAuthority> authorities = Collections.emptyList();
+
+        CustomUserDetails userDetails = new CustomUserDetails(
+                member.getEmail(),
+                member.getPassword(),
+                authorities,
+                member.getId() // memberId를 추가
+        );
+        return userDetails;
     }
 }
