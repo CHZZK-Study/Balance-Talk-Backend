@@ -49,6 +49,8 @@ public enum ErrorCode {
     FORBIDDEN_CREATE_NOTICE(FORBIDDEN, "공지사항 작성 권한이 없습니다."),
     FORBIDDEN_UPDATE_NOTICE(FORBIDDEN, "공지사항 수정 권한이 없습니다."),
     FORBIDDEN_DELETE_NOTICE(FORBIDDEN, "공지사항 삭제 권한이 없습니다."),
+    FORBIDDEN_POST_REPORT(FORBIDDEN, "본인 게시글을 신고할 수 없습니다."),
+    FORBIDDEN_COMMENT_REPORT(FORBIDDEN, "본인 댓글을 신고할 수 없습니다."),
 
     // 404
     NOT_FOUND_POST(NOT_FOUND, "존재하지 않는 게시글입니다."),
@@ -75,6 +77,8 @@ public enum ErrorCode {
     ALREADY_REGISTERED_EMAIL(CONFLICT, "이미 등록된 이메일입니다."),
     SAME_NICKNAME(CONFLICT, "변경하려는 닉네임이 현재와 동일합니다. 다른 닉네임을 입력해주세요."),
     SAME_PASSWORD(CONFLICT, "변경하려는 비밀번호가 현재와 동일합니다. 다른 비밀번호를 입력해주세요."),
+    ALREADY_REPORTED_POST(CONFLICT, "이미 신고한 게시글 입니다."),
+    ALREADY_REPORTED_COMMENT(CONFLICT, "이미 신고한 댓글 입니다."),
 
     // 500
     REDIS_CONNECTION_FAIL(INTERNAL_SERVER_ERROR, "Redis 연결에 실패했습니다."),

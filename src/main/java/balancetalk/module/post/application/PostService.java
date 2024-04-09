@@ -241,9 +241,13 @@ public class PostService {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_POST));
         Member member = getCurrentMember(memberRepository);
-//        if (post.getMember().equals(member)) {
-//            throw new BalanceTalkException(FORBIDDEN_OWN_REPORT);
-//        }
+        if (reportRepository.existsByReporter(member)) {
+            throw new BalanceTalkException(ALREADY_REPORTED_POST);
+        }
+        if (post.getMember().equals(member)) {
+            throw new BalanceTalkException(FORBIDDEN_POST_REPORT);
+        }
+
         Report report = Report.builder()
                 .content(reportRequest.getDescription())
                 .reporter(member)
