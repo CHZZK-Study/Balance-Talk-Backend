@@ -1,10 +1,11 @@
 package balancetalk.module.member.application;
 
+import balancetalk.global.config.CustomUserDetails;
+import balancetalk.global.config.MyUserDetailService;
 import balancetalk.global.exception.BalanceTalkException;
 import balancetalk.global.exception.ErrorCode;
 import balancetalk.global.jwt.JwtTokenProvider;
 import balancetalk.global.redis.application.RedisService;
-import balancetalk.module.comment.domain.Comment;
 import balancetalk.module.file.domain.File;
 import balancetalk.module.file.domain.FileRepository;
 import balancetalk.module.member.domain.Member;
@@ -20,6 +21,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -39,6 +41,7 @@ public class MemberService {
     private final FileRepository fileRepository;
     private final PasswordEncoder passwordEncoder;
     private final RedisService redisService;
+    private final MyUserDetailService myUserDetailService;
     @Transactional
     public Long join(final JoinRequest joinRequest) {
         if (memberRepository.existsByEmail(joinRequest.getEmail())) {
@@ -145,10 +148,31 @@ public class MemberService {
         redisService.deleteValues(username);
     }
 
+    @Transactional(readOnly = true)
+    public ProfileResponse memberProfile(Long memberId) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_MEMBER));
+        return ProfileResponse.fromEntity(member);
+    }
+
     public void verifyNickname(String nickname) {
         if (memberRepository.existsByNickname(nickname)) {
             throw new BalanceTalkException(ErrorCode.ALREADY_REGISTERED_NICKNAME);
         }
+    }
+
+    public String reissueAccessToken(HttpServletRequest request) {
+        Cookie[] cookies = request.getCookies();
+        for (Cookie cookie : cookies) {
+            String name = cookie.getName();
+            if (name.equals("refreshToken")) {
+                String refreshToken = cookie.getValue();
+                Long memberId = extractMemberId(refreshToken);
+                jwtTokenProvider.validateToken(refreshToken);
+                return jwtTokenProvider.reissueAccessToken(refreshToken, memberId);
+            }
+        }
+        return null;
     }
 
     private Member extractMember(HttpServletRequest request) {
@@ -158,16 +182,13 @@ public class MemberService {
                 .orElseThrow(() -> new BalanceTalkException(ErrorCode.NOT_FOUND_MEMBER));
     }
 
-    public String reissueAccessToken(HttpServletRequest request) {
-        Cookie[] cookies = request.getCookies();
-        for (Cookie cookie : cookies) {
-            String name = cookie.getName();
-            if (name.equals("refreshToken")) {
-                String refreshToken = cookie.getValue();
-                jwtTokenProvider.validateToken(refreshToken);
-                Long memberId = jwtTokenProvider.getMemberId(refreshToken);
-                return jwtTokenProvider.reissueAccessToken(refreshToken, memberId);
-            }
+    private Long extractMemberId(String refreshToken) {
+        Authentication authentication = jwtTokenProvider.getAuthentication(refreshToken);
+        String name = authentication.getName();
+        UserDetails userDetails = myUserDetailService.loadUserByUsername(name);
+        if (userDetails instanceof CustomUserDetails) {
+            CustomUserDetails customUserDetails = (CustomUserDetails) userDetails;
+            return customUserDetails.getMemberId();
         }
         return null;
     }

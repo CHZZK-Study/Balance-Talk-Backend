@@ -265,10 +265,12 @@ public class CommentService {
     public void reportComment(Long postId, Long commentId, ReportRequest reportRequest) {
         Comment comment = validateCommentId(commentId);
         Member member = getCurrentMember(memberRepository);
-//        if (comment.getMember().equals(member)) {
-//            throw new BalanceTalkException(FORBIDDEN_OWN_REPORT);
-//        }
-
+        if (reportRepository.existsByReporter(member)) {
+            throw new BalanceTalkException(ALREADY_REPORTED_COMMENT);
+        }
+        if (comment.getMember().equals(member)) {
+            throw new BalanceTalkException(FORBIDDEN_COMMENT_REPORT);
+        }
         if (!comment.getPost().getId().equals(postId)) {
             throw new BalanceTalkException(NOT_FOUND_COMMENT_AT_THAT_POST);
         }
