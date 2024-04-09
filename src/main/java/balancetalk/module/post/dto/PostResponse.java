@@ -72,7 +72,7 @@ public class PostResponse {
     private LocalDateTime createdAt;
 
     @Schema(description = "게시글 작성자 ID", example = "5")
-    private Long memberId;
+    private Long writerId;
 
     @Schema(description = "게시글 작성자", example = "작성자 닉네임")
     private String createdBy;
@@ -100,7 +100,7 @@ public class PostResponse {
                 .totalVotesCount(getTotalVotes(post))
                 .commentsCount(post.commentsCount())
                 .createdAt(post.getCreatedAt())
-                .memberId(post.getMember().getId())
+                .writerId(post.getMember().getId())
                 .createdBy(post.getMember().getNickname())
                 .profileImageUrl(getProfileImageUrl(post.getMember()))
                 .build();
