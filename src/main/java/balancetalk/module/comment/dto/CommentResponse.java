@@ -27,7 +27,7 @@ public class CommentResponse {
 
     @Schema(description = "해당 댓글에 맞는 게시글 id", example = "1")
     private Long postId;
-  
+
     @Schema(description = "해당 댓글에 맞는 선택지 id", example = "23")
     private Long selectedOptionId;
 
@@ -52,6 +52,9 @@ public class CommentResponse {
     @Schema(description = "댓글 수정 날짜")
     private LocalDateTime lastModifiedAt;
 
+    @Schema(description = "댓글 작성자 ID")
+    private Long writerId;
+
     @Schema(description = "댓글 작성자 프로필 사진 경로", example = "https://balance-talk-static-files4df23447-2355-45h2-8783-7f6gd2ceb848_프로필.jpg")
     private String profileImageUrl;
 
@@ -69,6 +72,7 @@ public class CommentResponse {
                 .replyCount(comment.getReplies().size())
                 .createdAt(comment.getCreatedAt())
                 .lastModifiedAt(comment.getLastModifiedAt())
+                .writerId(comment.getMember().getId())
                 .profileImageUrl(getProfileImageUrl(comment.getMember()))
                 .build();
     }
