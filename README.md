@@ -20,16 +20,16 @@
 
 ## 🛠️ 기술 스택
 ### 백엔드
-<img src="https://github.com/CHZZK-Study/Balance-Talk-Backend/assets/110653660/6d2a14ef-92bb-4021-967c-4c8b58939be8">
+<img width="800" src="https://github.com/CHZZK-Study/Balance-Talk-Backend/assets/110653660/6d2a14ef-92bb-4021-967c-4c8b58939be8">
 
 ### 인프라
-<img src="https://github.com/CHZZK-Study/Balance-Talk-Backend/assets/110653660/cd69ce13-c775-44a1-a3fe-6846985e14e8">
+<img width="800" src="https://github.com/CHZZK-Study/Balance-Talk-Backend/assets/110653660/cd69ce13-c775-44a1-a3fe-6846985e14e8">
 
 
 ## 🧱 아키텍처
-<img src="https://github.com/CHZZK-Study/Balance-Talk-Backend/assets/110653660/f4f1f902-4197-422b-8286-c9923212f0d4">
+<img width="800" src="https://github.com/CHZZK-Study/Balance-Talk-Backend/assets/110653660/f4f1f902-4197-422b-8286-c9923212f0d4">
 
-## 팀원
+## 👨‍👩‍👧‍👦 팀원
 |                                         Backend (PL)                                         |                                         Backend                                          |                                         Backend                                          |                                       Frontend                                        |                                        Frontend                                         |                                        Frontend                                        |
 | :--------------------------------------------------------------------------------------: | :--------------------------------------------------------------------------------------: | :--------------------------------------------------------------------------------------: | :-----------------------------------------------------------------------------------: | :-------------------------------------------------------------------------------------: | :------------------------------------------------------------------------------------: |
 | <img src="https://avatars.githubusercontent.com/u/110653660?v=4" width=400px alt="한재모"/> | <img src="https://avatars.githubusercontent.com/u/73704053?v=4" width=400px alt="왕효준"/> | <img src="https://avatars.githubusercontent.com/u/78118588?v=4" width=400px alt="최준수"/> | <img src="https://avatars.githubusercontent.com/u/76507017?v=4" width=400px alt="강준우"/> | <img src="https://avatars.githubusercontent.com/u/62270427?v=4" width=400px alt="김성현"/> | <img src="https://avatars.githubusercontent.com/u/84820008?v=4" width=400px alt="유희선"/> |
