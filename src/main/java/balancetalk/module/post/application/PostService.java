@@ -241,7 +241,7 @@ public class PostService {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_POST));
         Member member = getCurrentMember(memberRepository);
-        if (reportRepository.existsByReporter(member)) {
+        if (reportRepository.existsByReporterAndPost(member, post)) {
             throw new BalanceTalkException(ALREADY_REPORTED_POST);
         }
         if (post.getMember().equals(member)) {
