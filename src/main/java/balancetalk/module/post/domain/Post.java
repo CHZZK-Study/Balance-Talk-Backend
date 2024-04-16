@@ -33,6 +33,7 @@ public class Post extends BaseTimeEntity {
     private String title;
 
     @NotNull
+    @Future
     @Column(nullable = false)
     private LocalDateTime deadline;
 
