@@ -34,7 +34,6 @@ public class Post extends BaseTimeEntity {
 
     @NotNull
     @Future
-    //
     @Column(nullable = false)
     private LocalDateTime deadline;
 
