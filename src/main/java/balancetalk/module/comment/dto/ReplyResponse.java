@@ -45,6 +45,9 @@ public class ReplyResponse {
     @Schema(description = "답글 수정 날짜")
     private LocalDateTime lastModifiedAt;
 
+    @Schema(description = "답글 작성자 ID")
+    private Long writerId;
+
     @Schema(description = "답글 작성자 프로필 사진 경로", example = "https://balance-talk-static-files4df23447-2355-45h2-8783-7f6gd2ceb848_프로필.jpg")
     private String profileImageUrl;
 
@@ -60,6 +63,7 @@ public class ReplyResponse {
                 .myLike(myLike)
                 .createdAt(comment.getCreatedAt())
                 .lastModifiedAt(comment.getLastModifiedAt())
+                .writerId(comment.getMember().getId())
                 .profileImageUrl(getProfileImageUrl(comment.getMember()))
                 .build();
     }
