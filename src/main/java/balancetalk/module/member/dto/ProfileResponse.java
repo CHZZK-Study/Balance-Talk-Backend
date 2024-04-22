@@ -1,13 +1,14 @@
 package balancetalk.module.member.dto;
 
+import balancetalk.module.file.domain.File;
 import balancetalk.module.member.domain.Member;
 import io.swagger.v3.oas.annotations.media.Schema;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 @Data
 @Builder
@@ -33,8 +34,11 @@ public class ProfileResponse {
     private int level;
 
     public static ProfileResponse fromEntity(Member member) {
+        String profileImageUrl = Optional.ofNullable(member.getProfilePhoto())
+                .map(File::getUrl)
+                .orElse(null);
         return ProfileResponse.builder()
-                .profileImageUrl(member.getProfilePhoto().getUrl())
+                .profileImageUrl(profileImageUrl)
                 .nickname(member.getNickname())
                 .createdAt(member.getCreatedAt())
                 .postsCount(member.getPostCount())

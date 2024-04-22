@@ -118,6 +118,7 @@ public class MemberController {
 
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/{memberId}/profile")
+    @Operation(summary = "회원 프로필 조회", description = "회원 프로필을 조회한다.")
     public ProfileResponse memberProfile(@PathVariable("memberId") Long memberId) {
         return memberService.memberProfile(memberId);
     }

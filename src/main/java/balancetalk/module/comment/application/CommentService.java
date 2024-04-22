@@ -265,7 +265,8 @@ public class CommentService {
     public void reportComment(Long postId, Long commentId, ReportRequest reportRequest) {
         Comment comment = validateCommentId(commentId);
         Member member = getCurrentMember(memberRepository);
-        if (reportRepository.existsByReporter(member)) {
+        if (reportRepository.existsByReporterAndComment(member, comment)) {
+
             throw new BalanceTalkException(ALREADY_REPORTED_COMMENT);
         }
         if (comment.getMember().equals(member)) {
