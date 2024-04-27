@@ -1,6 +1,5 @@
 package balancetalk.module.post.dto;
 
-import balancetalk.module.ViewStatus;
 import balancetalk.module.file.domain.File;
 import balancetalk.module.member.domain.Member;
 import balancetalk.module.post.domain.BalanceOption;
@@ -8,7 +7,10 @@ import balancetalk.module.post.domain.Post;
 import balancetalk.module.post.domain.PostCategory;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
@@ -29,6 +31,9 @@ public class PostResponse {
     @JsonFormat(pattern = "yyyy/MM/dd HH:mm:ss")
     @Schema(description = "투료 종료 기한", example = "2024/12/25 15:30:00")
     private LocalDateTime deadline;
+
+    @Schema(description = "마감 여부", example = "true")
+    private Boolean isClosed;
 
     @Schema(description = "게시글 조회수", example = "126")
     private long views;
@@ -86,6 +91,7 @@ public class PostResponse {
                 .id(post.getId())
                 .title(post.getTitle())
                 .deadline(post.getDeadline())
+                .isClosed(post.isClosed())
                 .views(post.getViews())
 //                .viewStatus(post.getViewStatus())
                 .likesCount(post.likesCount())
@@ -140,11 +146,11 @@ public class PostResponse {
                 .orElse(null);
     }
 
-        private static int getTotalVotes (Post post){
-            return Optional.ofNullable(post.getOptions())
-                    .map(options -> options.stream()
-                            .mapToInt(option -> Optional.ofNullable(option.getVotes()).map(List::size).orElse(0))
-                            .sum())
-                    .orElse(0);
+    private static int getTotalVotes(Post post) {
+        return Optional.ofNullable(post.getOptions())
+                .map(options -> options.stream()
+                        .mapToInt(option -> Optional.ofNullable(option.getVotes()).map(List::size).orElse(0))
+                        .sum())
+                .orElse(0);
     }
 }
