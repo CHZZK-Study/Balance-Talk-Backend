@@ -8,7 +8,6 @@ import balancetalk.module.member.domain.MemberRepository;
 import balancetalk.module.post.domain.*;
 import balancetalk.module.post.dto.PostResponse;
 import balancetalk.module.post.dto.PostTagDto;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -17,28 +16,18 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
-import static org.assertj.core.api.Assertions.*;
-
-import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.lenient;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class PostServiceTest {
@@ -60,9 +49,7 @@ class PostServiceTest {
 
     @InjectMocks
     PostService postService;
-
-    private String accessToken = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ0ZXN0MTIzNDVAbmF2ZXIuY29tIiwiaWF0IjoxNzA5NDc1NTE4LCJleHAiOjE3MDk1MTg3MTh9.ZZXuN4OWM2HZjWOx7Pupl5NkRtjvd4qnK_txGdRy7G5_GdKgnyF3JfiUsenQgxsi1Y_-7C0dA85xabot2m1cag";
-
+    
     Member member = Member.builder()
             .id(1L)
             .email("member@gmail.com")
@@ -81,23 +68,13 @@ class PostServiceTest {
     Tag tag1 = Tag.builder()
             .name("태그1")
             .build();
+
     Tag tag2 = Tag.builder()
             .name("태그2")
             .build();
+
     PostTag postTag1 = PostTag.builder()
             .tag(tag1)
-            .build();
-    PostTag postTag2 = PostTag.builder()
-            .tag(tag2)
-            .build();
-    Post post1 = Post.builder()
-            .id(1L)
-            .title("고양이")
-            .category(PostCategory.CASUAL)
-            .member(member)
-            .options(List.of(balanceOption))
-            .views(0L)
-            .postTags(List.of(postTag1, postTag2))
             .build();
 
     Post post2 = Post.builder()
@@ -105,10 +82,29 @@ class PostServiceTest {
             .title("미어캣")
             .category(PostCategory.DISCUSSION)
             .member(member)
+            .deadline(LocalDateTime.now())
             .options(List.of(balanceOption))
             .views(23L)
             .postTags(List.of(postTag1))
             .build();
+
+    PostTag postTag2 = PostTag.builder()
+            .tag(tag2)
+            .build();
+
+    Post post1 = Post.builder()
+            .id(1L)
+            .title("고양이")
+            .deadline(LocalDateTime.now())
+            .category(PostCategory.CASUAL)
+            .member(member)
+            .options(List.of(balanceOption))
+            .views(0L)
+            .postTags(List.of(postTag1, postTag2))
+            .build();
+
+    private String accessToken = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ0ZXN0MTIzNDVAbmF2ZXIuY29tIiwiaWF0IjoxNzA5NDc1NTE4LCJleHAiOjE3MDk1MTg3MTh9.ZZXuN4OWM2HZjWOx7Pupl5NkRtjvd4qnK_txGdRy7G5_GdKgnyF3JfiUsenQgxsi1Y_-7C0dA85xabot2m1cag";
+
     @BeforeEach
     void setUp() {
         // SecurityContext에 인증된 사용자 설정
