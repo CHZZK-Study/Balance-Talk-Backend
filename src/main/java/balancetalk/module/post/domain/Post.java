@@ -7,13 +7,17 @@ import balancetalk.module.comment.domain.Comment;
 import balancetalk.module.member.domain.Member;
 import balancetalk.module.report.domain.Report;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.PositiveOrZero;
+import jakarta.validation.constraints.Size;
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.Formula;
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import org.hibernate.annotations.Formula;
 
 @Entity
 @Getter
@@ -93,7 +97,7 @@ public class Post extends BaseTimeEntity {
         }
         return comments.size();
     }
-    
+
     @PrePersist
     public void init() {
         this.views = 0L;
@@ -114,5 +118,9 @@ public class Post extends BaseTimeEntity {
 
     public void increaseViews() {
         views++;
+    }
+
+    public boolean isClosed() {
+        return LocalDateTime.now().isAfter(deadline);
     }
 }
