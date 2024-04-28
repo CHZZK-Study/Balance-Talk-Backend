@@ -49,7 +49,7 @@ class PostServiceTest {
 
     @InjectMocks
     PostService postService;
-    
+
     Member member = Member.builder()
             .id(1L)
             .email("member@gmail.com")
