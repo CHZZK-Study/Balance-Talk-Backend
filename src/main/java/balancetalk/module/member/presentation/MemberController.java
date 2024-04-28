@@ -1,7 +1,10 @@
 package balancetalk.module.member.presentation;
 
 import balancetalk.module.member.application.MemberService;
-import balancetalk.module.member.dto.*;
+import balancetalk.module.member.dto.JoinRequest;
+import balancetalk.module.member.dto.LoginRequest;
+import balancetalk.module.member.dto.MemberResponse;
+import balancetalk.module.member.dto.ProfileResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
@@ -15,6 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
 
 @Slf4j
@@ -59,7 +63,7 @@ public class MemberController {
     @ResponseStatus(HttpStatus.OK)
     @PutMapping(value = "/nickname", consumes = "text/plain")
     @Operation(summary = "회원 닉네임 수정", description = "회원 닉네임을 수정한다.")
-    public String updateNickname(@Valid @NotBlank @RequestBody @Size(min = 2, max = 10)String newNickname, HttpServletRequest request) {
+    public String updateNickname(@Valid @NotBlank @RequestBody @Size(min = 2, max = 10) String newNickname, HttpServletRequest request) {
         // TODO: RequestBody 빈 값일 때 에러체킹 x
         memberService.updateNickname(newNickname, request);
         return "회원 닉네임이 변경되었습니다.";
@@ -104,7 +108,7 @@ public class MemberController {
     @GetMapping("/duplicate")
     @Operation(summary = "닉네임 중복 검증", description = "중복된 닉네임이 존재하는지 체크한다.")
     public String verifyNickname(@RequestParam @NotBlank
-                                 @Size(min = 2, max = 10)String nickname) {
+                                 @Size(min = 2, max = 10) String nickname) {
         memberService.verifyNickname(nickname);
         return "사용 가능한 닉네임 입니다.";
     }
