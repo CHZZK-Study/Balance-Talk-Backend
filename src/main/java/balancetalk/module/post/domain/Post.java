@@ -119,8 +119,4 @@ public class Post extends BaseTimeEntity {
     public void increaseViews() {
         views++;
     }
-
-    public boolean isClosed() {
-        return LocalDateTime.now().isAfter(deadline);
-    }
 }

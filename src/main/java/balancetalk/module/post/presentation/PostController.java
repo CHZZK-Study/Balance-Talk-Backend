@@ -6,7 +6,6 @@ import balancetalk.module.post.dto.PostResponse;
 import balancetalk.module.report.dto.ReportRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import java.util.List;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -14,6 +13,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @Slf4j
 @RestController
@@ -26,7 +27,7 @@ public class PostController {
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
-    @Operation(summary = "게시글 생성" , description = "로그인 상태인 회원이 게시글을 작성한다.")
+    @Operation(summary = "게시글 생성", description = "로그인 상태인 회원이 게시글을 작성한다.")
     public PostResponse createPost(@Valid @RequestBody final PostRequest postRequestDto) {
         return postService.save(postRequestDto);
     }
@@ -35,8 +36,9 @@ public class PostController {
     @GetMapping
     @Operation(summary = "모든 게시글 조회", description = "해당 회원이 쓴 모든 글을 조회한다.")
     public Page<PostResponse> findAllPosts(@RequestHeader(value = "Authorization", required = false) String token,
+                                           @RequestParam Boolean closed,
                                            Pageable pageable) {
-        return postService.findAll(token, pageable);
+        return postService.findAll(token, closed, pageable);
     }
 
     @ResponseStatus(HttpStatus.OK)
@@ -66,7 +68,7 @@ public class PostController {
     @GetMapping("/tag")
     @Operation(summary = "게시글 태그 검색 기능", description = "태그에 맞는 모든 게시글을 조회한다.")
     public List<PostResponse> findPostsByTag(@RequestHeader(value = "Authorization", required = false) String token,
-                                               @RequestParam String tagName) {
+                                             @RequestParam String tagName) {
         return postService.findPostsByTag(token, tagName);
     }
 
