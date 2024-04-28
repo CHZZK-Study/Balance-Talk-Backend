@@ -32,9 +32,6 @@ public class PostResponse {
     @Schema(description = "투료 종료 기한", example = "2024/12/25 15:30:00")
     private LocalDateTime deadline;
 
-    @Schema(description = "마감 여부", example = "true")
-    private Boolean isClosed;
-
     @Schema(description = "게시글 조회수", example = "126")
     private long views;
 
@@ -91,7 +88,6 @@ public class PostResponse {
                 .id(post.getId())
                 .title(post.getTitle())
                 .deadline(post.getDeadline())
-                .isClosed(post.isClosed())
                 .views(post.getViews())
 //                .viewStatus(post.getViewStatus())
                 .likesCount(post.likesCount())
