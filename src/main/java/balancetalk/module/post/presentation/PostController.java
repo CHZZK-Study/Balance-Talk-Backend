@@ -5,6 +5,7 @@ import balancetalk.module.post.dto.PostRequest;
 import balancetalk.module.post.dto.PostResponse;
 import balancetalk.module.report.dto.ReportRequest;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -36,6 +37,10 @@ public class PostController {
     @GetMapping
     @Operation(summary = "모든 게시글 조회", description = "해당 회원이 쓴 모든 글을 조회한다.")
     public Page<PostResponse> findAllPosts(@RequestHeader(value = "Authorization", required = false) String token,
+                                           @Parameter(name = "closed",
+                                                   description = "마감된 게시글 포함 여부",
+                                                   example = "true",
+                                                   required = true)
                                            @RequestParam Boolean closed,
                                            Pageable pageable) {
         return postService.findAll(token, closed, pageable);
