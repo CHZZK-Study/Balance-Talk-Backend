@@ -1,8 +1,5 @@
 package balancetalk.module.post.application;
 
-import static balancetalk.global.exception.ErrorCode.*;
-import static balancetalk.global.utils.SecurityUtils.getCurrentMember;
-
 import balancetalk.global.exception.BalanceTalkException;
 import balancetalk.global.redis.application.RedisService;
 import balancetalk.module.bookmark.domain.BookmarkRepository;
@@ -19,10 +16,7 @@ import balancetalk.module.post.dto.PostResponse;
 import balancetalk.module.report.domain.Report;
 import balancetalk.module.report.domain.ReportRepository;
 import balancetalk.module.report.dto.ReportRequest;
-import balancetalk.module.post.dto.*;
 import balancetalk.module.vote.domain.VoteRepository;
-import java.util.stream.Collectors;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -30,6 +24,12 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
+import static balancetalk.global.exception.ErrorCode.*;
+import static balancetalk.global.utils.SecurityUtils.getCurrentMember;
 
 @Slf4j
 @Service
@@ -77,8 +77,8 @@ public class PostService {
     }
 
     @Transactional(readOnly = true)
-    public Page<PostResponse> findAll(String token, Pageable pageable) {
-        Page<Post> posts = postRepository.findAll(pageable);
+    public Page<PostResponse> findAll(String token, Boolean containsClosed, Pageable pageable) {
+        Page<Post> posts = getPosts(containsClosed, pageable);
 
         if (token == null) {
             return posts.map(post -> PostResponse.fromEntity(post, null, false, false, false));
@@ -90,6 +90,13 @@ public class PostService {
                 member.hasLiked(post),
                 member.hasBookmarked(post),
                 member.hasVoted(post)));
+    }
+
+    private Page<Post> getPosts(Boolean containsClosed, Pageable pageable) {
+        if (containsClosed) {
+            return postRepository.findAll(pageable);
+        }
+        return postRepository.findAllOnlyOpened(pageable);
     }
 
     @Transactional
@@ -104,7 +111,7 @@ public class PostService {
         Member member = getCurrentMember(memberRepository);
 
         if (member.getRole() == Role.USER) {
-             post.increaseViews();
+            post.increaseViews();
         }
         return PostResponse.fromEntity(post, member, member.hasLiked(post), member.hasBookmarked(post),
                 member.hasVoted(post));
@@ -174,6 +181,7 @@ public class PostService {
     private boolean notExistsPostLikeBy(Member member, Post post) {
         return !postLikeRepository.existsByMemberAndPost(member, post);
     }
+
     private Post getCurrentPost(Long postId) {
         return postRepository.findById(postId)
                 .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_POST));

@@ -1,10 +1,11 @@
 package balancetalk.module.post.domain;
 
-import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+
+import java.util.List;
 
 public interface PostRepository extends JpaRepository<Post, Long> {
     Page<Post> findAllByMemberId(Long id, Pageable pageable);
@@ -25,4 +26,7 @@ public interface PostRepository extends JpaRepository<Post, Long> {
             "JOIN pt.tag t " +
             "WHERE t.name = :tagName")
     List<Post> findByPostTagsContaining(String tagName);
+
+    @Query("select p from Post p where p.deadline > function('now')")
+    Page<Post> findAllOnlyOpened(Pageable pageable);
 }
