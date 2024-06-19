@@ -29,9 +29,6 @@ jobs:
     - name: Build with Gradle
       run: ./gradlew build
   
-  deploy:
-    runs-on: ubuntu-latest
-    steps:
     - name: Make zip file
       run: zip -r ./$GITHUB_SHA.zip .
       
