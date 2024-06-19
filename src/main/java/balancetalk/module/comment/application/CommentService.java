@@ -183,7 +183,7 @@ public class CommentService {
 
     private BalanceOption validateBalanceOptionId(CommentRequest request, Post post) {
         return post.getOptions().stream()
-                .filter(option -> option.getId().equals(request.getSelectedOptionId()))
+                // .filter(option -> option.getId().equals(request.getSelectedOptionId())) // TODO : 스웨거 변경 중 호환 안됨. 수정 필요
                 .findFirst()
                 .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_BALANCE_OPTION));
     }
