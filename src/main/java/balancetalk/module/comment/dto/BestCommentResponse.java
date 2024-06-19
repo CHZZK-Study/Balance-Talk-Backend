@@ -33,7 +33,7 @@ public class BestCommentResponse {
     private int likesCount;
 
     @Schema(description = "현재 사용자의 좋아요 여부", example = "true")
-    private boolean myLike;
+    private Boolean myLike;
 
     @Schema(description = "답글 생성 날짜")
     private LocalDateTime createdAt;
@@ -42,5 +42,5 @@ public class BestCommentResponse {
     private LocalDateTime lastModifiedAt;
 
     @Schema(description = "베스트 댓글 여부", example = "true")
-    private boolean isBest;
+    private Boolean isBest;
 }

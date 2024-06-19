@@ -45,7 +45,7 @@ public class CommentResponse {
 //    private long reportedCount;
 
     @Schema(description = "현재 사용자의 좋아요 여부", example = "true")
-    private boolean myLike;
+    private Boolean myLike;
 
     @Schema(description = "답글 수", example = "3")
     private int replyCount;
