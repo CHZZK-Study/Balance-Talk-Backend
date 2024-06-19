@@ -15,8 +15,8 @@ import lombok.NoArgsConstructor;
 @Builder
 public class VoteRequest {
 
-    @Schema(description = "투표한 선택지 id", example = "23")
-    private Long selectedOptionId;
+    @Schema(description = "투표한 선택지", example = "A")
+    private Option option;
 
     public Vote toEntity(BalanceOption balanceOption) {
         return Vote.builder()
