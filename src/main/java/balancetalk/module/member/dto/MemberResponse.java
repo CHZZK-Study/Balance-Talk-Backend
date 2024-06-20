@@ -26,14 +26,14 @@ public class MemberResponse {
     @Schema(description = "가입일", example = "2024-02-16 13:37:17.391706")
     private LocalDateTime createdAt;
 
-    @Schema(description = "작성한 게시글 수", example = "11")
-    private int postsCount;
-
-    @Schema(description = "작성한 게시글의 받은 추천 수", example = "119")
-    private int totalPostLike;
-
-    @Schema(description = "회원 등급", example = "1")
-    private int level;
+//    @Schema(description = "작성한 게시글 수", example = "11")
+//    private int postsCount;
+//
+//    @Schema(description = "작성한 게시글의 받은 추천 수", example = "119")
+//    private int totalPostLike;
+//
+//    @Schema(description = "회원 등급", example = "1")
+//    private int level;
 
     public static MemberResponse fromEntity(Member member) {
         String profileImageUrl = Optional.ofNullable(member.getProfilePhoto())
@@ -44,9 +44,9 @@ public class MemberResponse {
                 .id(member.getId())
                 .nickname(member.getNickname())
                 .profileImageUrl(profileImageUrl)
-                .createdAt(member.getCreatedAt())
-                .postsCount(member.getPostCount())
-                .totalPostLike(member.getPostLikes())
+//                .createdAt(member.getCreatedAt())
+//                .postsCount(member.getPostCount())
+//                .totalPostLike(member.getPostLikes())
                 .build();
     }
 }
