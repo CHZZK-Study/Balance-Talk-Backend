@@ -28,10 +28,10 @@ jobs:
 
       - name: Build with Gradle Wrapper
         run: ./gradlew build
-      
+
       - name: Make zip file
         run: zip -r ./$GITHUB_SHA.zip .
-      
+
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
@@ -40,12 +40,12 @@ jobs:
           aws-region: ${{ secrets.AWS_REGION }}
 
       - name: Upload to S3
-        run: aws s3 cp --region ap-northeast-2 ./$GITHUB_SHA.zip s3://balance-talk-deploy/$GITHUB_SHA.zip
+        run: aws s3 cp --region ap-northeast-2 ./$GITHUB_SHA.zip s3://pikko-deploy/$GITHUB_SHA.zip
 
       - name: Code deploy
         run: |
           aws deploy create-deployment \
           --deployment-config-name CodeDeployDefault.AllAtOnce \
-          --application-name balance-talk-code-deploy \
-          --deployment-group-name balance-talk-server \
-          --s3-location bucket=balance-talk-deploy,bundleType=zip,key=$GITHUB_SHA.zip
+          --application-name pikko \
+          --deployment-group-name pikko-deploy \
+          --s3-location bucket=pikko-deploy,bundleType=zip,key=$GITHUB_SHA.zip

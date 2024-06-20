@@ -1,5 +1,5 @@
 #!/bin/bash
-PROJECT_PATH="/home/ubuntu/balance_talk"
+PROJECT_PATH="/home/ubuntu/Balance-Talk-Backend"
 DEPLOY_LOG_PATH="$PROJECT_PATH/logs/deploy.log"
 DEPLOY_ERR_LOG_PATH="$PROJECT_PATH/logs/deploy_err.log"
 APPLICATION_LOG_PATH="$PROJECT_PATH/logs/application.log"
