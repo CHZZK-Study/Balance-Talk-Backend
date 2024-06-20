@@ -26,67 +26,67 @@ import static balancetalk.global.exception.ErrorCode.PAGE_SIZE_ZERO;
 
 public class MyPageController {
 
-    private final PostService postService;
-    private final CommentService commentService;
-
-    @ResponseStatus(HttpStatus.OK)
-    @GetMapping("/history/posts")
-    @Operation(summary = "모든 게시글 조회", description = "해당 회원이 쓴 모든 글을 조회한다.")
-    public Page<MyPageResponse> findAllPosts(
-            @RequestParam(value = "page", defaultValue = "0") int page,
-            @RequestParam(required = false, value = "size", defaultValue = "10") int size) {
-
-        validatePageNumberAndSize(page, size);
-
-        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
-        return postService.findAllByCurrentMember(pageable);
-    }
-
-    @ResponseStatus(HttpStatus.OK)
-    @GetMapping("/history/comments")
-    @Operation(summary = "모든 댓글 조회", description = "해당 회원이 쓴 모든 댓글을 조회한다.")
-    public Page<MyPageResponse> findAllComments(
-            @RequestParam(value = "page", defaultValue = "0") int page,
-            @RequestParam(required = false, value = "size", defaultValue = "10") int size) {
-
-        validatePageNumberAndSize(page, size);
-
-        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
-        return commentService.findAllByCurrentMember(pageable);
-    }
-
-    @ResponseStatus(HttpStatus.OK)
-    @Operation(summary = "투표한 게시글 조회", description = "해당 회원이 투표한 모든 글을 조회한다.")
-    @GetMapping("/history/votedPosts")
-    public Page<MyPageResponse> findAllVotedPosts(
-            @RequestParam(value = "page", defaultValue = "0") int page,
-            @RequestParam(required = false, value = "size", defaultValue = "10") int size) {
-
-        validatePageNumberAndSize(page, size);
-
-        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
-        return postService.findAllVotedByCurrentMember(pageable);
-    }
-
-    @ResponseStatus(HttpStatus.OK)
-    @Operation(summary = "북마크한 게시글 조회", description = "해당 회원이 북마크한 모든 글을 조회한다.")
-    @GetMapping("/history/bookmarks")
-    public Page<MyPageResponse> findAllBookmarkedPosts(
-            @RequestParam(value = "page", defaultValue = "0") int page,
-            @RequestParam(required = false, value = "size", defaultValue = "10") int size) {
-
-        validatePageNumberAndSize(page, size);
-
-        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
-        return postService.findAllBookmarkedByCurrentMember(pageable);
-    }
-
-    private void validatePageNumberAndSize(int page, int size) {
-        if (page < 0) {
-            throw new BalanceTalkException(PAGE_NUMBER_ZERO);
-        }
-        if (size <= 0) {
-            throw new BalanceTalkException(PAGE_SIZE_ZERO);
-        }
-    }
+//    private final PostService postService;
+//    private final CommentService commentService;
+//
+//    @ResponseStatus(HttpStatus.OK)
+//    @GetMapping("/history/posts")
+//    @Operation(summary = "모든 게시글 조회", description = "해당 회원이 쓴 모든 글을 조회한다.")
+//    public Page<MyPageResponse> findAllPosts(
+//            @RequestParam(value = "page", defaultValue = "0") int page,
+//            @RequestParam(required = false, value = "size", defaultValue = "10") int size) {
+//
+//        validatePageNumberAndSize(page, size);
+//
+//        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
+//        return postService.findAllByCurrentMember(pageable);
+//    }
+//
+//    @ResponseStatus(HttpStatus.OK)
+//    @GetMapping("/history/comments")
+//    @Operation(summary = "모든 댓글 조회", description = "해당 회원이 쓴 모든 댓글을 조회한다.")
+//    public Page<MyPageResponse> findAllComments(
+//            @RequestParam(value = "page", defaultValue = "0") int page,
+//            @RequestParam(required = false, value = "size", defaultValue = "10") int size) {
+//
+//        validatePageNumberAndSize(page, size);
+//
+//        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
+//        return commentService.findAllByCurrentMember(pageable);
+//    }
+//
+//    @ResponseStatus(HttpStatus.OK)
+//    @Operation(summary = "투표한 게시글 조회", description = "해당 회원이 투표한 모든 글을 조회한다.")
+//    @GetMapping("/history/votedPosts")
+//    public Page<MyPageResponse> findAllVotedPosts(
+//            @RequestParam(value = "page", defaultValue = "0") int page,
+//            @RequestParam(required = false, value = "size", defaultValue = "10") int size) {
+//
+//        validatePageNumberAndSize(page, size);
+//
+//        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
+//        return postService.findAllVotedByCurrentMember(pageable);
+//    }
+//
+//    @ResponseStatus(HttpStatus.OK)
+//    @Operation(summary = "북마크한 게시글 조회", description = "해당 회원이 북마크한 모든 글을 조회한다.")
+//    @GetMapping("/history/bookmarks")
+//    public Page<MyPageResponse> findAllBookmarkedPosts(
+//            @RequestParam(value = "page", defaultValue = "0") int page,
+//            @RequestParam(required = false, value = "size", defaultValue = "10") int size) {
+//
+//        validatePageNumberAndSize(page, size);
+//
+//        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
+//        return postService.findAllBookmarkedByCurrentMember(pageable);
+//    }
+//
+//    private void validatePageNumberAndSize(int page, int size) {
+//        if (page < 0) {
+//            throw new BalanceTalkException(PAGE_NUMBER_ZERO);
+//        }
+//        if (size <= 0) {
+//            throw new BalanceTalkException(PAGE_SIZE_ZERO);
+//        }
+//    }
 }
