@@ -14,7 +14,7 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
         with:
-            token: ${{ secrets.SUBMODULE_TOKEN }}
+            token: ${{ secrets.GIT_ACCESS_TOKEN }}
             submodules: recursive
 
       - name: Set up JDK 17
