@@ -1,4 +1,4 @@
-name: Java CD with Gradle
+name: CI/CD
 
 on:
   push:
@@ -8,7 +8,7 @@ permissions:
   contents: read
 
 jobs:
-  deploy:
+  build:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository

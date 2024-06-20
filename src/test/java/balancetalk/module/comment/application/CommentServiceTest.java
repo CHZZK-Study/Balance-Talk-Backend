@@ -23,6 +23,8 @@ import balancetalk.module.vote.domain.VoteRepository;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+
+import balancetalk.module.vote.dto.Option;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -86,7 +88,7 @@ class CommentServiceTest {
         Member member = Member.builder().email(authenticatedEmail).votes(List.of(vote)).build();
         BalanceOption balanceOption = BalanceOption.builder().id(selectedOptionId).build();
         Post post = Post.builder().id(postId).options(List.of(balanceOption)).build();
-        CommentRequest request = new CommentRequest("댓글 내용입니다.", selectedOptionId);
+        CommentRequest request = new CommentRequest("댓글 내용입니다.", Option.B);
 
         when(memberRepository.findByEmail(authenticatedEmail)).thenReturn(Optional.of(member));
         when(postRepository.findById(postId)).thenReturn(Optional.of(post));

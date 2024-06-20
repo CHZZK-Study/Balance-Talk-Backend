@@ -10,9 +10,12 @@ import lombok.Data;
 @AllArgsConstructor
 public class VotingStatusResponse {
 
-    @Schema(description = "선택지 제목", example = "선택지1 제목")
-    private String optionTitle;
+    @Schema(description = "A 선택지 투표 개수", example = "10")
+    private int optionACount;
 
-    @Schema(description = "회원 득표 수" , example = "3412")
-    private int voteCount;
+    @Schema(description = "B 선택지 투표 개수", example = "3")
+    private int optionBCount;
+
+    @Schema(description = "총 투표 수" , example = "13")
+    private int totalCount;
 }

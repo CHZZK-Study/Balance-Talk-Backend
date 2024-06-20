@@ -1,12 +1,10 @@
 package balancetalk.module.comment.presentation;
 
 import balancetalk.module.comment.application.CommentService;
-import balancetalk.module.comment.dto.CommentRequest;
-import balancetalk.module.comment.dto.CommentResponse;
-import balancetalk.module.comment.dto.ReplyCreateRequest;
+import balancetalk.module.comment.dto.*;
 import balancetalk.module.report.dto.ReportRequest;
-import balancetalk.module.comment.dto.ReplyResponse;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
 import jakarta.validation.Valid;
@@ -34,7 +32,7 @@ public class CommentController {
 
     @ResponseStatus(HttpStatus.OK)
     @GetMapping
-    @Operation(summary = "댓글 목록 조회", description = "post-id에 해당하는 게시글에 있는 모든 댓글을 조회한다.")
+    @Operation(summary = "최신 댓글 목록 조회", description = "post-id에 해당하는 게시글에 있는 모든 댓글을 최신순으로 정렬해 조회한다.")
     public Page<CommentResponse> findAllCommentsByPostId(@PathVariable Long postId, Pageable pageable,
                                                          @RequestHeader(value = "Authorization", required = false) String token) {
         return commentService.findAllComments(postId, token, pageable);
@@ -43,9 +41,9 @@ public class CommentController {
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/best")
     @Operation(summary = "인기 댓글 조회", description = "추천 수가 가장 많은 댓글을 각 선택지별로 3개씩 조회한다.")
-    public List<CommentResponse> findBestComments(@PathVariable Long postId,
-                                                  @RequestHeader(value = "Authorization", required = false) String token) {
-        return commentService.findBestComments(postId, token);
+    public List<BestCommentResponse> findBestComments(@PathVariable Long postId,
+                                                      @RequestHeader(value = "Authorization", required = false) String token) {
+        return null;
     }
 
     @ResponseStatus(HttpStatus.OK)

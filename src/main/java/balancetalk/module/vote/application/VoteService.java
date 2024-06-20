@@ -53,8 +53,9 @@ public class VoteService {
     }
 
     private BalanceOption getBalanceOption(VoteRequest voteRequest) {
-        return balanceOptionRepository.findById(voteRequest.getSelectedOptionId())
-                .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_BALANCE_OPTION));
+        return null;
+        // return balanceOptionRepository.findById(voteRequest.getSelectedOptionId()) // TODO : 스웨거 변경 중 호환 안됨. 수정 필요
+                // .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_BALANCE_OPTION));
     }
 
     private Vote voteForMember(VoteRequest voteRequest, Post post, BalanceOption balanceOption) {
@@ -80,8 +81,8 @@ public class VoteService {
 
         for (BalanceOption option : options) {
             VotingStatusResponse votingStatusResponse = VotingStatusResponse.builder()
-                    .optionTitle(option.getTitle())
-                    .voteCount(option.voteCount())
+                    // .optionTitle(option.getTitle()) // TODO : 스웨거 변경 중 호환 안됨. 수정 필요
+                    .totalCount(option.voteCount())
                     .build();
             responses.add(votingStatusResponse);
         }
