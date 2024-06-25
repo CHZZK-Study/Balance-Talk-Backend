@@ -4,7 +4,6 @@ import balancetalk.global.common.BaseTimeEntity;
 import balancetalk.module.ViewStatus;
 import balancetalk.module.member.domain.Member;
 import balancetalk.module.post.domain.Post;
-import balancetalk.module.report.domain.Report;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -51,9 +50,6 @@ public class Comment extends BaseTimeEntity {
 
     @OneToMany(mappedBy = "comment", cascade = CascadeType.ALL)
     private List<CommentLike> likes = new ArrayList<>();
-
-    @OneToMany(mappedBy = "comment", cascade = CascadeType.ALL)
-    private List<Report> reports = new ArrayList<>();
 
     public void updateContent(String content) {
         this.content = content;

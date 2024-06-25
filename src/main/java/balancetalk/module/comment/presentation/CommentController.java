@@ -2,9 +2,7 @@ package balancetalk.module.comment.presentation;
 
 import balancetalk.module.comment.application.CommentService;
 import balancetalk.module.comment.dto.*;
-import balancetalk.module.report.dto.ReportRequest;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
 import jakarta.validation.Valid;
@@ -91,13 +89,5 @@ public class CommentController {
     @Operation(summary = "댓글 추천 취소", description = "comment-id에 해당하는 댓글에 누른 추천을 취소한다.")
     public void cancelLikeComment(@PathVariable Long commentId) {
         commentService.cancelLikeComment(commentId);
-    }
-
-    @ResponseStatus(HttpStatus.OK)
-    @PostMapping("/{commentId}/report")
-    @Operation(summary = "댓글 신고", description = "comment-id에 해당하는 댓글을 신고 처리한다.")
-    public String reportComment(@PathVariable Long postId, @PathVariable Long commentId, @RequestBody ReportRequest reportRequest) {
-        commentService.reportComment(postId, commentId, reportRequest);
-        return "신고가 성공적으로 접수되었습니다.";
     }
 }
