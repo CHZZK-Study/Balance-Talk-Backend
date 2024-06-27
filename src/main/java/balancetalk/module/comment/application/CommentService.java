@@ -15,9 +15,6 @@ import balancetalk.module.member.domain.MemberRepository;
 import balancetalk.module.post.domain.BalanceOption;
 import balancetalk.module.post.domain.Post;
 import balancetalk.module.post.domain.PostRepository;
-import balancetalk.module.report.domain.Report;
-import balancetalk.module.report.domain.ReportRepository;
-import balancetalk.module.report.dto.ReportRequest;
 import balancetalk.module.member.dto.MyPageResponse;
 import balancetalk.module.vote.domain.Vote;
 import balancetalk.module.vote.domain.VoteRepository;
@@ -49,7 +46,6 @@ public class CommentService {
     private final PostRepository postRepository;
     private final CommentLikeRepository commentLikeRepository;
     private final VoteRepository voteRepository;
-    private final ReportRepository reportRepository;
 
     @Value("${comments.max-depth}")
     private int maxDepth;
@@ -260,27 +256,5 @@ public class CommentService {
             }
         }
         return responses;
-    }
-
-    public void reportComment(Long postId, Long commentId, ReportRequest reportRequest) {
-        Comment comment = validateCommentId(commentId);
-        Member member = getCurrentMember(memberRepository);
-        if (reportRepository.existsByReporterAndComment(member, comment)) {
-
-            throw new BalanceTalkException(ALREADY_REPORTED_COMMENT);
-        }
-        if (comment.getMember().equals(member)) {
-            throw new BalanceTalkException(FORBIDDEN_COMMENT_REPORT);
-        }
-        if (!comment.getPost().getId().equals(postId)) {
-            throw new BalanceTalkException(NOT_FOUND_COMMENT_AT_THAT_POST);
-        }
-        Report report = Report.builder()
-                .content(reportRequest.getDescription())
-                .reporter(member)
-                .comment(comment)
-                .category(reportRequest.getCategory())
-                .build();
-        reportRepository.save(report);
     }
 }

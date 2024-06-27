@@ -5,7 +5,6 @@ import balancetalk.module.ViewStatus;
 import balancetalk.module.bookmark.domain.Bookmark;
 import balancetalk.module.comment.domain.Comment;
 import balancetalk.module.member.domain.Member;
-import balancetalk.module.report.domain.Report;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -76,9 +75,6 @@ public class Post extends BaseTimeEntity {
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
     private List<Bookmark> bookmarks = new ArrayList<>();
-
-    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
-    private List<Report> reports = new ArrayList<>();
 
     public boolean isCasual() {
         return this.category == PostCategory.CASUAL;
