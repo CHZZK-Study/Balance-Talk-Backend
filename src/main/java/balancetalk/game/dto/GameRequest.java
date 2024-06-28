@@ -1,13 +1,11 @@
-package balancetalk.module.post.dto;
+package balancetalk.game.dto;
 
-import balancetalk.module.file.domain.File;
-import balancetalk.module.vote.Option;
+import balancetalk.module.vote.domain.Option;
 import io.swagger.v3.oas.annotations.media.Schema;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-
-import java.util.List;
 
 @Data
 @Builder

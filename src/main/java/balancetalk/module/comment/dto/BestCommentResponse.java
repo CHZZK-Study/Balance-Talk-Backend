@@ -27,7 +27,7 @@ public class BestCommentResponse {
     private String content;
 
     @Schema(description = "해당 답글에 맞는 선택지", example = "B")
-    private balancetalk.module.vote.dto.Option Option;
+    private balancetalk.module.vote.domain.Option Option;
 
     @Schema(description = "댓글 좋아요 수", example = "24")
     private int likesCount;

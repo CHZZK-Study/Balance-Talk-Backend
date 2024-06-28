@@ -1,5 +1,8 @@
 package balancetalk.module.member.domain;
 
+import balancetalk.game.domain.Game;
+import balancetalk.game.domain.Game_Bookmark;
+import balancetalk.game.domain.Game_Vote;
 import balancetalk.module.bookmark.domain.Bookmark;
 import balancetalk.module.comment.domain.Comment;
 import balancetalk.module.comment.domain.CommentLike;
@@ -54,14 +57,20 @@ public class Member extends BaseTimeEntity implements UserDetails {
     @Column(nullable = false)
     private Role role;
 
-    @OneToMany(mappedBy = "member")
+    @OneToMany(mappedBy = "member") // TODO: 삭제 예정
     private List<Post> posts = new ArrayList<>();
+
+    @OneToMany(mappedBy = "member")
+    private List<Game> games = new ArrayList<>();
 
     @OneToMany(mappedBy = "member")
     private List<PostLike> postLikes = new ArrayList<>();
 
-    @OneToMany(mappedBy = "member")
+    @OneToMany(mappedBy = "member") // TODO: 삭제 예정
     private List<Bookmark> bookmarks = new ArrayList<>();
+
+    @OneToMany(mappedBy = "member")
+    private List<Game_Bookmark> gameBookmarks = new ArrayList<>();
 
     @OneToMany(mappedBy = "member")
     private List<Comment> comments = new ArrayList<>();
@@ -69,14 +78,11 @@ public class Member extends BaseTimeEntity implements UserDetails {
     @OneToMany(mappedBy = "member")
     private List<CommentLike> commentLikes = new ArrayList<>();
 
-    @OneToMany(mappedBy = "member")
+    @OneToMany(mappedBy = "member") // TODO: 삭제 예정
     private List<Vote> votes = new ArrayList<>();
 
     @OneToMany(mappedBy = "member")
-    private List<Notice> notices = new ArrayList<>();
-
-    @OneToMany(mappedBy = "reporter")
-    private List<Report> reports = new ArrayList<>(); // 신고한 기록
+    private List<Game_Vote> gameVotes = new ArrayList<>();
 
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "file_id")

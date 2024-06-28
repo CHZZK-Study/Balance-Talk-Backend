@@ -2,6 +2,7 @@ package balancetalk.module.vote.dto;
 
 import balancetalk.module.member.domain.Member;
 import balancetalk.module.post.domain.BalanceOption;
+import balancetalk.module.vote.domain.Option;
 import balancetalk.module.vote.domain.Vote;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;

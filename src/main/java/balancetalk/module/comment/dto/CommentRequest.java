@@ -4,7 +4,7 @@ import balancetalk.module.ViewStatus;
 import balancetalk.module.comment.domain.Comment;
 import balancetalk.module.member.domain.Member;
 import balancetalk.module.post.domain.Post;
-import balancetalk.module.vote.dto.Option;
+import balancetalk.module.vote.domain.Option;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;

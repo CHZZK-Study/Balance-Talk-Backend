@@ -1,7 +1,6 @@
 package balancetalk.module.post.presentation;
 
-import balancetalk.module.post.dto.GameRequest;
-import balancetalk.module.post.dto.GameResponse;
+import balancetalk.game.dto.GameResponse;
 import balancetalk.module.post.dto.TalkRequest;
 import balancetalk.module.post.dto.TalkResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -49,7 +48,7 @@ public class TalkController {
     @ResponseStatus(HttpStatus.OK)
     @PatchMapping("/{postId}")
     @Operation(summary = "오늘의 톡픽 수정", description = "오늘의 톡픽 게시글을 수정한다")
-    public GameResponse updatePost(@PathVariable Long postId, @RequestBody final GameRequest request) {
+    public GameResponse updatePost(@PathVariable Long postId, @RequestBody final TalkRequest request) {
         return GameResponse.builder().build();
     }
 

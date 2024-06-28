@@ -3,7 +3,7 @@ package balancetalk.module.comment.dto;
 import balancetalk.module.comment.domain.Comment;
 import balancetalk.module.file.domain.File;
 import balancetalk.module.member.domain.Member;
-import balancetalk.module.vote.dto.Option;
+import balancetalk.module.vote.domain.Option;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -57,7 +57,7 @@ public class ReplyResponse {
                 .content(comment.getContent())
                 .nickname(comment.getMember().getNickname())
                 .postId(comment.getPost().getId())
-                .Option(balancetalk.module.vote.dto.Option.B) //TODO : 옵션 관리 방법에 따라 추후 재구현
+                .Option(balancetalk.module.vote.domain.Option.B) //TODO : 옵션 관리 방법에 따라 추후 재구현
                 .likesCount(comment.getLikes().size())
                 .myLike(myLike)
                 .createdAt(comment.getCreatedAt())
