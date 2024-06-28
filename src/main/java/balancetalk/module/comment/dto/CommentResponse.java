@@ -69,7 +69,6 @@ public class CommentResponse {
                 .likesCount(comment.getLikes().size())
                 //.reportedCount(comment.reportedCount())
                 .myLike(myLike)
-                .replyCount(comment.getReplies().size())
                 .createdAt(comment.getCreatedAt())
                 .lastModifiedAt(comment.getLastModifiedAt())
                 .build();
