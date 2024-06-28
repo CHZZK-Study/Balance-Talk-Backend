@@ -29,33 +29,10 @@ import lombok.Setter;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class GameFile {
-
     @Id
     @GeneratedValue
     @Column(name = "id")
     private Long id;
-
-    @NotBlank
-    @Size(max = 50)
-    @Column(nullable = false, length = 50)
-    private String originalName; // 사용자가 업로드한 파일명
-
-    @Size(max = 100)
-    @Column(length = 50, unique = true)
-    private String storedName; // 서버 내부에서 관리하는 파일명
-
-    @NotBlank
-    @Size(max = 209)
-    @Column(nullable = false, length = 209)
-    private String path;
-
-    @NotNull
-    @Enumerated(value = EnumType.STRING)
-    private FileType type;
-
-    @NotNull
-    @Positive
-    private Long size;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
@@ -64,4 +41,28 @@ public class GameFile {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "game_id")
     private Game game;
+
+    @NotNull
+    @Positive
+    @Column(nullable = false)
+    private Long size;
+
+    @NotBlank
+    @Size(max = 50)
+    @Column(nullable = false)
+    private String uploadName;
+
+    @Size(max = 50)
+    @Column(unique = true, nullable = false)
+    private String storedName;
+
+    @NotBlank
+    @Size(max = 255)
+    @Column(nullable = false)
+    private String path;
+
+    @NotBlank
+    @Enumerated(value = EnumType.STRING)
+    @Column(nullable = false)
+    private FileType type;
 }

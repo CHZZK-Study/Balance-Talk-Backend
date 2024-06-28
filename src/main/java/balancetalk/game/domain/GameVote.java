@@ -11,7 +11,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotBlank;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -29,11 +29,6 @@ public class GameVote extends BaseTimeEntity {
     @Column(name = "id")
     private Long id;
 
-    @NotNull
-    @Enumerated(value = EnumType.STRING)
-    @Column(nullable = false)
-    private Option option;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
@@ -41,4 +36,9 @@ public class GameVote extends BaseTimeEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "game_id")
     private Game game;
+
+    @NotBlank
+    @Enumerated(value = EnumType.STRING)
+    @Column(nullable = false)
+    private Option option;
 }

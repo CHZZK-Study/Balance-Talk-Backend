@@ -9,7 +9,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotBlank;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -23,15 +23,10 @@ import org.hibernate.annotations.ColumnDefault;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class GameBookmark extends BaseTimeEntity {
-
     @Id
     @GeneratedValue
     @Column(name = "id")
     private Long id;
-
-    @NotNull
-    @ColumnDefault("TRUE")
-    private Boolean active = Boolean.TRUE;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
@@ -41,4 +36,8 @@ public class GameBookmark extends BaseTimeEntity {
     @JoinColumn(name = "game_id")
     private Game game;
 
+    @NotBlank
+    @ColumnDefault("TRUE")
+    @Column(nullable = false)
+    private Boolean active;
 }
