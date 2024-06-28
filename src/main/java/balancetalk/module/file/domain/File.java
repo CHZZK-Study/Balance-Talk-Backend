@@ -14,10 +14,9 @@ import lombok.*;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class File {
-
     @Id
     @GeneratedValue
-    @Column(name = "file_id")
+    @Column(name = "id")
     private Long id;
 
     @NotBlank
