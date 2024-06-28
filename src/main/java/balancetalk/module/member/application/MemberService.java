@@ -11,7 +11,6 @@ import balancetalk.module.file.domain.FileRepository;
 import balancetalk.module.member.domain.Member;
 import balancetalk.module.member.domain.MemberRepository;
 import balancetalk.module.member.dto.*;
-import balancetalk.module.post.domain.Post;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -129,12 +128,6 @@ public class MemberService {
         if (!passwordEncoder.matches(loginRequest.getPassword(), member.getPassword())) {
             throw new BalanceTalkException(ErrorCode.MISMATCHED_EMAIL_OR_PASSWORD);
         }
-        List<Post> posts = member.getPosts();
-        if (posts != null) {
-            for (Post post : posts) {
-                post.removeMember();
-            }
-        }
         memberRepository.deleteByEmail(member.getEmail());
     }
 
@@ -146,13 +139,6 @@ public class MemberService {
         }
         String username = authentication.getName();
         redisService.deleteValues(username);
-    }
-
-    @Transactional(readOnly = true)
-    public ProfileResponse memberProfile(Long memberId) {
-        Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_MEMBER));
-        return ProfileResponse.fromEntity(member);
     }
 
     public void verifyNickname(String nickname) {

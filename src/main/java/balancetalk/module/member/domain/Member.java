@@ -3,21 +3,12 @@ package balancetalk.module.member.domain;
 import balancetalk.game.domain.Game;
 import balancetalk.game.domain.GameBookmark;
 import balancetalk.game.domain.GameVote;
-import balancetalk.module.bookmark.domain.Bookmark;
-import balancetalk.module.comment.domain.Comment;
-import balancetalk.module.comment.domain.CommentLike;
 import balancetalk.module.file.domain.File;
-import balancetalk.module.post.domain.Post;
-import balancetalk.module.post.domain.PostLike;
-import balancetalk.module.vote.domain.Vote;
 import balancetalk.global.common.BaseTimeEntity;
 import jakarta.persistence.*;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Optional;
-
 import jakarta.validation.constraints.*;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
@@ -55,29 +46,11 @@ public class Member extends BaseTimeEntity implements UserDetails {
     @Column(nullable = false)
     private Role role;
 
-    @OneToMany(mappedBy = "member") // TODO: 삭제 예정
-    private List<Post> posts = new ArrayList<>();
-
     @OneToMany(mappedBy = "member")
     private List<Game> games = new ArrayList<>();
 
     @OneToMany(mappedBy = "member")
-    private List<PostLike> postLikes = new ArrayList<>();
-
-    @OneToMany(mappedBy = "member") // TODO: 삭제 예정
-    private List<Bookmark> bookmarks = new ArrayList<>();
-
-    @OneToMany(mappedBy = "member")
     private List<GameBookmark> gameBookmarks = new ArrayList<>();
-
-    @OneToMany(mappedBy = "member")
-    private List<Comment> comments = new ArrayList<>();
-
-    @OneToMany(mappedBy = "member")
-    private List<CommentLike> commentLikes = new ArrayList<>();
-
-    @OneToMany(mappedBy = "member") // TODO: 삭제 예정
-    private List<Vote> votes = new ArrayList<>();
 
     @OneToMany(mappedBy = "member")
     private List<GameVote> gameVotes = new ArrayList<>();
@@ -127,35 +100,5 @@ public class Member extends BaseTimeEntity implements UserDetails {
 
     public void updateImage(File profilePhoto) {
         this.profilePhoto = profilePhoto;
-    }
-
-    public int getPostCount() {
-        return Optional.ofNullable(posts)
-                .map(List::size).orElse(0);
-    }
-
-    public int getPostLikes() {
-        return Optional.ofNullable(postLikes)
-                .map(List::size).orElse(0);
-    }
-
-    public boolean hasVoted(Post post) {
-        return votes.stream()
-                .anyMatch(vote -> vote.getBalanceOption().getPost().equals(post));
-    }
-
-    public boolean hasBookmarked(Post post) {
-        return bookmarks.stream()
-                .anyMatch(bookmark -> bookmark.getPost().equals(post));
-    }
-
-    public boolean hasLiked(Post post) {
-        return postLikes.stream()
-                .anyMatch(like -> like.getPost().equals(post));
-    }
-
-    public boolean hasLikedComment(Comment comment) {
-        return commentLikes.stream()
-                .anyMatch(like -> like.getComment().equals(comment));
     }
 }

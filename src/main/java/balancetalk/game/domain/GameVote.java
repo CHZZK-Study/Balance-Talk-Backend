@@ -2,7 +2,6 @@ package balancetalk.game.domain;
 
 import balancetalk.global.common.BaseTimeEntity;
 import balancetalk.module.member.domain.Member;
-import balancetalk.module.vote.domain.Option;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;

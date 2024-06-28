@@ -1,6 +1,6 @@
 package balancetalk.game.dto;
 
-import balancetalk.module.vote.domain.Option;
+import balancetalk.game.domain.Option;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

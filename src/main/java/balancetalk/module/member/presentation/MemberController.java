@@ -4,7 +4,6 @@ import balancetalk.module.member.application.MemberService;
 import balancetalk.module.member.dto.JoinRequest;
 import balancetalk.module.member.dto.LoginRequest;
 import balancetalk.module.member.dto.MemberResponse;
-import balancetalk.module.member.dto.ProfileResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
@@ -118,12 +117,5 @@ public class MemberController {
     @Operation(summary = "액세스 토큰 재발급", description = "만료된 액세스 토큰을 재발급 받는다.")
     public String reissueAccessToken(HttpServletRequest request) {
         return memberService.reissueAccessToken(request);
-    }
-
-    @ResponseStatus(HttpStatus.OK)
-    @GetMapping("/{memberId}/profile")
-    @Operation(summary = "회원 프로필 조회", description = "회원 프로필을 조회한다.")
-    public ProfileResponse memberProfile(@PathVariable("memberId") Long memberId) {
-        return memberService.memberProfile(memberId);
     }
 }
