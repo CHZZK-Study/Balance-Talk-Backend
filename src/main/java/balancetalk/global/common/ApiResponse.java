@@ -31,7 +31,7 @@ public class ApiResponse<T> {
         return new ApiResponse<>(OK, SUCCESS, data);
     }
 
-    public static <T> ApiResponse<T> error(ErrorCode errorCode, String message) {
-        return new ApiResponse<>(errorCode.getHttpStatus(), message);
+    public static <T> ApiResponse<T> error(HttpStatus status, String message) {
+        return new ApiResponse<>(status, message);
     }
 }
