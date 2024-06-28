@@ -2,6 +2,7 @@ package balancetalk.module.comment.domain;
 
 import balancetalk.module.member.domain.Member;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -27,4 +28,7 @@ public class CommentLike {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "comment_id")
     private Comment comment;
+
+    @NotBlank
+    private boolean isActive;
 }

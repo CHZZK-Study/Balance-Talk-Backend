@@ -1,6 +1,5 @@
 package balancetalk.module.file.domain;
 
-import balancetalk.module.notice.domain.Notice;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -42,10 +41,6 @@ public class File {
     @NotNull
     @Positive
     private Long size; // 바이트 단위로 파일 크기 저장
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "notice_id")
-    private Notice notice;
 
     public String getUrl() {
         return path + storedName;
