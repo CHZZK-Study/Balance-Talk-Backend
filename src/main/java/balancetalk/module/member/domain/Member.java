@@ -23,7 +23,7 @@ public class Member extends BaseTimeEntity implements UserDetails {
 
     @Id
     @GeneratedValue
-    @Column(name = "member_id")
+    @Column(name = "id")
     private Long id;
 
     @NotBlank

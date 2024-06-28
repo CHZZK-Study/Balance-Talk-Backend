@@ -32,7 +32,7 @@ public class GameFile {
 
     @Id
     @GeneratedValue
-    @Column(name = "game_file_id")
+    @Column(name = "id")
     private Long id;
 
     @NotBlank

@@ -26,7 +26,7 @@ import lombok.NoArgsConstructor;
 public class GameVote extends BaseTimeEntity {
     @Id
     @GeneratedValue
-    @Column(name = "game_vote_id")
+    @Column(name = "id")
     private Long id;
 
     @NotNull

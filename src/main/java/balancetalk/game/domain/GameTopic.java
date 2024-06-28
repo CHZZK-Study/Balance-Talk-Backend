@@ -24,7 +24,7 @@ import lombok.NoArgsConstructor;
 public class GameTopic extends BaseTimeEntity {
     @Id
     @GeneratedValue
-    @Column(name = "game_topic_id")
+    @Column(name = "id")
     private Long id;
 
     @NotBlank

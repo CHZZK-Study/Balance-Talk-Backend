@@ -26,7 +26,7 @@ public class GameBookmark extends BaseTimeEntity {
 
     @Id
     @GeneratedValue
-    @Column(name = "game_bookmark_id")
+    @Column(name = "id")
     private Long id;
 
     @NotNull

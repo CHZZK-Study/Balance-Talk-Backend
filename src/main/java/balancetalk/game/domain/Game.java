@@ -31,7 +31,7 @@ public class Game extends BaseTimeEntity {
 
     @Id
     @GeneratedValue
-    @Column(name = "game_id")
+    @Column(name = "id")
     private Long id;
 
     @NotBlank
