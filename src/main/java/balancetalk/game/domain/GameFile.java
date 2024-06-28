@@ -1,9 +1,7 @@
 package balancetalk.game.domain;
 
-import balancetalk.global.common.BaseTimeEntity;
+import balancetalk.module.file.domain.FileType;
 import balancetalk.module.member.domain.Member;
-import balancetalk.module.vote.domain.Option;
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -13,61 +11,57 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
-import java.util.ArrayList;
-import java.util.List;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Getter
+@Setter
 @Builder
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Game extends BaseTimeEntity {
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+public class GameFile {
 
     @Id
     @GeneratedValue
-    @Column(name = "game_id")
+    @Column(name = "game_file_id")
     private Long id;
 
     @NotBlank
     @Size(max = 50)
     @Column(nullable = false, length = 50)
-    private String title;
+    private String originalName; // 사용자가 업로드한 파일명
+
+    @Size(max = 100)
+    @Column(length = 50, unique = true)
+    private String storedName; // 서버 내부에서 관리하는 파일명
+
+    @NotBlank
+    @Size(max = 209)
+    @Column(nullable = false, length = 209)
+    private String path;
 
     @NotNull
-    @Size(max = 50)
-    @Column(nullable = false)
-    private String optionA;
+    @Enumerated(value = EnumType.STRING)
+    private FileType type;
 
     @NotNull
-    @Size(max = 50)
-    @Column(nullable = false)
-    private String optionB;
+    @Positive
+    private Long size;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "game_topic_id")
-    private GameTopic topic;
-
-    @OneToMany(mappedBy = "game")
-    private List<GameTopic> gameTopics = new ArrayList<>();
-
-    @OneToMany(mappedBy = "game", cascade = CascadeType.ALL)
-    private List<GameBookmark> gameBookmarks = new ArrayList<>();
-
-    @OneToMany(mappedBy = "game", cascade = CascadeType.ALL)
-    private List<GameFile> gameFiles = new ArrayList<>();
-
-
+    @JoinColumn(name = "game_id")
+    private Game game;
 }

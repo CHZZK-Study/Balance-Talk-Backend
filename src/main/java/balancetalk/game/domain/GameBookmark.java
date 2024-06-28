@@ -1,7 +1,5 @@
 package balancetalk.game.domain;
 
-import static lombok.Builder.*;
-
 import balancetalk.global.common.BaseTimeEntity;
 import balancetalk.module.member.domain.Member;
 import jakarta.persistence.Column;
@@ -15,7 +13,6 @@ import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Builder.Default;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
@@ -25,7 +22,7 @@ import org.hibernate.annotations.ColumnDefault;
 @Getter
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Game_Bookmark extends BaseTimeEntity {
+public class GameBookmark extends BaseTimeEntity {
 
     @Id
     @GeneratedValue

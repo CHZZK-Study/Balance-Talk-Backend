@@ -1,8 +1,8 @@
 package balancetalk.module.member.domain;
 
 import balancetalk.game.domain.Game;
-import balancetalk.game.domain.Game_Bookmark;
-import balancetalk.game.domain.Game_Vote;
+import balancetalk.game.domain.GameBookmark;
+import balancetalk.game.domain.GameVote;
 import balancetalk.module.bookmark.domain.Bookmark;
 import balancetalk.module.comment.domain.Comment;
 import balancetalk.module.comment.domain.CommentLike;
@@ -68,7 +68,7 @@ public class Member extends BaseTimeEntity implements UserDetails {
     private List<Bookmark> bookmarks = new ArrayList<>();
 
     @OneToMany(mappedBy = "member")
-    private List<Game_Bookmark> gameBookmarks = new ArrayList<>();
+    private List<GameBookmark> gameBookmarks = new ArrayList<>();
 
     @OneToMany(mappedBy = "member")
     private List<Comment> comments = new ArrayList<>();
@@ -80,7 +80,7 @@ public class Member extends BaseTimeEntity implements UserDetails {
     private List<Vote> votes = new ArrayList<>();
 
     @OneToMany(mappedBy = "member")
-    private List<Game_Vote> gameVotes = new ArrayList<>();
+    private List<GameVote> gameVotes = new ArrayList<>();
 
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "file_id")
