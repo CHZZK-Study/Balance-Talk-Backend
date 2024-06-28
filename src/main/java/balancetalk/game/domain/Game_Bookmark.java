@@ -18,6 +18,7 @@ import lombok.Builder;
 import lombok.Builder.Default;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.ColumnDefault;
 
 @Entity
 @Builder
@@ -32,7 +33,7 @@ public class Game_Bookmark extends BaseTimeEntity {
     private Long id;
 
     @NotNull
-    @Column(columnDefinition = "BOOLEAN DEFAULT TRUE")
+    @ColumnDefault("TRUE")
     private Boolean active = Boolean.TRUE;
 
     @ManyToOne(fetch = FetchType.LAZY)
