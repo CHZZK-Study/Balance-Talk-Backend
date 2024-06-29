@@ -1,5 +1,6 @@
 package balancetalk.like.domain;
 
+import balancetalk.comment.domain.Comment;
 import balancetalk.global.common.BaseTimeEntity;
 import balancetalk.member.domain.Member;
 import balancetalk.talkpick.domain.TalkPick;
@@ -26,6 +27,10 @@ public class Like extends BaseTimeEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "talk_pick_id")
     private TalkPick talkPick;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "comment_id")
+    private Comment comment;
 
     private Boolean active = true;
 }
