@@ -2,6 +2,7 @@ package balancetalk.file.domain;
 
 import balancetalk.game.domain.Game;
 import balancetalk.member.domain.Member;
+import balancetalk.talkpick.domain.TalkPick;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -29,7 +30,9 @@ public class File {
     @JoinColumn(name = "game_id")
     private Game game;
 
-    // TODO: TALK_PICK 추가
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "talk_pick_id")
+    private TalkPick talkPick;
 
     @NotNull
     @Positive

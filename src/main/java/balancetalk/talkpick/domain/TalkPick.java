@@ -1,8 +1,9 @@
 package balancetalk.talkpick.domain;
 
+import balancetalk.file.domain.File;
 import balancetalk.global.common.BaseTimeEntity;
 import balancetalk.like.domain.Like;
-import balancetalk.module.member.domain.Member;
+import balancetalk.member.domain.Member;
 import balancetalk.vote.domain.Vote;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
@@ -10,7 +11,6 @@ import jakarta.validation.constraints.PositiveOrZero;
 import jakarta.validation.constraints.Size;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -61,5 +61,5 @@ public class TalkPick extends BaseTimeEntity {
     private List<Vote> votes = new ArrayList<>();
 
     @OneToMany(mappedBy = "talkPick")
-    private List<TalkPickFile> talkPickFiles = new ArrayList<>();
+    private List<File> talkPickFiles = new ArrayList<>();
 }

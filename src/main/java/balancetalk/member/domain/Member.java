@@ -5,7 +5,6 @@ import balancetalk.file.domain.File;
 import balancetalk.global.common.BaseTimeEntity;
 import balancetalk.like.domain.Like;
 import balancetalk.talkpick.domain.TalkPick;
-import balancetalk.talkpick.domain.TalkPickFile;
 import balancetalk.vote.domain.Vote;
 import jakarta.persistence.*;
 import java.util.ArrayList;
@@ -57,7 +56,7 @@ public class Member extends BaseTimeEntity implements UserDetails {
     private List<Like> talkPickLikes = new ArrayList<>();
 
     @OneToMany(mappedBy = "member")
-    private List<TalkPickFile> talkPickFiles = new ArrayList<>();
+    private List<File> files = new ArrayList<>();
 
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "file_id")
