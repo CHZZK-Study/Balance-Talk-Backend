@@ -76,9 +76,9 @@ public class CommentDto {
                     .nickname(comment.getMember().getNickname())
                     .talkPickId(comment.getTalkPick().getId())
                     .option(comment.getSelectedOption())
-                    .likesCount(comment.getLikes().size())
+                    //.likesCount(comment.getLikes().size()) TODO : 좋아요 구현 시 작성
                     .myLike(myLike)
-                    .replyCount(comment.getReplies().size())
+                    //.replyCount(comment.getReplies().size())
                     .createdAt(comment.getCreatedAt())
                     .lastModifiedAt(comment.getLastModifiedAt())
                     .build();
