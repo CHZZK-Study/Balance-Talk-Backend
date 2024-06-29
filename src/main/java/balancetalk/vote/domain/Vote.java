@@ -1,7 +1,7 @@
 package balancetalk.vote.domain;
 
 import balancetalk.global.common.BaseTimeEntity;
-import balancetalk.module.member.domain.Member;
+import balancetalk.member.domain.Member;
 import balancetalk.talkpick.domain.TalkPick;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;

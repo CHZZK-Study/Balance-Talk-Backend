@@ -1,10 +1,8 @@
-package balancetalk.game.domain;
+package balancetalk.bookmark.domain;
 
-import balancetalk.bookmark.domain.BookmarkType;
-import balancetalk.file.domain.File;
+import balancetalk.game.domain.Game;
 import balancetalk.global.common.BaseTimeEntity;
 import balancetalk.member.domain.Member;
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -15,11 +13,8 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
-import java.util.ArrayList;
-import java.util.List;
+import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -27,11 +22,11 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Getter
 @Builder
+@Getter
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Game extends BaseTimeEntity {
+public class Bookmark extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
@@ -42,25 +37,14 @@ public class Game extends BaseTimeEntity {
     private Member member;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "game_topic_id")
-    private GameTopic gameTopic;
+    @JoinColumn(name = "game_id")
+    private Game game;
 
-    @NotBlank
-    @Size(max = 255)
-    private String title;
-
-    @NotBlank
-    @Size(max = 50)
-    private String optionA;
-
-    @NotBlank
-    @Size(max = 50)
-    private String optionB;
+    @NotNull
+    private Boolean active = true;
 
     @NotBlank
     @Enumerated(EnumType.STRING)
     private BookmarkType bookmarkType;
-
-    @OneToMany(mappedBy = "game", cascade = CascadeType.ALL) // TODO: Game에 파일이 몇개 들어가는지..?
-    private List<File> files = new ArrayList<>();
 }
+

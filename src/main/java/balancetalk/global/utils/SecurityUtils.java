@@ -2,8 +2,8 @@ package balancetalk.global.utils;
 
 import static balancetalk.global.exception.ErrorCode.NOT_FOUND_MEMBER;
 import balancetalk.global.exception.BalanceTalkException;
-import balancetalk.module.member.domain.Member;
-import balancetalk.module.member.domain.MemberRepository;
+import balancetalk.member.domain.Member;
+import balancetalk.member.domain.MemberRepository;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.springframework.security.core.Authentication;

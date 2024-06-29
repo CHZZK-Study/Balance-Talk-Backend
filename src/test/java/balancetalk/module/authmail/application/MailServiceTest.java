@@ -1,16 +1,13 @@
 package balancetalk.module.authmail.application;
 
+import balancetalk.authmail.application.MailService;
 import balancetalk.global.exception.BalanceTalkException;
 import balancetalk.global.exception.ErrorCode;
 import balancetalk.global.redis.application.RedisService;
-import balancetalk.module.authmail.dto.EmailRequest;
-import balancetalk.module.authmail.dto.EmailVerification;
-import balancetalk.module.member.domain.Member;
-import balancetalk.module.member.domain.MemberRepository;
-import jakarta.mail.internet.MimeMessage;
-import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
+import balancetalk.authmail.dto.EmailRequest;
+import balancetalk.authmail.dto.EmailVerification;
+import balancetalk.member.domain.Member;
+import balancetalk.member.domain.MemberRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -18,9 +15,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Optional;
@@ -29,7 +23,6 @@ import static org.assertj.core.api.Assertions.*;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
