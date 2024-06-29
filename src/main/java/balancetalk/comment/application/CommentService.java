@@ -75,7 +75,7 @@ public class CommentService {
 
     @Transactional(readOnly = true)
     public Page<CommentDto.Response> findAllComments(Long talkPickId, String token, Pageable pageable) {
-        // validatePostId(talkPickId);
+        validateTalkPickId(talkPickId);
 
         Page<Comment> comments = commentRepository.findAllByTalkPickId(talkPickId, pageable);
         return comments.map(comment -> CommentDto.Response.fromEntity(comment, false));
@@ -109,15 +109,15 @@ public class CommentService {
 
      */
 
-    public Comment updateComment(Long commentId, Long postId, String content) {
+    public Comment updateComment(Long commentId, Long talkPickId, String content) {
         Comment comment = validateCommentId(commentId);
-        validatePostId(postId);
+        validateTalkPickId(talkPickId);
 
         if (!getCurrentMember(memberRepository).equals(comment.getMember())) {
             throw new BalanceTalkException(FORBIDDEN_COMMENT_MODIFY);
         }
 
-        if (!comment.getPost().getId().equals(postId)) {
+        if (!comment.getTalkPick().getId().equals(talkPickId)) {
             throw new BalanceTalkException(NOT_FOUND_COMMENT_AT_THAT_POST);
         }
 
@@ -125,16 +125,16 @@ public class CommentService {
         return comment;
     }
 
-    public void deleteComment(Long commentId, Long postId) {
+    public void deleteComment(Long commentId, Long talkPickId) {
         Comment comment = validateCommentId(commentId);
         Member commentMember = commentRepository.findById(commentId).get().getMember();
-        validatePostId(postId);
+        validateTalkPickId(talkPickId);
 
         if (!getCurrentMember(memberRepository).equals(commentMember)) {
             throw new BalanceTalkException(FORBIDDEN_COMMENT_DELETE);
         }
 
-        if (!comment.getPost().getId().equals(postId)) {
+        if (!comment.getTalkPick().getId().equals(talkPickId)) {
             throw new BalanceTalkException(NOT_FOUND_COMMENT_AT_THAT_POST);
         }
 
