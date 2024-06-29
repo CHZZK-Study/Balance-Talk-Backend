@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface CommentRepository extends JpaRepository<Comment, Long> {
-    List<Comment> findByTalkPickId(Long talkPickId);
+    Page<Comment> findAllByTalkPickId(Long talkPickId, Pageable pageable);
 
     Page<Comment> findAllByMemberEmail(String email, Pageable pageable);
 
