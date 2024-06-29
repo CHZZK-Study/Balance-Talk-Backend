@@ -29,22 +29,18 @@ public class Member extends BaseTimeEntity implements UserDetails {
 
     @NotBlank
     @Size(min = 2, max = 10)
-    @Column(nullable = false, length = 10, unique = true)
     private String nickname;
 
     @NotBlank
     @Size(max = 30)
     @Email(regexp = "^[a-zA-Z0-9._%+-]{1,20}@[a-zA-Z0-9.-]{1,10}\\.[a-zA-Z]{2,}$")
-    @Column(nullable = false, length = 30, unique = true)
     private String email;
 
     @NotBlank
-    @Column(nullable = false)
     private String password;
 
     @NotBlank
     @Enumerated(value = EnumType.STRING)
-    @Column(nullable = false)
     private Role role;
 
     @OneToMany(mappedBy = "member")
