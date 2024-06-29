@@ -1,5 +1,6 @@
 package balancetalk.file.application;
 
+import balancetalk.file.domain.FileType;
 import balancetalk.global.exception.BalanceTalkException;
 import balancetalk.global.exception.ErrorCode;
 import balancetalk.file.domain.File;
@@ -43,7 +44,8 @@ public class FileService {
         try (InputStream inputStream = multipartFile.getInputStream()) {
             putObjectToS3(UPLOAD_DIR + storedName, inputStream, contentLength);
             File file = fileRepository.save(
-                    createFile(originalName, storedName, S3_URL + UPLOAD_DIR, FileFormat, contentLength));
+                    createFile(originalName, storedName, S3_URL + UPLOAD_DIR, null, FileFormat, contentLength));
+                    // TODO: 파일 업로드 로직 수정
 
             return FileResponse.fromEntity(file);
         } catch (IOException e) {
@@ -71,14 +73,15 @@ public class FileService {
         s3Client.putObject(putObjectRequest, RequestBody.fromInputStream(inputStream, contentLength));
     }
 
-    private File createFile(String originalName, String storedName, String path, FileFormat FileFormat,
+    private File createFile(String uploadName, String storedName, String path, FileType fileType, FileFormat FileFormat,
                             long contentLength) {
 
         return File.builder()
-                .originalName(originalName)
+                .uploadName(uploadName)
                 .storedName(storedName)
                 .path(path)
-                .type(FileFormat)
+                .fileType(fileType)
+                .fileFormat(FileFormat)
                 .size(contentLength)
                 .build();
     }

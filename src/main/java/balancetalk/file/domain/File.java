@@ -1,5 +1,7 @@
 package balancetalk.file.domain;
 
+import balancetalk.game.domain.Game;
+import balancetalk.member.domain.Member;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -15,31 +17,42 @@ import lombok.*;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class File {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
 
-    @NotBlank
-    @Size(max = 50)
-    @Column(nullable = false, length = 50)
-    private String originalName; // 사용자가 업로드한 파일명
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "member_id")
+    private Member member;
 
-    @Size(max = 100)
-    @Column(length = 50, unique = true)
-    private String storedName; // 서버 내부에서 관리하는 파일명
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "game_id")
+    private Game game;
 
-    @NotBlank
-    @Size(max = 209)
-    @Column(nullable = false, length = 209)
-    private String path;
-
-    @NotNull
-    @Enumerated(value = EnumType.STRING)
-    private FileFormat type;
+    // TODO: TALK_PICK 추가
 
     @NotNull
     @Positive
-    private Long size; // 바이트 단위로 파일 크기 저장
+    private Long size;
+
+    @NotBlank
+    @Size(max = 50)
+    private String uploadName;
+
+    @Size(max = 50)
+    private String storedName;
+
+    @NotBlank
+    @Size(max = 255)
+    private String path;
+
+    @NotBlank
+    @Enumerated(value = EnumType.STRING)
+    private FileType fileType;
+
+    @NotBlank
+    @Enumerated(value = EnumType.STRING)
+    private FileFormat fileFormat;
 
     public String getUrl() {
         return path + storedName;
