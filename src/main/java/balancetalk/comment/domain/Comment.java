@@ -1,6 +1,7 @@
 package balancetalk.comment.domain;
 
 import balancetalk.global.common.BaseTimeEntity;
+import balancetalk.like.domain.Like;
 import balancetalk.member.domain.Member;
 import balancetalk.talkpick.domain.TalkPick;
 import balancetalk.talkpick.domain.ViewStatus;
@@ -55,7 +56,7 @@ public class Comment extends BaseTimeEntity {
     private List<Comment> replies = new ArrayList<>();
 
     @OneToMany(mappedBy = "comment", cascade = CascadeType.ALL)
-    private List<CommentLike> likes = new ArrayList<>();
+    private List<Like> likes = new ArrayList<>();
 
     public void updateContent(String content) {
         this.content = content;
