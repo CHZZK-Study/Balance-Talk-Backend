@@ -3,10 +3,10 @@ package balancetalk.module.member.domain;
 import balancetalk.game.domain.Game;
 import balancetalk.game.domain.GameBookmark;
 import balancetalk.global.common.BaseTimeEntity;
+import balancetalk.like.domain.Like;
 import balancetalk.module.file.domain.File;
 import balancetalk.talkpick.domain.TalkPick;
 import balancetalk.talkpick.domain.TalkPickFile;
-import balancetalk.talkpick.domain.TalkPickLike;
 import balancetalk.vote.domain.Vote;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
@@ -65,7 +65,7 @@ public class Member extends BaseTimeEntity implements UserDetails {
     private List<TalkPick> talkPicks = new ArrayList<>();
 
     @OneToMany(mappedBy = "member")
-    private List<TalkPickLike> talkPickLikes = new ArrayList<>();
+    private List<Like> talkPickLikes = new ArrayList<>();
 
     @OneToMany(mappedBy = "member")
     private List<TalkPickFile> talkPickFiles = new ArrayList<>();
