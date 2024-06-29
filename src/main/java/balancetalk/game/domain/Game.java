@@ -43,17 +43,14 @@ public class Game extends BaseTimeEntity {
 
     @NotBlank
     @Size(max = 255)
-    @Column(nullable = false)
     private String title;
 
     @NotBlank
     @Size(max = 50)
-    @Column(nullable = false)
     private String optionA;
 
     @NotBlank
     @Size(max = 50)
-    @Column(nullable = false)
     private String optionB;
 
     @OneToMany(mappedBy = "game", cascade = CascadeType.ALL)

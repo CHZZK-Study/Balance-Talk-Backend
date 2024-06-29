@@ -39,6 +39,5 @@ public class GameBookmark extends BaseTimeEntity {
 
     @NotNull
     @ColumnDefault("TRUE")
-    @Column(nullable = false)
     private Boolean active = true;
 }

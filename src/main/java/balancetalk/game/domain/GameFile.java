@@ -45,25 +45,20 @@ public class GameFile {
 
     @NotNull
     @Positive
-    @Column(nullable = false)
     private Long size;
 
     @NotBlank
     @Size(max = 50)
-    @Column(nullable = false)
     private String uploadName;
 
     @Size(max = 50)
-    @Column(unique = true, nullable = false)
     private String storedName;
 
     @NotBlank
     @Size(max = 255)
-    @Column(nullable = false)
     private String path;
 
     @NotBlank
     @Enumerated(value = EnumType.STRING)
-    @Column(nullable = false)
     private FileType type;
 }

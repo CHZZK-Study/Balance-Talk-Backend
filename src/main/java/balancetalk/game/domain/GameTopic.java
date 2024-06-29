@@ -30,7 +30,6 @@ public class GameTopic extends BaseTimeEntity {
 
     @NotBlank
     @Size(max = 255)
-    @Column(nullable = false)
     private String name;
 
     @OneToMany(mappedBy = "gameTopic")
