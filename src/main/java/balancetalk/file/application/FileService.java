@@ -4,7 +4,7 @@ import balancetalk.global.exception.BalanceTalkException;
 import balancetalk.global.exception.ErrorCode;
 import balancetalk.file.domain.File;
 import balancetalk.file.domain.FileRepository;
-import balancetalk.file.domain.FileType;
+import balancetalk.file.domain.FileFormat;
 import balancetalk.file.dto.FileResponse;
 import java.io.IOException;
 import java.io.InputStream;
@@ -38,12 +38,12 @@ public class FileService {
         String originalName = multipartFile.getOriginalFilename();
         String storedName = String.format("%s_%s", UUID.randomUUID(), originalName);
         long contentLength = multipartFile.getSize();
-        FileType fileType = convertMimeTypeToFileType(multipartFile.getContentType());
+        FileFormat FileFormat = convertMimeTypeToFileFormat(multipartFile.getContentType());
 
         try (InputStream inputStream = multipartFile.getInputStream()) {
             putObjectToS3(UPLOAD_DIR + storedName, inputStream, contentLength);
             File file = fileRepository.save(
-                    createFile(originalName, storedName, S3_URL + UPLOAD_DIR, fileType, contentLength));
+                    createFile(originalName, storedName, S3_URL + UPLOAD_DIR, FileFormat, contentLength));
 
             return FileResponse.fromEntity(file);
         } catch (IOException e) {
@@ -51,12 +51,12 @@ public class FileService {
         }
     }
 
-    private FileType convertMimeTypeToFileType(String mimeType) {
+    private FileFormat convertMimeTypeToFileFormat(String mimeType) {
         if (mimeType == null) {
             throw new IllegalArgumentException("MIME 타입은 NULL이 될 수 없습니다.");
         }
 
-        return Arrays.stream(FileType.values())
+        return Arrays.stream(FileFormat.values())
                 .filter(type -> type.getMimeType().equalsIgnoreCase(mimeType))
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("지원하지 않는 파일 타입 : " + mimeType));
@@ -71,14 +71,14 @@ public class FileService {
         s3Client.putObject(putObjectRequest, RequestBody.fromInputStream(inputStream, contentLength));
     }
 
-    private File createFile(String originalName, String storedName, String path, FileType fileType,
+    private File createFile(String originalName, String storedName, String path, FileFormat FileFormat,
                             long contentLength) {
 
         return File.builder()
                 .originalName(originalName)
                 .storedName(storedName)
                 .path(path)
-                .type(fileType)
+                .type(FileFormat)
                 .size(contentLength)
                 .build();
     }

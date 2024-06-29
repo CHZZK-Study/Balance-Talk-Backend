@@ -1,6 +1,6 @@
 package balancetalk.game.domain;
 
-import balancetalk.file.domain.FileType;
+import balancetalk.file.domain.FileFormat;
 import balancetalk.member.domain.Member;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -60,5 +60,5 @@ public class GameFile {
 
     @NotBlank
     @Enumerated(value = EnumType.STRING)
-    private FileType type;
+    private FileFormat type;
 }
