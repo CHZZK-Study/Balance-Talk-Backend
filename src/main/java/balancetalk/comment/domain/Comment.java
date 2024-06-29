@@ -8,6 +8,7 @@ import balancetalk.talkpick.domain.ViewStatus;
 import balancetalk.vote.domain.VoteOption;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 
@@ -29,15 +30,14 @@ public class Comment extends BaseTimeEntity {
     @Size(max = 100)
     private String content;
 
-    @NotBlank
-    @Size(max = 50)
+    @Enumerated(value = EnumType.STRING)
+    @NotNull
     private VoteOption selectedOption;
 
     @Enumerated(value = EnumType.STRING)
-    @NotBlank
     private ViewStatus viewStatus;
 
-    @NotBlank
+    @NotNull
     private boolean isBest;
 
     @ManyToOne(fetch = FetchType.LAZY)
