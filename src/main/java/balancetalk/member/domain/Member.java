@@ -21,7 +21,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 public class Member extends BaseTimeEntity implements UserDetails {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
 
