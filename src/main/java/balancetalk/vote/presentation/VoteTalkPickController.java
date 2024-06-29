@@ -14,8 +14,8 @@ public class VoteTalkPickController {
 
     @Operation(summary = "톡픽 투표 생성", description = "톡픽에서 원하는 선택지에 투표합니다.")
     @PostMapping
-    public ApiResponse<Object> voteTalkPick(@PathVariable Long talkPickId,
-                                            @RequestBody VoteRequest request) {
+    public ApiResponse<Object> createVoteTalkPick(@PathVariable Long talkPickId,
+                                                  @RequestBody VoteRequest request) {
         return ApiResponse.ok();
     }
 
@@ -23,5 +23,12 @@ public class VoteTalkPickController {
     @GetMapping
     public ApiResponse<VoteResponse> getVoteResultTalkPick(@PathVariable Long talkPickId) {
         return ApiResponse.ok(new VoteResponse(23, 12));
+    }
+
+    @Operation(summary = "톡픽 투표 수정", description = "톡픽 투표를 수정합니다.")
+    @PutMapping
+    public ApiResponse<VoteResponse> updateVoteResultTalkPick(@PathVariable Long talkPickId,
+                                                              @RequestBody VoteRequest request) {
+        return ApiResponse.ok();
     }
 }
