@@ -1,10 +1,12 @@
 package balancetalk.global.common;
 
 import balancetalk.global.exception.ErrorCode;
+import lombok.Getter;
 import org.springframework.http.HttpStatus;
 
 import static org.springframework.http.HttpStatus.OK;
 
+@Getter
 public class ApiResponse<T> {
 
     private static final String SUCCESS = "SUCCESS";
