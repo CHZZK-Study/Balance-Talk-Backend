@@ -9,7 +9,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
 @OpenAPIDefinition(servers = {@Server(url = "/", description = "Default Server URL")})
 @EnableJpaAuditing
-@SpringBootApplication(exclude = SecurityAutoConfiguration.class)
+@SpringBootApplication
 public class BalanceTalkApplication {
 
 	public static void main(String[] args) {
