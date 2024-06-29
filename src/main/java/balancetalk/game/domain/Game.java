@@ -1,7 +1,7 @@
 package balancetalk.game.domain;
 
 import balancetalk.global.common.BaseTimeEntity;
-import balancetalk.module.member.domain.Member;
+import balancetalk.member.domain.Member;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -57,9 +57,6 @@ public class Game extends BaseTimeEntity {
 
     @OneToMany(mappedBy = "game", cascade = CascadeType.ALL)
     private List<GameBookmark> gameBookmarks = new ArrayList<>();
-
-    @OneToMany(mappedBy = "game", cascade = CascadeType.ALL)
-    private List<GameVote> gameVotes = new ArrayList<>();
 
     @OneToMany(mappedBy = "game", cascade = CascadeType.ALL) // TODO: Game에 파일이 몇개 들어가는지..?
     private List<GameFile> gameFiles = new ArrayList<>();

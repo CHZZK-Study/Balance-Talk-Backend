@@ -1,7 +1,7 @@
 package balancetalk.game.domain;
 
-import balancetalk.module.file.domain.FileType;
-import balancetalk.module.member.domain.Member;
+import balancetalk.file.domain.FileType;
+import balancetalk.member.domain.Member;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;

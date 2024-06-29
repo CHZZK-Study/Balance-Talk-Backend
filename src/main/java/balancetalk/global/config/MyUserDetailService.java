@@ -2,8 +2,8 @@ package balancetalk.global.config;
 
 import balancetalk.global.exception.BalanceTalkException;
 import balancetalk.global.exception.ErrorCode;
-import balancetalk.module.member.domain.Member;
-import balancetalk.module.member.domain.MemberRepository;
+import balancetalk.member.domain.Member;
+import balancetalk.member.domain.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;

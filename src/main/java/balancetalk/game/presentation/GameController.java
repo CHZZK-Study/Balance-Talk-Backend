@@ -1,5 +1,6 @@
 package balancetalk.game.presentation;
 
+import balancetalk.game.domain.GameBookmark;
 import balancetalk.game.dto.GameRequest;
 import balancetalk.game.dto.GameResponse;
 import io.swagger.v3.oas.annotations.Operation;
