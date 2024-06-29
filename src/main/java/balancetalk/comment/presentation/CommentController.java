@@ -1,11 +1,10 @@
 package balancetalk.comment.presentation;
 
 import balancetalk.comment.application.CommentService;
+import balancetalk.comment.domain.Comment;
 import balancetalk.comment.dto.CommentDto;
 import balancetalk.global.common.ApiResponse;
-import balancetalk.module.comment.application.CommentService;
-import balancetalk.module.comment.dto.*;
-import balancetalk.module.report.dto.ReportRequest;
+
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -15,10 +14,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
-@RequestMapping("/posts/{postId}/comments")
+@RequestMapping("/talks/{talkPickId}/comments")
 @RequiredArgsConstructor
 @Tag(name = "comment", description = "댓글 API")
 public class CommentController {
@@ -28,17 +25,17 @@ public class CommentController {
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
     @Operation(summary = "댓글 작성", description = "post-id에 해당하는 게시글에 댓글을 작성한다.")
-    public ApiResponse<CommentDto.Response> createComment(@PathVariable Long postId, @Valid @RequestBody CommentDto.Request request) {
-        commentService.createComment(request, postId);
-        return ApiResponse.ok(null);
+    public ApiResponse<String> createComment(@PathVariable Long talkPickId, @Valid @RequestBody CommentDto.Request request) {
+        commentService.createComment(request, talkPickId);
+        return ApiResponse.ok("댓글이 정상적으로 작성되었습니다.");
     }
 
     @ResponseStatus(HttpStatus.OK)
     @GetMapping
     @Operation(summary = "최신 댓글 목록 조회", description = "post-id에 해당하는 게시글에 있는 모든 댓글을 최신순으로 정렬해 조회한다.")
-    public Page<CommentDto.Response> findAllCommentsByPostId(@PathVariable Long postId, Pageable pageable,
-                                                         @RequestHeader(value = "Authorization", required = false) String token) {
-        return commentService.findAllComments(postId, token, pageable);
+    public ApiResponse<Page<CommentDto.Response>> findAllCommentsByPostId(@PathVariable Long talkPickId, Pageable pageable,
+                                                             @RequestHeader(value = "Authorization", required = false) String token) {
+        return ApiResponse.ok(commentService.findAllComments(talkPickId, token, pageable));
     }
 
     /*
@@ -55,17 +52,18 @@ public class CommentController {
     @ResponseStatus(HttpStatus.OK)
     @PutMapping("/{commentId}")
     @Operation(summary = "댓글 수정", description = "comment-id에 해당하는 댓글 내용을 수정한다.")
-    public String updateComment(@PathVariable Long commentId, @PathVariable Long postId, @RequestBody CommentRequest request) {
-        commentService.updateComment(commentId, postId, request.getContent());
-        return "댓글이 정상적으로 수정되었습니다.";
+    public ApiResponse<String> updateComment(@PathVariable Long commentId, @PathVariable Long talkPickId, @RequestBody CommentDto.Request request) {
+        commentService.updateComment(commentId, talkPickId, request.getContent());
+        return ApiResponse.ok("댓글이 정상적으로 수정되었습니다.");
     }
+
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping("/{commentId}")
     @Operation(summary = "댓글 삭제", description = "comment-id에 해당하는 댓글을 삭제한다.")
-    public String deleteComment(@PathVariable Long commentId, @PathVariable Long postId) {
-        commentService.deleteComment(commentId, postId);
-        return "댓글이 정상적으로 삭제되었습니다.";
+    public ApiResponse<String> deleteComment(@PathVariable Long commentId, @PathVariable Long talkPickId) {
+        commentService.deleteComment(commentId, talkPickId);
+        return ApiResponse.ok("댓글이 정상적으로 삭제되었습니다.");
     }
 
     /*

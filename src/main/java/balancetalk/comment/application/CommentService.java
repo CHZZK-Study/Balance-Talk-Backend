@@ -1,48 +1,20 @@
 package balancetalk.comment.application;
 
 import balancetalk.comment.domain.Comment;
-import balancetalk.comment.domain.CommentLikeRepository;
 import balancetalk.comment.domain.CommentRepository;
 import balancetalk.comment.dto.CommentDto;
 import balancetalk.global.exception.BalanceTalkException;
-import balancetalk.global.exception.ErrorCode;
 import balancetalk.member.domain.Member;
 import balancetalk.member.domain.MemberRepository;
-import balancetalk.module.comment.domain.Comment;
-import balancetalk.module.comment.domain.CommentLike;
-import balancetalk.module.comment.domain.CommentLikeRepository;
-import balancetalk.module.comment.domain.CommentRepository;
-import balancetalk.module.comment.dto.CommentRequest;
-import balancetalk.module.comment.dto.CommentResponse;
-import balancetalk.module.comment.dto.ReplyCreateRequest;
-import balancetalk.module.comment.dto.ReplyResponse;
-import balancetalk.module.member.domain.Member;
-import balancetalk.module.member.domain.MemberRepository;
-import balancetalk.module.member.dto.MyPageResponse;
-import balancetalk.module.post.domain.BalanceOption;
-import balancetalk.module.post.domain.Post;
-import balancetalk.module.post.domain.PostRepository;
-import balancetalk.module.report.domain.Report;
-import balancetalk.module.report.domain.ReportRepository;
-import balancetalk.module.report.dto.ReportRequest;
-import balancetalk.module.vote.domain.Vote;
-import balancetalk.module.vote.domain.VoteRepository;
 import balancetalk.talkpick.domain.TalkPick;
 import balancetalk.talkpick.domain.TalkPickRepository;
 import balancetalk.vote.domain.VoteRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
 import static balancetalk.global.exception.ErrorCode.*;
 import static balancetalk.global.utils.SecurityUtils.getCurrentMember;
 
@@ -62,7 +34,7 @@ public class CommentService {
     @Value("${comments.max-depth}")
     private int maxDepth;
 
-    public Comment createComment(CommentDto.Request request, Long talkPickId) {
+    public CommentDto.Response createComment(CommentDto.Request request, Long talkPickId) {
         Member member = getCurrentMember(memberRepository);
         TalkPick talkPick = validateTalkPickId(talkPickId);
         //BalanceOption balanceOption = validateBalanceOptionId(request, post); TODO : Vote 구현 완료 후 작업
@@ -70,7 +42,8 @@ public class CommentService {
                 //.orElseThrow(() -> new BalanceTalkException(ErrorCode.NOT_FOUND_VOTE));
 
         Comment comment = request.toEntity(member, talkPick);
-        return commentRepository.save(comment);
+        commentRepository.save(comment);
+        return CommentDto.Response.fromEntity(comment, false);
     }
 
     @Transactional(readOnly = true)
