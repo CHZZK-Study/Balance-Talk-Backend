@@ -4,7 +4,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 @Data
-public class CreateTalkPickRequest {
+public class TalkPickRequest {
 
     @Schema(description = "제목", example = "제목")
     private String title;

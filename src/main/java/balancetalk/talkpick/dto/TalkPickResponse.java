@@ -6,7 +6,7 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class CreateTalkPickResponse {
+public class TalkPickResponse {
     @Schema(description = "톡픽 ID", example = "톡픽 ID")
     private Long id;
 
