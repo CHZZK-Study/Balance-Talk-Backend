@@ -39,6 +39,10 @@ public class ApiResponse<T> {
         return new ApiResponse<>(OK, SUCCESS, data);
     }
 
+    public static <T> ApiResponse<T> ok() {
+        return new ApiResponse<>(OK, SUCCESS, null);
+    }
+
     public static <T> ApiResponse<T> error(HttpStatus status, String message) {
         return new ApiResponse<>(status, message);
     }

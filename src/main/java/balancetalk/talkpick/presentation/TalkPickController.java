@@ -14,6 +14,12 @@ import org.springframework.web.bind.annotation.*;
 @Tag(name = "talk_pick", description = "톡픽 API")
 public class TalkPickController {
 
+    @Operation(summary = "오늘의 톡픽 조회 (메인)", description = "메인 페이지에서 오늘의 톡픽을 조회합니다.")
+    @GetMapping("/today")
+    public ApiResponse<TodayTalkPickResponse> findTodayTalkPick(final Pageable pageable) {
+        return ApiResponse.ok(new TodayTalkPickResponse(1L, "제목", "요약", "O", "X"));
+    }
+
     @Operation(summary = "톡픽 생성", description = "톡픽을 생성합니다.")
     @PostMapping
     public ApiResponse<TalkPickResponse> createTalkPick(@RequestBody final TalkPickRequest request) {
@@ -35,9 +41,9 @@ public class TalkPickController {
         return ApiResponse.ok(new TalkPickResponse(1L, "제목", "내용", "요약", 0L, 0L, "O", "X"));
     }
 
-    @Operation(summary = "오늘의 톡픽 조회 (메인)", description = "메인 페이지에서 오늘의 톡픽을 조회합니다.")
-    @GetMapping("/today")
-    public ApiResponse<TodayTalkPickResponse> findTodayTalkPick(final Pageable pageable) {
-        return ApiResponse.ok(new TodayTalkPickResponse(1L, "제목", "요약", "O", "X"));
+    @Operation(summary = "톡픽 삭제", description = "톡픽을 삭제합니다.")
+    @DeleteMapping("/{talkPickId}")
+    public ApiResponse<Object> deleteTalkPick(@PathVariable final Long talkPickId) {
+        return ApiResponse.ok();
     }
 }
