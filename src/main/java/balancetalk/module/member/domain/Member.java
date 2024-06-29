@@ -2,17 +2,23 @@ package balancetalk.module.member.domain;
 
 import balancetalk.game.domain.Game;
 import balancetalk.game.domain.GameBookmark;
-import balancetalk.game.domain.GameVote;
-import balancetalk.module.file.domain.File;
 import balancetalk.global.common.BaseTimeEntity;
+import balancetalk.like.domain.Like;
+import balancetalk.module.file.domain.File;
+import balancetalk.talkpick.domain.TalkPick;
+import balancetalk.talkpick.domain.TalkPickFile;
+import balancetalk.vote.domain.Vote;
 import jakarta.persistence.*;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import jakarta.validation.constraints.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 @Entity
 @Builder
@@ -22,7 +28,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 public class Member extends BaseTimeEntity implements UserDetails {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
 
@@ -53,7 +59,16 @@ public class Member extends BaseTimeEntity implements UserDetails {
     private List<GameBookmark> gameBookmarks = new ArrayList<>();
 
     @OneToMany(mappedBy = "member")
-    private List<GameVote> gameVotes = new ArrayList<>();
+    private List<Vote> votes = new ArrayList<>();
+
+    @OneToMany(mappedBy = "member")
+    private List<TalkPick> talkPicks = new ArrayList<>();
+
+    @OneToMany(mappedBy = "member")
+    private List<Like> talkPickLikes = new ArrayList<>();
+
+    @OneToMany(mappedBy = "member")
+    private List<TalkPickFile> talkPickFiles = new ArrayList<>();
 
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "file_id")
