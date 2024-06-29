@@ -1,7 +1,7 @@
 package balancetalk.member.domain;
 
+import balancetalk.bookmark.domain.Bookmark;
 import balancetalk.game.domain.Game;
-import balancetalk.game.domain.GameBookmark;
 import balancetalk.file.domain.File;
 import balancetalk.global.common.BaseTimeEntity;
 import jakarta.persistence.*;
@@ -45,7 +45,7 @@ public class Member extends BaseTimeEntity implements UserDetails {
     private List<Game> games = new ArrayList<>();
 
     @OneToMany(mappedBy = "member")
-    private List<GameBookmark> gameBookmarks = new ArrayList<>();
+    private List<Bookmark> bookmarks = new ArrayList<>();
 
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "file_id")
