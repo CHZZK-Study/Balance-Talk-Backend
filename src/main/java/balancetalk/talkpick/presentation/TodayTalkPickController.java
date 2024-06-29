@@ -10,12 +10,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/talks")
+@RequestMapping("/talks/today")
 @Tag(name = "talk_pick", description = "톡픽 API")
 public class TodayTalkPickController {
 
     @Operation(summary = "오늘의 톡픽 조회 (메인)", description = "메인 페이지에서 오늘의 톡픽을 조회합니다.")
-    @GetMapping("/today")
+    @GetMapping
     public ApiResponse<TodayTalkPickResponse> findTodayTalkPick(final Pageable pageable) {
         return ApiResponse.ok(new TodayTalkPickResponse(1L, "제목", "요약", "O", "X"));
     }
