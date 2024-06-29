@@ -1,8 +1,8 @@
 package balancetalk.talkpick.presentation;
 
 import balancetalk.global.common.ApiResponse;
-import balancetalk.talkpick.dto.TalkPickRequest;
-import balancetalk.talkpick.dto.TalkPickResponse;
+import balancetalk.talkpick.dto.CreateTalkPickRequest;
+import balancetalk.talkpick.dto.CreateTalkPickResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,8 +17,8 @@ public class TalkPickController {
 
     @Operation(summary = "톡픽 생성", description = "톡픽을 생성합니다.")
     @PostMapping
-    public ApiResponse<TalkPickResponse> createTalkPick(@RequestBody final TalkPickRequest request) {
-        return ApiResponse.ok(new TalkPickResponse(
+    public ApiResponse<CreateTalkPickResponse> createTalkPick(@RequestBody final CreateTalkPickRequest request) {
+        return ApiResponse.ok(new CreateTalkPickResponse(
                 1L,
                 request.getTitle(),
                 request.getContent(),
