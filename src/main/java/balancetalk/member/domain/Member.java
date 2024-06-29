@@ -39,7 +39,6 @@ public class Member extends BaseTimeEntity implements UserDetails {
     @NotBlank
     private String password;
 
-    @NotBlank
     @Enumerated(value = EnumType.STRING)
     private Role role;
 
