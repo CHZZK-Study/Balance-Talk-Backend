@@ -1,7 +1,7 @@
 package balancetalk.file.dto;
 
 import balancetalk.file.domain.File;
-import balancetalk.file.domain.FileType;
+import balancetalk.file.domain.FileFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 
@@ -22,7 +22,7 @@ public class FileResponse {
     private String path;
 
     @Schema(description = "업로드한 파일 확장자", example = "JPEG")
-    private FileType type;
+    private FileFormat type;
 
     @Schema(description = "업도르한 파일 사이즈", example = "236")
     private Long size; // 바이트 단위로 파일 크기 저장
