@@ -1,5 +1,6 @@
 package balancetalk.member.domain;
 
+import balancetalk.bookmark.domain.Bookmark;
 import balancetalk.file.domain.File;
 import balancetalk.global.common.BaseTimeEntity;
 import balancetalk.like.domain.Like;
@@ -45,6 +46,9 @@ public class Member extends BaseTimeEntity implements UserDetails {
 
     @OneToMany(mappedBy = "member")
     private List<Vote> votes = new ArrayList<>();
+
+    @OneToMany(mappedBy = "member")
+    private List<Bookmark> bookmarks = new ArrayList<>();
 
     @OneToMany(mappedBy = "member")
     private List<TalkPick> talkPicks = new ArrayList<>();
