@@ -27,17 +27,16 @@ public class Comment extends BaseTimeEntity {
     private Long id;
 
     @NotBlank
-    @Size(max = 100)
+    @Size(max = 255)
     private String content;
 
     @Enumerated(value = EnumType.STRING)
     @NotNull
-    private VoteOption selectedOption;
+    private VoteOption voteOption;
 
     @Enumerated(value = EnumType.STRING)
     private ViewStatus viewStatus;
 
-    @NotNull
     private boolean isBest;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -45,7 +44,7 @@ public class Comment extends BaseTimeEntity {
     private Member member;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "talkpick_id")
+    @JoinColumn(name = "talk_pick_id")
     private TalkPick talkPick;
 
     @ManyToOne(fetch = FetchType.LAZY)

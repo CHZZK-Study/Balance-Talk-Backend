@@ -28,7 +28,7 @@ public class CommentDto {
                     .content(content)
                     .member(member)
                     .talkPick(talkPick)
-                    .selectedOption(option) // TODO : Vote 구현 완료 후 member와 talkPick 이용해서 선택한 option 가져오기
+                    .voteOption(option) // TODO : Vote 구현 완료 후 member와 talkPick 이용해서 선택한 option 가져오기
                     .build();
         }
     }
@@ -42,6 +42,7 @@ public class CommentDto {
         @Schema(description = "수정할 댓글 내용", example = "댓글 내용...")
         private String content;
     }
+
 
     @Data
     @AllArgsConstructor
@@ -88,7 +89,7 @@ public class CommentDto {
                     .content(comment.getContent())
                     .nickname(comment.getMember().getNickname())
                     .talkPickId(comment.getTalkPick().getId())
-                    .option(comment.getSelectedOption())
+                    .option(comment.getVoteOption())
                     //.likesCount(comment.getLikes().size()) TODO : 좋아요 구현 시 작성
                     .myLike(myLike)
                     //.replyCount(comment.getReplies().size())

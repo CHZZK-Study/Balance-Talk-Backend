@@ -1,72 +1,69 @@
 package balancetalk.game.presentation;
 
+import balancetalk.game.dto.GameDetailResponse;
 import balancetalk.game.dto.GameRequest;
 import balancetalk.game.dto.GameResponse;
+import balancetalk.global.common.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("games")
-@Tag(name = "game", description = "주제별 밸런스 게임 API")
+@RequestMapping("/games")
+@Tag(name = "game", description = "밸런스 게임 API")
 public class GameController {
 
-    @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
-    @Operation(summary = "주제별 밸런스 게임 생성")
-    public GameResponse createBalanceGame(@RequestBody final GameRequest request) {
-        return GameResponse.builder().build();
+    @Operation(summary = "밸런스 게임 생성", description = "밸런스 게임을 생성합니다.")
+    public ApiResponse<GameResponse> createGame(@RequestBody final GameRequest request) {
+        return ApiResponse.ok(new GameResponse(1L, request.getTitle(), request.getOptionA(), request.getOptionB()));
     }
 
-    @ResponseStatus(HttpStatus.OK)
+    @GetMapping("/{gameId}")
+    @Operation(summary = "밸런스 게임 상세 조회", description = "밸런스 게임을 조회합니다.")
+    public ApiResponse<GameDetailResponse> findGame(@PathVariable final Long gameId) {
+        return ApiResponse.ok(new GameDetailResponse(1L, "제목", "O", "X", false, false));
+    }
+
+    @PutMapping("/{gameId}")
+    @Operation(summary = "밸런스 게임 수정", description = "밸런스 게임을 수정합니다.")
+    public ApiResponse<GameResponse> updateGame(@PathVariable final Long gameId, @RequestBody final GameRequest request) {
+        return ApiResponse.ok(new GameResponse(1L, "변경된 제목", "O", "X"));
+    }
+
+    @DeleteMapping("/{gameId}")
+    @Operation(summary = "밸런스 게임 삭제", description = "밸런스 게임을 삭제합니다.")
+    public ApiResponse<Object> deleteGame(@PathVariable final Long gameId) {
+        return ApiResponse.ok();
+    }
+
     @GetMapping("/best")
-    @Operation(summary = "인기 게시글 조회", description = "요새 인기 있는 주제별 밸런스 게임 목록 조회")
-    public List<GameResponse> findBestPosts() {
-        GameResponse gameResponses = GameResponse.builder().build();
-        return Collections.singletonList(gameResponses);
+    @Operation(summary = "인기 밸런스 게임 조회", description = "인기 있는 밸런스 게임 목록을 조회합니다.")
+    public ApiResponse<Page<GameResponse>> findBestPosts(Pageable pageable) {
+        return null;
     }
 
-    @ResponseStatus(HttpStatus.OK)
     @GetMapping("/new")
-    @Operation(summary = "새로운 게시글 목록 조회", description = "새로 나온 밸런스 게임 목록 조회")
-    public List<GameResponse> findNewPosts() {
-        GameResponse gameResponses = GameResponse.builder().build();
-        return Collections.singletonList(gameResponses);
-    }
-
-    @ResponseStatus(HttpStatus.OK)
-    @GetMapping("/{postId}")
-    @Operation(summary = "밸런스 게임 조회", description = "주제별 밸런스 게임 단건 조회")
-    public GameResponse findPost(@PathVariable Long postId) {
-        return GameResponse.builder().build();
-    }
-
-    @ResponseStatus(HttpStatus.OK)
-    @PatchMapping("/{postId}")
-    @Operation(summary = "밸런스 게임 수정", description = "밸런스 게임 게시글을 수정한다")
-    public GameResponse updatePost(@PathVariable Long postId, @RequestBody final GameRequest request) {
-        return GameResponse.builder().build();
-    }
-
-    @ResponseStatus(HttpStatus.OK)
-    @DeleteMapping("/{postId}")
-    @Operation(summary = "밸런스 게임 삭제", description = "밸런스 게임 게시글을 삭제한다")
-    public String updatePost(@PathVariable Long postId) {
-        return "게시글이 삭제되었습니다.";
+    @Operation(summary = "새로운 밸런스 게임 조회", description = "새로 업로드 된 밸런스 게임 목록들을 조회합니다.")
+    public ApiResponse<List<GameResponse>> findNewPosts() {
+        GameResponse gameResponse1 = new GameResponse(1L, "제목1", "O", "X");
+        GameResponse gameResponse2 = new GameResponse(2L, "제목2", "X", "O");
+        List<GameResponse> gameResponses = Arrays.asList(gameResponse1, gameResponse2);
+        return ApiResponse.ok(gameResponses);
     }
 }

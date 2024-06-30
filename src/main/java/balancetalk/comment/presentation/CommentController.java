@@ -86,6 +86,7 @@ public class CommentController {
     }
     */
     /*
+
     @ResponseStatus(HttpStatus.OK)
     @PostMapping("/{commentId}/report")
     @Operation(summary = "댓글 신고", description = "comment-id에 해당하는 댓글을 신고 처리한다.")
