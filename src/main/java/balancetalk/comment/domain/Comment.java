@@ -32,7 +32,7 @@ public class Comment extends BaseTimeEntity {
 
     @Enumerated(value = EnumType.STRING)
     @NotNull
-    private VoteOption selectedOption;
+    private VoteOption voteOption;
 
     @Enumerated(value = EnumType.STRING)
     private ViewStatus viewStatus;
