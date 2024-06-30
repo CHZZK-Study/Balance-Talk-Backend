@@ -1,5 +1,6 @@
 package balancetalk.global.common;
 
+import balancetalk.global.exception.ErrorCode;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
