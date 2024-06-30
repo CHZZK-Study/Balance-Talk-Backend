@@ -1,6 +1,8 @@
 name: Build with Gradle
 
 on:
+  push:
+    branches: [ "dev" ]
   pull_request:
     types: [ opened, synchronize ]
     branches: [ "dev" ]

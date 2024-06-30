@@ -30,32 +30,6 @@ public class SecurityConfig {
     private final JwtTokenProvider jwtTokenProvider;
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
     private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
-
-    private static final String[] PUBLIC_GET = {
-            // h2 database
-            "/h2-console/**",
-            // swagger
-            "/swagger-ui/**", "/v3/api-docs/**",
-
-            "/",
-
-            "/email/password",
-            "/members/duplicate", "/members/reissue", "/members/{memberId}/profile",
-
-            "/posts", "/posts/{postId}", "/posts/{postId}/vote", "/posts/{postId}/comments/**",
-            "/notices", "/notices/{noticeId}"
-    };
-
-    private static final String[] PUBLIC_POST = {
-            "/members/join", "/members/login",
-            "/email/request", "/email/verify", "/email/password",
-            "/posts/{postId}/vote", "/files/image/upload"
-    };
-
-    private static final String[] PUBLIC_PUT = {
-            "/posts/{postId}/vote"
-    };
-
     @Bean
     public BCryptPasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
@@ -74,15 +48,10 @@ public class SecurityConfig {
                     exception.authenticationEntryPoint(jwtAuthenticationEntryPoint);
                     exception.accessDeniedHandler(jwtAccessDeniedHandler);
                 })
-                // h2 콘솔 사용
-                .headers(header -> header.frameOptions(frameOption -> frameOption.disable()).disable())
                 // 세션 사용 X (jwt 사용)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(request -> request
-                        .requestMatchers(HttpMethod.GET, PUBLIC_GET).permitAll()
-                        .requestMatchers(HttpMethod.POST, PUBLIC_POST).permitAll()
-                        .requestMatchers(HttpMethod.PUT, PUBLIC_PUT).permitAll()
-                        .requestMatchers(HttpMethod.OPTIONS, "**").permitAll()
+                        .requestMatchers("/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 // jwtFilter 먼저 적용
