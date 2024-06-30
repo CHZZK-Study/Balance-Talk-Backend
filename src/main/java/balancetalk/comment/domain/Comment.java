@@ -27,7 +27,7 @@ public class Comment extends BaseTimeEntity {
     private Long id;
 
     @NotBlank
-    @Size(max = 100)
+    @Size(max = 255)
     private String content;
 
     @Enumerated(value = EnumType.STRING)
