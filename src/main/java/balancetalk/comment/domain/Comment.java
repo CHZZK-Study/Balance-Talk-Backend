@@ -44,7 +44,7 @@ public class Comment extends BaseTimeEntity {
     private Member member;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "talkpick_id")
+    @JoinColumn(name = "talk_pick_id")
     private TalkPick talkPick;
 
     @ManyToOne(fetch = FetchType.LAZY)
