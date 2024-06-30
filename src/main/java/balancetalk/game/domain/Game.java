@@ -1,30 +1,16 @@
 package balancetalk.game.domain;
 
-import balancetalk.bookmark.domain.BookmarkType;
 import balancetalk.file.domain.File;
 import balancetalk.global.common.BaseTimeEntity;
 import balancetalk.member.domain.Member;
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
+import balancetalk.vote.domain.Vote;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+import lombok.*;
+
 import java.util.ArrayList;
 import java.util.List;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
@@ -57,10 +43,9 @@ public class Game extends BaseTimeEntity {
     @Size(max = 50)
     private String optionB;
 
-    @NotBlank
-    @Enumerated(EnumType.STRING)
-    private BookmarkType bookmarkType;
-
     @OneToMany(mappedBy = "game", cascade = CascadeType.ALL) // TODO: Game에 파일이 몇개 들어가는지..?
     private List<File> files = new ArrayList<>();
+
+    @OneToMany(mappedBy = "game")
+    private List<Vote> votes = new ArrayList<>();
 }

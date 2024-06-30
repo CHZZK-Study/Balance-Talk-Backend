@@ -1,5 +1,6 @@
 package balancetalk.vote.domain;
 
+import balancetalk.game.domain.Game;
 import balancetalk.global.common.BaseTimeEntity;
 import balancetalk.member.domain.Member;
 import balancetalk.talkpick.domain.TalkPick;
@@ -16,15 +17,22 @@ public class Vote extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Enumerated(value = EnumType.STRING)
+    private VoteType voteType;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
 
-    @NotBlank
-    @Enumerated(value = EnumType.STRING)
-    private VoteOption voteOption;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "talk_pick_id")
     private TalkPick talkPick;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "game_id")
+    private Game game;
+
+    @NotBlank
+    @Enumerated(value = EnumType.STRING)
+    private VoteOption voteOption;
 }
