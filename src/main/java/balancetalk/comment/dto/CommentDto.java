@@ -9,6 +9,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import java.time.LocalDateTime;
+import lombok.NoArgsConstructor;
 
 public class CommentDto {
     @Data
@@ -31,6 +32,18 @@ public class CommentDto {
                     .build();
         }
     }
+
+    @Data
+    @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class UpdateRequest {
+
+        @Schema(description = "수정할 댓글 내용", example = "댓글 내용...")
+        private String content;
+    }
+
+
     @Data
     @AllArgsConstructor
     @Builder
@@ -39,19 +52,20 @@ public class CommentDto {
         @Schema(description = "댓글 id", example = "1")
         private Long id;
 
-        @Schema(description = "해당 댓글에 맞는 게시글 id", example = "1")
+        @Schema(description = "해당 댓글에 맞는 톡픽 id", example = "1")
         private Long talkPickId;
 
-        @Schema(description = "해당 댓글에 맞는 게시글 제목", example = "주먹밥 뭐 좋아함?")
+        @Schema(description = "해당 댓글에 맞는 톡픽 제목", example = "메시 vs 호날두")
         private String talkPickTitle;
 
-        @Schema(description = "댓글 작성자", example = "짱구")
+        @Schema(description = "댓글 작성자", example = "운영자1")
         private String nickname;
 
-        @Schema(description = "댓글 내용", example = "주먹밥은 역시 훈이 머리!")
+        @Schema(description = "댓글 내용", example = "너는나를존중해야한다나는발롱도르5개와수많은개인트로피를들어올렸으며"
+                + "2016유로에서포르투갈을이끌고우승을차지했고동시에A매치역대최다득점자이다")
         private String content;
 
-        @Schema(description = "해당 댓글에 맞는 선택지 id", example = "A")
+        @Schema(description = "해당 댓글에 맞는 선택지 이름", example = "A")
         private VoteOption option;
 
         @Schema(description = "댓글 좋아요 개수", example = "24")
