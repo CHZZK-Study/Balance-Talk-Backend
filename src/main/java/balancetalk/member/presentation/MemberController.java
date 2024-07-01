@@ -28,6 +28,8 @@ import java.util.List;
 @Tag(name = "member", description = "회원 API")
 public class MemberController {
 
+    private static final String SUCCESS_RESPONSE_MESSAGE = "OK";
+
     private final MemberService memberService;
 
     @ResponseStatus(HttpStatus.CREATED)
@@ -35,7 +37,7 @@ public class MemberController {
     @Operation(summary = "회원 가입", description = "닉네임, 이메일, 비밀번호를 입력하여 회원 가입을 한다.")
     public String join(@Valid @RequestBody JoinRequest joinRequest) {
         memberService.join(joinRequest);
-        return "회원가입이 정상적으로 처리되었습니다.";
+        return SUCCESS_RESPONSE_MESSAGE;
     }
 
     @ResponseStatus(HttpStatus.OK)
@@ -65,7 +67,7 @@ public class MemberController {
     public String updateNickname(@Valid @NotBlank @RequestBody @Size(min = 2, max = 10) String newNickname, HttpServletRequest request) {
         // TODO: RequestBody 빈 값일 때 에러체킹 x
         memberService.updateNickname(newNickname, request);
-        return "회원 닉네임이 변경되었습니다.";
+        return SUCCESS_RESPONSE_MESSAGE;
     }
 
     @ResponseStatus(HttpStatus.OK)
@@ -76,7 +78,7 @@ public class MemberController {
                                  String newPassword, HttpServletRequest request) {
         // TODO: RequestBody 빈 값일 때 에러체킹 x
         memberService.updatePassword(newPassword, request);
-        return "회원 비밀번호가 변경되었습니다.";
+        return SUCCESS_RESPONSE_MESSAGE;
     }
 
     @ResponseStatus(HttpStatus.OK)
@@ -84,7 +86,7 @@ public class MemberController {
     @Operation(summary = "회원 이미지 변경", description = "회원 프로필 이미지를 변경한다.")
     public String updateImage(@RequestBody String storedFileName, HttpServletRequest request) {
         memberService.updateImage(storedFileName, request);
-        return "회원 이미지가 변경되었습니다.";
+        return SUCCESS_RESPONSE_MESSAGE;
     }
 
     @ResponseStatus(HttpStatus.OK)
@@ -92,7 +94,7 @@ public class MemberController {
     @Operation(summary = "회원 삭제", description = "회원 정보를 삭제한다.")
     public String deleteMember(@Valid @RequestBody LoginRequest loginRequest, HttpServletRequest request) {
         memberService.delete(loginRequest, request);
-        return "회원 탈퇴가 정상적으로 처리되었습니다.";
+        return SUCCESS_RESPONSE_MESSAGE;
     }
 
     @ResponseStatus(HttpStatus.OK)
@@ -100,7 +102,7 @@ public class MemberController {
     @Operation(summary = "로그아웃", description = "로그인 된 회원을 로그 아웃한다.")
     public String logout() {
         memberService.logout();
-        return "로그아웃이 정상적으로 처리되었습니다.";
+        return SUCCESS_RESPONSE_MESSAGE;
     }
 
     @ResponseStatus(HttpStatus.OK)
@@ -109,7 +111,7 @@ public class MemberController {
     public String verifyNickname(@RequestParam @NotBlank
                                  @Size(min = 2, max = 10) String nickname) {
         memberService.verifyNickname(nickname);
-        return "사용 가능한 닉네임 입니다.";
+        return SUCCESS_RESPONSE_MESSAGE;
     }
 
     @ResponseStatus(HttpStatus.CREATED)

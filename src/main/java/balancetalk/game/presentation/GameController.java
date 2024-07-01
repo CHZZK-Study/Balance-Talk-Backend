@@ -28,42 +28,43 @@ import org.springframework.web.bind.annotation.RestController;
 @Tag(name = "game", description = "밸런스 게임 API")
 public class GameController {
 
+    private static final String SUCCESS_RESPONSE_MESSAGE = "OK";
+
     @PostMapping
     @Operation(summary = "밸런스 게임 생성", description = "밸런스 게임을 생성합니다.")
-    public ApiResponse<GameResponse> createGame(@RequestBody final GameRequest request) {
-        return ApiResponse.ok(new GameResponse(1L, request.getTitle(), request.getOptionA(), request.getOptionB()));
+    public GameResponse createGame(@RequestBody final GameRequest request) {
+        return new GameResponse(1L, request.getTitle(), request.getOptionA(), request.getOptionB());
     }
 
     @GetMapping("/{gameId}")
     @Operation(summary = "밸런스 게임 상세 조회", description = "밸런스 게임을 조회합니다.")
-    public ApiResponse<GameDetailResponse> findGame(@PathVariable final Long gameId) {
-        return ApiResponse.ok(new GameDetailResponse(1L, "제목", "O", "X", false, false));
+    public GameDetailResponse findGame(@PathVariable final Long gameId) {
+        return new GameDetailResponse(1L, "제목", "O", "X", false, false);
     }
 
     @PutMapping("/{gameId}")
     @Operation(summary = "밸런스 게임 수정", description = "밸런스 게임을 수정합니다.")
-    public ApiResponse<GameResponse> updateGame(@PathVariable final Long gameId, @RequestBody final GameRequest request) {
-        return ApiResponse.ok(new GameResponse(1L, "변경된 제목", "O", "X"));
+    public GameResponse updateGame(@PathVariable final Long gameId, @RequestBody final GameRequest request) {
+        return new GameResponse(1L, "변경된 제목", "O", "X");
     }
 
     @DeleteMapping("/{gameId}")
     @Operation(summary = "밸런스 게임 삭제", description = "밸런스 게임을 삭제합니다.")
-    public ApiResponse<Object> deleteGame(@PathVariable final Long gameId) {
-        return ApiResponse.ok();
+    public String deleteGame(@PathVariable final Long gameId) {
+        return SUCCESS_RESPONSE_MESSAGE;
     }
 
     @GetMapping("/best")
     @Operation(summary = "인기 밸런스 게임 조회", description = "인기 있는 밸런스 게임 목록을 조회합니다.")
-    public ApiResponse<Page<GameResponse>> findBestPosts(Pageable pageable) {
-        return null;
+    public Page<GameResponse> findBestPosts(Pageable pageable) {
+        return null; // TODO 응답 객체 반환 코드 작성
     }
 
     @GetMapping("/new")
     @Operation(summary = "새로운 밸런스 게임 조회", description = "새로 업로드 된 밸런스 게임 목록들을 조회합니다.")
-    public ApiResponse<List<GameResponse>> findNewPosts() {
+    public List<GameResponse> findNewPosts() {
         GameResponse gameResponse1 = new GameResponse(1L, "제목1", "O", "X");
         GameResponse gameResponse2 = new GameResponse(2L, "제목2", "X", "O");
-        List<GameResponse> gameResponses = Arrays.asList(gameResponse1, gameResponse2);
-        return ApiResponse.ok(gameResponses);
+        return Arrays.asList(gameResponse1, gameResponse2);
     }
 }
