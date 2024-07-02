@@ -29,14 +29,14 @@ public class CommentController {
     }
 
     @GetMapping
-    @Operation(summary = "최신 댓글 목록 조회", description = "talkPick-id에 해당하는 게시글에 있는 모든 댓글을 최신순으로 정렬해 조회한다.")
+    @Operation(summary = "최신 댓글 목록 조회", description = "talkPick-id에 해당하는 게시글에 있는 모든 댓글 및 답글을 최신순으로 정렬해 조회한다.")
     public Page<CommentDto.Response> findAllCommentsByPostId(@PathVariable Long talkPickId, Pageable pageable,
                                                              @RequestHeader(value = "Authorization", required = false) String token) {
         return commentService.findAllComments(talkPickId, token, pageable);
     }
 
     @GetMapping("/best")
-    @Operation(summary = "베스트 댓글 목록 조회", description = "talkPick-id에 해당하는 게시글에 있는 모든 댓글을 베스트 및 좋아요 순으로 정렬해 조회한다.")
+    @Operation(summary = "베스트 댓글 목록 조회", description = "talkPick-id에 해당하는 게시글에 있는 모든 댓글 및 답글을 베스트 및 좋아요 순으로 정렬해 조회한다.")
     public Page<CommentDto.Response> findAllBestCommentsByPostId(@PathVariable Long talkPickId, Pageable pageable,
                                                                  @RequestHeader(value = "Authorization", required = false) String token) {
         return commentService.findAllComments(talkPickId, token, pageable);
@@ -54,15 +54,15 @@ public class CommentController {
      */
 
     @PutMapping("/{commentId}")
-    @Operation(summary = "댓글 수정", description = "talkPick-id에 해당하는 댓글 내용을 수정한다.")
+    @Operation(summary = "댓글 수정", description = "commentId에 해당하는 댓글 내용을 수정한다.")
     public String updateComment(@PathVariable Long commentId, @PathVariable Long talkPickId, @RequestBody CommentDto.UpdateRequest request) {
-        commentService.updateComment(commentId, talkPickId, request.getContent());
+            commentService.updateComment(commentId, talkPickId, request.getContent());
         return SUCCESS_RESPONSE_MESSAGE;
     }
 
 
     @DeleteMapping("/{commentId}")
-    @Operation(summary = "댓글 삭제", description = "talkPick-id에 해당하는 댓글을 삭제한다.")
+    @Operation(summary = "댓글 삭제", description = "commentId에 해당하는 댓글을 삭제한다.")
     public String deleteComment(@PathVariable Long commentId, @PathVariable Long talkPickId) {
         commentService.deleteComment(commentId, talkPickId);
         return SUCCESS_RESPONSE_MESSAGE;
@@ -70,8 +70,8 @@ public class CommentController {
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/{commentId}/replies")
-    @Operation(summary = "답글 작성", description = "talkPick-id에 해당하는 댓글에 답글을 작성한다.")
-    public String createComment(@PathVariable Long postId, @PathVariable Long commentId, @Valid @RequestBody CommentDto.Request request) {
+    @Operation(summary = "답글 작성", description = "commentId에 해당하는 댓글에 답글을 작성한다.")
+    public String createReply(@PathVariable Long commentId, @Valid @RequestBody CommentDto.Request request) {
         return SUCCESS_RESPONSE_MESSAGE;
     }
 
