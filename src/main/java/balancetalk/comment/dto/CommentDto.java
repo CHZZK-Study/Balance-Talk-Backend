@@ -74,8 +74,14 @@ public class CommentDto {
         @Schema(description = "현재 사용자의 좋아요 여부", example = "true")
         private Boolean myLike;
 
+        @Schema(description = "부모 댓글 id (답글이 아닐 경우, null 반환)", example = "5")
+        private Long parentId;
+
         @Schema(description = "답글 수", example = "3")
         private int replyCount;
+
+        @Schema(description = "베스트 댓글 여부", example = "true")
+        private boolean isBest;
 
         @Schema(description = "댓글 생성 날짜")
         private LocalDateTime createdAt;
@@ -92,7 +98,9 @@ public class CommentDto {
                     .option(comment.getVoteOption())
                     //.likesCount(comment.getLikes().size()) TODO : 좋아요 구현 시 작성
                     .myLike(myLike)
+                    .parentId(comment.getParent() == null ? null : comment.getParent().getId())
                     //.replyCount(comment.getReplies().size())
+                    .isBest(comment.isBest())
                     .createdAt(comment.getCreatedAt())
                     .lastModifiedAt(comment.getLastModifiedAt())
                     .build();

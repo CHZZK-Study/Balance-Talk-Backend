@@ -84,7 +84,7 @@ public class CommentService {
 
     public Comment updateComment(Long commentId, Long talkPickId, String content) {
         Comment comment = validateCommentId(commentId);
-        validateTalkPickId(talkPickId);
+        validateTalkPickId(talkPickId); // TODO: talkPickId를 굳이 클라이언트로 받아야하는가?
 
         if (!getCurrentMember(memberRepository).equals(comment.getMember())) {
             throw new BalanceTalkException(FORBIDDEN_COMMENT_MODIFY);
