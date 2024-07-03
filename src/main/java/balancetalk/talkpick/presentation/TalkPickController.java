@@ -1,12 +1,11 @@
 package balancetalk.talkpick.presentation;
 
-import balancetalk.talkpick.dto.TalkPickDetailResponse;
-import balancetalk.talkpick.dto.TalkPickRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.*;
 
 import static balancetalk.talkpick.dto.TalkPickDto.CreateTalkPickRequest;
+import static balancetalk.talkpick.dto.TalkPickDto.TalkPickDetailResponse;
 import static balancetalk.vote.domain.VoteOption.A;
 
 @RestController
@@ -27,7 +26,7 @@ public class TalkPickController {
 
     @Operation(summary = "톡픽 수정", description = "톡픽을 수정합니다.")
     @PutMapping("/{talkPickId}")
-    public void updateTalkPick(@PathVariable final Long talkPickId, @RequestBody final TalkPickRequest request) {
+    public void updateTalkPick(@PathVariable final Long talkPickId, @RequestBody final CreateTalkPickRequest request) {
     }
 
     @Operation(summary = "톡픽 삭제", description = "톡픽을 삭제합니다.")
