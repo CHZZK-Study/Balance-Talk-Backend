@@ -25,7 +25,7 @@ public class LikeController {
 
     @DeleteMapping("/{talkPickId}/{commentId}/likes")
     @Operation(summary = "댓글 좋아요 취소", description = "commentId에 해당하는 댓글의 좋아요를 취소합니다.")
-    public String cancelLikeComment(@PathVariable Long commentId) {
+    public String unlikeComment(@PathVariable Long commentId) { // TODO : 추후 talkPickId 파라미터를 받아 validate 필요
         commentLikeService.unLikeComment(commentId);
         return SUCCESS_RESPONSE_MESSAGE;
     }
