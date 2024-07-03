@@ -1,7 +1,7 @@
 package balancetalk.vote.presentation;
 
-import balancetalk.vote.dto.VoteRequest;
-import balancetalk.vote.dto.VoteResponse;
+import balancetalk.vote.dto.VoteDto.VoteRequest;
+import balancetalk.vote.dto.VoteDto.VoteResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.*;
