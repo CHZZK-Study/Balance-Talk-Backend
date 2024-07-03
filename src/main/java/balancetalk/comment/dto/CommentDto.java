@@ -74,7 +74,7 @@ public class CommentDto {
         @Schema(description = "현재 사용자의 좋아요 여부", example = "true")
         private Boolean myLike;
 
-        @Schema(description = "부모 댓글 id", example = "null")
+        @Schema(description = "부모 댓글 id (답글이 아닐 경우, null 반환)", example = "5")
         private Long parentId;
 
         @Schema(description = "답글 수", example = "3")
