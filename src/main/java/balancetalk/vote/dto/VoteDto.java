@@ -8,6 +8,7 @@ import lombok.Data;
 public class VoteDto {
 
     @Data
+    @Schema(description = "투표 생성 요청")
     public static class VoteRequest {
 
         @Schema(description = "투표할 선택지", example = "A")
@@ -16,6 +17,7 @@ public class VoteDto {
 
     @Data
     @AllArgsConstructor
+    @Schema(description = "투표 결과 응답")
     public static class VoteResponse {
 
         @Schema(description = "선택지 B 투표 개수", example = "23")

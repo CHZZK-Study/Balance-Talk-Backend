@@ -20,6 +20,7 @@ public class MemberDto {
     @Data
     @Builder
     @AllArgsConstructor
+    @Schema(description = "회원가입 요청")
     public static class JoinRequest {
 
         @NotBlank
@@ -56,6 +57,7 @@ public class MemberDto {
     @Data
     @Builder
     @AllArgsConstructor
+    @Schema(description = "로그인 요청")
     public static class LoginRequest {
 
         @Schema(description = "회원 이메일", example = "test1234@naver.com")
@@ -75,6 +77,7 @@ public class MemberDto {
     @Data
     @Builder
     @AllArgsConstructor
+    @Schema(description = "회원 조회 응답")
     public static class MemberResponse {
 
         @Schema(description = "회원 id", example = "1")

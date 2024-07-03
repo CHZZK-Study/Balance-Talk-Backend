@@ -10,6 +10,7 @@ public class GameDto {
     @Data
     @Builder
     @AllArgsConstructor
+    @Schema(description = "밸런스 게임 생성 요청")
     public static class GameRequest {
 
         @Schema(description = "제목", example = "제목")
@@ -25,6 +26,7 @@ public class GameDto {
     @Data
     @Builder
     @AllArgsConstructor
+    @Schema(description = "밸런스 게임 조회 응답")
     public static class GameResponse {
 
         @Schema(description = "밸런스 게임 id", example = "1")
@@ -46,6 +48,7 @@ public class GameDto {
     @Data
     @Builder
     @AllArgsConstructor
+    @Schema(description = "밸런스 게임 상세 조회 응답")
     public static class GameDetailResponse {
 
         @Schema(description = "밸런스 게임 id", example = "1")
