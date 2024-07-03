@@ -60,4 +60,12 @@ public class Comment extends BaseTimeEntity {
     public void updateContent(String content) {
         this.content = content;
     }
+
+    public int getLikesCount() {
+        return likes.size();
+    }
+
+    public void setIsBest(boolean isBest) {
+        this.isBest = isBest;
+    }
 }
