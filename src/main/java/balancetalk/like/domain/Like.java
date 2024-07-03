@@ -3,7 +3,6 @@ package balancetalk.like.domain;
 import balancetalk.comment.domain.Comment;
 import balancetalk.global.common.BaseTimeEntity;
 import balancetalk.member.domain.Member;
-import balancetalk.talkpick.domain.TalkPick;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -23,10 +22,6 @@ public class Like extends BaseTimeEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "talk_pick_id")
-    private TalkPick talkPick;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "comment_id")
