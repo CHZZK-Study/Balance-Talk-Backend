@@ -62,7 +62,7 @@ public class Comment extends BaseTimeEntity {
     }
 
     public int getLikesCount() {
-        return likes.size();
+        return likes != null ? likes.size() : 0;
     }
 
     public void setIsBest(boolean isBest) {
