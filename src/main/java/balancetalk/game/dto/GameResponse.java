@@ -20,4 +20,7 @@ public class GameResponse {
 
     @Schema(description = "선택지 B 이름", example = "선택지 B 이름")
     private String optionB;
+
+    @Schema(description = "총 투표 수", example = "10")
+    private int totalVotes;
 }
