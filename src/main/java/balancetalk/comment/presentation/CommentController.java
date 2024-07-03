@@ -7,7 +7,9 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -30,9 +32,11 @@ public class CommentController {
 
     @GetMapping
     @Operation(summary = "최신 댓글 목록 조회", description = "talkPick-id에 해당하는 게시글에 있는 모든 댓글 및 답글을 최신순으로 정렬해 조회한다.")
-    public Page<CommentDto.CommentResponse> findAllCommentsByPostId(@PathVariable Long talkPickId, Pageable pageable,
+    public Page<CommentDto.CommentResponse> findAllCommentsByPostIdSortedByCreatedAt(@PathVariable Long talkPickId, Pageable pageable,
                                                                     @RequestHeader(value = "Authorization", required = false) String token) {
-        return commentService.findAllComments(talkPickId, token, pageable);
+        Pageable sortedByCreatedAtDesc = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(),
+                Sort.by("createdAt").descending());
+        return commentService.findAllComments(talkPickId, token, sortedByCreatedAtDesc);
     }
 
     @GetMapping("/best")
