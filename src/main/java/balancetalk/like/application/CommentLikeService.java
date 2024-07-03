@@ -39,7 +39,7 @@ public class CommentLikeService {
 
          */
 
-        Like commentLike = LikeDto.Request.toCommentLikeEntity(comment, member);
+        Like commentLike = LikeDto.Request.toEntity(comment, member);
         likeRepository.save(commentLike);
 
         return LikeDto.Response.fromEntity(commentLike);

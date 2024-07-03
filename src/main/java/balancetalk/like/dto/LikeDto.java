@@ -30,10 +30,19 @@ public class LikeDto {
         @Schema(description = "좋아요한 톡픽 id", example = "1")
         private Long talkPickId;
 
-        public static Like toCommentLikeEntity(Comment comment, Member member) {
+        public static Like toEntity(Comment comment, Member member) {
             return Like.builder()
                     .likeType(LikeType.COMMENT)
                     .comment(comment)
+                    .member(member)
+                    .active(true)
+                    .build();
+        }
+
+        public static Like toEntity(TalkPick talkPick, Member member) {
+            return Like.builder()
+                    .likeType(LikeType.TALK_PICK)
+                    .talkPick(talkPick)
                     .member(member)
                     .active(true)
                     .build();
