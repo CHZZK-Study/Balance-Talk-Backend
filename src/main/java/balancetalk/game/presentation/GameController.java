@@ -1,8 +1,6 @@
 package balancetalk.game.presentation;
 
-import balancetalk.game.dto.GameDetailResponse;
-import balancetalk.game.dto.GameRequest;
-import balancetalk.game.dto.GameResponse;
+import static balancetalk.game.dto.GameDto.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -25,8 +23,8 @@ public class GameController {
 
     @PostMapping
     @Operation(summary = "밸런스 게임 생성", description = "밸런스 게임을 생성합니다.")
-    public GameResponse createGame(@RequestBody final GameRequest request) {
-        return new GameResponse(1L, request.getTitle(), request.getOptionA(), request.getOptionB(), 10);
+    public String createGame(@RequestBody final GameRequest request) {
+        return SUCCESS_RESPONSE_MESSAGE;
     }
 
     @GetMapping("/{gameId}")
@@ -37,8 +35,8 @@ public class GameController {
 
     @PutMapping("/{gameId}")
     @Operation(summary = "밸런스 게임 수정", description = "밸런스 게임을 수정합니다.")
-    public GameResponse updateGame(@PathVariable final Long gameId, @RequestBody final GameRequest request) {
-        return new GameResponse(1L, "변경된 제목", "O", "X", 10);
+    public String updateGame(@PathVariable final Long gameId, @RequestBody final GameRequest request) {
+        return SUCCESS_RESPONSE_MESSAGE;
     }
 
     @DeleteMapping("/{gameId}")
