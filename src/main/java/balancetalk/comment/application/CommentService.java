@@ -12,9 +12,15 @@ import balancetalk.vote.domain.VoteRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+
 import static balancetalk.global.exception.ErrorCode.*;
 import static balancetalk.global.utils.SecurityUtils.getCurrentMember;
 
@@ -24,7 +30,7 @@ import static balancetalk.global.utils.SecurityUtils.getCurrentMember;
 public class CommentService {
 
     private static final int BEST_COMMENTS_SIZE = 3;
-    private static final int MIN_COUNT_FOR_BEST_COMMENT = 15;
+    private static final int MIN_COUNT_FOR_BEST_COMMENT = 10;
 
     private final CommentRepository commentRepository;
     private final MemberRepository memberRepository;
@@ -69,6 +75,66 @@ public class CommentService {
         });
 
          */
+    }
+
+    @Transactional(readOnly = true)
+    public Page<CommentDto.CommentResponse> findAllBestComments(Long talkPickId, Pageable pageable) {
+        validateTalkPickId(talkPickId);
+
+        List<Comment> allComments = commentRepository.findByTalkPickIdOrderByLikesCountDescCreatedAtDesc(talkPickId);
+        List<CommentDto.CommentResponse> bestComments = new ArrayList<>();
+        List<CommentDto.CommentResponse> otherComments = new ArrayList<>();
+
+        // 최대 좋아요 수 구하기
+        int maxLikes = allComments.stream()
+                .mapToInt(Comment::getLikesCount)
+                .max()
+                .orElse(0);
+
+        // 좋아요 10개 이상인 댓글이 있는 경우
+        if (maxLikes >= MIN_COUNT_FOR_BEST_COMMENT) {
+            for (Comment comment : allComments) {
+                boolean myLike = false;
+                if (comment.getLikesCount() >= MIN_COUNT_FOR_BEST_COMMENT) {
+                    comment.setIsBest(true);
+                } else {
+                    comment.setIsBest(false);
+                }
+                CommentDto.CommentResponse response = CommentDto.CommentResponse.fromEntity(comment, myLike);
+                if (comment.getIsBest()) {
+                    bestComments.add(response);
+                } else {
+                    otherComments.add(response);
+                }
+            }
+        } else {
+            for (Comment comment : allComments) {
+                boolean myLike = false;
+                if (comment.getLikesCount() == maxLikes) {
+                    comment.setIsBest(true);
+                } else {
+                    comment.setIsBest(false);
+
+                }
+                CommentDto.CommentResponse response = CommentDto.CommentResponse.fromEntity(comment, myLike);
+                if (comment.getIsBest()) {
+                    bestComments.add(response);
+                } else {
+                    otherComments.add(response);
+                }
+            }
+        }
+
+        bestComments.sort(Comparator.comparing(CommentDto.CommentResponse::getCreatedAt).reversed());
+        otherComments.sort(Comparator.comparing(CommentDto.CommentResponse::getCreatedAt).reversed());
+
+        List<CommentDto.CommentResponse> result = new ArrayList<>();
+        result.addAll(bestComments);
+        result.addAll(otherComments);
+        int start = (int) pageable.getOffset();
+        int end = Math.min((start + pageable.getPageSize()), result.size());
+
+        return new PageImpl<>(result.subList(start, end), pageable, result.size());
     }
 
     /*
