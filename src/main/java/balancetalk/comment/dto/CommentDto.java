@@ -30,6 +30,7 @@ public class CommentDto {
                     .member(member)
                     .talkPick(talkPick)
                     .voteOption(option) // TODO : Vote 구현 완료 후 member와 talkPick 이용해서 선택한 option 가져오기
+                    .isBest(false)
                     .build();
         }
     }
@@ -99,7 +100,7 @@ public class CommentDto {
                     .nickname(comment.getMember().getNickname())
                     .talkPickId(comment.getTalkPick().getId())
                     .option(comment.getVoteOption())
-                    //.likesCount(comment.getLikes().size()) TODO : 좋아요 구현 시 작성
+                    .likesCount(comment.getLikesCount())
                     .myLike(myLike)
                     .parentId(comment.getParent() == null ? null : comment.getParent().getId())
                     //.replyCount(comment.getReplies().size())
