@@ -19,7 +19,8 @@ public class LikeDto {
     @Data
     @Builder
     @AllArgsConstructor
-    public static class Request { // TODO : 추후 likeType 별로 분리 필요
+    @Schema(description = "좋아요 생성 요청")
+    public static class CreateLikeRequest {
 
         @Schema(description = "좋아요 타입", example = "TALK_PICK")
         private LikeType likeType;
@@ -53,7 +54,8 @@ public class LikeDto {
         @Builder
         @AllArgsConstructor
         @JsonInclude
-        public static class Response {
+        @Schema(description = "좋아요 조회 응답")
+        public static class LikeResponse {
 
             @Schema(description = "좋아요 id", example = "1")
             private Long id;
@@ -76,8 +78,8 @@ public class LikeDto {
             @Schema(description = "좋아요 변경 날짜")
             private LocalDateTime lastModifiedAt;
 
-            public static Response fromEntity(Like like) {
-                return Response.builder()
+            public static LikeResponse fromEntity(Like like) {
+                return LikeResponse.builder()
                         .id(like.getId())
                         .likeType(like.getLikeType())
                         .memberId(like.getMember().getId())

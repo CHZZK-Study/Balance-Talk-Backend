@@ -26,7 +26,7 @@ public class CommentLikeService {
 
     private final MemberRepository memberRepository;
 
-    public LikeDto.Response likeComment(Long commentId) {
+    public LikeDto.LikeResponse likeComment(Long commentId) {
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new BalanceTalkException(ErrorCode.NOT_FOUND_COMMENT));
 
@@ -39,10 +39,10 @@ public class CommentLikeService {
 
          */
 
-        Like commentLike = LikeDto.Request.toEntity(comment, member);
+        Like commentLike = LikeDto.CreateLikeRequest.toEntity(comment, member);
         likeRepository.save(commentLike);
 
-        return LikeDto.Response.fromEntity(commentLike);
+        return LikeDto.LikeResponse.fromEntity(commentLike);
     }
 
     public void unLikeComment(Long commentId) {
