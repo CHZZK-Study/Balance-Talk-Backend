@@ -7,7 +7,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/talks/{talkPickId}/vote")
+@RequestMapping("/votes/talks/{talkPickId}")
 @Tag(name = "vote", description = "투표 API")
 public class VoteTalkPickController {
 
