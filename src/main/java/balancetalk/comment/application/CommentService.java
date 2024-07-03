@@ -34,24 +34,24 @@ public class CommentService {
     @Value("${comments.max-depth}")
     private int maxDepth;
 
-    public CommentDto.Response createComment(CommentDto.Request request, Long talkPickId) {
+    public CommentDto.CommentResponse createComment(CommentDto.CreateCommentRequest createCommentRequest, Long talkPickId) {
         Member member = getCurrentMember(memberRepository);
         TalkPick talkPick = validateTalkPickId(talkPickId);
         //BalanceOption balanceOption = validateBalanceOptionId(request, post); TODO : Vote 구현 완료 후 작업
         //voteRepository.findByMemberIdAndBalanceOption_PostId(member.getId(), postId)
                 //.orElseThrow(() -> new BalanceTalkException(ErrorCode.NOT_FOUND_VOTE));
 
-        Comment comment = request.toEntity(member, talkPick);
+        Comment comment = createCommentRequest.toEntity(member, talkPick);
         commentRepository.save(comment);
-        return CommentDto.Response.fromEntity(comment, false);
+        return CommentDto.CommentResponse.fromEntity(comment, false);
     }
 
     @Transactional(readOnly = true)
-    public Page<CommentDto.Response> findAllComments(Long talkPickId, String token, Pageable pageable) {
+    public Page<CommentDto.CommentResponse> findAllComments(Long talkPickId, String token, Pageable pageable) {
         validateTalkPickId(talkPickId);
 
         Page<Comment> comments = commentRepository.findAllByTalkPickId(talkPickId, pageable);
-        return comments.map(comment -> CommentDto.Response.fromEntity(comment, false));
+        return comments.map(comment -> CommentDto.CommentResponse.fromEntity(comment, false));
 
         /*return comments.map(comment -> {
             Optional<Vote> voteForComment = voteRepository.findByMemberIdAndBalanceOption_PostId(

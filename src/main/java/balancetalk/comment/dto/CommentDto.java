@@ -15,7 +15,8 @@ public class CommentDto {
     @Data
     @Builder
     @AllArgsConstructor
-    public static class Request {
+    @Schema(description = "댓글 생성 요청")
+    public static class CreateCommentRequest {
 
         @Schema(description = "댓글 내용", example = "댓글 내용...")
         private String content;
@@ -37,7 +38,8 @@ public class CommentDto {
     @Builder
     @AllArgsConstructor
     @NoArgsConstructor
-    public static class UpdateRequest {
+    @Schema(description = "댓글 수정 요청")
+    public static class UpdateCommentRequest {
 
         @Schema(description = "수정할 댓글 내용", example = "댓글 내용...")
         private String content;
@@ -47,7 +49,8 @@ public class CommentDto {
     @Data
     @AllArgsConstructor
     @Builder
-    public static class Response {
+    @Schema(description = "댓글 조회 응답")
+    public static class CommentResponse {
 
         @Schema(description = "댓글 id", example = "1")
         private Long id;
@@ -89,8 +92,8 @@ public class CommentDto {
         @Schema(description = "댓글 수정 날짜")
         private LocalDateTime lastModifiedAt;
 
-        public static Response fromEntity(Comment comment, boolean myLike) {
-            return Response.builder()
+        public static CommentResponse fromEntity(Comment comment, boolean myLike) {
+            return CommentResponse.builder()
                     .id(comment.getId())
                     .content(comment.getContent())
                     .nickname(comment.getMember().getNickname())
