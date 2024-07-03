@@ -95,11 +95,7 @@ public class CommentService {
         if (maxLikes >= MIN_COUNT_FOR_BEST_COMMENT) {
             for (Comment comment : allComments) {
                 boolean myLike = false;
-                if (comment.getLikesCount() >= MIN_COUNT_FOR_BEST_COMMENT) {
-                    comment.setIsBest(true);
-                } else {
-                    comment.setIsBest(false);
-                }
+                comment.setIsBest(comment.getLikesCount() >= MIN_COUNT_FOR_BEST_COMMENT);
                 CommentDto.CommentResponse response = CommentDto.CommentResponse.fromEntity(comment, myLike);
                 if (comment.getIsBest()) {
                     bestComments.add(response);
@@ -110,12 +106,7 @@ public class CommentService {
         } else {
             for (Comment comment : allComments) {
                 boolean myLike = false;
-                if (comment.getLikesCount() == maxLikes) {
-                    comment.setIsBest(true);
-                } else {
-                    comment.setIsBest(false);
-
-                }
+                comment.setIsBest(comment.getLikesCount() == maxLikes);
                 CommentDto.CommentResponse response = CommentDto.CommentResponse.fromEntity(comment, myLike);
                 if (comment.getIsBest()) {
                     bestComments.add(response);
