@@ -103,7 +103,7 @@ public class CommentDto {
                     .myLike(myLike)
                     .parentId(comment.getParent() == null ? null : comment.getParent().getId())
                     //.replyCount(comment.getReplies().size())
-                    .isBest(comment.isBest())
+                    .isBest(comment.getIsBest())
                     .createdAt(comment.getCreatedAt())
                     .lastModifiedAt(comment.getLastModifiedAt())
                     .build();

@@ -37,7 +37,7 @@ public class Comment extends BaseTimeEntity {
     @Enumerated(value = EnumType.STRING)
     private ViewStatus viewStatus;
 
-    private boolean isBest;
+    private Boolean isBest;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
