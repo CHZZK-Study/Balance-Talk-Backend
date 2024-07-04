@@ -37,7 +37,7 @@ public class Comment extends BaseTimeEntity {
     @Enumerated(value = EnumType.STRING)
     private ViewStatus viewStatus;
 
-    private boolean isBest;
+    private Boolean isBest;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
@@ -59,5 +59,13 @@ public class Comment extends BaseTimeEntity {
 
     public void updateContent(String content) {
         this.content = content;
+    }
+
+    public int getLikesCount() {
+        return likes != null ? likes.size() : 0;
+    }
+
+    public void setIsBest(boolean isBest) {
+        this.isBest = isBest;
     }
 }
