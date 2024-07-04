@@ -1,4 +1,4 @@
-package balancetalk.game.presentation;
+package balancetalk.bookmark.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @RequestMapping("/bookmarks/games/{gameId}")
 @Tag(name = "bookmark", description = "북마크 API")
-public class GameBookmarkController {
+public class BookmarkGameController {
 
     @Operation(summary = "밸런스 게임 북마크", description = "밸런스 게임 북마크를 활성화합니다.")
     @PostMapping

@@ -18,7 +18,8 @@ public class LikeDto {
     @Data
     @Builder
     @AllArgsConstructor
-    public static class Request { // TODO : 추후 likeType 별로 분리 필요
+    @Schema(description = "좋아요 생성 요청")
+    public static class CreateLikeRequest {
 
         @Schema(description = "좋아요 타입", example = "COMMENT")
         private LikeType likeType;
@@ -36,39 +37,40 @@ public class LikeDto {
         }
     }
 
-    @Data
-    @Builder
-    @AllArgsConstructor
-    @JsonInclude
-    public static class Response {
+        @Data
+        @Builder
+        @AllArgsConstructor
+        @JsonInclude
+        @Schema(description = "좋아요 조회 응답")
+        public static class LikeResponse {
 
-        @Schema(description = "좋아요 id", example = "1")
-        private Long id;
+            @Schema(description = "좋아요 id", example = "1")
+            private Long id;
 
-        @Schema(description = "좋아요 타입", example = "TALK_PICK")
-        private LikeType likeType;
+            @Schema(description = "좋아요 타입", example = "TALK_PICK")
+            private LikeType likeType;
 
-        @Schema(description = "좋아요한 멤버 id", example = "1")
-        private Long memberId;
+            @Schema(description = "좋아요한 멤버 id", example = "1")
+            private Long memberId;
 
-        @Schema(description = "좋아요한 댓글 id", example = "1")
-        private Long commentId;
+            @Schema(description = "좋아요한 댓글 id", example = "1")
+            private Long commentId;
 
-        @Schema(description = "좋아요 생성 날짜")
-        private LocalDateTime createdAt;
+            @Schema(description = "좋아요 생성 날짜")
+            private LocalDateTime createdAt;
 
-        @Schema(description = "좋아요 변경 날짜")
-        private LocalDateTime lastModifiedAt;
+            @Schema(description = "좋아요 변경 날짜")
+            private LocalDateTime lastModifiedAt;
 
-        public static Response fromEntity(Like like) {
-            return Response.builder()
-                    .id(like.getId())
-                    .likeType(like.getLikeType())
-                    .memberId(like.getMember().getId())
-                    .commentId(Optional.ofNullable(like.getComment()).map(Comment::getId).orElse(null))
-                    .createdAt(like.getCreatedAt())
-                    .lastModifiedAt(like.getLastModifiedAt())
-                    .build();
-        }
+            public static LikeResponse fromEntity(Like like) {
+                return LikeResponse.builder()
+                        .id(like.getId())
+                        .likeType(like.getLikeType())
+                        .memberId(like.getMember().getId())
+                        .commentId(Optional.ofNullable(like.getComment()).map(Comment::getId).orElse(null))
+                        .createdAt(like.getCreatedAt())
+                        .lastModifiedAt(like.getLastModifiedAt())
+                        .build();
+            }
     }
 }

@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 
 @Data
 @AllArgsConstructor
+@Schema(description = "회원가입을 위한 인증번호 발송 요청")
 public class EmailRequest {
 
     @NotNull
