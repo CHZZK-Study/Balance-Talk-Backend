@@ -1,12 +1,13 @@
 package balancetalk.talkpick.presentation;
 
-import balancetalk.talkpick.dto.TodayTalkPickResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import static balancetalk.talkpick.dto.TodayTalkPickDto.TodayTalkPickResponse;
 
 @RestController
 @RequestMapping("/talks/today")

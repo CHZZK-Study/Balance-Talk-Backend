@@ -3,23 +3,11 @@ package balancetalk.bookmark.domain;
 import balancetalk.game.domain.Game;
 import balancetalk.global.common.BaseTimeEntity;
 import balancetalk.member.domain.Member;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import balancetalk.talkpick.domain.TalkPick;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Entity
 @Builder
@@ -37,6 +25,10 @@ public class Bookmark extends BaseTimeEntity {
     private Member member;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "talk_pick_id")
+    private TalkPick talkPick;
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "game_id")
     private Game game;
 
@@ -47,4 +39,3 @@ public class Bookmark extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     private BookmarkType bookmarkType;
 }
-
