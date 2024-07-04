@@ -21,8 +21,6 @@ import java.util.List;
 @Tag(name = "game", description = "밸런스 게임 API")
 public class GameController {
 
-    private static final String SUCCESS_RESPONSE_MESSAGE = "OK";
-
     @PostMapping
     @Operation(summary = "밸런스 게임 생성", description = "밸런스 게임을 생성합니다.")
     public GameResponse createGame(@RequestBody final GameRequest request) {
@@ -43,8 +41,7 @@ public class GameController {
 
     @DeleteMapping("/{gameId}")
     @Operation(summary = "밸런스 게임 삭제", description = "밸런스 게임을 삭제합니다.")
-    public String deleteGame(@PathVariable final Long gameId) {
-        return SUCCESS_RESPONSE_MESSAGE;
+    public void deleteGame(@PathVariable final Long gameId) {
     }
 
     @GetMapping("/best")

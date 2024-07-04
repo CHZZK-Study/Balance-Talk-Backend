@@ -13,17 +13,13 @@ import org.springframework.web.bind.annotation.*;
 @Tag(name = "bookmark", description = "북마크 API")
 public class GameBookmarkController {
 
-    private static final String SUCCESS_RESPONSE_MESSAGE = "OK";
-
     @Operation(summary = "밸런스 게임 북마크", description = "밸런스 게임 북마크를 활성화합니다.")
     @PostMapping
-    public String bookmarkGame(@PathVariable final Long gameId) {
-        return SUCCESS_RESPONSE_MESSAGE;
+    public void bookmarkGame(@PathVariable final Long gameId) {
     }
 
     @Operation(summary = "밸런스 게임 북마크 취소", description = "밸런스 게임 북마크를 취소합니다.")
     @DeleteMapping
-    public String deleteBookmarkGame(@PathVariable final Long gameId) {
-        return SUCCESS_RESPONSE_MESSAGE;
+    public void deleteBookmarkGame(@PathVariable final Long gameId) {
     }
 }

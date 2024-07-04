@@ -26,6 +26,6 @@ public class VoteTalkPickController {
     @Operation(summary = "톡픽 투표 수정", description = "톡픽 투표를 수정합니다.")
     @PutMapping
     public void updateVoteResultTalkPick(@PathVariable Long talkPickId,
-                                           @RequestBody VoteRequest request) {
+                                         @RequestBody VoteRequest request) {
     }
 }
