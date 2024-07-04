@@ -1,30 +1,28 @@
 package balancetalk.like.presentation;
 
-import balancetalk.global.common.ApiResponse;
+import balancetalk.like.application.CommentLikeService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/talks")
 @RequiredArgsConstructor
 @Tag(name = "like", description = "좋아요 API")
 public class LikeController {
+
+    private final CommentLikeService commentLikeService;
+
     @PostMapping("/{talkPickId}/{commentId}/likes")
-    @Operation(summary = "댓글 좋아요", description = "talkPick-id에 해당하는 댓글에 추천을 누른다.")
-    public ApiResponse<String> likeComment(@PathVariable Long talkPickId, @PathVariable Long commentId) {
-        //commentService.likeComment(postId, commentId);
-        return ApiResponse.ok("댓글 좋아요가 정상적으로 처리되었습니다.");
+    @Operation(summary = "댓글 좋아요", description = "commentId에 해당하는 댓글에 좋아요를 활성화합니다.")
+    public void likeComment(@PathVariable Long commentId) {
+        commentLikeService.likeComment(commentId);
     }
 
     @DeleteMapping("/{talkPickId}/{commentId}/likes")
-    @Operation(summary = "댓글 좋아요 취소", description = "talkPick-id에 해당하는 댓글에 누른 추천을 취소한다.")
-    public void cancelLikeComment(@PathVariable Long commentId) {
-        //commentService.cancelLikeComment(commentId);
+    @Operation(summary = "댓글 좋아요 취소", description = "commentId에 해당하는 댓글의 좋아요를 취소합니다.")
+    public void unlikeComment(@PathVariable Long commentId) { // TODO : 추후 talkPickId 파라미터를 받아 validate 필요
+        commentLikeService.unLikeComment(commentId);
     }
 }
