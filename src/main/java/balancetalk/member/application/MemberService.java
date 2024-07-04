@@ -1,18 +1,18 @@
 package balancetalk.member.application;
 
+import balancetalk.file.domain.File;
+import balancetalk.file.domain.FileRepository;
 import balancetalk.global.config.CustomUserDetails;
 import balancetalk.global.config.MyUserDetailService;
 import balancetalk.global.exception.BalanceTalkException;
 import balancetalk.global.exception.ErrorCode;
 import balancetalk.global.jwt.JwtTokenProvider;
 import balancetalk.global.redis.application.RedisService;
-import balancetalk.member.dto.JoinRequest;
-import balancetalk.member.dto.LoginRequest;
-import balancetalk.member.dto.MemberResponse;
-import balancetalk.file.domain.File;
-import balancetalk.file.domain.FileRepository;
 import balancetalk.member.domain.Member;
 import balancetalk.member.domain.MemberRepository;
+import balancetalk.member.dto.MemberDto.JoinRequest;
+import balancetalk.member.dto.MemberDto.LoginRequest;
+import balancetalk.member.dto.MemberDto.MemberResponse;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -26,6 +26,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -43,6 +44,7 @@ public class MemberService {
     private final PasswordEncoder passwordEncoder;
     private final RedisService redisService;
     private final MyUserDetailService myUserDetailService;
+
     @Transactional
     public Long join(final JoinRequest joinRequest) {
         if (memberRepository.existsByEmail(joinRequest.getEmail())) {
@@ -107,7 +109,7 @@ public class MemberService {
     @Transactional
     public void updatePassword(final String newPassword, HttpServletRequest request) {
         Member member = extractMember(request);
-        if (passwordEncoder.matches(newPassword, member.getPassword())){
+        if (passwordEncoder.matches(newPassword, member.getPassword())) {
             throw new BalanceTalkException(ErrorCode.SAME_PASSWORD);
         }
         member.updatePassword(passwordEncoder.encode(newPassword));
@@ -134,7 +136,7 @@ public class MemberService {
     }
 
     @Transactional
-    public void logout(){
+    public void logout() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null) {
             throw new BalanceTalkException(ErrorCode.AUTHENTICATION_REQUIRED);

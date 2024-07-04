@@ -8,14 +8,16 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import java.time.LocalDateTime;
 import lombok.NoArgsConstructor;
+
+import java.time.LocalDateTime;
 
 public class CommentDto {
     @Data
     @Builder
     @AllArgsConstructor
-    public static class Request {
+    @Schema(description = "댓글 생성 요청")
+    public static class CreateCommentRequest {
 
         @Schema(description = "댓글 내용", example = "댓글 내용...")
         private String content;
@@ -29,6 +31,7 @@ public class CommentDto {
                     .member(member)
                     .talkPick(talkPick)
                     .voteOption(option) // TODO : Vote 구현 완료 후 member와 talkPick 이용해서 선택한 option 가져오기
+                    .isBest(false)
                     .build();
         }
     }
@@ -37,7 +40,8 @@ public class CommentDto {
     @Builder
     @AllArgsConstructor
     @NoArgsConstructor
-    public static class UpdateRequest {
+    @Schema(description = "댓글 수정 요청")
+    public static class UpdateCommentRequest {
 
         @Schema(description = "수정할 댓글 내용", example = "댓글 내용...")
         private String content;
@@ -47,7 +51,8 @@ public class CommentDto {
     @Data
     @AllArgsConstructor
     @Builder
-    public static class Response {
+    @Schema(description = "댓글 조회 응답")
+    public static class CommentResponse {
 
         @Schema(description = "댓글 id", example = "1")
         private Long id;
@@ -74,8 +79,14 @@ public class CommentDto {
         @Schema(description = "현재 사용자의 좋아요 여부", example = "true")
         private Boolean myLike;
 
+        @Schema(description = "부모 댓글 id (답글이 아닐 경우, null 반환)", example = "5")
+        private Long parentId;
+
         @Schema(description = "답글 수", example = "3")
         private int replyCount;
+
+        @Schema(description = "베스트 댓글 여부", example = "true")
+        private boolean isBest;
 
         @Schema(description = "댓글 생성 날짜")
         private LocalDateTime createdAt;
@@ -83,16 +94,18 @@ public class CommentDto {
         @Schema(description = "댓글 수정 날짜")
         private LocalDateTime lastModifiedAt;
 
-        public static Response fromEntity(Comment comment, boolean myLike) {
-            return Response.builder()
+        public static CommentResponse fromEntity(Comment comment, boolean myLike) {
+            return CommentResponse.builder()
                     .id(comment.getId())
                     .content(comment.getContent())
                     .nickname(comment.getMember().getNickname())
                     .talkPickId(comment.getTalkPick().getId())
                     .option(comment.getVoteOption())
-                    //.likesCount(comment.getLikes().size()) TODO : 좋아요 구현 시 작성
+                    .likesCount(comment.getLikesCount())
                     .myLike(myLike)
+                    .parentId(comment.getParent() == null ? null : comment.getParent().getId())
                     //.replyCount(comment.getReplies().size())
+                    .isBest(comment.getIsBest())
                     .createdAt(comment.getCreatedAt())
                     .lastModifiedAt(comment.getLastModifiedAt())
                     .build();
