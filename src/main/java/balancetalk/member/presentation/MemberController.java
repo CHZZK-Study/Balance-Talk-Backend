@@ -1,9 +1,9 @@
 package balancetalk.member.presentation;
 
+import static balancetalk.member.dto.MemberDto.*;
+
 import balancetalk.member.application.MemberService;
-import balancetalk.member.dto.JoinRequest;
-import balancetalk.member.dto.LoginRequest;
-import balancetalk.member.dto.MemberResponse;
+import balancetalk.member.dto.MemberDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;

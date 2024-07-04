@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 
 @Data
 @AllArgsConstructor
+@Schema(description = "비밀 번호 찾기를 위한 인증번호 발송 요청")
 public class EmailVerification {
 
     @NotNull
