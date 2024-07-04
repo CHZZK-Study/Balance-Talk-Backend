@@ -14,7 +14,7 @@ public class BookmarkTalkPickController {
     public void bookmarkTalkPick(@PathVariable Long talkPickId) {
     }
 
-    @Operation(summary = "톡픽 북마크 추가", description = "북마크에 톡픽을 추가합니다.")
+    @Operation(summary = "톡픽 북마크 제거", description = "북마크에서 톡픽을 제거합니다.")
     @DeleteMapping
     public void deleteBookmarkTalkPick(@PathVariable Long talkPickId) {
     }
