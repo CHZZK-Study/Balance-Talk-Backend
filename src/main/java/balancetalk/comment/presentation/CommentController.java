@@ -20,15 +20,12 @@ import org.springframework.web.bind.annotation.*;
 @Tag(name = "comment", description = "댓글 API")
 public class CommentController {
 
-    private static final String SUCCESS_RESPONSE_MESSAGE = "OK"; // TODO : 상수 클래스로 분리
-
     private final CommentService commentService;
 
     @PostMapping
     @Operation(summary = "댓글 작성", description = "talkPick-id에 해당하는 게시글에 댓글을 작성한다.")
-    public String createComment(@PathVariable Long talkPickId, @Valid @RequestBody CommentDto.CreateCommentRequest createCommentRequest) {
+    public void createComment(@PathVariable Long talkPickId, @Valid @RequestBody CommentDto.CreateCommentRequest createCommentRequest) {
         commentService.createComment(createCommentRequest, talkPickId);
-        return SUCCESS_RESPONSE_MESSAGE;
     }
 
     @GetMapping
@@ -60,24 +57,21 @@ public class CommentController {
 
     @PutMapping("/{commentId}")
     @Operation(summary = "댓글 수정", description = "commentId에 해당하는 댓글 내용을 수정한다.")
-    public String updateComment(@PathVariable Long commentId, @PathVariable Long talkPickId, @RequestBody CommentDto.UpdateCommentRequest request) {
+    public void updateComment(@PathVariable Long commentId, @PathVariable Long talkPickId, @RequestBody CommentDto.UpdateCommentRequest request) {
             commentService.updateComment(commentId, talkPickId, request.getContent());
-        return SUCCESS_RESPONSE_MESSAGE;
     }
 
 
     @DeleteMapping("/{commentId}")
     @Operation(summary = "댓글 삭제", description = "commentId에 해당하는 댓글을 삭제한다.")
-    public String deleteComment(@PathVariable Long commentId, @PathVariable Long talkPickId) {
+    public void deleteComment(@PathVariable Long commentId, @PathVariable Long talkPickId) {
         commentService.deleteComment(commentId, talkPickId);
-        return SUCCESS_RESPONSE_MESSAGE;
     }
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/{commentId}/replies")
     @Operation(summary = "답글 작성", description = "commentId에 해당하는 댓글에 답글을 작성한다.")
-    public String createReply(@PathVariable Long commentId, @Valid @RequestBody CommentDto.CreateCommentRequest createCommentRequest) {
-        return SUCCESS_RESPONSE_MESSAGE;
+    public void createReply(@PathVariable Long commentId, @Valid @RequestBody CommentDto.CreateCommentRequest createCommentRequest) {
     }
 
     /*
