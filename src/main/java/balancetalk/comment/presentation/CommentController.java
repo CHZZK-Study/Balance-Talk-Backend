@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.*;
 @Tag(name = "comment", description = "댓글 API")
 public class CommentController {
 
-    private static final String SUCCESS_RESPONSE_MESSAGE = "OK";
+    private static final String SUCCESS_RESPONSE_MESSAGE = "OK"; // TODO : 상수 클래스로 분리
 
     private final CommentService commentService;
 
