@@ -5,11 +5,13 @@ import balancetalk.global.common.BaseTimeEntity;
 import balancetalk.member.domain.Member;
 import balancetalk.talkpick.domain.TalkPick;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Entity
+@Builder
+@Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Table(name = "likes")
 public class Like extends BaseTimeEntity {
 
@@ -33,4 +35,8 @@ public class Like extends BaseTimeEntity {
     private Comment comment;
 
     private Boolean active = true;
+
+    public void deActive() {
+        this.active = false;
+    }
 }
