@@ -3,7 +3,6 @@ package balancetalk.like.application;
 import balancetalk.comment.domain.Comment;
 import balancetalk.comment.domain.CommentRepository;
 import balancetalk.global.exception.BalanceTalkException;
-import balancetalk.global.exception.ErrorCode;
 import balancetalk.like.domain.Like;
 import balancetalk.like.domain.LikeRepository;
 import balancetalk.like.dto.LikeDto;
@@ -13,6 +12,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
+
+import static balancetalk.global.exception.ErrorCode.*;
 import static balancetalk.global.utils.SecurityUtils.getCurrentMember;
 
 @Service
@@ -27,35 +29,37 @@ public class CommentLikeService {
     private final MemberRepository memberRepository;
 
     public LikeDto.LikeResponse likeComment(Long commentId) {
-        Comment comment = commentRepository.findById(commentId)
-                .orElseThrow(() -> new BalanceTalkException(ErrorCode.NOT_FOUND_COMMENT));
+        Comment comment = validateComment(commentId);
 
         Member member = getCurrentMember(memberRepository);
-        /* TODO : 추후 예외처리
-        boolean alreadyLiked = likeRepository.existsByCommentIdAndMemberId(commentId, member.getId());
-        if (alreadyLiked) {
-            throw new BalanceTalkException(ErrorCode.ALREADY_LIKED);
-        }
 
-         */
+        // 이미 좋아요를 누른 댓글일 경우 예외 처리
+        boolean alreadyLiked = likeRepository.existsByCommentIdAndMemberId(commentId, member.getId());
+
+        if (alreadyLiked) {
+            throw new BalanceTalkException(ALREADY_LIKED_COMMENT);
+        }
 
         Like commentLike = LikeDto.CreateLikeRequest.toEntity(comment, member);
         likeRepository.save(commentLike);
 
-        return LikeDto.LikeResponse.fromEntity(commentLike);
+        return LikeDto.LikeResponse.fromEntity(commentLike); // TODO : 제거
     }
 
     public void unLikeComment(Long commentId) {
-        Comment comment = commentRepository.findById(commentId)
-                .orElseThrow(() -> new BalanceTalkException(ErrorCode.NOT_FOUND_COMMENT)); // TODO : 추후 메서드 분리
+        validateComment(commentId);
 
         Member member = getCurrentMember(memberRepository);
 
-        Like commentLike = likeRepository.findByCommentIdAndMemberId(commentId, member.getId());
+        // 좋아요를 누르지 않은 댓글에 좋아요 취소를 누를 경우 예외 처리
+        Like commentLike = likeRepository.findByCommentIdAndMemberId(commentId, member.getId())
+                .orElseThrow(() -> new BalanceTalkException(NOT_LIKED_COMMENT));
 
         commentLike.deActive();
-
     }
 
-    // TODO : 추후 예외처리
+    private Comment validateComment(Long commentId) {
+        return commentRepository.findById(commentId)
+                .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_COMMENT));
+    }
 }
