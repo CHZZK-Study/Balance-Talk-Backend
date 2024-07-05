@@ -7,7 +7,7 @@ import balancetalk.global.exception.BalanceTalkException;
 import balancetalk.member.domain.Member;
 import balancetalk.member.domain.MemberRepository;
 import balancetalk.talkpick.domain.TalkPick;
-import balancetalk.talkpick.domain.TalkPickRepository;
+import balancetalk.talkpick.domain.repository.TalkPickRepository;
 import balancetalk.vote.domain.VoteRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
