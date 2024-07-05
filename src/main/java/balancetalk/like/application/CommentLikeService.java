@@ -8,6 +8,8 @@ import balancetalk.like.domain.LikeRepository;
 import balancetalk.like.dto.LikeDto;
 import balancetalk.member.domain.Member;
 import balancetalk.member.domain.MemberRepository;
+import balancetalk.talkpick.domain.TalkPick;
+import balancetalk.talkpick.domain.TalkPickRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,9 +30,12 @@ public class CommentLikeService {
 
     private final MemberRepository memberRepository;
 
-    public LikeDto.LikeResponse likeComment(Long commentId) {
-        Comment comment = validateComment(commentId);
+    private final TalkPickRepository talkPickRepository;
 
+    public LikeDto.LikeResponse likeComment(Long commentId, Long talkPickId) {
+        // 톡픽, 댓글, 회원 존재 여부 예외 처리
+        validateTalkPick(talkPickId);
+        Comment comment = validateComment(commentId);
         Member member = getCurrentMember(memberRepository);
 
         // 이미 좋아요를 누른 댓글일 경우 예외 처리
@@ -46,9 +51,9 @@ public class CommentLikeService {
         return LikeDto.LikeResponse.fromEntity(commentLike); // TODO : 제거
     }
 
-    public void unLikeComment(Long commentId) {
+    public void unLikeComment(Long commentId, Long talkPickId) {
+        validateTalkPick(talkPickId);
         validateComment(commentId);
-
         Member member = getCurrentMember(memberRepository);
 
         // 좋아요를 누르지 않은 댓글에 좋아요 취소를 누를 경우 예외 처리
@@ -61,5 +66,10 @@ public class CommentLikeService {
     private Comment validateComment(Long commentId) {
         return commentRepository.findById(commentId)
                 .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_COMMENT));
+    }
+
+    private TalkPick validateTalkPick(Long talkPickId) {
+        return talkPickRepository.findById(talkPickId)
+                .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_TALK_PICK));
     }
 }
