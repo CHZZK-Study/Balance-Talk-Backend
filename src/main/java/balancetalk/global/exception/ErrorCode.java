@@ -26,6 +26,7 @@ public enum ErrorCode {
     EXCEED_VALIDATION_LENGTH(BAD_REQUEST, "입력값이 제약 조건에 맞지 않습니다."),
     AUTHORIZATION_CODE_MISMATCH(BAD_REQUEST, "인증 번호가 일치하지 않습니다."),
     EMPTY_JWT_TOKEN(BAD_REQUEST, "토큰 값이 존재하지 않습니다."),
+    NOT_INPUT_PARENT_COMMENT_ID(BAD_REQUEST, "원 댓글 ID가 입력되지 않았습니다."),
 
 
     // 401
