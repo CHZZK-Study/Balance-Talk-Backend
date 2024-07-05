@@ -52,16 +52,11 @@ public class CommentService {
         return CommentDto.CommentResponse.fromEntity(comment, false);
     }
 
-    public void createCommentReply(CommentDto.CreateCommentRequest createCommentRequest, Long talkPickId) {
+    @Transactional
+    public void createCommentReply(CommentDto.CreateCommentRequest createCommentRequest, Long talkPickId, Long commentId) {
         Member member = getCurrentMember(memberRepository);
         TalkPick talkPick = validateTalkPickId(talkPickId);
-
-        // 요청 본문에 parentId가 없는 경우 예외 처리 TODO : 추후 예외처리 메서드들 분리
-        if (createCommentRequest.getParentId() == null) {
-            throw new BalanceTalkException(NOT_INPUT_PARENT_COMMENT_ID);
-        }
-
-        Comment parentComment = validateCommentId(createCommentRequest.getParentId());
+        Comment parentComment = validateCommentId(commentId);
 
         // 부모 댓글 존재 여부 예외 처리
         validateCommentId(parentComment.getId());
