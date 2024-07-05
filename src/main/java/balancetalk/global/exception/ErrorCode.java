@@ -64,7 +64,7 @@ public enum ErrorCode {
     NOT_FOUND_DIRECTORY(NOT_FOUND, "존재하지 않는 디렉토리입니다."),
     NOT_SUPPORTED_FILE_TYPE(NOT_FOUND, "지원하지 않는 파일 형식입니다."),
     NOT_FOUND_FILE(NOT_FOUND, "존재하지 않는 파일입니다."),
-    NOT_FOUND_PARENT_COMMENT(NOT_FOUND, "존재하지 않는 원 댓글입니다."),
+    NOT_FOUND_PARENT_COMMENT_AT_THAT_TALK_PICK(NOT_FOUND, "해당 톡픽에 존재하지 않는 원 댓글입니다."),
     NOT_FOUND_COMMENT_AT_THAT_POST(NOT_FOUND, "해당 게시글에 존재하지 않는 댓글입니다."),
     NOT_FOUND_NOTICE(NOT_FOUND, "존재하지 않는 공지사항입니다."),
     NOT_LIKED_COMMENT(NOT_FOUND, "해당 댓글을 좋아요한 기록이 존재하지 않습니다."),

@@ -56,11 +56,24 @@ public class CommentService {
         Member member = getCurrentMember(memberRepository);
         TalkPick talkPick = validateTalkPickId(talkPickId);
 
+        // 요청 본문에 parentId가 없는 경우 예외 처리 TODO : 추후 예외처리 메서드들 분리
         if (createCommentRequest.getParentId() == null) {
             throw new BalanceTalkException(NOT_INPUT_PARENT_COMMENT_ID);
         }
 
         Comment parentComment = validateCommentId(createCommentRequest.getParentId());
+
+        // 부모 댓글 존재 여부 예외 처리
+        validateCommentId(parentComment.getId());
+
+        // 부모 댓글과 연결된 게시글이 아닌 경우 예외 처리
+        if (!parentComment.getTalkPick().equals(talkPick)) {
+            throw new BalanceTalkException(NOT_FOUND_PARENT_COMMENT_AT_THAT_TALK_PICK);
+        }
+
+        // 부모 댓글의 depth가 maxDepth를 초과하는 경우 예외 처리 (답글에 답글 불가)
+        validateDepth(parentComment);
+
 
         Comment commentReply = createCommentRequest.toEntity(member, talkPick, parentComment);
         commentRepository.save(commentReply);
