@@ -52,6 +52,20 @@ public class CommentService {
         return CommentDto.CommentResponse.fromEntity(comment, false);
     }
 
+    public void createCommentReply(CommentDto.CreateCommentRequest createCommentRequest, Long talkPickId) {
+        Member member = getCurrentMember(memberRepository);
+        TalkPick talkPick = validateTalkPickId(talkPickId);
+
+        if (createCommentRequest.getParentId() == null) {
+            throw new BalanceTalkException(NOT_INPUT_PARENT_COMMENT_ID);
+        }
+
+        Comment parentComment = validateCommentId(createCommentRequest.getParentId());
+
+        Comment commentReply = createCommentRequest.toEntity(member, talkPick, parentComment);
+        commentRepository.save(commentReply);
+    }
+
     @Transactional(readOnly = true)
     public Page<CommentDto.CommentResponse> findAllComments(Long talkPickId, String token, Pageable pageable) {
         validateTalkPickId(talkPickId);

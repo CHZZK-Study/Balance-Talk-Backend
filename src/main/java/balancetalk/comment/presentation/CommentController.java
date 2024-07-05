@@ -28,6 +28,12 @@ public class CommentController {
         commentService.createComment(createCommentRequest, talkPickId);
     }
 
+    @PostMapping("/replies")
+    @Operation(summary = "답글 작성", description = "commentId에 해당하는 댓글에 답글을 작성한다.")
+    public void createCommentReply(@PathVariable Long talkPickId, @Valid @RequestBody CommentDto.CreateCommentRequest createCommentRequest) {
+        commentService.createCommentReply(createCommentRequest, talkPickId);
+    }
+
     @GetMapping
     @Operation(summary = "최신 댓글 목록 조회", description = "talkPick-id에 해당하는 게시글에 있는 모든 댓글 및 답글을 최신순으로 정렬해 조회한다.")
     public Page<CommentResponse> findAllCommentsByPostIdSortedByCreatedAt(@PathVariable Long talkPickId, Pageable pageable,
