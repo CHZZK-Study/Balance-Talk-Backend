@@ -9,7 +9,6 @@ import balancetalk.member.domain.MemberRepository;
 import balancetalk.talkpick.domain.TalkPick;
 import balancetalk.talkpick.domain.repository.TalkPickRepository;
 import balancetalk.vote.domain.VoteOption;
-import balancetalk.vote.domain.VoteRepository;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -28,19 +27,16 @@ import static balancetalk.global.utils.SecurityUtils.getCurrentMember;
 @Transactional
 @RequiredArgsConstructor
 public class CommentService {
-
-    private static final int BEST_COMMENTS_SIZE = 3;
     private static final int MIN_COUNT_FOR_BEST_COMMENT = 10;
 
     private final CommentRepository commentRepository;
     private final MemberRepository memberRepository;
     private final TalkPickRepository talkPickRepository;
-    private final VoteRepository voteRepository;
 
     @Value("${comments.max-depth}")
     private int maxDepth;
 
-    public CommentDto.CommentResponse createComment(@Valid CommentDto.CreateCommentRequest createCommentRequest, Long talkPickId) {
+    public void createComment(@Valid CommentDto.CreateCommentRequest createCommentRequest, Long talkPickId) {
         //TODO : Vote 기능 구현 완료 후 추가 예외 처리 필요
         Member member = getCurrentMember(memberRepository);
         TalkPick talkPick = validateTalkPickId(talkPickId);
@@ -53,7 +49,6 @@ public class CommentService {
 
         Comment comment = createCommentRequest.toEntity(member, talkPick);
         commentRepository.save(comment);
-        return CommentDto.CommentResponse.fromEntity(comment, false);
     }
 
     @Transactional
