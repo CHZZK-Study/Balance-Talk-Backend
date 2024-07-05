@@ -5,12 +5,10 @@ import balancetalk.member.domain.Member;
 import balancetalk.talkpick.domain.TalkPick;
 import balancetalk.vote.domain.VoteOption;
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 public class CommentDto {
     @Data
@@ -25,6 +23,9 @@ public class CommentDto {
         @Schema(description = "선택지", example = "A")
         private VoteOption option;
 
+        @Schema(description = "부모 댓글 id (답글 작성이 아닐 경우, 작성 x)", example = "5")
+        private Long parentId;
+
         public Comment toEntity(Member member, TalkPick talkPick) {
             return Comment.builder()
                     .content(content)
@@ -32,6 +33,17 @@ public class CommentDto {
                     .talkPick(talkPick)
                     .voteOption(option) // TODO : Vote 구현 완료 후 member와 talkPick 이용해서 선택한 option 가져오기
                     .isBest(false)
+                    .build();
+        }
+
+        public Comment toEntity(Member member, TalkPick talkPick, Comment parent) {
+            return Comment.builder()
+                    .content(content)
+                    .member(member)
+                    .talkPick(talkPick)
+                    .voteOption(option) // TODO : Vote 구현 완료 후 member와 talkPick 이용해서 선택한 option 가져오기
+                    .isBest(false)
+                    .parent(parent)
                     .build();
         }
     }
@@ -104,7 +116,7 @@ public class CommentDto {
                     .likesCount(comment.getLikesCount())
                     .myLike(myLike)
                     .parentId(comment.getParent() == null ? null : comment.getParent().getId())
-                    //.replyCount(comment.getReplies().size())
+                    //.replyCount(comment.getReplies().size()) // TODO : 작업
                     .isBest(comment.getIsBest())
                     .createdAt(comment.getCreatedAt())
                     .lastModifiedAt(comment.getLastModifiedAt())
