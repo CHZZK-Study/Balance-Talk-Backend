@@ -53,7 +53,7 @@ public enum ErrorCode {
     FORBIDDEN_COMMENT_REPORT(FORBIDDEN, "본인 댓글을 신고할 수 없습니다."),
 
     // 404
-    NOT_FOUND_POST(NOT_FOUND, "존재하지 않는 게시글입니다."),
+    NOT_FOUND_TALK_PICK(NOT_FOUND, "존재하지 않는 게시글입니다."),
     NOT_FOUND_BALANCE_OPTION(NOT_FOUND, "존재하지 않는 선택지입니다."),
     NOT_FOUND_MEMBER(NOT_FOUND, "존재하지 않는 회원입니다."),
     NOT_FOUND_VOTE(NOT_FOUND, "해당 게시글에서 투표한 기록이 존재하지 않습니다."),
