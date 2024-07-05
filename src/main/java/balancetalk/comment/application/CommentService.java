@@ -65,7 +65,6 @@ public class CommentService {
         // 부모 댓글의 depth가 maxDepth를 초과하는 경우 예외 처리 (답글에 답글 불가)
         validateDepth(parentComment);
 
-
         Comment commentReply = createCommentRequest.toEntity(member, talkPick, parentComment);
         commentRepository.save(commentReply);
     }
