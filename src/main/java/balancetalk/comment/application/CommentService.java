@@ -8,7 +8,9 @@ import balancetalk.member.domain.Member;
 import balancetalk.member.domain.MemberRepository;
 import balancetalk.talkpick.domain.TalkPick;
 import balancetalk.talkpick.domain.repository.TalkPickRepository;
+import balancetalk.vote.domain.VoteOption;
 import balancetalk.vote.domain.VoteRepository;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -17,9 +19,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 
 import static balancetalk.global.exception.ErrorCode.*;
 import static balancetalk.global.utils.SecurityUtils.getCurrentMember;
@@ -40,12 +40,16 @@ public class CommentService {
     @Value("${comments.max-depth}")
     private int maxDepth;
 
-    public CommentDto.CommentResponse createComment(CommentDto.CreateCommentRequest createCommentRequest, Long talkPickId) {
+    public CommentDto.CommentResponse createComment(@Valid CommentDto.CreateCommentRequest createCommentRequest, Long talkPickId) {
+        //TODO : Vote 기능 구현 완료 후 추가 예외 처리 필요
         Member member = getCurrentMember(memberRepository);
         TalkPick talkPick = validateTalkPickId(talkPickId);
-        //BalanceOption balanceOption = validateBalanceOptionId(request, post); TODO : Vote 구현 완료 후 작업
-        //voteRepository.findByMemberIdAndBalanceOption_PostId(member.getId(), postId)
-        //.orElseThrow(() -> new BalanceTalkException(ErrorCode.NOT_FOUND_VOTE));
+
+        // option이 VoteOption에 존재하는 값인지 확인 및 예외 처리
+        VoteOption option = createCommentRequest.getOption();
+        if (option == null || !EnumSet.allOf(VoteOption.class).contains(option)) {
+            throw new BalanceTalkException(NOT_FOUND_OPTION);
+        }
 
         Comment comment = createCommentRequest.toEntity(member, talkPick);
         commentRepository.save(comment);
@@ -77,23 +81,6 @@ public class CommentService {
 
         Page<Comment> comments = commentRepository.findAllByTalkPickId(talkPickId, pageable);
         return comments.map(comment -> CommentDto.CommentResponse.fromEntity(comment, false));
-
-        /*return comments.map(comment -> {
-            Optional<Vote> voteForComment = voteRepository.findByMemberIdAndBalanceOption_PostId(
-                    comment.getMember().getId(), talkPickId);
-
-            Long balanceOptionId = voteForComment.map(Vote::getBalanceOption).map(BalanceOption::getId)
-                    .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_BALANCE_OPTION));
-
-            if (token == null) {
-                return CommentResponse.fromEntity(comment, balanceOptionId, false);
-            } else {
-                Member member = getCurrentMember(memberRepository);
-                return CommentResponse.fromEntity(comment, balanceOptionId, member.hasLikedComment(comment));
-            }
-        });
-
-         */
     }
 
     @Transactional(readOnly = true)
@@ -146,114 +133,33 @@ public class CommentService {
 
         return new PageImpl<>(result.subList(start, end), pageable, result.size());
     }
+    
+    public void updateComment(Long commentId, Long talkPickId, String content) {
+        Comment comment = validateCommentByMemberAndTalkPick(commentId, talkPickId);
 
-    /*
-    @Transactional(readOnly = true)
-    public Page<MyPageResponse> findAllByCurrentMember(Pageable pageable) {
-        Member currentMember = getCurrentMember(memberRepository);
-
-        return commentRepository.findAllByMemberEmail(currentMember.getEmail(), pageable)
-                .map(MyPageResponse::fromEntity);
+        comment.updateContent(content);
     }
 
-     */
+    public void deleteComment(Long commentId, Long talkPickId) {
+        validateCommentByMemberAndTalkPick(commentId, talkPickId);
 
-    public Comment updateComment(Long commentId, Long talkPickId, String content) {
+        commentRepository.deleteById(commentId);
+    }
+
+    private Comment validateCommentByMemberAndTalkPick(Long commentId, Long talkPickId) {
+        Member member = getCurrentMember(memberRepository);
         Comment comment = validateCommentId(commentId);
-        validateTalkPickId(talkPickId); // TODO: talkPickId를 굳이 클라이언트로 받아야하는가?
+        validateTalkPickId(talkPickId);
 
-        if (!getCurrentMember(memberRepository).equals(comment.getMember())) {
+        if (!member.equals(comment.getMember())) {
             throw new BalanceTalkException(FORBIDDEN_COMMENT_MODIFY);
         }
 
         if (!comment.getTalkPick().getId().equals(talkPickId)) {
             throw new BalanceTalkException(NOT_FOUND_COMMENT_AT_THAT_POST);
         }
-
-        comment.updateContent(content);
         return comment;
     }
-
-    public void deleteComment(Long commentId, Long talkPickId) {
-        Comment comment = validateCommentId(commentId);
-        Member commentMember = commentRepository.findById(commentId).get().getMember();
-        validateTalkPickId(talkPickId);
-
-        if (!getCurrentMember(memberRepository).equals(commentMember)) {
-            throw new BalanceTalkException(FORBIDDEN_COMMENT_DELETE);
-        }
-
-        if (!comment.getTalkPick().getId().equals(talkPickId)) {
-            throw new BalanceTalkException(NOT_FOUND_COMMENT_AT_THAT_POST);
-        }
-
-        commentRepository.deleteById(commentId);
-    }
-
-    /*
-    @Transactional
-    public Comment createReply(Long postId, Long commentId, ReplyCreateRequest request) {
-        Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_POST));
-
-        Comment parentComment = commentRepository.findById(commentId)
-                .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_COMMENT));
-
-        Member member = getCurrentMember(memberRepository);
-
-        // 부모 댓글과 연결된 게시글이 맞는지 확인
-        if (!parentComment.getPost().equals(post)) {
-            throw new BalanceTalkException(NOT_FOUND_PARENT_COMMENT);
-        }
-
-        validateDepth(parentComment);
-
-        Comment reply = request.toEntity(member, post, parentComment);
-        return commentRepository.save(reply);
-    }
-
-    public List<ReplyResponse> findAllReplies(Long postId, Long parentId, String token) {
-        validatePostId(postId);
-
-        List<Comment> replies = commentRepository.findAllByPostIdAndParentId(postId, parentId);
-
-        if (token == null) {
-            return replies.stream()
-                    .map(reply -> ReplyResponse.fromEntity(reply, null, false))
-                    .collect(Collectors.toList());
-        } else {
-            Member member = getCurrentMember(memberRepository);
-
-            return replies.stream()
-                    .map(reply -> {
-                        boolean myLike = member.hasLikedComment(reply);
-
-                        Optional<Vote> voteForComment = voteRepository.findByMemberIdAndBalanceOption_PostId(
-                                reply.getMember().getId(), postId);
-
-                        Long balanceOptionId = voteForComment.map(Vote::getBalanceOption).map(BalanceOption::getId)
-                                .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_BALANCE_OPTION));
-
-                        return ReplyResponse.fromEntity(reply, balanceOptionId, myLike);
-                    })
-                    .collect(Collectors.toList());
-        }
-    }
-
-    private TalkPick validateTalkPickId(Long talkPickId) {
-        return talkPickRepository.findById(talkPickId)
-                .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_POST));
-    }
-
-    /*
-    private BalanceOption validateBalanceOptionId(CommentRequest request, Post post) {
-        return post.getOptions().stream()
-                // .filter(option -> option.getId().equals(request.getSelectedOptionId())) // TODO : 스웨거 변경 중 호환 안됨. 수정 필요
-                .findFirst()
-                .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_BALANCE_OPTION));
-    }
-
-     */
 
     private TalkPick validateTalkPickId(Long talkPickId) {
         return talkPickRepository.findById(talkPickId)
@@ -280,82 +186,4 @@ public class CommentService {
         }
         return depth;
     }
-
-    /*
-    public Long likeComment(Long postId, Long commentId) {
-        Comment comment = commentRepository.findById(commentId)
-                .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_COMMENT));
-        Member member = getCurrentMember(memberRepository);
-
-        if (commentLikeRepository.existsByMemberAndComment(member, comment)) {
-            throw new BalanceTalkException(ErrorCode.ALREADY_LIKE_COMMENT);
-        }
-
-        CommentLike commentLike = CommentLike.builder()
-                .comment(comment)
-                .member(member)
-                .build();
-        commentLikeRepository.save(commentLike);
-
-        return comment.getId();
-    }
-
-    public void cancelLikeComment(Long commentId) {
-        Comment comment = commentRepository.findById(commentId)
-                .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_COMMENT));
-        Member member = getCurrentMember(memberRepository);
-
-        commentLikeRepository.deleteByMemberAndComment(member, comment);
-    }
-
-    @Transactional(readOnly = true)
-    public List<CommentResponse> findBestComments(Long postId, String token) {
-        Post post = validatePostId(postId);
-        List<BalanceOption> options = post.getOptions();
-
-        List<CommentResponse> responses = new ArrayList<>();
-        for (BalanceOption option : options) {
-            List<Long> memberIdsBySelectedOptionId =
-                    memberRepository.findMemberIdsBySelectedOptionId(option.getId());
-
-            List<Comment> bestComments = commentRepository.findBestCommentsByPostId(postId,
-                    memberIdsBySelectedOptionId, MIN_COUNT_FOR_BEST_COMMENT, PageRequest.of(0, BEST_COMMENTS_SIZE));
-
-            if (token == null) {
-                responses.addAll(bestComments.stream()
-                        .map(comment -> CommentResponse.fromEntity(comment, option.getId(), false)).toList());
-            } else {
-                Member member = getCurrentMember(memberRepository);
-                responses.addAll(bestComments.stream()
-                        .map(comment ->
-                                CommentResponse.fromEntity(comment, option.getId(), member.hasLikedComment(comment)))
-                        .toList());
-            }
-        }
-        return responses;
-    }
-
-    public void reportComment(Long postId, Long commentId, ReportRequest reportRequest) {
-        Comment comment = validateCommentId(commentId);
-        Member member = getCurrentMember(memberRepository);
-        if (reportRepository.existsByReporterAndComment(member, comment)) {
-
-            throw new BalanceTalkException(ALREADY_REPORTED_COMMENT);
-        }
-        if (comment.getMember().equals(member)) {
-            throw new BalanceTalkException(FORBIDDEN_COMMENT_REPORT);
-        }
-        if (!comment.getPost().getId().equals(postId)) {
-            throw new BalanceTalkException(NOT_FOUND_COMMENT_AT_THAT_POST);
-        }
-        Report report = Report.builder()
-                .content(reportRequest.getDescription())
-                .reporter(member)
-                .comment(comment)
-                .category(reportRequest.getCategory())
-                .build();
-        reportRepository.save(report);
-    }
-
-     */
 }
