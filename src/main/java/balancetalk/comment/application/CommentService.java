@@ -58,9 +58,6 @@ public class CommentService {
         TalkPick talkPick = validateTalkPickId(talkPickId);
         Comment parentComment = validateCommentId(commentId);
 
-        // 부모 댓글 존재 여부 예외 처리
-        validateCommentId(parentComment.getId());
-
         // 부모 댓글과 연결된 게시글이 아닌 경우 예외 처리
         if (!parentComment.getTalkPick().equals(talkPick)) {
             throw new BalanceTalkException(NOT_FOUND_PARENT_COMMENT_AT_THAT_TALK_PICK);
