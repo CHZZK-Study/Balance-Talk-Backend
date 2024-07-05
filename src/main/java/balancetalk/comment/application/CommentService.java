@@ -238,7 +238,7 @@ public class CommentService {
 
     private TalkPick validateTalkPickId(Long talkPickId) {
         return talkPickRepository.findById(talkPickId)
-                .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_POST)); // TODO : 에러메시지 수정 필요
+                .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_TALK_PICK)); // TODO : 에러메시지 수정 필요
     }
 
     private Comment validateCommentId(Long commentId) {
