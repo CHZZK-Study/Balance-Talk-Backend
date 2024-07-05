@@ -29,6 +29,7 @@ public class CommentLikeService {
 
     private final TalkPickRepository talkPickRepository;
 
+    @Transactional
     public void likeComment(Long commentId, Long talkPickId) {
         // 톡픽, 댓글, 회원 존재 여부 예외 처리
         validateTalkPick(talkPickId);
@@ -46,6 +47,7 @@ public class CommentLikeService {
         likeRepository.save(commentLike);
     }
 
+    @Transactional
     public void unLikeComment(Long commentId, Long talkPickId) {
         validateTalkPick(talkPickId);
         validateComment(commentId);
@@ -54,6 +56,10 @@ public class CommentLikeService {
         // 좋아요를 누르지 않은 댓글에 좋아요 취소를 누를 경우 예외 처리
         Like commentLike = likeRepository.findByCommentIdAndMemberId(commentId, member.getId())
                 .orElseThrow(() -> new BalanceTalkException(NOT_LIKED_COMMENT));
+
+        if (!commentLike.getActive()) {
+            throw new BalanceTalkException(NOT_LIKED_COMMENT);
+        }
 
         commentLike.deActive();
     }
