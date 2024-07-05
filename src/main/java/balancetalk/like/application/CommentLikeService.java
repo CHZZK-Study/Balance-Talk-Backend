@@ -8,13 +8,10 @@ import balancetalk.like.domain.LikeRepository;
 import balancetalk.like.dto.LikeDto;
 import balancetalk.member.domain.Member;
 import balancetalk.member.domain.MemberRepository;
-import balancetalk.talkpick.domain.TalkPick;
 import balancetalk.talkpick.domain.TalkPickRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Optional;
 
 import static balancetalk.global.exception.ErrorCode.*;
 import static balancetalk.global.utils.SecurityUtils.getCurrentMember;
@@ -32,7 +29,7 @@ public class CommentLikeService {
 
     private final TalkPickRepository talkPickRepository;
 
-    public LikeDto.LikeResponse likeComment(Long commentId, Long talkPickId) {
+    public void likeComment(Long commentId, Long talkPickId) {
         // 톡픽, 댓글, 회원 존재 여부 예외 처리
         validateTalkPick(talkPickId);
         Comment comment = validateComment(commentId);
@@ -47,8 +44,6 @@ public class CommentLikeService {
 
         Like commentLike = LikeDto.CreateLikeRequest.toEntity(comment, member);
         likeRepository.save(commentLike);
-
-        return LikeDto.LikeResponse.fromEntity(commentLike); // TODO : 제거
     }
 
     public void unLikeComment(Long commentId, Long talkPickId) {
@@ -68,8 +63,8 @@ public class CommentLikeService {
                 .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_COMMENT));
     }
 
-    private TalkPick validateTalkPick(Long talkPickId) {
-        return talkPickRepository.findById(talkPickId)
+    private void validateTalkPick(Long talkPickId) {
+        talkPickRepository.findById(talkPickId)
                 .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_TALK_PICK));
     }
 }
