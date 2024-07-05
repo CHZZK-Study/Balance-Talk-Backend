@@ -8,7 +8,7 @@ import balancetalk.like.domain.LikeRepository;
 import balancetalk.like.dto.LikeDto;
 import balancetalk.member.domain.Member;
 import balancetalk.member.domain.MemberRepository;
-import balancetalk.talkpick.domain.TalkPickRepository;
+import balancetalk.talkpick.domain.repository.TalkPickRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
