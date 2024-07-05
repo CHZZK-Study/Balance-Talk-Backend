@@ -41,13 +41,13 @@ public class LikeDto {
         @Builder
         @AllArgsConstructor
         @JsonInclude
-        @Schema(description = "좋아요 조회 응답")
+        @Schema(description = "좋아요 조회 응답 (현재 미사용)")
         public static class LikeResponse {
 
             @Schema(description = "좋아요 id", example = "1")
             private Long id;
 
-            @Schema(description = "좋아요 타입", example = "TALK_PICK")
+            @Schema(description = "좋아요 타입", example = "COMMENT")
             private LikeType likeType;
 
             @Schema(description = "좋아요한 멤버 id", example = "1")
