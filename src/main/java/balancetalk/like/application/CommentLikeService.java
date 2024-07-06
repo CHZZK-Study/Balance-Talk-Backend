@@ -73,11 +73,6 @@ public class CommentLikeService {
         commentLike.deActive();
     }
 
-    private Comment validateComment(Long commentId) {
-        return commentRepository.findById(commentId)
-                .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_COMMENT));
-    }
-
     private void validateTalkPick(Long talkPickId) {
         talkPickRepository.findById(talkPickId)
                 .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_TALK_PICK));
