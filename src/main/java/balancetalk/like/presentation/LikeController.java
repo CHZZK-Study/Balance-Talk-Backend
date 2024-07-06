@@ -14,13 +14,13 @@ public class LikeController {
 
     private final CommentLikeService commentLikeService;
 
-    @PostMapping("/{talkPickId}/{commentId}/likes")
+    @PostMapping("/{talkPickId}/comments/{commentId}/likes")
     @Operation(summary = "댓글 좋아요", description = "commentId에 해당하는 댓글에 좋아요를 활성화합니다.")
     public void likeComment(@PathVariable Long commentId, @PathVariable Long talkPickId) {
         commentLikeService.likeComment(commentId, talkPickId);
     }
 
-    @DeleteMapping("/{talkPickId}/{commentId}/likes")
+    @DeleteMapping("/{talkPickId}/comments/{commentId}/likes")
     @Operation(summary = "댓글 좋아요 취소", description = "commentId에 해당하는 댓글의 좋아요를 취소합니다.")
     public void unlikeComment(@PathVariable Long commentId, @PathVariable Long talkPickId) {
         commentLikeService.unLikeComment(commentId, talkPickId);
