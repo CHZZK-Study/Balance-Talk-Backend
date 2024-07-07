@@ -1,5 +1,6 @@
-package balancetalk.global.config;
+package balancetalk.member.application;
 
+import balancetalk.member.domain.CustomUserDetails;
 import balancetalk.global.exception.BalanceTalkException;
 import balancetalk.global.exception.ErrorCode;
 import balancetalk.member.domain.Member;

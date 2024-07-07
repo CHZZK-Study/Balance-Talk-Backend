@@ -1,6 +1,5 @@
-package balancetalk.global.config;
+package balancetalk.member.domain;
 
-import balancetalk.member.domain.Member;
 import java.util.ArrayList;
 import org.springframework.security.core.GrantedAuthority;
 import java.util.Collection;
@@ -20,8 +19,7 @@ public class CustomUserDetails implements UserDetails {
         collection.add(new GrantedAuthority() {
             @Override
             public String getAuthority() {
-                String role = String.valueOf(member.getRole());
-                return role;
+                return String.valueOf(member.getRole());
             }
         });
         return collection;
