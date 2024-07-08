@@ -1,16 +1,12 @@
 package balancetalk.file.application;
 
+import balancetalk.file.domain.File;
+import balancetalk.file.domain.FileFormat;
+import balancetalk.file.domain.FileRepository;
 import balancetalk.file.domain.FileType;
+import balancetalk.file.dto.FileResponse;
 import balancetalk.global.exception.BalanceTalkException;
 import balancetalk.global.exception.ErrorCode;
-import balancetalk.file.domain.File;
-import balancetalk.file.domain.FileRepository;
-import balancetalk.file.domain.FileFormat;
-import balancetalk.file.dto.FileResponse;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Arrays;
-import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -21,12 +17,19 @@ import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.GetUrlRequest;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Arrays;
+import java.util.UUID;
+
+import static balancetalk.file.domain.FileType.TALK_PICK;
+
 @Service
 @RequiredArgsConstructor
 public class FileService {
 
-    private static final String S3_URL = "https://balance-talk-static-files.s3.ap-northeast-2.amazonaws.com/";
-    private static final String UPLOAD_DIR = "balance-talk-images/balance-option/";
+    private static final String S3_URL = "https://pikko-image.s3.ap-northeast-2.amazonaws.com/";
+    private static final String UPLOAD_DIR = "talk-pick/";
 
     private final S3Client s3Client;
     private final FileRepository fileRepository;
@@ -44,8 +47,8 @@ public class FileService {
         try (InputStream inputStream = multipartFile.getInputStream()) {
             putObjectToS3(UPLOAD_DIR + storedName, inputStream, contentLength);
             File file = fileRepository.save(
-                    createFile(originalName, storedName, S3_URL + UPLOAD_DIR, null, FileFormat, contentLength));
-                    // TODO: 파일 업로드 로직 수정
+                    createFile(originalName, storedName, S3_URL + UPLOAD_DIR, TALK_PICK, FileFormat, contentLength));
+            // TODO: 파일 업로드 로직 수정
 
             return FileResponse.fromEntity(file);
         } catch (IOException e) {

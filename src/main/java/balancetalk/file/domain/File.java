@@ -17,7 +17,7 @@ import lombok.*;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class File {
-    
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
@@ -50,11 +50,9 @@ public class File {
     @Size(max = 255)
     private String path;
 
-    @NotBlank
     @Enumerated(value = EnumType.STRING)
     private FileType fileType;
 
-    @NotBlank
     @Enumerated(value = EnumType.STRING)
     private FileFormat fileFormat;
 
