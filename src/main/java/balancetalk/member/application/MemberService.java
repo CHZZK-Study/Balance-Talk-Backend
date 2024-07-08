@@ -12,6 +12,7 @@ import balancetalk.member.domain.MemberRepository;
 import balancetalk.member.dto.MemberDto.JoinRequest;
 import balancetalk.member.dto.MemberDto.LoginRequest;
 import balancetalk.member.dto.MemberDto.MemberResponse;
+import balancetalk.member.dto.MemberDto.TokenDto;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -57,7 +58,6 @@ public class MemberService {
         return memberRepository.save(member).getId();
     }
 
-
     public String login(final LoginRequest loginRequest, HttpServletResponse response) {
         Member member = memberRepository.findByEmail(loginRequest.getEmail())
                 .orElseThrow(() -> new BalanceTalkException(ErrorCode.MISMATCHED_EMAIL_OR_PASSWORD));
@@ -88,31 +88,36 @@ public class MemberService {
                 .collect(Collectors.toList());
     }
 
-    public void updateNickname(final String newNickname, HttpServletRequest request) {
-        Member member = extractMember(request);
+    public void updateNickname(final String newNickname, TokenDto tokenDto) {
+        Member member = memberRepository.findByEmail(tokenDto.getEmail())
+                .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_MEMBER));
+
         if (member.getNickname().equals(newNickname)) {
             throw new BalanceTalkException(ErrorCode.SAME_NICKNAME);
         }
         member.updateNickname(newNickname);
     }
 
-    public void updatePassword(final String newPassword, HttpServletRequest request) {
-        Member member = extractMember(request);
+    public void updatePassword(final String newPassword, TokenDto tokenDto) {
+        Member member = memberRepository.findByEmail(tokenDto.getEmail())
+                .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_MEMBER));
         if (passwordEncoder.matches(newPassword, member.getPassword())) {
             throw new BalanceTalkException(ErrorCode.SAME_PASSWORD);
         }
         member.updatePassword(passwordEncoder.encode(newPassword));
     }
 
-    public void updateImage(String storedFileName, HttpServletRequest request) {
-        Member member = extractMember(request);
+    public void updateImage(String storedFileName, TokenDto tokenDto) {
+        Member member = memberRepository.findByEmail(tokenDto.getEmail())
+                .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_MEMBER));
         File file = fileRepository.findByStoredName(storedFileName)
                 .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_FILE));
         member.updateImage(file);
     }
 
-    public void delete(final LoginRequest loginRequest, HttpServletRequest request) {
-        Member member = extractMember(request);
+    public void delete(final LoginRequest loginRequest, TokenDto tokenDto) {
+        Member member = memberRepository.findByEmail(tokenDto.getEmail())
+                .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_MEMBER));
         if (!member.getEmail().equals(loginRequest.getEmail())) {
             throw new BalanceTalkException(ErrorCode.FORBIDDEN_MEMBER_DELETE);
         }
@@ -150,14 +155,6 @@ public class MemberService {
         }
         return null;
     }
-
-    private Member extractMember(HttpServletRequest request) {
-        String token = jwtTokenProvider.resolveToken(request);
-        String email = jwtTokenProvider.getPayload(token);
-        return memberRepository.findByEmail(email)
-                .orElseThrow(() -> new BalanceTalkException(ErrorCode.NOT_FOUND_MEMBER));
-    }
-
     private Long extractMemberId(String refreshToken) {
         Authentication authentication = jwtTokenProvider.getAuthentication(refreshToken);
         String name = authentication.getName();
