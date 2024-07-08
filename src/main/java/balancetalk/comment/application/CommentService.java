@@ -4,6 +4,7 @@ import balancetalk.comment.domain.Comment;
 import balancetalk.comment.domain.CommentRepository;
 import balancetalk.comment.dto.CommentDto;
 import balancetalk.global.exception.BalanceTalkException;
+import balancetalk.global.exception.ErrorCode;
 import balancetalk.member.domain.Member;
 import balancetalk.member.domain.MemberRepository;
 import balancetalk.talkpick.domain.TalkPick;
@@ -122,50 +123,42 @@ public class CommentService {
         List<CommentDto.CommentResponse> result = new ArrayList<>();
         result.addAll(bestComments);
         result.addAll(otherComments);
+
         int start = (int) pageable.getOffset();
         int end = Math.min((start + pageable.getPageSize()), result.size());
 
         return new PageImpl<>(result.subList(start, end), pageable, result.size());
     }
 
-    public Comment updateComment(Long commentId, Long talkPickId, String content) {
-        Comment comment = validateCommentId(commentId);
-        validateTalkPickId(talkPickId); // TODO: talkPickId를 굳이 클라이언트로 받아야하는가?
+    public void updateComment(Long commentId, Long talkPickId, String content) {
+        Comment comment = validateCommentByMemberAndTalkPick(commentId, talkPickId, FORBIDDEN_COMMENT_MODIFY);
+        comment.updateContent(content);
+    }
 
-        if (!getCurrentMember(memberRepository).equals(comment.getMember())) {
-            throw new BalanceTalkException(FORBIDDEN_COMMENT_MODIFY);
+    public void deleteComment(Long commentId, Long talkPickId) {
+        validateCommentByMemberAndTalkPick(commentId, talkPickId, FORBIDDEN_COMMENT_DELETE);
+        commentRepository.deleteById(commentId);
+    }
+
+    private Comment validateCommentByMemberAndTalkPick(Long commentId, Long talkPickId, ErrorCode errorCode) {
+        Member member = getCurrentMember(memberRepository);
+        Comment comment = validateCommentId(commentId);
+        validateTalkPickId(talkPickId);
+
+        if (!member.equals(comment.getMember())) {
+            throw new BalanceTalkException(errorCode);
         }
 
         if (!comment.getTalkPick().getId().equals(talkPickId)) {
             throw new BalanceTalkException(NOT_FOUND_COMMENT_AT_THAT_TALK_PICK);
         }
 
-        comment.updateContent(content);
-    }
-
-    public void deleteComment(Long commentId, Long talkPickId) {
-        validateCommentByMemberAndTalkPick(commentId, talkPickId);
-        commentRepository.deleteById(commentId);
-    }
-
-    private Comment validateCommentByMemberAndTalkPick(Long commentId, Long talkPickId) {
-        Member member = getCurrentMember(memberRepository);
-        Comment comment = validateCommentId(commentId);
-        validateTalkPickId(talkPickId);
-
-        if (!member.equals(comment.getMember())) {
-            throw new BalanceTalkException(FORBIDDEN_COMMENT_MODIFY);
-        }
-
-        if (!comment.getTalkPick().getId().equals(talkPickId)) {
-            throw new BalanceTalkException(NOT_FOUND_COMMENT_AT_THAT_POST);
-        }
         return comment;
     }
 
     private TalkPick validateTalkPickId(Long talkPickId) {
         return talkPickRepository.findById(talkPickId)
-                .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_TALK_PICK)); // TODO : 에러메시지 수정 필요
+                .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_TALK_PICK));
     }
 
     private Comment validateCommentId(Long commentId) {
