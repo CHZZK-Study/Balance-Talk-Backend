@@ -56,7 +56,7 @@ public enum ErrorCode {
     FORBIDDEN_LIKE_OWN_COMMENT(FORBIDDEN, "본인 댓글에는 좋아요를 누를 수 없습니다."),
 
     // 404
-    NOT_FOUND_TALK_PICK(NOT_FOUND, "존재하지 않는 게시글입니다."),
+    NOT_FOUND_TALK_PICK(NOT_FOUND, "존재하지 않는 톡픽입니다."),
     NOT_FOUND_VOTE_OPTION(NOT_FOUND, "존재하지 않는 선택지입니다."),
     NOT_FOUND_MEMBER(NOT_FOUND, "존재하지 않는 회원입니다."),
     NOT_FOUND_VOTE(NOT_FOUND, "해당 게시글에서 투표한 기록이 존재하지 않습니다."),
