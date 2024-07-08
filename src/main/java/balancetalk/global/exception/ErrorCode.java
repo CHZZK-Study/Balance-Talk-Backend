@@ -27,6 +27,7 @@ public enum ErrorCode {
     AUTHORIZATION_CODE_MISMATCH(BAD_REQUEST, "인증 번호가 일치하지 않습니다."),
     EMPTY_JWT_TOKEN(BAD_REQUEST, "토큰 값이 존재하지 않습니다."),
     NOT_INPUT_PARENT_COMMENT_ID(BAD_REQUEST, "원 댓글 ID가 입력되지 않았습니다."),
+    INVALID_VOTE_OPTION(BAD_REQUEST, "존재하지 않는 선택지입니다."),
 
 
     // 401
@@ -56,7 +57,7 @@ public enum ErrorCode {
 
     // 404
     NOT_FOUND_TALK_PICK(NOT_FOUND, "존재하지 않는 게시글입니다."),
-    NOT_FOUND_BALANCE_OPTION(NOT_FOUND, "존재하지 않는 선택지입니다."),
+    NOT_FOUND_VOTE_OPTION(NOT_FOUND, "존재하지 않는 선택지입니다."),
     NOT_FOUND_MEMBER(NOT_FOUND, "존재하지 않는 회원입니다."),
     NOT_FOUND_VOTE(NOT_FOUND, "해당 게시글에서 투표한 기록이 존재하지 않습니다."),
     NOT_FOUND_BOOKMARK(NOT_FOUND, "해당 게시글에서 북마크한 기록이 존재하지 않습니다."),
