@@ -2,8 +2,7 @@ package balancetalk.member.application;
 
 import balancetalk.file.domain.File;
 import balancetalk.file.domain.FileRepository;
-import balancetalk.global.config.CustomUserDetails;
-import balancetalk.global.config.MyUserDetailService;
+import balancetalk.member.domain.CustomUserDetails;
 import balancetalk.global.exception.BalanceTalkException;
 import balancetalk.global.exception.ErrorCode;
 import balancetalk.global.jwt.JwtTokenProvider;
@@ -79,6 +78,8 @@ public class MemberService {
         String refreshToken = jwtTokenProvider.createRefreshToken(authentication);
         Cookie cookie = jwtTokenProvider.createCookie(refreshToken);
         response.addCookie(cookie);
+
+
         return accessToken;
     }
 
