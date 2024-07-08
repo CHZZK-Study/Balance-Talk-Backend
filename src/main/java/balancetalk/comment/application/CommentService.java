@@ -44,7 +44,7 @@ public class CommentService {
         // option이 VoteOption에 존재하는 값인지 확인 및 예외 처리
         VoteOption option = createCommentRequest.getOption();
         if (option == null || !EnumSet.allOf(VoteOption.class).contains(option)) {
-            throw new BalanceTalkException(NOT_FOUND_OPTION);
+            throw new BalanceTalkException(NOT_FOUND_VOTE_OPTION);
         }
 
         Comment comment = createCommentRequest.toEntity(member, talkPick);
