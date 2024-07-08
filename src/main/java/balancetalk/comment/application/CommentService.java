@@ -167,7 +167,7 @@ public class CommentService {
         }
 
         if (!comment.getTalkPick().getId().equals(talkPickId)) {
-            throw new BalanceTalkException(NOT_FOUND_COMMENT_AT_THAT_POST);
+            throw new BalanceTalkException(NOT_FOUND_COMMENT_AT_THAT_TALK_PICK);
         }
 
         comment.updateContent(content);
@@ -184,7 +184,7 @@ public class CommentService {
         }
 
         if (!comment.getTalkPick().getId().equals(talkPickId)) {
-            throw new BalanceTalkException(NOT_FOUND_COMMENT_AT_THAT_POST);
+            throw new BalanceTalkException(NOT_FOUND_COMMENT_AT_THAT_TALK_PICK);
         }
 
         commentRepository.deleteById(commentId);
