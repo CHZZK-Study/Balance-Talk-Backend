@@ -75,6 +75,15 @@ public class MemberDto {
     }
 
     @Data
+    @AllArgsConstructor
+    @Schema(description = "인증이 필요한 API에서 토큰 유효성 검사를 진행")
+    public static class TokenDto {
+
+        @Schema(description = "회원 이메일", example = "test1234@naver.com")
+        private String email;
+    }
+
+    @Data
     @Builder
     @AllArgsConstructor
     @Schema(description = "회원 조회 응답")
