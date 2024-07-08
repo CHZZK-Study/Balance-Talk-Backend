@@ -116,7 +116,7 @@ public class CommentDto {
                     .likesCount(comment.getLikesCount())
                     .myLike(myLike)
                     .parentId(comment.getParent() == null ? null : comment.getParent().getId())
-                    //.replyCount(comment.getReplies().size()) // TODO : 작업
+                    .replyCount(comment.getReplies() == null ? 0 : comment.getReplies().size())
                     .isBest(comment.getIsBest())
                     .createdAt(comment.getCreatedAt())
                     .lastModifiedAt(comment.getLastModifiedAt())

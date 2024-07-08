@@ -33,8 +33,15 @@ public class CommentLikeService {
     public void likeComment(Long commentId, Long talkPickId) {
         // 톡픽, 댓글, 회원 존재 여부 예외 처리
         validateTalkPick(talkPickId);
-        Comment comment = validateComment(commentId);
         Member member = getCurrentMember(memberRepository);
+
+        // 톡픽에 속한 댓글이 아닐 경우 예외 처리
+        Comment comment = validateCommentByTalkPick(commentId, talkPickId);
+
+        // 본인 댓글에는 좋아요 불가
+        if (comment.getMember().getId().equals(member.getId())) {
+            throw new BalanceTalkException(FORBIDDEN_LIKE_OWN_COMMENT);
+        }
 
         // 이미 좋아요를 누른 댓글일 경우 예외 처리
         boolean alreadyLiked = likeRepository.existsByCommentIdAndMemberId(commentId, member.getId());
@@ -50,11 +57,13 @@ public class CommentLikeService {
     @Transactional
     public void unLikeComment(Long commentId, Long talkPickId) {
         validateTalkPick(talkPickId);
-        validateComment(commentId);
         Member member = getCurrentMember(memberRepository);
 
+        // 톡픽에 속한 댓글이 아닐 경우 예외 처리
+        Comment comment = validateCommentByTalkPick(commentId, talkPickId);
+
         // 좋아요를 누르지 않은 댓글에 좋아요 취소를 누를 경우 예외 처리
-        Like commentLike = likeRepository.findByCommentIdAndMemberId(commentId, member.getId())
+        Like commentLike = likeRepository.findByCommentIdAndMemberId(comment.getId(), member.getId())
                 .orElseThrow(() -> new BalanceTalkException(NOT_LIKED_COMMENT));
 
         if (!commentLike.getActive()) {
@@ -64,13 +73,19 @@ public class CommentLikeService {
         commentLike.deActive();
     }
 
-    private Comment validateComment(Long commentId) {
-        return commentRepository.findById(commentId)
-                .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_COMMENT));
-    }
-
     private void validateTalkPick(Long talkPickId) {
         talkPickRepository.findById(talkPickId)
                 .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_TALK_PICK));
+    }
+
+    private Comment validateCommentByTalkPick(Long commentId, Long talkPickId) {
+        Comment comment = commentRepository.findById(commentId)
+                .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_COMMENT));
+
+        if (!comment.getTalkPick().getId().equals(talkPickId)) {
+            throw new BalanceTalkException(NOT_FOUND_COMMENT_AT_THAT_TALK_PICK);
+        }
+
+        return comment;
     }
 }
