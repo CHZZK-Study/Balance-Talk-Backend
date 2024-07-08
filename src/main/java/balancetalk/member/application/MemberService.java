@@ -17,34 +17,29 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.util.List;
 import java.util.stream.Collectors;
-
 import static balancetalk.global.exception.ErrorCode.*;
 
 @Slf4j
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class MemberService {
 
     private final JwtTokenProvider jwtTokenProvider;
-    private final AuthenticationManager authenticationManager;
     private final MemberRepository memberRepository;
     private final FileRepository fileRepository;
     private final PasswordEncoder passwordEncoder;
     private final RedisService redisService;
     private final MyUserDetailService myUserDetailService;
 
-    @Transactional
     public Long join(final JoinRequest joinRequest) {
         if (memberRepository.existsByEmail(joinRequest.getEmail())) {
             throw new BalanceTalkException(ALREADY_REGISTERED_EMAIL);
@@ -63,7 +58,6 @@ public class MemberService {
     }
 
 
-    @Transactional
     public String login(final LoginRequest loginRequest, HttpServletResponse response) {
         Member member = memberRepository.findByEmail(loginRequest.getEmail())
                 .orElseThrow(() -> new BalanceTalkException(ErrorCode.MISMATCHED_EMAIL_OR_PASSWORD));
@@ -71,15 +65,11 @@ public class MemberService {
             throw new BalanceTalkException(ErrorCode.MISMATCHED_EMAIL_OR_PASSWORD);
         }
 
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword())
-        );
+        Authentication authentication = jwtTokenProvider.getAuthentication(loginRequest.getEmail());
         String accessToken = jwtTokenProvider.createAccessToken(authentication, member.getId());
         String refreshToken = jwtTokenProvider.createRefreshToken(authentication);
         Cookie cookie = jwtTokenProvider.createCookie(refreshToken);
         response.addCookie(cookie);
-
-
         return accessToken;
     }
 
@@ -98,7 +88,6 @@ public class MemberService {
                 .collect(Collectors.toList());
     }
 
-    @Transactional
     public void updateNickname(final String newNickname, HttpServletRequest request) {
         Member member = extractMember(request);
         if (member.getNickname().equals(newNickname)) {
@@ -107,7 +96,6 @@ public class MemberService {
         member.updateNickname(newNickname);
     }
 
-    @Transactional
     public void updatePassword(final String newPassword, HttpServletRequest request) {
         Member member = extractMember(request);
         if (passwordEncoder.matches(newPassword, member.getPassword())) {
@@ -116,7 +104,6 @@ public class MemberService {
         member.updatePassword(passwordEncoder.encode(newPassword));
     }
 
-    @Transactional
     public void updateImage(String storedFileName, HttpServletRequest request) {
         Member member = extractMember(request);
         File file = fileRepository.findByStoredName(storedFileName)
@@ -124,7 +111,6 @@ public class MemberService {
         member.updateImage(file);
     }
 
-    @Transactional
     public void delete(final LoginRequest loginRequest, HttpServletRequest request) {
         Member member = extractMember(request);
         if (!member.getEmail().equals(loginRequest.getEmail())) {
@@ -136,7 +122,6 @@ public class MemberService {
         memberRepository.deleteByEmail(member.getEmail());
     }
 
-    @Transactional
     public void logout() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null) {

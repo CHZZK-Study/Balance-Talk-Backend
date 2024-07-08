@@ -3,6 +3,7 @@ package balancetalk.global.jwt;
 import balancetalk.global.exception.BalanceTalkException;
 import balancetalk.global.exception.ErrorCode;
 import balancetalk.global.redis.application.RedisService;
+import balancetalk.member.application.MyUserDetailService;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.SignatureException;
 import jakarta.servlet.http.Cookie;
@@ -13,7 +14,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
 import java.time.Duration;
 import java.util.Date;
@@ -34,7 +34,7 @@ public class JwtTokenProvider {
     @Value("${spring.jwt.token.refresh-expiration-time}")
     private long refreshExpirationTime;
 
-    private final UserDetailsService userDetailsService;
+    private final MyUserDetailService myUserDetailService;
 
     /**
      * Access 토큰 생성
@@ -87,10 +87,8 @@ public class JwtTokenProvider {
     }
 
     // 토큰으로부터 클레임을 만들고, User 객체를 생성해서 Authentication 객체 반환
-    public Authentication getAuthentication(String token) {
-        String userPrincipal = Jwts.parserBuilder().setSigningKey(secretKey).build().parseClaimsJws(token).getBody().getSubject();
-        UserDetails userDetails = userDetailsService.loadUserByUsername(userPrincipal);
-
+    public Authentication getAuthentication(String email) {
+        UserDetails userDetails = myUserDetailService.loadUserByUsername(email);
         return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
     }
 
