@@ -5,7 +5,6 @@ import balancetalk.file.domain.FileFormat;
 import balancetalk.file.domain.FileRepository;
 import balancetalk.file.domain.FileType;
 import balancetalk.global.exception.BalanceTalkException;
-import balancetalk.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -23,6 +22,7 @@ import java.util.Arrays;
 import java.util.UUID;
 
 import static balancetalk.file.domain.FileType.TALK_PICK;
+import static balancetalk.global.exception.ErrorCode.*;
 
 @Service
 @RequiredArgsConstructor
@@ -39,6 +39,10 @@ public class FileService {
 
     @Transactional
     public String uploadImage(MultipartFile multipartFile) {
+        if (multipartFile.isEmpty()) {
+            throw new BalanceTalkException(NOT_ATTACH_IMAGE);
+        }
+
         // 이미지 고유 이름 생성
         String originalName = multipartFile.getOriginalFilename();
         String storedName = String.format("%s_%s", UUID.randomUUID(), originalName);
@@ -51,7 +55,7 @@ public class FileService {
         try (InputStream inputStream = multipartFile.getInputStream()) {
             putObjectToS3(UPLOAD_DIR + storedName, inputStream, contentLength);
         } catch (IOException e) {
-            throw new BalanceTalkException(ErrorCode.FILE_UPLOAD_FAILED);
+            throw new BalanceTalkException(FILE_UPLOAD_FAILED);
         }
 
         try {
@@ -59,7 +63,7 @@ public class FileService {
                     createFile(originalName, storedName, END_POINT + UPLOAD_DIR, TALK_PICK, FileFormat, contentLength));
         } catch (Exception e) {
             deleteObjectFromS3(UPLOAD_DIR + storedName);
-            throw new BalanceTalkException(ErrorCode.NOT_UPLOADED_IMAGE_FOR_DB_ERROR);
+            throw new BalanceTalkException(NOT_UPLOADED_IMAGE_FOR_DB_ERROR);
         }
 
         return getUrl(UPLOAD_DIR + storedName);
