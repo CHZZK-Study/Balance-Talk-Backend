@@ -28,32 +28,35 @@ import static balancetalk.file.domain.FileType.TALK_PICK;
 @RequiredArgsConstructor
 public class FileService {
 
-    private static final String S3_URL = "https://pikko-image.s3.ap-northeast-2.amazonaws.com/";
+    private static final String END_POINT = "https://pikko-image.s3.ap-northeast-2.amazonaws.com/";
     private static final String UPLOAD_DIR = "talk-pick/";
 
     private final S3Client s3Client;
     private final FileRepository fileRepository;
 
-    @Value("${cloud.aws.s3.bucket}")
+    @Value("${aws.s3.bucket}")
     private String bucket;
 
     @Transactional
     public FileResponse uploadImage(MultipartFile multipartFile) {
+        // 이미지 고유 이름 생성
         String originalName = multipartFile.getOriginalFilename();
         String storedName = String.format("%s_%s", UUID.randomUUID(), originalName);
+
+        // 이미지 파일 메타 데이터 추출
         long contentLength = multipartFile.getSize();
         FileFormat FileFormat = convertMimeTypeToFileFormat(multipartFile.getContentType());
 
+        // S3에 이미지 저장 & DB에 메타 데이터 저장
         try (InputStream inputStream = multipartFile.getInputStream()) {
             putObjectToS3(UPLOAD_DIR + storedName, inputStream, contentLength);
             File file = fileRepository.save(
-                    createFile(originalName, storedName, S3_URL + UPLOAD_DIR, TALK_PICK, FileFormat, contentLength));
-            // TODO: 파일 업로드 로직 수정
-
+                    createFile(originalName, storedName, END_POINT + UPLOAD_DIR, TALK_PICK, FileFormat, contentLength));
             return FileResponse.fromEntity(file);
         } catch (IOException e) {
             throw new BalanceTalkException(ErrorCode.FILE_UPLOAD_FAILED);
         }
+
     }
 
     private FileFormat convertMimeTypeToFileFormat(String mimeType) {
@@ -89,8 +92,7 @@ public class FileService {
                 .build();
     }
 
-    @Transactional(readOnly = true)
-    public String getUrl(String key) {
+    private String getUrl(String key) {
         GetUrlRequest request = GetUrlRequest.builder()
                 .bucket(bucket)
                 .key(key)
