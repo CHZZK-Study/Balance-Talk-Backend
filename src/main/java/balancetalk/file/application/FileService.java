@@ -4,7 +4,6 @@ import balancetalk.file.domain.File;
 import balancetalk.file.domain.FileFormat;
 import balancetalk.file.domain.FileRepository;
 import balancetalk.file.domain.FileType;
-import balancetalk.file.dto.FileResponse;
 import balancetalk.global.exception.BalanceTalkException;
 import balancetalk.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
@@ -38,7 +37,7 @@ public class FileService {
     private String bucket;
 
     @Transactional
-    public FileResponse uploadImage(MultipartFile multipartFile) {
+    public String uploadImage(MultipartFile multipartFile) {
         // 이미지 고유 이름 생성
         String originalName = multipartFile.getOriginalFilename();
         String storedName = String.format("%s_%s", UUID.randomUUID(), originalName);
@@ -50,9 +49,9 @@ public class FileService {
         // S3에 이미지 저장 & DB에 메타 데이터 저장
         try (InputStream inputStream = multipartFile.getInputStream()) {
             putObjectToS3(UPLOAD_DIR + storedName, inputStream, contentLength);
-            File file = fileRepository.save(
+            fileRepository.save(
                     createFile(originalName, storedName, END_POINT + UPLOAD_DIR, TALK_PICK, FileFormat, contentLength));
-            return FileResponse.fromEntity(file);
+            return getUrl(UPLOAD_DIR + storedName);
         } catch (IOException e) {
             throw new BalanceTalkException(ErrorCode.FILE_UPLOAD_FAILED);
         }
