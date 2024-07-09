@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
 import software.amazon.awssdk.services.s3.model.GetUrlRequest;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
@@ -49,13 +50,19 @@ public class FileService {
         // S3에 이미지 저장 & DB에 메타 데이터 저장
         try (InputStream inputStream = multipartFile.getInputStream()) {
             putObjectToS3(UPLOAD_DIR + storedName, inputStream, contentLength);
-            fileRepository.save(
-                    createFile(originalName, storedName, END_POINT + UPLOAD_DIR, TALK_PICK, FileFormat, contentLength));
-            return getUrl(UPLOAD_DIR + storedName);
         } catch (IOException e) {
             throw new BalanceTalkException(ErrorCode.FILE_UPLOAD_FAILED);
         }
 
+        try {
+            fileRepository.save(
+                    createFile(originalName, storedName, END_POINT + UPLOAD_DIR, TALK_PICK, FileFormat, contentLength));
+        } catch (Exception e) {
+            deleteObjectFromS3(UPLOAD_DIR + storedName);
+            throw new BalanceTalkException(ErrorCode.NOT_UPLOADED_IMAGE_FOR_DB_ERROR);
+        }
+
+        return getUrl(UPLOAD_DIR + storedName);
     }
 
     private FileFormat convertMimeTypeToFileFormat(String mimeType) {
@@ -89,6 +96,14 @@ public class FileService {
                 .fileFormat(FileFormat)
                 .size(contentLength)
                 .build();
+    }
+
+    private void deleteObjectFromS3(String key) {
+        DeleteObjectRequest request = DeleteObjectRequest.builder()
+                .bucket(bucket)
+                .key(key)
+                .build();
+        s3Client.deleteObject(request);
     }
 
     private String getUrl(String key) {
