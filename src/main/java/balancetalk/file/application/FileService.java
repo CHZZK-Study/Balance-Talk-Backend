@@ -51,13 +51,14 @@ public class FileService {
         long contentLength = multipartFile.getSize();
         FileFormat FileFormat = convertMimeTypeToFileFormat(multipartFile.getContentType());
 
-        // S3에 이미지 저장 & DB에 메타 데이터 저장
+        // S3에 이미지 파일 업로드
         try (InputStream inputStream = multipartFile.getInputStream()) {
             putObjectToS3(UPLOAD_DIR + storedName, inputStream, contentLength);
         } catch (IOException e) {
             throw new BalanceTalkException(FILE_UPLOAD_FAILED);
         }
 
+        // DB에 메타 데이터 저장
         try {
             fileRepository.save(
                     createFile(originalName, storedName, END_POINT + UPLOAD_DIR, TALK_PICK, FileFormat, contentLength));
@@ -66,6 +67,7 @@ public class FileService {
             throw new BalanceTalkException(NOT_UPLOADED_IMAGE_FOR_DB_ERROR);
         }
 
+        // 이미지 URL 반환
         return getUrl(UPLOAD_DIR + storedName);
     }
 
