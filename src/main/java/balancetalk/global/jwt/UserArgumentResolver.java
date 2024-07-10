@@ -1,10 +1,11 @@
 package balancetalk.global.jwt;
 
+import balancetalk.global.exception.BalanceTalkException;
+import balancetalk.global.exception.ErrorCode;
 import balancetalk.global.utils.AuthPrincipal;
 import balancetalk.member.dto.MemberDto.TokenDto;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
-import org.apache.coyote.BadRequestException;
 import org.springframework.core.MethodParameter;
 import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
@@ -28,7 +29,7 @@ public class UserArgumentResolver implements HandlerMethodArgumentResolver {
         HttpServletRequest httpServletRequest = (HttpServletRequest) webRequest.getNativeRequest();
 
         if (httpServletRequest == null) {
-            throw new BadRequestException();
+            throw new BalanceTalkException(ErrorCode.INVALID_HANDLER_RESOLVER);
         }
 
         String token = jwtTokenProvider.resolveToken(httpServletRequest);
