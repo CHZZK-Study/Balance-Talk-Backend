@@ -4,6 +4,7 @@ import balancetalk.global.exception.BalanceTalkException;
 import balancetalk.global.exception.ErrorCode;
 import balancetalk.global.redis.application.RedisService;
 import balancetalk.member.application.MyUserDetailService;
+import balancetalk.member.domain.CustomUserDetails;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.SignatureException;
 import jakarta.servlet.http.Cookie;
@@ -86,9 +87,14 @@ public class JwtTokenProvider {
         return cookie;
     }
 
-    // 토큰으로부터 클레임을 만들고, User 객체를 생성해서 Authentication 객체 반환
-    public Authentication getAuthentication(String email) {
+    public Authentication getAuthenticationByEmail(String email) {
         UserDetails userDetails = myUserDetailService.loadUserByUsername(email);
+        return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
+    }
+
+    public Authentication getAuthenticationByToken(String token) {
+        String userPrincipal = Jwts.parserBuilder().setSigningKey(secretKey).build().parseClaimsJws(token).getBody().getSubject();
+        UserDetails userDetails = myUserDetailService.loadUserByUsername(userPrincipal);
         return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
     }
 
@@ -127,7 +133,7 @@ public class JwtTokenProvider {
 
     public String reissueAccessToken(String refreshToken, Long memberId) {
         validateToken(refreshToken);
-        Authentication authentication = getAuthentication(refreshToken);
+        Authentication authentication = getAuthenticationByToken(refreshToken);
         // redis에 저장된 RefreshToken 값을 가져옴
         String redisRefreshToken = redisService.getValues(authentication.getName());
         if (redisRefreshToken == null) {
@@ -138,5 +144,16 @@ public class JwtTokenProvider {
             throw new BalanceTalkException(ErrorCode.INVALID_REFRESH_TOKEN);
         }
         return createAccessToken(authentication, memberId);
+    }
+
+    public Long extractMemberId(String refreshToken) {
+        Authentication authentication = getAuthenticationByToken(refreshToken);
+        String name = authentication.getName();
+        UserDetails userDetails = myUserDetailService.loadUserByUsername(name);
+        if (userDetails instanceof CustomUserDetails) {
+            CustomUserDetails customUserDetails = (CustomUserDetails) userDetails;
+            return customUserDetails.getMemberId();
+        }
+        return null;
     }
 }

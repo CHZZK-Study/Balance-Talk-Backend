@@ -2,7 +2,6 @@ package balancetalk.member.application;
 
 import balancetalk.file.domain.File;
 import balancetalk.file.domain.FileRepository;
-import balancetalk.member.domain.CustomUserDetails;
 import balancetalk.global.exception.BalanceTalkException;
 import balancetalk.global.exception.ErrorCode;
 import balancetalk.global.jwt.JwtTokenProvider;
@@ -20,7 +19,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -65,7 +63,7 @@ public class MemberService {
             throw new BalanceTalkException(ErrorCode.MISMATCHED_EMAIL_OR_PASSWORD);
         }
 
-        Authentication authentication = jwtTokenProvider.getAuthentication(loginRequest.getEmail());
+        Authentication authentication = jwtTokenProvider.getAuthenticationByEmail(loginRequest.getEmail());
         String accessToken = jwtTokenProvider.createAccessToken(authentication, member.getId());
         String refreshToken = jwtTokenProvider.createRefreshToken(authentication);
         Cookie cookie = jwtTokenProvider.createCookie(refreshToken);
@@ -148,20 +146,10 @@ public class MemberService {
             String name = cookie.getName();
             if (name.equals("refreshToken")) {
                 String refreshToken = cookie.getValue();
-                Long memberId = extractMemberId(refreshToken);
+                Long memberId = jwtTokenProvider.extractMemberId(refreshToken);
                 jwtTokenProvider.validateToken(refreshToken);
                 return jwtTokenProvider.reissueAccessToken(refreshToken, memberId);
             }
-        }
-        return null;
-    }
-    private Long extractMemberId(String refreshToken) {
-        Authentication authentication = jwtTokenProvider.getAuthentication(refreshToken);
-        String name = authentication.getName();
-        UserDetails userDetails = myUserDetailService.loadUserByUsername(name);
-        if (userDetails instanceof CustomUserDetails) {
-            CustomUserDetails customUserDetails = (CustomUserDetails) userDetails;
-            return customUserDetails.getMemberId();
         }
         return null;
     }
