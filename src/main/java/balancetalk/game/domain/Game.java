@@ -42,6 +42,10 @@ public class Game extends BaseTimeEntity {
     @Size(max = 50)
     private String optionB;
 
+    private String optionAImg;
+
+    private String optionBImg;
+
     @OneToMany(mappedBy = "game")
     private List<Vote> votes = new ArrayList<>();
 }
