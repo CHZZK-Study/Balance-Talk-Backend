@@ -54,13 +54,6 @@ public class Member extends BaseTimeEntity implements UserDetails {
     @OneToMany(mappedBy = "member")
     private List<Like> talkPickLikes = new ArrayList<>();
 
-    @OneToMany(mappedBy = "member")
-    private List<File> files = new ArrayList<>();
-
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name = "file_id")
-    private File profilePhoto;
-
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return null;
@@ -97,9 +90,5 @@ public class Member extends BaseTimeEntity implements UserDetails {
 
     public void updatePassword(String password) {
         this.password = password;
-    }
-
-    public void updateImage(File profilePhoto) {
-        this.profilePhoto = profilePhoto;
     }
 }

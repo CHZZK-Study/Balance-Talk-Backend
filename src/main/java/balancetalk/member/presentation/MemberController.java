@@ -75,12 +75,12 @@ public class MemberController {
         memberService.updatePassword(newPassword, request);
     }
 
-    @ResponseStatus(HttpStatus.OK)
-    @PutMapping(value = "/image", consumes = "text/plain")
-    @Operation(summary = "회원 이미지 변경", description = "회원 프로필 이미지를 변경한다.")
-    public void updateImage(@RequestBody String storedFileName, HttpServletRequest request) {
-        memberService.updateImage(storedFileName, request);
-    }
+//    @ResponseStatus(HttpStatus.OK)
+//    @PutMapping(value = "/image", consumes = "text/plain")
+//    @Operation(summary = "회원 이미지 변경", description = "회원 프로필 이미지를 변경한다.")
+//    public void updateImage(@RequestBody String storedFileName, HttpServletRequest request) {
+//        memberService.updateImage(storedFileName, request);
+//    }
 
     @ResponseStatus(HttpStatus.OK)
     @DeleteMapping

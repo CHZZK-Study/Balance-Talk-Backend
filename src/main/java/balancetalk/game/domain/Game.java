@@ -1,6 +1,5 @@
 package balancetalk.game.domain;
 
-import balancetalk.file.domain.File;
 import balancetalk.global.common.BaseTimeEntity;
 import balancetalk.member.domain.Member;
 import balancetalk.vote.domain.Vote;
@@ -42,9 +41,6 @@ public class Game extends BaseTimeEntity {
     @NotBlank
     @Size(max = 50)
     private String optionB;
-
-    @OneToMany(mappedBy = "game", cascade = CascadeType.ALL) // TODO: Game에 파일이 몇개 들어가는지..?
-    private List<File> files = new ArrayList<>();
 
     @OneToMany(mappedBy = "game")
     private List<Vote> votes = new ArrayList<>();

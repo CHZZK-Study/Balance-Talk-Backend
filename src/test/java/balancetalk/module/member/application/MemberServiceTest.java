@@ -104,7 +104,6 @@ class MemberServiceTest {
                 .email(joinRequest.getEmail())
                 .password(joinRequest.getPassword())
                 .nickname("멤버1")
-                .profilePhoto(file)
                 .build();
 
         // SecurityContext에 인증된 사용자 설정
@@ -230,7 +229,7 @@ class MemberServiceTest {
 
         // when
         joinRequest.setNickname(newNickname);
-        member = joinRequest.toEntity(null);
+        member = joinRequest.toEntity();
         memberService.updateNickname(newNickname, request);
 
         // then
@@ -264,7 +263,7 @@ class MemberServiceTest {
 
         // when
         joinRequest.setPassword(newPassword);
-        member = joinRequest.toEntity(null);
+        member = joinRequest.toEntity();
         memberService.updatePassword(newPassword, request);
 
         // then
@@ -388,23 +387,23 @@ class MemberServiceTest {
                 .hasMessage(ErrorCode.ALREADY_REGISTERED_NICKNAME.getMessage());
     }
 
-    @Test
-    @DisplayName("회원 프로필 이미지 수정 성공")
-    void changeMemberProfilePhoto() {
-        // given
-        File updateFile = File.builder()
-                .id(2L)
-                .storedName("95323ff4-540c-4778-93a3-3f6aeb5121ce_test.png")
-                .build();
-        when(jwtTokenProvider.resolveToken(request)).thenReturn(accessToken);
-        when(jwtTokenProvider.getPayload(accessToken)).thenReturn(member.getEmail());
-        when(memberRepository.findByEmail(member.getEmail())).thenReturn(Optional.of(member));
-        when(fileRepository.findByStoredName(anyString())).thenReturn(Optional.of(updateFile));
-
-        // when
-        memberService.updateImage(updateFile.getStoredName(), request);
-
-        // then
-        assertThat(member.getProfilePhoto().getStoredName()).isEqualTo(updateFile.getStoredName());
-    }
+//    @Test
+//    @DisplayName("회원 프로필 이미지 수정 성공")
+//    void changeMemberProfilePhoto() {
+//        // given
+//        File updateFile = File.builder()
+//                .id(2L)
+//                .storedName("95323ff4-540c-4778-93a3-3f6aeb5121ce_test.png")
+//                .build();
+//        when(jwtTokenProvider.resolveToken(request)).thenReturn(accessToken);
+//        when(jwtTokenProvider.getPayload(accessToken)).thenReturn(member.getEmail());
+//        when(memberRepository.findByEmail(member.getEmail())).thenReturn(Optional.of(member));
+//        when(fileRepository.findByStoredName(anyString())).thenReturn(Optional.of(updateFile));
+//
+//        // when
+//        memberService.updateImage(updateFile.getStoredName(), request);
+//
+//        // then
+//        assertThat(member.getProfilePhoto().getStoredName()).isEqualTo(updateFile.getStoredName());
+//    }
 }
