@@ -1,5 +1,6 @@
 package balancetalk.member.presentation;
 
+import balancetalk.global.utils.AuthPrincipal;
 import balancetalk.member.application.MemberService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -60,9 +61,10 @@ public class MemberController {
     @ResponseStatus(HttpStatus.OK)
     @PutMapping(value = "/nickname", consumes = "text/plain")
     @Operation(summary = "회원 닉네임 수정", description = "회원 닉네임을 수정한다.")
-    public void updateNickname(@Valid @NotBlank @RequestBody @Size(min = 2, max = 10) String newNickname, HttpServletRequest request) {
+    public void updateNickname(@Valid @NotBlank @RequestBody @Size(min = 2, max = 10) String newNickname, @AuthPrincipal
+    TokenDto tokenDto) {
         // TODO: RequestBody 빈 값일 때 에러체킹 x
-        memberService.updateNickname(newNickname, request);
+        memberService.updateNickname(newNickname, tokenDto);
     }
 
     @ResponseStatus(HttpStatus.OK)
@@ -70,23 +72,23 @@ public class MemberController {
     @Operation(summary = "회원 비밀번호 수정", description = "회원 패스워드를 수정한다.")
     public void updatePassword(@RequestBody @Size(min = 10, max = 20)
                                @Pattern(regexp = "^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d@$!%*#?&]{10,20}$")
-                               String newPassword, HttpServletRequest request) {
+                               String newPassword, @AuthPrincipal TokenDto tokenDto) {
         // TODO: RequestBody 빈 값일 때 에러체킹 x
-        memberService.updatePassword(newPassword, request);
+        memberService.updatePassword(newPassword, tokenDto);
     }
 
 //    @ResponseStatus(HttpStatus.OK)
 //    @PutMapping(value = "/image", consumes = "text/plain")
 //    @Operation(summary = "회원 이미지 변경", description = "회원 프로필 이미지를 변경한다.")
-//    public void updateImage(@RequestBody String storedFileName, HttpServletRequest request) {
-//        memberService.updateImage(storedFileName, request);
+//    public void updateImage(@RequestBody String storedFileName, @AuthPrincipal TokenDto tokenDto) {
+//        memberService.updateImage(storedFileName, tokenDto);
 //    }
 
     @ResponseStatus(HttpStatus.OK)
     @DeleteMapping
     @Operation(summary = "회원 삭제", description = "회원 정보를 삭제한다.")
-    public void deleteMember(@Valid @RequestBody LoginRequest loginRequest, HttpServletRequest request) {
-        memberService.delete(loginRequest, request);
+    public void deleteMember(@Valid @RequestBody LoginRequest loginRequest, @AuthPrincipal TokenDto tokenDto) {
+        memberService.delete(loginRequest, tokenDto);
     }
 
     @ResponseStatus(HttpStatus.OK)
