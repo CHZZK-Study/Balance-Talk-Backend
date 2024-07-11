@@ -1,5 +1,7 @@
 package balancetalk.file.domain;
 
+import balancetalk.global.exception.BalanceTalkException;
+import balancetalk.global.exception.ErrorCode;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -9,26 +11,26 @@ import java.util.UUID;
 @Component
 public class FileProcessor {
 
-    public File process(MultipartFile multipartFile, String path, Long resourceId, FileType fileType) {
+    public File process(MultipartFile multipartFile, String path, long resourceId, FileType fileType) {
         String originalName = multipartFile.getOriginalFilename();
-        String storedName = String.format("%s_%s", UUID.randomUUID(), originalName);
+        String storedName = createRandomName(originalName);
         long size = multipartFile.getSize();
         FileFormat FileFormat = convertMimeTypeToFileFormat(multipartFile.getContentType());
         return createFile(resourceId, originalName, storedName, FileFormat, path, fileType, size);
     }
 
-    private FileFormat convertMimeTypeToFileFormat(String mimeType) {
-        if (mimeType == null) {
-            throw new IllegalArgumentException("MIME 타입은 NULL이 될 수 없습니다.");
-        }
+    private String createRandomName(String originalName) {
+        return String.format("%s_%s", UUID.randomUUID(), originalName);
+    }
 
+    private FileFormat convertMimeTypeToFileFormat(String mimeType) {
         return Arrays.stream(FileFormat.values())
                 .filter(type -> type.getMimeType().equalsIgnoreCase(mimeType))
                 .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("지원하지 않는 파일 타입 : " + mimeType));
+                .orElseThrow(() -> new BalanceTalkException(ErrorCode.NOT_SUPPORTED_FILE_FORMAT));
     }
 
-    private File createFile(Long resourceId,
+    private File createFile(long resourceId,
                             String uploadName,
                             String storedName,
                             FileFormat FileFormat,
