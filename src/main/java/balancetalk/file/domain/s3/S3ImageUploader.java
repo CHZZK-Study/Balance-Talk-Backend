@@ -23,20 +23,22 @@ public class S3ImageUploader {
     @Value("${aws.s3.bucket}")
     private String bucket;
 
-    public void uploadImageToBucket(MultipartFile multipartFile, String uploadDir, String storedName) {
+    public void uploadImageToBucket(MultipartFile multipartFile, String key) {
         try (InputStream inputStream = multipartFile.getInputStream()) {
-            putObject(uploadDir + storedName, inputStream, multipartFile.getSize());
+            s3Client.putObject(getPutObjectRequest(key), getRequestBody(multipartFile, inputStream));
         } catch (IOException e) {
             throw new BalanceTalkException(FILE_UPLOAD_FAILED);
         }
     }
 
-    private void putObject(String key, InputStream inputStream, long size) {
-        PutObjectRequest putObjectRequest = PutObjectRequest.builder()
+    private PutObjectRequest getPutObjectRequest(String key) {
+        return PutObjectRequest.builder()
                 .bucket(bucket)
                 .key(key)
                 .build();
+    }
 
-        s3Client.putObject(putObjectRequest, RequestBody.fromInputStream(inputStream, size));
+    private RequestBody getRequestBody(MultipartFile multipartFile, InputStream inputStream) {
+        return RequestBody.fromInputStream(inputStream, multipartFile.getSize());
     }
 }

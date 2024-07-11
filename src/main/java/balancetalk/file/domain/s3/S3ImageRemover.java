@@ -16,10 +16,13 @@ public class S3ImageRemover {
     private String bucket;
 
     public void removeImageFromBucket(String key) {
-        DeleteObjectRequest request = DeleteObjectRequest.builder()
+        s3Client.deleteObject(getDeleteObjectRequest(key));
+    }
+
+    private DeleteObjectRequest getDeleteObjectRequest(String key) {
+        return DeleteObjectRequest.builder()
                 .bucket(bucket)
                 .key(key)
                 .build();
-        s3Client.deleteObject(request);
     }
 }
