@@ -42,8 +42,4 @@ public class File {
 
     @Enumerated(value = EnumType.STRING)
     private FileFormat fileFormat;
-
-    public String getUrl() {
-        return path + storedName;
-    }
 }
