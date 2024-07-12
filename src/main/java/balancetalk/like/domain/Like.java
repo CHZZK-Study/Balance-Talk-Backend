@@ -1,9 +1,9 @@
 package balancetalk.like.domain;
 
-import balancetalk.comment.domain.Comment;
 import balancetalk.global.common.BaseTimeEntity;
 import balancetalk.member.domain.Member;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 @Entity
@@ -25,9 +25,8 @@ public class Like extends BaseTimeEntity {
     @JoinColumn(name = "member_id")
     private Member member;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "comment_id")
-    private Comment comment;
+    @NotNull
+    private Long resourceId;
 
     private Boolean active = true;
 
