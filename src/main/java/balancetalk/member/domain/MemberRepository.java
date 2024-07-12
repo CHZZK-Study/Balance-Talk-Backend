@@ -10,6 +10,8 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     boolean existsByEmail(String email);
     void deleteByEmail(String email);
 
+    Member findByUsername(String username);
+
 //    @Query("select m.id from Member m JOIN m.votes v WHERE v.balanceOption.id = :balanceOptionId")
 //    List<Long> findMemberIdsBySelectedOptionId(Long balanceOptionId);
 }
