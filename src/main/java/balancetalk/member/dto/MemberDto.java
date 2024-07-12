@@ -43,13 +43,12 @@ public class MemberDto {
         @Schema(description = "회원 프로필 사진", example = "4df23447-2355-45h2-8783-7f6gd2ceb848_프로필사진.jpg")
         private String profilePhoto;
 
-        public Member toEntity(File profilePhoto) {
+        public Member toEntity() {
             return Member.builder()
                     .nickname(nickname)
                     .email(email)
                     .password(password)
                     .role(Role.USER)
-                    .profilePhoto(profilePhoto)
                     .build();
         }
     }
@@ -120,14 +119,13 @@ public class MemberDto {
 //    private int level;
 
         public static MemberResponse fromEntity(Member member) {
-            String profileImageUrl = Optional.ofNullable(member.getProfilePhoto())
-                    .map(File::getUrl)
-                    .orElse(null);
+//            String profileImageUrl = Optional.ofNullable(member.getProfilePhoto())
+//                    .map(File::getUrl)
+//                    .orElse(null);
 
             return MemberResponse.builder()
                     .id(member.getId())
                     .nickname(member.getNickname())
-                    .profileImageUrl(profileImageUrl)
 //                .createdAt(member.getCreatedAt())
 //                .postsCount(member.getPostCount())
 //                .totalPostLike(member.getPostLikes())
