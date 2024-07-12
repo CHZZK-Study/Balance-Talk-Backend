@@ -27,10 +27,10 @@ public class LikeDto {
         @Schema(description = "좋아요한 댓글 id", example = "1")
         private Long commentId;
 
-        public static Like toEntity(Comment comment, Member member) {
+        public static Like toEntity(Long resourceId, Member member) {
             return Like.builder()
                     .likeType(LikeType.COMMENT)
-                    .comment(comment)
+                    .resourceId(resourceId)
                     .member(member)
                     .active(true)
                     .build();
@@ -54,7 +54,7 @@ public class LikeDto {
             private Long memberId;
 
             @Schema(description = "좋아요한 댓글 id", example = "1")
-            private Long commentId;
+            private Long resourceId;
 
             @Schema(description = "좋아요 생성 날짜")
             private LocalDateTime createdAt;
@@ -67,7 +67,7 @@ public class LikeDto {
                         .id(like.getId())
                         .likeType(like.getLikeType())
                         .memberId(like.getMember().getId())
-                        .commentId(Optional.ofNullable(like.getComment()).map(Comment::getId).orElse(null))
+                        .resourceId(like.getResourceId())
                         .createdAt(like.getCreatedAt())
                         .lastModifiedAt(like.getLastModifiedAt())
                         .build();

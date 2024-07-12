@@ -106,14 +106,14 @@ public class CommentDto {
         @Schema(description = "댓글 수정 날짜")
         private LocalDateTime lastModifiedAt;
 
-        public static CommentResponse fromEntity(Comment comment, boolean myLike) {
+        public static CommentResponse fromEntity(Comment comment, int likesCount, boolean myLike) {
             return CommentResponse.builder()
                     .id(comment.getId())
                     .content(comment.getContent())
                     .nickname(comment.getMember().getNickname())
                     .talkPickId(comment.getTalkPick().getId())
                     .option(comment.getVoteOption())
-                    .likesCount(comment.getLikesCount())
+                    .likesCount(likesCount)
                     .myLike(myLike)
                     .parentId(comment.getParent() == null ? null : comment.getParent().getId())
                     .replyCount(comment.getReplies() == null ? 0 : comment.getReplies().size())
