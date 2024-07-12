@@ -43,13 +43,12 @@ public class MemberDto {
         @Schema(description = "회원 프로필 사진", example = "4df23447-2355-45h2-8783-7f6gd2ceb848_프로필사진.jpg")
         private String profilePhoto;
 
-        public Member toEntity(File profilePhoto) {
+        public Member toEntity() {
             return Member.builder()
                     .nickname(nickname)
                     .email(email)
                     .password(password)
                     .role(Role.USER)
-                    .profilePhoto(profilePhoto)
                     .build();
         }
     }
@@ -60,9 +59,15 @@ public class MemberDto {
     @Schema(description = "로그인 요청")
     public static class LoginRequest {
 
+        @NotNull
+        @Size(max = 30)
+        @Email(regexp = "^[a-zA-Z0-9._%+-]{1,20}@[a-zA-Z0-9.-]{1,10}\\.[a-zA-Z]{2,}$")
         @Schema(description = "회원 이메일", example = "test1234@naver.com")
         private String email;
 
+        @NotBlank
+        @Size(min = 10, max = 20)
+        @Pattern(regexp = "^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d@$!%*#?&]{10,20}$")
         @Schema(description = "회원 비밀번호", example = "Test1234test!")
         private String password;
 
@@ -72,6 +77,18 @@ public class MemberDto {
                     .password(password)
                     .build();
         }
+    }
+
+    @Data
+    @AllArgsConstructor
+    @Schema(description = "인증이 필요한 API에서 토큰 유효성 검사를 진행")
+    public static class TokenDto {
+
+        @NotNull
+        @Size(max = 30)
+        @Email(regexp = "^[a-zA-Z0-9._%+-]{1,20}@[a-zA-Z0-9.-]{1,10}\\.[a-zA-Z]{2,}$")
+        @Schema(description = "회원 이메일", example = "test1234@naver.com")
+        private String email;
     }
 
     @Data
@@ -102,14 +119,13 @@ public class MemberDto {
 //    private int level;
 
         public static MemberResponse fromEntity(Member member) {
-            String profileImageUrl = Optional.ofNullable(member.getProfilePhoto())
-                    .map(File::getUrl)
-                    .orElse(null);
+//            String profileImageUrl = Optional.ofNullable(member.getProfilePhoto())
+//                    .map(File::getUrl)
+//                    .orElse(null);
 
             return MemberResponse.builder()
                     .id(member.getId())
                     .nickname(member.getNickname())
-                    .profileImageUrl(profileImageUrl)
 //                .createdAt(member.getCreatedAt())
 //                .postsCount(member.getPostCount())
 //                .totalPostLike(member.getPostLikes())

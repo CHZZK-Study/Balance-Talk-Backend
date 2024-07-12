@@ -1,7 +1,6 @@
 package balancetalk.talkpick.domain;
 
 import balancetalk.bookmark.domain.Bookmark;
-import balancetalk.file.domain.File;
 import balancetalk.global.common.BaseTimeEntity;
 import balancetalk.member.domain.Member;
 import balancetalk.vote.domain.Vote;
@@ -62,7 +61,4 @@ public class TalkPick extends BaseTimeEntity {
 
     @OneToMany(mappedBy = "talkPick")
     private List<Bookmark> bookmarks = new ArrayList<>();
-
-    @OneToMany(mappedBy = "talkPick")
-    private List<File> talkPickFiles = new ArrayList<>();
 }

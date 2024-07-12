@@ -28,7 +28,9 @@ public enum ErrorCode {
     EMPTY_JWT_TOKEN(BAD_REQUEST, "토큰 값이 존재하지 않습니다."),
     NOT_INPUT_PARENT_COMMENT_ID(BAD_REQUEST, "원 댓글 ID가 입력되지 않았습니다."),
     INVALID_VOTE_OPTION(BAD_REQUEST, "존재하지 않는 선택지입니다."),
-
+    NOT_ATTACH_IMAGE(BAD_REQUEST, "이미지를 첨부하지 않아 문제가 발생했습니다."),
+    NOT_SUPPORTED_FILE_FORMAT(BAD_REQUEST, "지원하지 않는 파일 형식입니다."),
+    INVALID_HANDLER_RESOLVER(BAD_REQUEST, "UserArgumentResolver가 올바르게 설정되지 않았습니다."),
 
     // 401
     MISMATCHED_EMAIL_OR_PASSWORD(UNAUTHORIZED, "이메일 또는 비밀번호가 잘못되었습니다."),
@@ -64,7 +66,6 @@ public enum ErrorCode {
     NOT_FOUND_POST_LIKE(NOT_FOUND, "해당 게시글을 추천한 기록이 존재하지 않습니다. "),
     NOT_FOUND_COMMENT(NOT_FOUND, "존재하지 않는 댓글입니다."),
     NOT_FOUND_DIRECTORY(NOT_FOUND, "존재하지 않는 디렉토리입니다."),
-    NOT_SUPPORTED_FILE_TYPE(NOT_FOUND, "지원하지 않는 파일 형식입니다."),
     NOT_FOUND_FILE(NOT_FOUND, "존재하지 않는 파일입니다."),
     NOT_FOUND_PARENT_COMMENT_AT_THAT_TALK_PICK(NOT_FOUND, "해당 톡픽에 존재하지 않는 원 댓글입니다."),
     NOT_FOUND_COMMENT_AT_THAT_TALK_PICK(NOT_FOUND, "해당 게시글에 존재하지 않는 댓글입니다."),
@@ -86,7 +87,8 @@ public enum ErrorCode {
 
     // 500
     REDIS_CONNECTION_FAIL(INTERNAL_SERVER_ERROR, "Redis 연결에 실패했습니다."),
-    FAIL_SEND_EMAIL(INTERNAL_SERVER_ERROR, "이메일 발송에 실패했습니다");
+    FAIL_SEND_EMAIL(INTERNAL_SERVER_ERROR, "이메일 발송에 실패했습니다."),
+    NOT_UPLOADED_IMAGE_FOR_DB_ERROR(INTERNAL_SERVER_ERROR, "이미지 정보를 저장하던 중 문제가 생겨 업로드에 실패했습니다.");
 
     private final HttpStatus httpStatus;
     private final String message;
