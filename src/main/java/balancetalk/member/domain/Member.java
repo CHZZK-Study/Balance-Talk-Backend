@@ -1,16 +1,18 @@
 package balancetalk.member.domain;
 
 import balancetalk.bookmark.domain.Bookmark;
-import balancetalk.file.domain.File;
 import balancetalk.global.common.BaseTimeEntity;
 import balancetalk.like.domain.Like;
 import balancetalk.talkpick.domain.TalkPick;
 import balancetalk.vote.domain.Vote;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
+import lombok.*;
+
 import java.util.ArrayList;
 import java.util.List;
-import jakarta.validation.constraints.*;
-import lombok.*;
 
 @Entity
 @Builder
@@ -53,22 +55,11 @@ public class Member extends BaseTimeEntity {
     @OneToMany(mappedBy = "member")
     private List<Like> talkPickLikes = new ArrayList<>();
 
-    @OneToMany(mappedBy = "member")
-    private List<File> files = new ArrayList<>();
-
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name = "file_id")
-    private File profilePhoto;
-
     public void updateNickname(String nickname) {
         this.nickname = nickname;
     }
 
     public void updatePassword(String password) {
         this.password = password;
-    }
-
-    public void updateImage(File profilePhoto) {
-        this.profilePhoto = profilePhoto;
     }
 }
