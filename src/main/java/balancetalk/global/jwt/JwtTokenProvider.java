@@ -77,7 +77,7 @@ public class JwtTokenProvider {
         return refreshToken;
     }
 
-    public Cookie createCookie(String refreshToken) {
+    public static Cookie createCookie(String refreshToken) {
         String cookieName = "refreshToken";
         Cookie cookie = new Cookie(cookieName, refreshToken);
         cookie.setHttpOnly(true);
@@ -106,8 +106,15 @@ public class JwtTokenProvider {
         return null;
     }
 
+    public String getUsername(String token) {
+        return Jwts.parserBuilder().setSigningKey(secretKey).build().parseClaimsJws(token).getBody().get("username", String.class);
+    }
+
+    public String getRole(String token) {
+        return Jwts.parserBuilder().setSigningKey(secretKey).build().parseClaimsJws(token).getBody().get("role", String.class);
+    }
+
     public String getPayload(String token) {
-        validateToken(token);
         return Jwts.parserBuilder().setSigningKey(secretKey).build().parseClaimsJws(token).getBody().getSubject();
     }
 
