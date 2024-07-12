@@ -1,5 +1,6 @@
 package balancetalk.comment.domain;
 
+import balancetalk.like.domain.LikeType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -11,7 +12,10 @@ import java.util.List;
 public interface CommentRepository extends JpaRepository<Comment, Long> {
     Page<Comment> findAllByTalkPickId(Long talkPickId, Pageable pageable);
 
-    @Query("SELECT c FROM Comment c LEFT JOIN c.likes l WHERE c.talkPick.id = :talkPickId GROUP BY c ORDER BY COUNT(l) DESC, c.createdAt DESC")
-    List<Comment> findByTalkPickIdOrderByLikesCountDescCreatedAtDesc(@Param("talkPickId") Long talkPickId);
+    @Query("SELECT c FROM Comment c LEFT JOIN Like l ON c.id = l.resourceId AND l.likeType = :likeType " +
+            "WHERE c.talkPick.id = :talkPickId " +
+            "GROUP BY c " +
+            "ORDER BY COUNT(l) DESC, c.createdAt DESC")
+    List<Comment> findByTalkPickIdOrderByLikesCountDescCreatedAtDesc(@Param("talkPickId") Long talkPickId, @Param("likeType") LikeType likeType);
 
 }
