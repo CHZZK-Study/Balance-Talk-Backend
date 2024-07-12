@@ -5,6 +5,8 @@ import balancetalk.comment.domain.CommentRepository;
 import balancetalk.comment.dto.CommentDto;
 import balancetalk.global.exception.BalanceTalkException;
 import balancetalk.global.exception.ErrorCode;
+import balancetalk.like.domain.LikeRepository;
+import balancetalk.like.domain.LikeType;
 import balancetalk.member.domain.Member;
 import balancetalk.member.domain.MemberRepository;
 import balancetalk.talkpick.domain.TalkPick;
@@ -33,6 +35,7 @@ public class CommentService {
     private final CommentRepository commentRepository;
     private final MemberRepository memberRepository;
     private final TalkPickRepository talkPickRepository;
+    private final LikeRepository likeRepository;
 
     @Value("${comments.max-depth}")
     private int maxDepth;
@@ -75,20 +78,23 @@ public class CommentService {
         validateTalkPickId(talkPickId);
 
         Page<Comment> comments = commentRepository.findAllByTalkPickId(talkPickId, pageable);
-        return comments.map(comment -> CommentDto.CommentResponse.fromEntity(comment, false));
+        return comments.map(comment -> {
+            int likesCount = likeRepository.countByResourceIdAndLikeType(comment.getId(), LikeType.COMMENT);
+            return CommentDto.CommentResponse.fromEntity(comment, likesCount, false);
+        });
     }
 
     @Transactional(readOnly = true)
     public Page<CommentDto.CommentResponse> findAllBestComments(Long talkPickId, Pageable pageable) {
         validateTalkPickId(talkPickId);
 
-        List<Comment> allComments = commentRepository.findByTalkPickIdOrderByLikesCountDescCreatedAtDesc(talkPickId);
+        List<Comment> allComments = commentRepository.findByTalkPickIdOrderByLikesCountDescCreatedAtDesc(talkPickId, LikeType.COMMENT);
         List<CommentDto.CommentResponse> bestComments = new ArrayList<>();
         List<CommentDto.CommentResponse> otherComments = new ArrayList<>();
 
         // 최대 좋아요 수 구하기
         int maxLikes = allComments.stream()
-                .mapToInt(Comment::getLikesCount)
+                .mapToInt(comment -> likeRepository.countByResourceIdAndLikeType(comment.getId(), LikeType.COMMENT))
                 .max()
                 .orElse(0);
 
@@ -96,8 +102,9 @@ public class CommentService {
         if (maxLikes >= MIN_COUNT_FOR_BEST_COMMENT) {
             for (Comment comment : allComments) {
                 boolean myLike = false;
-                comment.setIsBest(comment.getLikesCount() >= MIN_COUNT_FOR_BEST_COMMENT);
-                CommentDto.CommentResponse response = CommentDto.CommentResponse.fromEntity(comment, myLike);
+                int likeCount = likeRepository.countByResourceIdAndLikeType(comment.getId(), LikeType.COMMENT);
+                comment.setIsBest(likeCount >= MIN_COUNT_FOR_BEST_COMMENT);
+                CommentDto.CommentResponse response = CommentDto.CommentResponse.fromEntity(comment, likeCount, myLike);
                 if (comment.getIsBest()) {
                     bestComments.add(response);
                 } else {
@@ -107,8 +114,9 @@ public class CommentService {
         } else {
             for (Comment comment : allComments) {
                 boolean myLike = false;
-                comment.setIsBest(comment.getLikesCount() == maxLikes);
-                CommentDto.CommentResponse response = CommentDto.CommentResponse.fromEntity(comment, myLike);
+                int likeCount = likeRepository.countByResourceIdAndLikeType(comment.getId(), LikeType.COMMENT);
+                comment.setIsBest(likeCount == maxLikes);
+                CommentDto.CommentResponse response = CommentDto.CommentResponse.fromEntity(comment, likeCount, myLike);
                 if (comment.getIsBest()) {
                     bestComments.add(response);
                 } else {

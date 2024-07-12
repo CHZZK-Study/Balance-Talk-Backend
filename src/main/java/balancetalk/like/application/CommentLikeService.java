@@ -44,13 +44,13 @@ public class CommentLikeService {
         }
 
         // 이미 좋아요를 누른 댓글일 경우 예외 처리
-        boolean alreadyLiked = likeRepository.existsByCommentIdAndMemberId(commentId, member.getId());
+        boolean alreadyLiked = likeRepository.existsByResourceIdAndMemberId(commentId, member.getId());
 
         if (alreadyLiked) {
             throw new BalanceTalkException(ALREADY_LIKED_COMMENT);
         }
 
-        Like commentLike = LikeDto.CreateLikeRequest.toEntity(comment, member);
+        Like commentLike = LikeDto.CreateLikeRequest.toEntity(commentId, member);
         likeRepository.save(commentLike);
     }
 
@@ -63,7 +63,7 @@ public class CommentLikeService {
         Comment comment = validateCommentByTalkPick(commentId, talkPickId);
 
         // 좋아요를 누르지 않은 댓글에 좋아요 취소를 누를 경우 예외 처리
-        Like commentLike = likeRepository.findByCommentIdAndMemberId(comment.getId(), member.getId())
+        Like commentLike = likeRepository.findByResourceIdAndMemberId(comment.getId(), member.getId())
                 .orElseThrow(() -> new BalanceTalkException(NOT_LIKED_COMMENT));
 
         if (!commentLike.getActive()) {
