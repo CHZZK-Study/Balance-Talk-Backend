@@ -27,7 +27,7 @@ public class FileService {
     private final S3ImageRemover s3ImageRemover;
     private final S3ImageUrlGetter s3ImageUrlGetter;
 
-    @Value(value = "aws.s3.end-point")
+    @Value(value = "${aws.s3.end-point}")
     private String s3EndPoint;
 
     @Transactional
