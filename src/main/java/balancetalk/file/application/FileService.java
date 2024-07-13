@@ -58,6 +58,6 @@ public class FileService {
         }
 
         // 이미지 URL 반환
-        return s3ImageUrlGetter.getUrl(s3Client, bucket, s3Key);
+        return s3ImageUrlGetter.getImageUrl(s3Client, bucket, s3Key);
     }
 }

@@ -9,7 +9,7 @@ import software.amazon.awssdk.services.s3.model.GetUrlRequest;
 @RequiredArgsConstructor
 public class S3ImageUrlGetter {
 
-    public String getUrl(S3Client s3Client, String bucket, String key) {
+    public String getImageUrl(S3Client s3Client, String bucket, String key) {
         GetUrlRequest request = GetUrlRequest.builder()
                 .bucket(bucket)
                 .key(key)
