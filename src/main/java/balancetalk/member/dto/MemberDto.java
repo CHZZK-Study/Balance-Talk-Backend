@@ -40,7 +40,7 @@ public class MemberDto {
         @Schema(description = "회원 비밀번호", example = "Test1234test!")
         private String password;
 
-        @Schema(description = "회원 권환", example = "USER")
+        @Schema(description = "회원 권한", example = "USER")
         private Role role;
 
         @Schema(description = "회원 프로필 사진", example = "4df23447-2355-45h2-8783-7f6gd2ceb848_프로필사진.jpg")
