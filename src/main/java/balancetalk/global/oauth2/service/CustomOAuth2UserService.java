@@ -24,7 +24,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
-    private static final String TEMP_PASSWORD = "TEMP_PASSWORD";
+    private static final String OAUTH2_PASSWORD = "OAUTH2_PASSWORD";
     private final MemberRepository memberRepository;
 
     @Override
@@ -46,7 +46,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         Member findMember = memberRepository.findByUsername(username);
 
         if (findMember == null) {
-            String encodedPassword = passwordEncoder().encode(TEMP_PASSWORD);
+            String encodedPassword = passwordEncoder().encode(OAUTH2_PASSWORD);
             String hideEmail = hideEmail(oauth2Response.getEmail());
             Oauth2Dto oauth2Dto = Oauth2Dto.builder()
                     .name(hideEmail)

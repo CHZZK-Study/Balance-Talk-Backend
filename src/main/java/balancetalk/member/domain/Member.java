@@ -27,7 +27,7 @@ public class Member extends BaseTimeEntity {
     private Long id;
 
     @NotBlank
-    @Size(min = 2, max = 20)
+    @Size(min = 2, max = 30)
     private String nickname;
 
     @NotBlank
