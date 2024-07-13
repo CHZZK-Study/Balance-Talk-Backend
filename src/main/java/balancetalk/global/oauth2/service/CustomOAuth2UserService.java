@@ -35,31 +35,21 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
         String registrationId = userRequest.getClientRegistration().getRegistrationId();
 
-        Oauth2Response oauth2Response = null;
-
-        if (registrationId.equals("naver")) {
-            oauth2Response = new NaverResponse(oAuth2User.getAttributes());
-        }
-
-        else if (registrationId.equals("google")) {
-            oauth2Response = new GoogleResponse(oAuth2User.getAttributes());
-        }
-
-        else if (registrationId.equals("kakao")) {
-            oauth2Response = new KakaoResponse(oAuth2User.getAttributes());
-        }
-
-        else {
-            return null;
-        }
+        Oauth2Response oauth2Response = switch (registrationId) {
+            case "naver" -> new NaverResponse(oAuth2User.getAttributes());
+            case "google" -> new GoogleResponse(oAuth2User.getAttributes());
+            case "kakao" -> new KakaoResponse(oAuth2User.getAttributes());
+            default -> null;
+        };
 
         String username = oauth2Response.getProvider() + " " + oauth2Response.getProviderId();
         Member findMember = memberRepository.findByUsername(username);
 
         if (findMember == null) {
             String encodedPassword = passwordEncoder().encode(TEMP_PASSWORD);
+            String hideEmail = hideEmail(oauth2Response.getEmail());
             Oauth2Dto oauth2Dto = Oauth2Dto.builder()
-                    .name(oauth2Response.getName())
+                    .name(hideEmail)
                     .email(oauth2Response.getEmail())
                     .username(username)
                     .role(Role.USER)
@@ -73,14 +63,24 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         }
 
         else { // 회원이 존재할 떄
-            findMember.updateNickname(oauth2Response.getName());
             Oauth2Dto oauth2Dto = Oauth2Dto.builder()
                     .name(findMember.getNickname())
                     .email(findMember.getEmail())
                     .username(findMember.getUsername())
-                    .role(Role.USER)
+                    .role(findMember.getRole())
                     .build();
             return new CustomOAuth2User(oauth2Dto);
         }
+    }
+
+    private String hideEmail(String email) {
+        StringBuilder sb = new StringBuilder(email);
+        for (int i = 3; i < email.length(); i++) {
+            if (email.charAt(i) == '@') {
+                break;
+            }
+            sb.setCharAt(i, '*');
+        }
+        return sb.toString();
     }
 }
