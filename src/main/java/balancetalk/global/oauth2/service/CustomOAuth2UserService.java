@@ -1,5 +1,7 @@
 package balancetalk.global.oauth2.service;
 
+import static balancetalk.global.config.SecurityConfig.*;
+
 import balancetalk.global.oauth2.dto.CustomOAuth2User;
 import balancetalk.global.oauth2.dto.GoogleResponse;
 import balancetalk.global.oauth2.dto.KakaoResponse;
@@ -22,13 +24,14 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
+    private static final String TEMP_PASSWORD = "TEMP_PASSWORD";
     private final MemberRepository memberRepository;
 
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
 
         OAuth2User oAuth2User = super.loadUser(userRequest);
-        log.error("Loading user: {}", oAuth2User);
+        log.info("Loading user: {}", oAuth2User);
 
         String registrationId = userRequest.getClientRegistration().getRegistrationId();
 
@@ -54,11 +57,13 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         Member findMember = memberRepository.findByUsername(username);
 
         if (findMember == null) {
+            String encodedPassword = passwordEncoder().encode(TEMP_PASSWORD);
             Oauth2Dto oauth2Dto = Oauth2Dto.builder()
                     .name(oauth2Response.getName())
                     .email(oauth2Response.getEmail())
                     .username(username)
                     .role(Role.USER)
+                    .password(encodedPassword)
                     .build();
 
             Member newMember = oauth2Dto.toEntity();
