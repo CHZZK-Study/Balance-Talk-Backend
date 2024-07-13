@@ -1,9 +1,7 @@
 package balancetalk.bookmark.domain;
 
-import balancetalk.game.domain.Game;
 import balancetalk.global.common.BaseTimeEntity;
 import balancetalk.member.domain.Member;
-import balancetalk.talkpick.domain.TalkPick;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -24,13 +22,8 @@ public class Bookmark extends BaseTimeEntity {
     @JoinColumn(name = "member_id")
     private Member member;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "talk_pick_id")
-    private TalkPick talkPick;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "game_id")
-    private Game game;
+    @NotNull
+    private Long resourceId;
 
     @NotNull
     private Boolean active = true;
