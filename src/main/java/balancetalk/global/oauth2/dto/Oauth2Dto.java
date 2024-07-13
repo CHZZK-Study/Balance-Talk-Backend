@@ -15,6 +15,7 @@ public class Oauth2Dto {
     private String username;
     private String email;
     private Role role;
+    private String password;
 
     public Member toEntity() {
         return Member.builder()
@@ -22,6 +23,7 @@ public class Oauth2Dto {
                 .username(username)
                 .email(email)
                 .role(Role.USER)
+                .password(password)
                 .build();
     }
 }
