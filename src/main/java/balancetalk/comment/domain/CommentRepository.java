@@ -16,6 +16,6 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
             "WHERE c.talkPick.id = :talkPickId " +
             "GROUP BY c " +
             "ORDER BY COUNT(l) DESC, c.createdAt DESC")
-    List<Comment> findByTalkPickIdOrderByLikesCountDescCreatedAtDesc(@Param("talkPickId") Long talkPickId, @Param("likeType") LikeType likeType);
-
+    List<Comment> findByTalkPickIdOrderByLikesCountDescCreatedAtDesc(@Param("talkPickId") Long talkPickId,
+                                                                     @Param("likeType") LikeType likeType);
 }

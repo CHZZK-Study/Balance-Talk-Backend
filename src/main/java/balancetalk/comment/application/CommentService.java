@@ -21,7 +21,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.EnumSet;
+import java.util.List;
 
 import static balancetalk.global.exception.ErrorCode.*;
 import static balancetalk.global.utils.SecurityUtils.getCurrentMember;
@@ -30,6 +33,7 @@ import static balancetalk.global.utils.SecurityUtils.getCurrentMember;
 @Transactional
 @RequiredArgsConstructor
 public class CommentService {
+
     private static final int MIN_COUNT_FOR_BEST_COMMENT = 10;
 
     private final CommentRepository commentRepository;

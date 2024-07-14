@@ -1,9 +1,9 @@
 package balancetalk.comment.presentation;
 
 import balancetalk.comment.application.CommentService;
+import balancetalk.comment.dto.CommentDto.CommentResponse;
 import balancetalk.comment.dto.CommentDto.CreateCommentRequest;
 import balancetalk.comment.dto.CommentDto.UpdateCommentRequest;
-import balancetalk.comment.dto.CommentDto.CommentResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;

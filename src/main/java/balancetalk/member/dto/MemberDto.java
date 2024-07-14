@@ -1,19 +1,14 @@
 package balancetalk.member.dto;
 
-import balancetalk.file.domain.File;
 import balancetalk.member.domain.Member;
 import balancetalk.member.domain.Role;
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
-import java.time.LocalDateTime;
-import java.util.Optional;
+import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+
+import java.time.LocalDateTime;
 
 public class MemberDto {
 
@@ -135,5 +130,4 @@ public class MemberDto {
                     .build();
         }
     }
-
 }

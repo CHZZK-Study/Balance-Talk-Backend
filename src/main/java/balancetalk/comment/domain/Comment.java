@@ -1,7 +1,6 @@
 package balancetalk.comment.domain;
 
 import balancetalk.global.common.BaseTimeEntity;
-import balancetalk.like.domain.Like;
 import balancetalk.member.domain.Member;
 import balancetalk.talkpick.domain.TalkPick;
 import balancetalk.talkpick.domain.ViewStatus;

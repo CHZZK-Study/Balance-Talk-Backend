@@ -41,7 +41,6 @@ public class GlobalExceptionHandler {
                 .map(ConstraintViolation::getMessage)
                 .collect(Collectors.joining("\n"));
         log.error("exception message = {}", message);
-
         ErrorResponse response = ErrorResponse.from(HttpStatus.BAD_REQUEST, message);
         return ResponseEntity.status(response.getHttpStatus()).body(response);
     }
