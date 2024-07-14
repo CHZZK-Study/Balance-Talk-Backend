@@ -3,6 +3,8 @@ package balancetalk.global.exception;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -19,9 +21,10 @@ import static org.springframework.http.HttpStatus.BAD_REQUEST;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(BalanceTalkException.class)
-    public ErrorResponse handleBalanceTalkException(BalanceTalkException e) {
+    public ResponseEntity<ErrorResponse> handleBalanceTalkException(BalanceTalkException e) {
+        ErrorResponse response = ErrorResponse.from(e.getErrorCode().getHttpStatus(), e.getMessage());
         log.error("exception message = {}", e.getMessage());
-        return ErrorResponse.from(e.getErrorCode().getHttpStatus(), e.getMessage());
+        return ResponseEntity.status(response.getHttpStatus()).body(response);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -32,13 +35,14 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(ConstraintViolationException.class)
-    public ErrorResponse handleConstraintViolationException(ConstraintViolationException e) {
+    public ResponseEntity<ErrorResponse> handleConstraintViolationException(ConstraintViolationException e) {
         Set<ConstraintViolation<?>> violations = e.getConstraintViolations();
         String message = violations.stream()
                 .map(ConstraintViolation::getMessage)
                 .collect(Collectors.joining("\n"));
         log.error("exception message = {}", message);
-        return ErrorResponse.from(BAD_REQUEST, message);
+        ErrorResponse response = ErrorResponse.from(HttpStatus.BAD_REQUEST, message);
+        return ResponseEntity.status(response.getHttpStatus()).body(response);
     }
 
     @ExceptionHandler(MaxUploadSizeExceededException.class)

@@ -1,7 +1,6 @@
 package balancetalk.comment.domain;
 
 import balancetalk.global.common.BaseTimeEntity;
-import balancetalk.like.domain.Like;
 import balancetalk.member.domain.Member;
 import balancetalk.talkpick.domain.TalkPick;
 import balancetalk.talkpick.domain.ViewStatus;
@@ -11,6 +10,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
+import org.springframework.lang.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,6 +47,7 @@ public class Comment extends BaseTimeEntity {
     @JoinColumn(name = "talk_pick_id")
     private TalkPick talkPick;
 
+    @Nullable
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_id")
     private Comment parent;
@@ -54,15 +55,8 @@ public class Comment extends BaseTimeEntity {
     @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL)
     private List<Comment> replies = new ArrayList<>();
 
-    @OneToMany(mappedBy = "comment", cascade = CascadeType.ALL)
-    private List<Like> likes = new ArrayList<>();
-
     public void updateContent(String content) {
         this.content = content;
-    }
-
-    public int getLikesCount() {
-        return likes != null ? likes.size() : 0;
     }
 
     public void setIsBest(boolean isBest) {

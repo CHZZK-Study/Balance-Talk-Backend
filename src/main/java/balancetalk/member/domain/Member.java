@@ -1,26 +1,25 @@
 package balancetalk.member.domain;
 
 import balancetalk.bookmark.domain.Bookmark;
-import balancetalk.file.domain.File;
 import balancetalk.global.common.BaseTimeEntity;
 import balancetalk.like.domain.Like;
 import balancetalk.talkpick.domain.TalkPick;
 import balancetalk.vote.domain.Vote;
 import jakarta.persistence.*;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import jakarta.validation.constraints.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.*;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Builder
 @Getter
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Member extends BaseTimeEntity implements UserDetails {
+public class Member extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -28,7 +27,7 @@ public class Member extends BaseTimeEntity implements UserDetails {
     private Long id;
 
     @NotBlank
-    @Size(min = 2, max = 10)
+    @Size(min = 2, max = 30)
     private String nickname;
 
     @NotBlank
@@ -38,6 +37,8 @@ public class Member extends BaseTimeEntity implements UserDetails {
 
     @NotBlank
     private String password;
+
+    private String username; // 소셜 로그인으로 가입했을 때 식별하기 위해 설정
 
     @Enumerated(value = EnumType.STRING)
     private Role role;
@@ -54,52 +55,11 @@ public class Member extends BaseTimeEntity implements UserDetails {
     @OneToMany(mappedBy = "member")
     private List<Like> talkPickLikes = new ArrayList<>();
 
-    @OneToMany(mappedBy = "member")
-    private List<File> files = new ArrayList<>();
-
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name = "file_id")
-    private File profilePhoto;
-
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return null;
-    }
-
-    @Override
-    public String getUsername() {
-        return email;
-    }
-
-    @Override
-    public boolean isAccountNonExpired() {
-        return true;
-    }
-
-    @Override
-    public boolean isAccountNonLocked() {
-        return true;
-    }
-
-    @Override
-    public boolean isCredentialsNonExpired() {
-        return true;
-    }
-
-    @Override
-    public boolean isEnabled() {
-        return true;
-    }
-
     public void updateNickname(String nickname) {
         this.nickname = nickname;
     }
 
     public void updatePassword(String password) {
         this.password = password;
-    }
-
-    public void updateImage(File profilePhoto) {
-        this.profilePhoto = profilePhoto;
     }
 }

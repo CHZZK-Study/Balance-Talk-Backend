@@ -25,6 +25,9 @@ public class CommentDto {
         @Schema(description = "선택지", example = "A")
         private VoteOption option;
 
+        @Schema(description = "부모 댓글 id (답글 작성이 아닐 경우, 작성 x)", example = "5")
+        private Long parentId;
+
         public Comment toEntity(Member member, TalkPick talkPick) {
             return Comment.builder()
                     .content(content)
@@ -32,6 +35,17 @@ public class CommentDto {
                     .talkPick(talkPick)
                     .voteOption(option) // TODO : Vote 구현 완료 후 member와 talkPick 이용해서 선택한 option 가져오기
                     .isBest(false)
+                    .build();
+        }
+
+        public Comment toEntity(Member member, TalkPick talkPick, Comment parent) {
+            return Comment.builder()
+                    .content(content)
+                    .member(member)
+                    .talkPick(talkPick)
+                    .voteOption(option) // TODO : Vote 구현 완료 후 member와 talkPick 이용해서 선택한 option 가져오기
+                    .isBest(false)
+                    .parent(parent)
                     .build();
         }
     }
@@ -94,17 +108,17 @@ public class CommentDto {
         @Schema(description = "댓글 수정 날짜")
         private LocalDateTime lastModifiedAt;
 
-        public static CommentResponse fromEntity(Comment comment, boolean myLike) {
+        public static CommentResponse fromEntity(Comment comment, int likesCount, boolean myLike) {
             return CommentResponse.builder()
                     .id(comment.getId())
                     .content(comment.getContent())
                     .nickname(comment.getMember().getNickname())
                     .talkPickId(comment.getTalkPick().getId())
                     .option(comment.getVoteOption())
-                    .likesCount(comment.getLikesCount())
+                    .likesCount(likesCount)
                     .myLike(myLike)
                     .parentId(comment.getParent() == null ? null : comment.getParent().getId())
-                    //.replyCount(comment.getReplies().size())
+                    .replyCount(comment.getReplies() == null ? 0 : comment.getReplies().size())
                     .isBest(comment.getIsBest())
                     .createdAt(comment.getCreatedAt())
                     .lastModifiedAt(comment.getLastModifiedAt())

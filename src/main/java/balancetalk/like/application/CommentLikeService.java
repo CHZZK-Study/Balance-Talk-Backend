@@ -3,16 +3,17 @@ package balancetalk.like.application;
 import balancetalk.comment.domain.Comment;
 import balancetalk.comment.domain.CommentRepository;
 import balancetalk.global.exception.BalanceTalkException;
-import balancetalk.global.exception.ErrorCode;
 import balancetalk.like.domain.Like;
 import balancetalk.like.domain.LikeRepository;
 import balancetalk.like.dto.LikeDto;
 import balancetalk.member.domain.Member;
 import balancetalk.member.domain.MemberRepository;
+import balancetalk.talkpick.domain.repository.TalkPickRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import static balancetalk.global.exception.ErrorCode.*;
 import static balancetalk.global.utils.SecurityUtils.getCurrentMember;
 
 @Service
@@ -26,36 +27,65 @@ public class CommentLikeService {
 
     private final MemberRepository memberRepository;
 
-    public LikeDto.LikeResponse likeComment(Long commentId) {
-        Comment comment = commentRepository.findById(commentId)
-                .orElseThrow(() -> new BalanceTalkException(ErrorCode.NOT_FOUND_COMMENT));
+    private final TalkPickRepository talkPickRepository;
 
+    @Transactional
+    public void likeComment(Long commentId, Long talkPickId) {
+        // 톡픽, 댓글, 회원 존재 여부 예외 처리
+        validateTalkPick(talkPickId);
         Member member = getCurrentMember(memberRepository);
-        /* TODO : 추후 예외처리
-        boolean alreadyLiked = likeRepository.existsByCommentIdAndMemberId(commentId, member.getId());
-        if (alreadyLiked) {
-            throw new BalanceTalkException(ErrorCode.ALREADY_LIKED);
+
+        // 톡픽에 속한 댓글이 아닐 경우 예외 처리
+        Comment comment = validateCommentByTalkPick(commentId, talkPickId);
+
+        // 본인 댓글에는 좋아요 불가
+        if (comment.getMember().getId().equals(member.getId())) {
+            throw new BalanceTalkException(FORBIDDEN_LIKE_OWN_COMMENT);
         }
 
-         */
+        // 이미 좋아요를 누른 댓글일 경우 예외 처리
+        boolean alreadyLiked = likeRepository.existsByResourceIdAndMemberId(commentId, member.getId());
 
-        Like commentLike = LikeDto.CreateLikeRequest.toEntity(comment, member);
+        if (alreadyLiked) {
+            throw new BalanceTalkException(ALREADY_LIKED_COMMENT);
+        }
+
+        Like commentLike = LikeDto.CreateLikeRequest.toEntity(commentId, member);
         likeRepository.save(commentLike);
-
-        return LikeDto.LikeResponse.fromEntity(commentLike);
     }
 
-    public void unLikeComment(Long commentId) {
-        Comment comment = commentRepository.findById(commentId)
-                .orElseThrow(() -> new BalanceTalkException(ErrorCode.NOT_FOUND_COMMENT)); // TODO : 추후 메서드 분리
-
+    @Transactional
+    public void unLikeComment(Long commentId, Long talkPickId) {
+        validateTalkPick(talkPickId);
         Member member = getCurrentMember(memberRepository);
 
-        Like commentLike = likeRepository.findByCommentIdAndMemberId(commentId, member.getId());
+        // 톡픽에 속한 댓글이 아닐 경우 예외 처리
+        Comment comment = validateCommentByTalkPick(commentId, talkPickId);
+
+        // 좋아요를 누르지 않은 댓글에 좋아요 취소를 누를 경우 예외 처리
+        Like commentLike = likeRepository.findByResourceIdAndMemberId(comment.getId(), member.getId())
+                .orElseThrow(() -> new BalanceTalkException(NOT_LIKED_COMMENT));
+
+        if (!commentLike.getActive()) {
+            throw new BalanceTalkException(NOT_LIKED_COMMENT);
+        }
 
         commentLike.deActive();
-
     }
 
-    // TODO : 추후 예외처리
+    private void validateTalkPick(Long talkPickId) {
+        talkPickRepository.findById(talkPickId)
+                .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_TALK_PICK));
+    }
+
+    private Comment validateCommentByTalkPick(Long commentId, Long talkPickId) {
+        Comment comment = commentRepository.findById(commentId)
+                .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_COMMENT));
+
+        if (!comment.getTalkPick().getId().equals(talkPickId)) {
+            throw new BalanceTalkException(NOT_FOUND_COMMENT_AT_THAT_TALK_PICK);
+        }
+
+        return comment;
+    }
 }
