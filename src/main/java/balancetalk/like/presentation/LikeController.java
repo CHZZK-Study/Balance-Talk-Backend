@@ -7,7 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/talks/likes/{talkPickId}/comments/{commentId}")
+@RequestMapping("/likes/talks/{talkPickId}/comments/{commentId}")
 @RequiredArgsConstructor
 @Tag(name = "like", description = "좋아요 API")
 public class LikeController {
