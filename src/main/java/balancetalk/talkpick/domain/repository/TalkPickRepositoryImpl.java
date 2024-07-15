@@ -23,7 +23,7 @@ public class TalkPickRepositoryImpl implements TalkPickRepositoryCustom {
                 .join(vote.talkPick, talkPick)
                 .where(talkPick.id.eq(vote.talkPick.id))
                 .groupBy(talkPick.id)
-                .orderBy(vote.count().desc(), talkPick.createdAt.desc())
+                .orderBy(talkPick.views.desc(), vote.count().desc(), talkPick.createdAt.desc())
                 .limit(1)
                 .fetchOne();
     }
