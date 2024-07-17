@@ -1,5 +1,5 @@
 package balancetalk.bookmark.domain;
 
 public enum BookmarkType {
-    GAME
+    TALK_PICK, GAME
 }
