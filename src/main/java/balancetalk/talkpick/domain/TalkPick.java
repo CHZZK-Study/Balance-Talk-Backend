@@ -50,11 +50,15 @@ public class TalkPick extends BaseTimeEntity {
     private String optionB;
 
     @PositiveOrZero
-    private Long views = 0L;
+    private Long views;
 
     @Enumerated(value = EnumType.STRING)
     private ViewStatus viewStatus = ViewStatus.NORMAL;
 
     @OneToMany(mappedBy = "talkPick")
     private List<Vote> votes = new ArrayList<>();
+
+    public void increaseViews() {
+        this.views++;
+    }
 }

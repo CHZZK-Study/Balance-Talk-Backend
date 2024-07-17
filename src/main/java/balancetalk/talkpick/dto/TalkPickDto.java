@@ -1,8 +1,10 @@
 package balancetalk.talkpick.dto;
 
+import balancetalk.talkpick.domain.TalkPick;
 import balancetalk.vote.domain.VoteOption;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 
 public class TalkPickDto {
@@ -31,6 +33,7 @@ public class TalkPickDto {
     @Schema(description = "톡픽 상세 조회 응답")
     @Data
     @AllArgsConstructor
+    @Builder
     public static class TalkPickDetailResponse {
 
         @Schema(description = "톡픽 ID", example = "톡픽 ID")
@@ -54,19 +57,24 @@ public class TalkPickDto {
         @Schema(description = "조회수", example = "152")
         private Long views;
 
-        @Schema(description = "좋아요 개수", example = "35")
-        private Long likesCount;
-
-        @Schema(description = "좋아요 여부", example = "true")
-        private Boolean myLike;
-
         @Schema(description = "북마크 여부", example = "true")
         private Boolean myBookmark;
 
-        @Schema(description = "투표 여부", example = "true")
-        private Boolean myVote;
-
         @Schema(description = "투표한 선택지", example = "A")
         private VoteOption votedOption;
+
+        public static TalkPickDetailResponse from(TalkPick entity, boolean myBookmark, VoteOption votedOption) {
+            return TalkPickDetailResponse.builder()
+                    .id(entity.getId())
+                    .title(entity.getTitle())
+                    .content(entity.getContent())
+                    .summary(entity.getSummary())
+                    .optionA(entity.getOptionA())
+                    .optionB(entity.getOptionB())
+                    .views(entity.getViews())
+                    .myBookmark(myBookmark)
+                    .votedOption(votedOption)
+                    .build();
+        }
     }
 }
