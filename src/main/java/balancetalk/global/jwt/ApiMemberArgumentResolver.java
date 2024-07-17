@@ -34,7 +34,7 @@ public class ApiMemberArgumentResolver implements HandlerMethodArgumentResolver 
         String accessToken = jwtTokenProvider.resolveToken(request);
 
         if (accessToken == null) {
-            throw new BalanceTalkException(ErrorCode.NOT_FOUND_MEMBER);
+            throw new BalanceTalkException(ErrorCode.EMPTY_JWT_TOKEN);
         }
 
         String token = jwtTokenProvider.resolveToken(request);
