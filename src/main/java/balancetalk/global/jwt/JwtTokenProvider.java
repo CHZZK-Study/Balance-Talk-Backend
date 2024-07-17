@@ -98,14 +98,14 @@ public class JwtTokenProvider {
     }
 
     public Authentication getAuthenticationByEmail(String email) {
-        UserDetails userDetails = myUserDetailService.loadUserByUsername(email);
-        return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
+        CustomUserDetails customUserDetails = myUserDetailService.loadUserByUsername(email);
+        return new UsernamePasswordAuthenticationToken(customUserDetails, "", customUserDetails.getAuthorities());
     }
 
     public Authentication getAuthenticationByToken(String token) {
         String userPrincipal = Jwts.parserBuilder().setSigningKey(secretKey).build().parseClaimsJws(token).getBody().getSubject();
-        UserDetails userDetails = myUserDetailService.loadUserByUsername(userPrincipal);
-        return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
+        CustomUserDetails customUserDetails = myUserDetailService.loadUserByUsername(userPrincipal);
+        return new UsernamePasswordAuthenticationToken(customUserDetails, "", customUserDetails.getAuthorities());
     }
 
     public String resolveToken(HttpServletRequest request) {
