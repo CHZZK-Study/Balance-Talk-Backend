@@ -26,13 +26,16 @@ public class UserArgumentResolver implements HandlerMethodArgumentResolver {
     @Override
     public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,
                                   NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
+
         HttpServletRequest httpServletRequest = (HttpServletRequest) webRequest.getNativeRequest();
 
-        if (httpServletRequest == null) {
-            throw new BalanceTalkException(ErrorCode.INVALID_HANDLER_RESOLVER);
+        String token = jwtTokenProvider.resolveToken(httpServletRequest);
+
+        // 임시 추가
+        if (token == null) {
+            return null;
         }
 
-        String token = jwtTokenProvider.resolveToken(httpServletRequest);
         jwtTokenProvider.validateToken(token);
         String email = jwtTokenProvider.getPayload(token);
         return new TokenDto(email);
