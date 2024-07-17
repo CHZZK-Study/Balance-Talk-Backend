@@ -1,13 +1,12 @@
 package balancetalk.global.oauth2;
 
+import static balancetalk.global.jwt.JwtTokenProvider.createAccessCookie;
 import static balancetalk.global.jwt.JwtTokenProvider.createCookie;
-
 import balancetalk.global.jwt.JwtTokenProvider;
 import balancetalk.global.oauth2.dto.CustomOAuth2User;
 import balancetalk.member.domain.Member;
 import balancetalk.member.domain.MemberRepository;
 import jakarta.servlet.ServletException;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -45,6 +44,7 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
 
         response.addCookie(createCookie(refreshToken));
+        response.addCookie(createAccessCookie(accessToken));
         response.sendRedirect("http://localhost:3000/");
     }
 }
