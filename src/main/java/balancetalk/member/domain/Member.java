@@ -53,7 +53,7 @@ public class Member extends BaseTimeEntity {
     private List<TalkPick> talkPicks = new ArrayList<>();
 
     @OneToMany(mappedBy = "member")
-    private List<Like> talkPickLikes = new ArrayList<>();
+    private List<Like> likes = new ArrayList<>();
 
     public void updateNickname(String nickname) {
         this.nickname = nickname;
