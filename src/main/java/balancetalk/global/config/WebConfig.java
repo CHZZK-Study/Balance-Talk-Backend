@@ -1,7 +1,8 @@
 package balancetalk.global.config;
 
 import balancetalk.global.jwt.JwtTokenProvider;
-import balancetalk.global.jwt.UserArgumentResolver;
+import balancetalk.global.jwt.GuestOrApiMemberArgumentResolver;
+import balancetalk.global.jwt.ApiMemberArgumentResolver;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
@@ -16,6 +17,7 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
-        resolvers.add(new UserArgumentResolver(jwtTokenProvider));
+        resolvers.add(new GuestOrApiMemberArgumentResolver(jwtTokenProvider));
+        resolvers.add(new ApiMemberArgumentResolver(jwtTokenProvider));
     }
 }

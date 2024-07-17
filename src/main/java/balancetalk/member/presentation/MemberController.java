@@ -2,6 +2,7 @@ package balancetalk.member.presentation;
 
 import balancetalk.global.utils.AuthPrincipal;
 import balancetalk.member.application.MemberService;
+import balancetalk.member.dto.ApiMember;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
@@ -15,9 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
-
 import static balancetalk.member.dto.MemberDto.*;
 
 @Slf4j
@@ -62,9 +61,9 @@ public class MemberController {
     @PutMapping(value = "/nickname", consumes = "text/plain")
     @Operation(summary = "회원 닉네임 수정", description = "회원 닉네임을 수정한다.")
     public void updateNickname(@Valid @NotBlank @RequestBody @Size(min = 2, max = 10) String newNickname, @AuthPrincipal
-    TokenDto tokenDto) {
+    ApiMember apiMember) {
         // TODO: RequestBody 빈 값일 때 에러체킹 x
-        memberService.updateNickname(newNickname, tokenDto);
+        memberService.updateNickname(newNickname, apiMember);
     }
 
     @ResponseStatus(HttpStatus.OK)
@@ -72,9 +71,9 @@ public class MemberController {
     @Operation(summary = "회원 비밀번호 수정", description = "회원 패스워드를 수정한다.")
     public void updatePassword(@RequestBody @Size(min = 10, max = 20)
                                @Pattern(regexp = "^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d@$!%*#?&]{10,20}$")
-                               String newPassword, @AuthPrincipal TokenDto tokenDto) {
+                               String newPassword, @AuthPrincipal ApiMember apiMember) {
         // TODO: RequestBody 빈 값일 때 에러체킹 x
-        memberService.updatePassword(newPassword, tokenDto);
+        memberService.updatePassword(newPassword, apiMember);
     }
 
 //    @ResponseStatus(HttpStatus.OK)
@@ -87,8 +86,8 @@ public class MemberController {
     @ResponseStatus(HttpStatus.OK)
     @DeleteMapping
     @Operation(summary = "회원 삭제", description = "회원 정보를 삭제한다.")
-    public void deleteMember(@Valid @RequestBody LoginRequest loginRequest, @AuthPrincipal TokenDto tokenDto) {
-        memberService.delete(loginRequest, tokenDto);
+    public void deleteMember(@Valid @RequestBody LoginRequest loginRequest, @AuthPrincipal ApiMember apiMember) {
+        memberService.delete(loginRequest, apiMember);
     }
 
     @ResponseStatus(HttpStatus.OK)
