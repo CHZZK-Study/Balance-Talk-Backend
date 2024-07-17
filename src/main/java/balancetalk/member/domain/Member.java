@@ -1,6 +1,7 @@
 package balancetalk.member.domain;
 
 import balancetalk.bookmark.domain.Bookmark;
+import balancetalk.bookmark.domain.BookmarkType;
 import balancetalk.global.common.BaseTimeEntity;
 import balancetalk.like.domain.Like;
 import balancetalk.talkpick.domain.TalkPick;
@@ -61,5 +62,9 @@ public class Member extends BaseTimeEntity {
 
     public void updatePassword(String password) {
         this.password = password;
+    }
+
+    public boolean hasBookmarked(Long resourceId, BookmarkType bookmarkType) {
+        return this.bookmarks.stream().anyMatch(bookmark -> bookmark.isMatches(resourceId, bookmarkType));
     }
 }

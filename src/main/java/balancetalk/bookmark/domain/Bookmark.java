@@ -31,4 +31,16 @@ public class Bookmark extends BaseTimeEntity {
     @NotBlank
     @Enumerated(EnumType.STRING)
     private BookmarkType bookmarkType;
+
+    public boolean isMatches(long resourceId, BookmarkType bookmarkType) {
+        return isEqualsResourceId(resourceId) && isEqualsType(bookmarkType);
+    }
+
+    private boolean isEqualsResourceId(long resourceId) {
+        return this.resourceId.equals(resourceId);
+    }
+
+    private boolean isEqualsType(BookmarkType bookmarkType) {
+        return this.bookmarkType == bookmarkType;
+    }
 }
