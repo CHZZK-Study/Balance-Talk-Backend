@@ -1,7 +1,6 @@
 package balancetalk.global.jwt;
 
 import balancetalk.global.utils.AuthPrincipal;
-import balancetalk.member.domain.MemberRepository;
 import balancetalk.member.dto.GuestOrApiMember;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -31,7 +30,6 @@ public class GuestOrApiMemberArgumentResolver implements HandlerMethodArgumentRe
                                             NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
         HttpServletRequest request = (HttpServletRequest) webRequest.getNativeRequest();
         String accessToken = jwtTokenProvider.resolveToken(request);
-        log.info("accessToken={}", accessToken);
 
         if (accessToken == null) { // 비회원일 때
             return new GuestOrApiMember("guest");

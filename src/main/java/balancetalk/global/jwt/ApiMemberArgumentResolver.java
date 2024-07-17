@@ -3,7 +3,6 @@ package balancetalk.global.jwt;
 import balancetalk.global.exception.BalanceTalkException;
 import balancetalk.global.exception.ErrorCode;
 import balancetalk.global.utils.AuthPrincipal;
-import balancetalk.member.domain.MemberRepository;
 import balancetalk.member.dto.ApiMember;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +20,6 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 public class ApiMemberArgumentResolver implements HandlerMethodArgumentResolver {
 
     private final JwtTokenProvider jwtTokenProvider;
-    private final MemberRepository memberRepository;
 
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
@@ -34,7 +32,6 @@ public class ApiMemberArgumentResolver implements HandlerMethodArgumentResolver 
                                             NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
         HttpServletRequest request = (HttpServletRequest) webRequest.getNativeRequest();
         String accessToken = jwtTokenProvider.resolveToken(request);
-        log.info("accessToken={}", accessToken);
 
         if (accessToken == null) {
             throw new BalanceTalkException(ErrorCode.NOT_FOUND_MEMBER);
