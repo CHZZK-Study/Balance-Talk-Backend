@@ -14,6 +14,7 @@ import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Entity
 @Builder
@@ -65,6 +66,13 @@ public class Member extends BaseTimeEntity {
     }
 
     public boolean hasBookmarked(Long resourceId, BookmarkType bookmarkType) {
-        return this.bookmarks.stream().anyMatch(bookmark -> bookmark.isMatches(resourceId, bookmarkType));
+        return this.bookmarks.stream()
+                .anyMatch(bookmark -> bookmark.matches(resourceId, bookmarkType));
+    }
+
+    public Optional<Vote> getVoteOnTalkPick(TalkPick talkPick) {
+        return this.votes.stream()
+                .filter(vote -> vote.matchesTalkPick(talkPick))
+                .findAny();
     }
 }

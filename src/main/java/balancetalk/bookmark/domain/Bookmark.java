@@ -32,7 +32,7 @@ public class Bookmark extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     private BookmarkType bookmarkType;
 
-    public boolean isMatches(long resourceId, BookmarkType bookmarkType) {
+    public boolean matches(long resourceId, BookmarkType bookmarkType) {
         return isEqualsResourceId(resourceId) && isEqualsType(bookmarkType);
     }
 
