@@ -1,5 +1,6 @@
 package balancetalk.game.presentation;
 
+import balancetalk.game.application.GameService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -8,10 +9,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.Arrays;
 import java.util.List;
-
 import static balancetalk.game.dto.GameDto.*;
 
 @Slf4j
@@ -20,6 +19,8 @@ import static balancetalk.game.dto.GameDto.*;
 @RequestMapping("/games")
 @Tag(name = "game", description = "밸런스 게임 API")
 public class GameController {
+
+    private final GameService gameService;
 
     @PostMapping
     @Operation(summary = "밸런스 게임 생성", description = "밸런스 게임을 생성합니다.")
