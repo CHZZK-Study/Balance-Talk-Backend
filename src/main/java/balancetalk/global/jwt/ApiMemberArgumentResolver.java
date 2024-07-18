@@ -28,22 +28,8 @@ public class ApiMemberArgumentResolver implements HandlerMethodArgumentResolver 
     }
 
     @Override
-<<<<<<< HEAD:src/main/java/balancetalk/global/jwt/UserArgumentResolver.java
-    public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,
-                                  NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
-
-        HttpServletRequest httpServletRequest = (HttpServletRequest) webRequest.getNativeRequest();
-
-        String token = jwtTokenProvider.resolveToken(httpServletRequest);
-
-        // 임시 추가
-        if (token == null) {
-            return null;
-        }
-
-=======
     public ApiMember resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,
-                                            NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
+                                     NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
         HttpServletRequest request = (HttpServletRequest) webRequest.getNativeRequest();
         String accessToken = jwtTokenProvider.resolveToken(request);
 
@@ -52,7 +38,6 @@ public class ApiMemberArgumentResolver implements HandlerMethodArgumentResolver 
         }
 
         String token = jwtTokenProvider.resolveToken(request);
->>>>>>> 82069c9883056247cf39fa48ba164beca46020ac:src/main/java/balancetalk/global/jwt/ApiMemberArgumentResolver.java
         jwtTokenProvider.validateToken(token);
         String email = jwtTokenProvider.getPayload(token);
 
