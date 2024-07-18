@@ -8,6 +8,7 @@ import balancetalk.like.domain.LikeRepository;
 import balancetalk.like.dto.LikeDto;
 import balancetalk.member.domain.Member;
 import balancetalk.member.domain.MemberRepository;
+import balancetalk.member.dto.ApiMember;
 import balancetalk.talkpick.domain.repository.TalkPickRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -30,10 +31,10 @@ public class CommentLikeService {
     private final TalkPickRepository talkPickRepository;
 
     @Transactional
-    public void likeComment(Long commentId, Long talkPickId) {
+    public void likeComment(Long commentId, Long talkPickId, ApiMember apiMember) {
         // 톡픽, 댓글, 회원 존재 여부 예외 처리
         validateTalkPick(talkPickId);
-        Member member = getCurrentMember(memberRepository);
+        Member member = apiMember.toMember(memberRepository);
 
         // 톡픽에 속한 댓글이 아닐 경우 예외 처리
         Comment comment = validateCommentByTalkPick(commentId, talkPickId);
@@ -55,9 +56,9 @@ public class CommentLikeService {
     }
 
     @Transactional
-    public void unLikeComment(Long commentId, Long talkPickId) {
+    public void unLikeComment(Long commentId, Long talkPickId, ApiMember apiMember) {
         validateTalkPick(talkPickId);
-        Member member = getCurrentMember(memberRepository);
+        Member member = apiMember.toMember(memberRepository);
 
         // 톡픽에 속한 댓글이 아닐 경우 예외 처리
         Comment comment = validateCommentByTalkPick(commentId, talkPickId);
