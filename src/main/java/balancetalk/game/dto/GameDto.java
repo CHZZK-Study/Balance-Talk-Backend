@@ -1,9 +1,12 @@
 package balancetalk.game.dto;
 
+import balancetalk.game.domain.GameTopic;
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 public class GameDto {
 
@@ -68,5 +71,22 @@ public class GameDto {
 
         @Schema(description = "투표 여부", example = "false")
         private Boolean myVote;
+    }
+
+    @Data
+    @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Schema(description = "밸런스 게임 주제 생성")
+    public static class GameTopicCreateRequest {
+
+        @Schema(description = "밸런스 게임 주제", example = "인기")
+        private String name;
+
+        public GameTopic toEntity() {
+            return GameTopic.builder()
+                    .name(name)
+                    .build();
+        }
     }
 }
