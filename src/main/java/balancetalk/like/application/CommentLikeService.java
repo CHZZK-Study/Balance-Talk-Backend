@@ -13,9 +13,9 @@ import balancetalk.talkpick.domain.repository.TalkPickRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import java.util.Optional;
 
 import static balancetalk.global.exception.ErrorCode.*;
-import static balancetalk.global.utils.SecurityUtils.getCurrentMember;
 
 @Service
 @Transactional
@@ -45,14 +45,20 @@ public class CommentLikeService {
         }
 
         // 이미 좋아요를 누른 댓글일 경우 예외 처리
-        boolean alreadyLiked = likeRepository.existsByResourceIdAndMemberId(commentId, member.getId());
+        Optional<Like> existingLike = likeRepository.findByResourceIdAndMemberId(commentId, member.getId());
 
-        if (alreadyLiked) {
+        if (existingLike.isPresent() && existingLike.get().getActive()) {
             throw new BalanceTalkException(ALREADY_LIKED_COMMENT);
         }
 
-        Like commentLike = LikeDto.CreateLikeRequest.toEntity(commentId, member);
-        likeRepository.save(commentLike);
+        // 이미 좋아요가 존재하지만 비활성화 상태인 경우 활성화 처리
+        if (existingLike.isPresent()) {
+            Like commentLike = existingLike.get();
+            commentLike.activate();
+        } else {
+            Like commentLike = LikeDto.CreateLikeRequest.toEntity(commentId, member);
+            likeRepository.save(commentLike);
+        }
     }
 
     @Transactional
