@@ -7,7 +7,6 @@ import lombok.NoArgsConstructor;
 
 @Embeddable
 @Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Summary {
 
     String summaryFirstLine;
