@@ -81,7 +81,7 @@ public class CommentService {
     }
 
     @Transactional(readOnly = true)
-    public Page<CommentDto.CommentResponse> findAllComments(Long talkPickId, String token, Pageable pageable,
+    public Page<CommentDto.CommentResponse> findAllComments(Long talkPickId, Pageable pageable,
                                                             GuestOrApiMember guestOrApiMember) {
         validateTalkPickId(talkPickId);
 
