@@ -7,9 +7,11 @@ import balancetalk.talkpick.domain.TalkPick;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
+@Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Vote extends BaseTimeEntity {
 
@@ -35,4 +37,8 @@ public class Vote extends BaseTimeEntity {
     @NotBlank
     @Enumerated(value = EnumType.STRING)
     private VoteOption voteOption;
+
+    public boolean matchesTalkPick(TalkPick talkPick) {
+        return this.talkPick.equals(talkPick);
+    }
 }

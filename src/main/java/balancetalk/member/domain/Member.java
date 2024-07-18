@@ -1,6 +1,7 @@
 package balancetalk.member.domain;
 
 import balancetalk.bookmark.domain.Bookmark;
+import balancetalk.bookmark.domain.BookmarkType;
 import balancetalk.global.common.BaseTimeEntity;
 import balancetalk.like.domain.Like;
 import balancetalk.talkpick.domain.TalkPick;
@@ -13,6 +14,7 @@ import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Entity
 @Builder
@@ -53,7 +55,7 @@ public class Member extends BaseTimeEntity {
     private List<TalkPick> talkPicks = new ArrayList<>();
 
     @OneToMany(mappedBy = "member")
-    private List<Like> talkPickLikes = new ArrayList<>();
+    private List<Like> likes = new ArrayList<>();
 
     public void updateNickname(String nickname) {
         this.nickname = nickname;
@@ -61,5 +63,16 @@ public class Member extends BaseTimeEntity {
 
     public void updatePassword(String password) {
         this.password = password;
+    }
+
+    public boolean hasBookmarked(Long resourceId, BookmarkType bookmarkType) {
+        return this.bookmarks.stream()
+                .anyMatch(bookmark -> bookmark.matches(resourceId, bookmarkType));
+    }
+
+    public Optional<Vote> getVoteOnTalkPick(TalkPick talkPick) {
+        return this.votes.stream()
+                .filter(vote -> vote.matchesTalkPick(talkPick))
+                .findAny();
     }
 }

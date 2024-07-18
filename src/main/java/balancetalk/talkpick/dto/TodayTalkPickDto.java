@@ -16,9 +16,6 @@ public class TodayTalkPickDto {
         @Schema(description = "제목", example = "톡픽 제목")
         private String title;
 
-        @Schema(description = "요약", example = "3줄 요약")
-        private String summary;
-
         @Schema(description = "선택지 A 이름", example = "선택지 A 이름")
         private String optionA; // TODO "O"로 자동 지정
 
@@ -26,10 +23,9 @@ public class TodayTalkPickDto {
         private String optionB; // TODO "X"로 자동 지정
 
         @QueryProjection
-        public TodayTalkPickResponse(Long id, String title, String summary, String optionA, String optionB) {
+        public TodayTalkPickResponse(Long id, String title, String optionA, String optionB) {
             this.id = id;
             this.title = title;
-            this.summary = summary;
             this.optionA = optionA;
             this.optionB = optionB;
         }
