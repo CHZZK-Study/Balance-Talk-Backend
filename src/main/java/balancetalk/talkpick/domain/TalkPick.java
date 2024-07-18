@@ -31,9 +31,8 @@ public class TalkPick extends BaseTimeEntity {
     @Size(max = 255)
     private String title;
 
-    @NotBlank
-    @Size(max = 255)
-    private String summary;
+    @Embedded
+    private Summary summary;
 
     @NotBlank
     @Size(max = 255)

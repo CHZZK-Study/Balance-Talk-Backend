@@ -45,8 +45,7 @@ public class TalkPickDto {
         @Schema(description = "본문 내용", example = "톡픽 본문 내용")
         private String content;
 
-        @Schema(description = "요약", example = "3줄 요약")
-        private String summary;
+        private SummaryDto summary;
 
         @Schema(description = "선택지 A 이름", example = "선택지 A 이름")
         private String optionA; // TODO "O"로 자동 지정
@@ -68,7 +67,7 @@ public class TalkPickDto {
                     .id(entity.getId())
                     .title(entity.getTitle())
                     .content(entity.getContent())
-                    .summary(entity.getSummary())
+                    .summary(new SummaryDto(entity.getSummary()))
                     .optionA(entity.getOptionA())
                     .optionB(entity.getOptionB())
                     .views(entity.getViews())
