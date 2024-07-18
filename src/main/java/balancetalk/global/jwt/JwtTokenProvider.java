@@ -87,15 +87,25 @@ public class JwtTokenProvider {
         return cookie;
     }
 
+    public static Cookie createAccessCookie(String accessToken) {
+        String cookieName = "accessToken";
+        Cookie cookie = new Cookie(cookieName, accessToken);
+        cookie.setHttpOnly(true);
+        cookie.setSecure(true);
+        cookie.setPath("/");
+        cookie.setMaxAge(60 * 60 * 24);
+        return cookie;
+    }
+
     public Authentication getAuthenticationByEmail(String email) {
-        UserDetails userDetails = myUserDetailService.loadUserByUsername(email);
-        return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
+        CustomUserDetails customUserDetails = myUserDetailService.loadUserByUsername(email);
+        return new UsernamePasswordAuthenticationToken(customUserDetails, "", customUserDetails.getAuthorities());
     }
 
     public Authentication getAuthenticationByToken(String token) {
         String userPrincipal = Jwts.parserBuilder().setSigningKey(secretKey).build().parseClaimsJws(token).getBody().getSubject();
-        UserDetails userDetails = myUserDetailService.loadUserByUsername(userPrincipal);
-        return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
+        CustomUserDetails customUserDetails = myUserDetailService.loadUserByUsername(userPrincipal);
+        return new UsernamePasswordAuthenticationToken(customUserDetails, "", customUserDetails.getAuthorities());
     }
 
     public String resolveToken(HttpServletRequest request) {
@@ -104,10 +114,6 @@ public class JwtTokenProvider {
             return bearerToken.substring(7);
         }
         return null;
-    }
-
-    public String getUsername(String token) {
-        return Jwts.parserBuilder().setSigningKey(secretKey).build().parseClaimsJws(token).getBody().get("username", String.class);
     }
 
     public String getRole(String token) {

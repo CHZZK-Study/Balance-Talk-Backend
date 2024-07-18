@@ -1,23 +1,24 @@
 package balancetalk.global.oauth2;
 
-import static balancetalk.global.jwt.JwtTokenProvider.createCookie;
-
 import balancetalk.global.jwt.JwtTokenProvider;
 import balancetalk.global.oauth2.dto.CustomOAuth2User;
 import balancetalk.member.domain.Member;
 import balancetalk.member.domain.MemberRepository;
 import jakarta.servlet.ServletException;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.util.Collection;
-import java.util.Iterator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
+
+import java.io.IOException;
+import java.util.Collection;
+import java.util.Iterator;
+
+import static balancetalk.global.jwt.JwtTokenProvider.createAccessCookie;
+import static balancetalk.global.jwt.JwtTokenProvider.createCookie;
 
 @Component
 @RequiredArgsConstructor
@@ -45,6 +46,7 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
 
         response.addCookie(createCookie(refreshToken));
+        response.addCookie(createAccessCookie(accessToken));
         response.sendRedirect("http://localhost:3000/");
     }
 }

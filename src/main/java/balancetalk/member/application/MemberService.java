@@ -7,10 +7,10 @@ import balancetalk.global.jwt.JwtTokenProvider;
 import balancetalk.global.redis.application.RedisService;
 import balancetalk.member.domain.Member;
 import balancetalk.member.domain.MemberRepository;
+import balancetalk.member.dto.ApiMember;
 import balancetalk.member.dto.MemberDto.JoinRequest;
 import balancetalk.member.dto.MemberDto.LoginRequest;
 import balancetalk.member.dto.MemberDto.MemberResponse;
-import balancetalk.member.dto.MemberDto.TokenDto;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -25,7 +25,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static balancetalk.global.exception.ErrorCode.*;
+import static balancetalk.global.exception.ErrorCode.ALREADY_REGISTERED_EMAIL;
+import static balancetalk.global.exception.ErrorCode.ALREADY_REGISTERED_NICKNAME;
 
 @Slf4j
 @Service
@@ -38,7 +39,6 @@ public class MemberService {
     private final FileRepository fileRepository;
     private final PasswordEncoder passwordEncoder;
     private final RedisService redisService;
-    private final MyUserDetailService myUserDetailService;
 
     public Long join(final JoinRequest joinRequest) {
         if (memberRepository.existsByEmail(joinRequest.getEmail())) {
@@ -87,19 +87,16 @@ public class MemberService {
                 .collect(Collectors.toList());
     }
 
-    public void updateNickname(final String newNickname, TokenDto tokenDto) {
-        Member member = memberRepository.findByEmail(tokenDto.getEmail())
-                .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_MEMBER));
-
+    public void updateNickname(final String newNickname, ApiMember apiMember) {
+        Member member = apiMember.toMember(memberRepository);
         if (member.getNickname().equals(newNickname)) {
             throw new BalanceTalkException(ErrorCode.SAME_NICKNAME);
         }
         member.updateNickname(newNickname);
     }
 
-    public void updatePassword(final String newPassword, TokenDto tokenDto) {
-        Member member = memberRepository.findByEmail(tokenDto.getEmail())
-                .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_MEMBER));
+    public void updatePassword(final String newPassword, ApiMember apiMember) {
+        Member member = apiMember.toMember(memberRepository);
         if (passwordEncoder.matches(newPassword, member.getPassword())) {
             throw new BalanceTalkException(ErrorCode.SAME_PASSWORD);
         }
@@ -114,9 +111,8 @@ public class MemberService {
 //        member.updateImage(file);
 //    }
 
-    public void delete(final LoginRequest loginRequest, TokenDto tokenDto) {
-        Member member = memberRepository.findByEmail(tokenDto.getEmail())
-                .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_MEMBER));
+    public void delete(final LoginRequest loginRequest, ApiMember apiMember) {
+        Member member = apiMember.toMember(memberRepository);
         if (!member.getEmail().equals(loginRequest.getEmail())) {
             throw new BalanceTalkException(ErrorCode.FORBIDDEN_MEMBER_DELETE);
         }
