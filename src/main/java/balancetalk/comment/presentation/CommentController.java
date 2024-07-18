@@ -48,14 +48,15 @@ public class CommentController {
                                                                           @AuthPrincipal GuestOrApiMember guestOrApiMember) {
         Pageable sortedByCreatedAtDesc = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(),
                 Sort.by("createdAt").descending());
-        return commentService.findAllComments(talkPickId, token, sortedByCreatedAtDesc);
+        return commentService.findAllComments(talkPickId, token, sortedByCreatedAtDesc, guestOrApiMember);
     }
 
     @GetMapping("/best")
     @Operation(summary = "베스트 댓글 목록 조회", description = "talkPick-id에 해당하는 게시글에 있는 모든 댓글 및 답글을 베스트 및 좋아요 순으로 정렬해 조회한다.")
     public Page<CommentResponse> findAllBestCommentsByPostId(@PathVariable Long talkPickId, Pageable pageable,
-                                                             @RequestHeader(value = "Authorization", required = false) String token) {
-        return commentService.findAllBestComments(talkPickId, pageable);
+                                                             @RequestHeader(value = "Authorization", required = false) String token,
+                                                             @AuthPrincipal GuestOrApiMember guestOrApiMember) {
+        return commentService.findAllBestComments(talkPickId, pageable, guestOrApiMember);
     }
 
     @PutMapping("/{commentId}")
