@@ -38,7 +38,7 @@ public class VoteTalkPickController {
 
     @Operation(summary = "톡픽 투표 수정", description = "톡픽 투표를 수정합니다.")
     @PutMapping
-    public void updateVoteResultTalkPick(@PathVariable Long talkPickId,
+    public void updateVoteResultTalkPick(@PathVariable long talkPickId,
                                          @RequestBody VoteRequest request,
                                          @AuthPrincipal ApiMember apiMember) {
         voteTalkPickService.updateVote(talkPickId, request, apiMember);
@@ -46,7 +46,7 @@ public class VoteTalkPickController {
 
     @Operation(summary = "톡픽 투표 삭제", description = "톡픽 투표를 삭제합니다.")
     @DeleteMapping
-    public void deleteVoteTalkPick(@PathVariable Long talkPickId,
+    public void deleteVoteTalkPick(@PathVariable long talkPickId,
                                    @AuthPrincipal ApiMember apiMember) {
         voteTalkPickService.deleteVote(talkPickId, apiMember);
     }

@@ -44,7 +44,7 @@ public class VoteTalkPickService {
     }
 
     @Transactional
-    public void updateVote(Long talkPickId, VoteRequest request, ApiMember apiMember) {
+    public void updateVote(long talkPickId, VoteRequest request, ApiMember apiMember) {
         TalkPick talkPick = talkPickReader.readTalkPickById(talkPickId);
         Member member = apiMember.toMember(memberRepository);
 
@@ -57,7 +57,7 @@ public class VoteTalkPickService {
     }
 
     @Transactional
-    public void deleteVote(Long talkPickId, ApiMember apiMember) {
+    public void deleteVote(long talkPickId, ApiMember apiMember) {
         TalkPick talkPick = talkPickReader.readTalkPickById(talkPickId);
         Member member = apiMember.toMember(memberRepository);
 
