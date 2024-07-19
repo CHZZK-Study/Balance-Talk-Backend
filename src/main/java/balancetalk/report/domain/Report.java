@@ -30,6 +30,9 @@ public class Report extends BaseTimeEntity {
     @NotBlank
     private String reason;
 
+    @NotBlank
+    private String reportedContent;
+
     @ManyToOne
     @JoinColumn(name = "reporter_id")
     private Member reporter;
