@@ -11,6 +11,7 @@ import balancetalk.vote.domain.VoteRepository;
 import balancetalk.vote.dto.VoteTalkPickDto.VoteRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -20,6 +21,7 @@ public class VoteTalkPickService {
     private final VoteRepository voteRepository;
     private final MemberRepository memberRepository;
 
+    @Transactional
     public void createVote(long talkPickId, VoteRequest request, GuestOrApiMember guestOrApiMember) {
         TalkPick talkPick = talkPickReader.readTalkPickById(talkPickId);
 
