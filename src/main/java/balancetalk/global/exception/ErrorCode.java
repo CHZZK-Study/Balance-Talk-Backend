@@ -30,6 +30,7 @@ public enum ErrorCode {
     INVALID_VOTE_OPTION(BAD_REQUEST, "존재하지 않는 선택지입니다."),
     NOT_ATTACH_IMAGE(BAD_REQUEST, "이미지를 첨부하지 않아 문제가 발생했습니다."),
     NOT_SUPPORTED_FILE_FORMAT(BAD_REQUEST, "지원하지 않는 파일 형식입니다."),
+    REPORT_MY_COMMENT(BAD_REQUEST, "본인의 댓글을 신고할 수 없습니다"),
 
     // 401
     MISMATCHED_EMAIL_OR_PASSWORD(UNAUTHORIZED, "이메일 또는 비밀번호가 잘못되었습니다."),
