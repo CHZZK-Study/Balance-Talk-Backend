@@ -56,15 +56,6 @@ public class GameDto {
 
         @Schema(description = "선택지 B 이름", example = "선택지 B 이름")
         private String optionB;
-
-        @Schema(description = "북마크 여부", example = "true")
-        private Boolean myBookmark;
-
-        @Schema(description = "투표 여부", example = "true")
-        private Boolean myVote;
-
-        @Schema(description = "투표한 선택지", example = "A")
-        private VoteOption votedOption;
     }
 
     @Data
@@ -85,11 +76,20 @@ public class GameDto {
         @Schema(description = "선택지 B 이름", example = "선택지 B 이름")
         private String optionB;
 
+        @Schema(description = "조회수", example = "3")
+        private Long views;
+
         @Schema(description = "북마크 여부", example = "false")
         private Boolean myBookmark;
 
         @Schema(description = "투표 여부", example = "false")
         private Boolean myVote;
+
+        @Schema(description = "투표한 선택지", example = "A")
+        private VoteOption votedOption;
+
+        @Schema(description = "밸런스 게임 주제", example = "커플")
+        private String name;
     }
 
     @Data

@@ -5,6 +5,7 @@ import balancetalk.member.domain.Member;
 import balancetalk.vote.domain.Vote;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.PositiveOrZero;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 
@@ -45,6 +46,9 @@ public class Game extends BaseTimeEntity {
     private String optionAImg;
 
     private String optionBImg;
+
+    @PositiveOrZero
+    private Long views = 0L;
 
     @OneToMany(mappedBy = "game")
     private List<Vote> votes = new ArrayList<>();
