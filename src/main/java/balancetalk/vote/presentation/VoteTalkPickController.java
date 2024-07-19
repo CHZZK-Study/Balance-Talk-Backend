@@ -25,7 +25,7 @@ public class VoteTalkPickController {
     public void createVoteTalkPick(@PathVariable long talkPickId,
                                    @RequestBody VoteRequest request,
                                    @AuthPrincipal GuestOrApiMember guestOrApiMember) {
-        voteTalkPickService.vote(talkPickId, request, guestOrApiMember);
+        voteTalkPickService.createVote(talkPickId, request, guestOrApiMember);
     }
 
     @Operation(summary = "톡픽 투표 결과 조회", description = "톡픽 투표 결과를 조회합니다.")
