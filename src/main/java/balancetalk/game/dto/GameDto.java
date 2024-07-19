@@ -1,8 +1,9 @@
 package balancetalk.game.dto;
 
+import balancetalk.game.domain.Game;
 import balancetalk.game.domain.GameTopic;
+import balancetalk.vote.domain.VoteOption;
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -14,7 +15,7 @@ public class GameDto {
     @Builder
     @AllArgsConstructor
     @Schema(description = "밸런스 게임 생성 요청")
-    public static class GameRequest {
+    public static class CreateGameRequest {
 
         @Schema(description = "제목", example = "제목")
         private String title;
@@ -24,6 +25,18 @@ public class GameDto {
 
         @Schema(description = "선택지 B 이름", example = "선택지 B 이름")
         private String optionB;
+
+        @Schema(description = "밸런스 게임 주제", example = "커플")
+        private String name;
+
+        public Game toEntity(GameTopic topic) {
+            return Game.builder()
+                    .title(title)
+                    .optionA(optionA)
+                    .optionB(optionB)
+                    .gameTopic(topic)
+                    .build();
+        }
     }
 
     @Data
@@ -44,8 +57,14 @@ public class GameDto {
         @Schema(description = "선택지 B 이름", example = "선택지 B 이름")
         private String optionB;
 
-        @Schema(description = "총 투표 수", example = "10")
-        private int totalVotes;
+        @Schema(description = "북마크 여부", example = "true")
+        private Boolean myBookmark;
+
+        @Schema(description = "투표 여부", example = "true")
+        private Boolean myVote;
+
+        @Schema(description = "투표한 선택지", example = "A")
+        private VoteOption votedOption;
     }
 
     @Data
@@ -78,9 +97,9 @@ public class GameDto {
     @AllArgsConstructor
     @NoArgsConstructor
     @Schema(description = "밸런스 게임 주제 생성")
-    public static class GameTopicCreateRequest {
+    public static class CreateGameTopicRequest {
 
-        @Schema(description = "밸런스 게임 주제", example = "인기")
+        @Schema(description = "밸런스 게임 주제", example = "커플")
         private String name;
 
         public GameTopic toEntity() {
