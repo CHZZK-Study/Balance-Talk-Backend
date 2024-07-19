@@ -35,6 +35,8 @@ public class CommentDto {
                     .talkPick(talkPick)
                     .voteOption(option) // TODO : Vote 구현 완료 후 member와 talkPick 이용해서 선택한 option 가져오기
                     .isBest(false)
+                    .isBlind(false)
+                    .reportedCount(0)
                     .build();
         }
 
@@ -102,6 +104,12 @@ public class CommentDto {
         @Schema(description = "베스트 댓글 여부", example = "true")
         private boolean isBest;
 
+        @Schema(description = "댓글 블라인드 처리 여부", example = "false")
+        private boolean isBlind;
+
+        @Schema(description = "댓글이 신고당한 횟수", example = "0")
+        private int reportedCount;
+
         @Schema(description = "댓글 생성 날짜")
         private LocalDateTime createdAt;
 
@@ -119,7 +127,9 @@ public class CommentDto {
                     .myLike(myLike)
                     .parentId(comment.getParent() == null ? null : comment.getParent().getId())
                     .replyCount(comment.getReplies() == null ? 0 : comment.getReplies().size())
+                    .reportedCount(comment.getReportedCount())
                     .isBest(comment.getIsBest())
+                    .isBlind(comment.getIsBlind())
                     .createdAt(comment.getCreatedAt())
                     .lastModifiedAt(comment.getLastModifiedAt())
                     .build();
