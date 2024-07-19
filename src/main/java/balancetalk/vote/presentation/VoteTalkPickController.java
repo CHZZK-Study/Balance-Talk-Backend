@@ -1,6 +1,7 @@
 package balancetalk.vote.presentation;
 
 import balancetalk.global.utils.AuthPrincipal;
+import balancetalk.member.dto.ApiMember;
 import balancetalk.member.dto.GuestOrApiMember;
 import balancetalk.vote.application.VoteTalkPickService;
 import balancetalk.vote.dto.VoteTalkPickDto.VoteResultResponse;
@@ -28,6 +29,7 @@ public class VoteTalkPickController {
         voteTalkPickService.createVote(talkPickId, request, guestOrApiMember);
     }
 
+    // TODO 톡픽 조회에 포함하기
     @Operation(summary = "톡픽 투표 결과 조회", description = "톡픽 투표 결과를 조회합니다.")
     @GetMapping
     public VoteResultResponse getVoteResultTalkPick(@PathVariable Long talkPickId) {
@@ -37,6 +39,8 @@ public class VoteTalkPickController {
     @Operation(summary = "톡픽 투표 수정", description = "톡픽 투표를 수정합니다.")
     @PutMapping
     public void updateVoteResultTalkPick(@PathVariable Long talkPickId,
-                                         @RequestBody VoteRequest request) {
+                                         @RequestBody VoteRequest request,
+                                         @AuthPrincipal ApiMember apiMember) {
+        voteTalkPickService.updateVote(talkPickId, request, apiMember);
     }
 }

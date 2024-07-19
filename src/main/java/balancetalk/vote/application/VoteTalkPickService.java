@@ -4,14 +4,19 @@ import balancetalk.global.exception.BalanceTalkException;
 import balancetalk.global.exception.ErrorCode;
 import balancetalk.member.domain.Member;
 import balancetalk.member.domain.MemberRepository;
+import balancetalk.member.dto.ApiMember;
 import balancetalk.member.dto.GuestOrApiMember;
 import balancetalk.talkpick.domain.TalkPick;
 import balancetalk.talkpick.domain.TalkPickReader;
+import balancetalk.vote.domain.Vote;
 import balancetalk.vote.domain.VoteRepository;
+import balancetalk.vote.dto.VoteTalkPickDto;
 import balancetalk.vote.dto.VoteTalkPickDto.VoteRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -36,5 +41,18 @@ public class VoteTalkPickService {
         }
 
         voteRepository.save(request.toEntity(member, talkPick));
+    }
+
+    @Transactional
+    public void updateVote(Long talkPickId, VoteRequest request, ApiMember apiMember) {
+        TalkPick talkPick = talkPickReader.readTalkPickById(talkPickId);
+        Member member = apiMember.toMember(memberRepository);
+
+        Optional<Vote> vote = member.getVoteOnTalkPick(talkPick);
+        if (vote.isEmpty()) {
+            throw new BalanceTalkException(ErrorCode.NOT_FOUND_VOTE);
+        }
+
+        vote.get().updateVoteOption(request.getVoteOption());
     }
 }
