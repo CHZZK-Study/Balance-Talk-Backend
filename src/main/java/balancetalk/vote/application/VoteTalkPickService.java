@@ -55,4 +55,17 @@ public class VoteTalkPickService {
 
         vote.get().updateVoteOption(request.getVoteOption());
     }
+
+    @Transactional
+    public void deleteVote(Long talkPickId, ApiMember apiMember) {
+        TalkPick talkPick = talkPickReader.readTalkPickById(talkPickId);
+        Member member = apiMember.toMember(memberRepository);
+
+        Optional<Vote> vote = member.getVoteOnTalkPick(talkPick);
+        if (vote.isEmpty()) {
+            throw new BalanceTalkException(ErrorCode.NOT_FOUND_VOTE);
+        }
+
+        voteRepository.delete(vote.get());
+    }
 }

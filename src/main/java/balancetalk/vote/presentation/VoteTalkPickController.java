@@ -43,4 +43,11 @@ public class VoteTalkPickController {
                                          @AuthPrincipal ApiMember apiMember) {
         voteTalkPickService.updateVote(talkPickId, request, apiMember);
     }
+
+    @Operation(summary = "톡픽 투표 삭제", description = "톡픽 투표를 삭제합니다.")
+    @DeleteMapping
+    public void deleteVoteTalkPick(@PathVariable Long talkPickId,
+                                   @AuthPrincipal ApiMember apiMember) {
+        voteTalkPickService.deleteVote(talkPickId, apiMember);
+    }
 }
