@@ -2,6 +2,7 @@ package balancetalk.comment.domain;
 
 import balancetalk.global.common.BaseTimeEntity;
 import balancetalk.member.domain.Member;
+import balancetalk.report.domain.Report;
 import balancetalk.talkpick.domain.TalkPick;
 import balancetalk.talkpick.domain.ViewStatus;
 import balancetalk.vote.domain.VoteOption;
@@ -22,6 +23,8 @@ import java.util.List;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class Comment extends BaseTimeEntity {
 
+    private static final int MIN_COUNT_FOR_BLIND = 5;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -38,6 +41,14 @@ public class Comment extends BaseTimeEntity {
     private ViewStatus viewStatus;
 
     private Boolean isBest;
+
+    private Boolean isBlind;
+
+    @NotNull
+    private int reportedCount;
+
+    @OneToMany(mappedBy = "comment")
+    private List<Report> reports;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
@@ -61,5 +72,14 @@ public class Comment extends BaseTimeEntity {
 
     public void setIsBest(boolean isBest) {
         this.isBest = isBest;
+    }
+
+    public void incrementReportCount() { // TODO : 옵저버 패턴 도입 해도 좋을지도
+        this.reportedCount++;
+
+        if (this.reportedCount >= MIN_COUNT_FOR_BLIND) {
+            this.content = "신고된 댓글입니다.";
+            this.isBlind = true;
+        }
     }
 }
