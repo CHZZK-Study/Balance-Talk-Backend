@@ -12,6 +12,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.List;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
@@ -34,6 +36,7 @@ class TalkPickServiceTest {
         TalkPick talkPick = TalkPick.builder()
                 .id(1L)
                 .summary(new Summary())
+                .votes(List.of())
                 .views(0L)
                 .build();
 
@@ -54,6 +57,7 @@ class TalkPickServiceTest {
         TalkPick talkPick = TalkPick.builder()
                 .id(1L)
                 .summary(new Summary())
+                .votes(List.of())
                 .views(0L)
                 .build();
 
@@ -74,6 +78,7 @@ class TalkPickServiceTest {
         TalkPick talkPick = TalkPick.builder()
                 .id(1L)
                 .summary(new Summary())
+                .votes(List.of())
                 .views(0L)
                 .build();
 
