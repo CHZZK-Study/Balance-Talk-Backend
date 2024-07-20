@@ -43,9 +43,9 @@ dependencies {
 
 	// emailAuth
 	implementation 'org.springframework.boot:spring-boot-starter-mail'
+
 	// swagger
 	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.2'
-	implementation group: 'org.springdoc', name: 'springdoc-openapi-ui', version: '1.7.0'
 
 	// redis
 	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
