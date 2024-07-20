@@ -82,14 +82,24 @@ public class GameDto {
         @Schema(description = "북마크 여부", example = "false")
         private Boolean myBookmark;
 
-        @Schema(description = "투표 여부", example = "false")
-        private Boolean myVote;
-
         @Schema(description = "투표한 선택지", example = "A")
         private VoteOption votedOption;
 
         @Schema(description = "밸런스 게임 주제", example = "커플")
-        private String name;
+        private GameTopic gameTopic;
+
+        public static GameDetailResponse from(Game game, boolean myBookmark, VoteOption votedOption) {
+            return GameDetailResponse.builder()
+                    .id(game.getId())
+                    .title(game.getTitle())
+                    .optionA(game.getOptionA())
+                    .optionB(game.getOptionB())
+                    .views(game.getViews())
+                    .myBookmark(myBookmark)
+                    .votedOption(votedOption)
+                    .gameTopic(game.getGameTopic())
+                    .build();
+        }
     }
 
     @Data
