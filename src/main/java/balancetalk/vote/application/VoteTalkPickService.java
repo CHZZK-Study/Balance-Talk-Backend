@@ -10,7 +10,6 @@ import balancetalk.talkpick.domain.TalkPick;
 import balancetalk.talkpick.domain.TalkPickReader;
 import balancetalk.vote.domain.Vote;
 import balancetalk.vote.domain.VoteRepository;
-import balancetalk.vote.dto.VoteTalkPickDto;
 import balancetalk.vote.dto.VoteTalkPickDto.VoteRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
