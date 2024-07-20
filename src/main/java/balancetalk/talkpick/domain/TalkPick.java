@@ -3,6 +3,7 @@ package balancetalk.talkpick.domain;
 import balancetalk.global.common.BaseTimeEntity;
 import balancetalk.member.domain.Member;
 import balancetalk.vote.domain.Vote;
+import balancetalk.vote.domain.VoteOption;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.PositiveOrZero;
@@ -59,5 +60,11 @@ public class TalkPick extends BaseTimeEntity {
 
     public void increaseViews() {
         this.views++;
+    }
+
+    public long votesCountOf(VoteOption voteOption) {
+        return votes.stream()
+                .filter(vote -> vote.isVoteOptionEquals(voteOption))
+                .count();
     }
 }

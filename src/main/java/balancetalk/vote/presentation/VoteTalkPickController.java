@@ -4,7 +4,6 @@ import balancetalk.global.utils.AuthPrincipal;
 import balancetalk.member.dto.ApiMember;
 import balancetalk.member.dto.GuestOrApiMember;
 import balancetalk.vote.application.VoteTalkPickService;
-import balancetalk.vote.dto.VoteTalkPickDto.VoteResultResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -27,13 +26,6 @@ public class VoteTalkPickController {
                                    @RequestBody VoteRequest request,
                                    @Parameter(hidden = true) @AuthPrincipal GuestOrApiMember guestOrApiMember) {
         voteTalkPickService.createVote(talkPickId, request, guestOrApiMember);
-    }
-
-    // TODO 톡픽 조회에 포함하기
-    @Operation(summary = "톡픽 투표 결과 조회", description = "톡픽 투표 결과를 조회합니다.")
-    @GetMapping
-    public VoteResultResponse getVoteResultTalkPick(@PathVariable Long talkPickId) {
-        return new VoteResultResponse(23, 12);
     }
 
     @Operation(summary = "톡픽 투표 수정", description = "톡픽 투표를 수정합니다.")
