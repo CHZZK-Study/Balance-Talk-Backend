@@ -2,6 +2,7 @@ package balancetalk.game.presentation;
 
 import balancetalk.game.application.GameService;
 import balancetalk.global.utils.AuthPrincipal;
+import balancetalk.member.dto.ApiMember;
 import balancetalk.member.dto.GuestOrApiMember;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -27,8 +28,9 @@ public class GameController {
 
     @PostMapping
     @Operation(summary = "밸런스 게임 생성", description = "밸런스 게임을 생성합니다.")
-    public void createGame(@RequestBody final CreateGameRequest request) {
-        gameService.createBalanceGame(request);
+    public void createGame(@RequestBody final CreateGameRequest request,
+                           @Parameter(hidden = true) @AuthPrincipal final ApiMember apiMember) {
+        gameService.createBalanceGame(request, apiMember);
     }
 
     @GetMapping("/{gameId}")

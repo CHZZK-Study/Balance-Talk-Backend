@@ -12,6 +12,7 @@ import balancetalk.global.exception.BalanceTalkException;
 import balancetalk.global.exception.ErrorCode;
 import balancetalk.member.domain.Member;
 import balancetalk.member.domain.MemberRepository;
+import balancetalk.member.dto.ApiMember;
 import balancetalk.member.dto.GuestOrApiMember;
 import balancetalk.vote.domain.Vote;
 import jakarta.transaction.Transactional;
@@ -30,12 +31,14 @@ import org.springframework.stereotype.Service;
         private final MemberRepository memberRepository;
         private final GameTopicRepository gameTopicRepository;
 
-        public void createBalanceGame(CreateGameRequest request) {
+        public void createBalanceGame(CreateGameRequest request, ApiMember apiMember) {
+            Member member = apiMember.toMember(memberRepository);
+
             GameTopic gameTopic = gameTopicRepository.findByName(request.getName());
             if (gameTopic == null) {
                 throw new BalanceTalkException(ErrorCode.NOT_FOUND_GAME_TOPIC);
             }
-            Game game = request.toEntity(gameTopic);
+            Game game = request.toEntity(gameTopic, member);
             gameRepository.save(game);
         }
 

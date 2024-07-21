@@ -2,6 +2,7 @@ package balancetalk.game.dto;
 
 import balancetalk.game.domain.Game;
 import balancetalk.game.domain.GameTopic;
+import balancetalk.member.domain.Member;
 import balancetalk.vote.domain.VoteOption;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
@@ -29,12 +30,13 @@ public class GameDto {
         @Schema(description = "밸런스 게임 주제", example = "커플")
         private String name;
 
-        public Game toEntity(GameTopic topic) {
+        public Game toEntity(GameTopic topic, Member member) {
             return Game.builder()
                     .title(title)
                     .optionA(optionA)
                     .optionB(optionB)
                     .gameTopic(topic)
+                    .member(member)
                     .build();
         }
     }
