@@ -6,6 +6,7 @@ import balancetalk.member.dto.ApiMember;
 import balancetalk.report.application.ReportCommentService;
 import balancetalk.report.dto.ReportDto;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -29,7 +30,7 @@ public class ReportController {
     @Operation(summary = "댓글 신고", description = "comment-Id에 해당하는 댓글을 신고한다.")
     public void createCommentReport(@PathVariable Long talkPickId, @PathVariable Long commentId,
                                     @Valid @RequestBody CreateReportRequest createCommentRequest,
-                                    @AuthPrincipal ApiMember apiMember) {
+                                    @Parameter(hidden = true) @AuthPrincipal ApiMember apiMember) {
 
         reportCommentService.createCommentReport(createCommentRequest, apiMember, commentId, talkPickId);
     }
