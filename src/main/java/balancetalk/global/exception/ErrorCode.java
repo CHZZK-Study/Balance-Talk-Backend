@@ -1,10 +1,10 @@
 package balancetalk.global.exception;
 
+import static org.springframework.http.HttpStatus.*;
+
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-
-import static org.springframework.http.HttpStatus.*;
 
 @Getter
 @RequiredArgsConstructor
@@ -71,6 +71,8 @@ public enum ErrorCode {
     NOT_FOUND_NOTICE(NOT_FOUND, "존재하지 않는 공지사항입니다."),
     NOT_LIKED_COMMENT(NOT_FOUND, "해당 댓글을 좋아요한 기록이 존재하지 않습니다."),
     NOT_FOUND_LIKE(NOT_FOUND, "해당 좋아요가 존재하지 않습니다."),
+    NOT_FOUND_BALANCE_GAME(NOT_FOUND, "존재하지 않는 밸런스 게임입니다."),
+    NOT_FOUND_GAME_TOPIC(NOT_FOUND, "존재하지 않는 밸런스 게임 주제입니다."),
 
 
     // 409
