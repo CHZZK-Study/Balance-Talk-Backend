@@ -13,7 +13,9 @@ import balancetalk.global.exception.ErrorCode;
 import balancetalk.member.domain.Member;
 import balancetalk.member.domain.MemberRepository;
 import balancetalk.member.dto.GuestOrApiMember;
+import balancetalk.vote.domain.Vote;
 import jakarta.transaction.Transactional;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -48,8 +50,13 @@ import org.springframework.stereotype.Service;
 
             Member member = guestOrApiMember.toMember(memberRepository);
             boolean hasBookmarked = member.hasBookmarked(gameId, GAME);
+            Optional<Vote> myVote = member.getVoteOnGame(game);
 
-            return GameDetailResponse.from(game, hasBookmarked, null);  // TODO: 투표 임시로 null 처리
+            if (myVote.isEmpty()) {
+                return GameDetailResponse.from(game, hasBookmarked, null); // 투표한 게시글이 아닌경우 투표한 선택지는 null
+            }
+
+            return GameDetailResponse.from(game, hasBookmarked, myVote.get().getVoteOption());
         }
 
         public void createGameTopic(CreateGameTopicRequest request) {
