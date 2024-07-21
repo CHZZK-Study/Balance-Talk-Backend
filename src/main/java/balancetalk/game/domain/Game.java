@@ -49,7 +49,7 @@ public class Game extends BaseTimeEntity {
     private String optionBImg;
 
     @PositiveOrZero
-    private Long views = 0L;
+    private long views = 0L;
 
     @OneToMany(mappedBy = "game")
     private List<Vote> votes = new ArrayList<>();

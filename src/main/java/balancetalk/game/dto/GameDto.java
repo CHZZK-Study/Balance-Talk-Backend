@@ -77,7 +77,7 @@ public class GameDto {
         private String optionB;
 
         @Schema(description = "조회수", example = "3")
-        private Long views;
+        private long views;
 
         @Schema(description = "북마크 여부", example = "false")
         private Boolean myBookmark;
@@ -86,7 +86,7 @@ public class GameDto {
         private VoteOption votedOption;
 
         @Schema(description = "밸런스 게임 주제", example = "커플")
-        private GameTopic gameTopic;
+        private String name;
 
         public static GameDetailResponse from(Game game, boolean myBookmark, VoteOption votedOption) {
             return GameDetailResponse.builder()
@@ -97,7 +97,7 @@ public class GameDto {
                     .views(game.getViews())
                     .myBookmark(myBookmark)
                     .votedOption(votedOption)
-                    .gameTopic(game.getGameTopic())
+                    .name(game.getGameTopic().getName())
                     .build();
         }
     }
