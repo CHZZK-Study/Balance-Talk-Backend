@@ -7,6 +7,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 
+import static balancetalk.vote.domain.VoteOption.*;
+
 public class TalkPickDto {
 
     @Schema(description = "톡픽 생성/수정 요청")
@@ -37,7 +39,7 @@ public class TalkPickDto {
     public static class TalkPickDetailResponse {
 
         @Schema(description = "톡픽 ID", example = "톡픽 ID")
-        private Long id;
+        private long id;
 
         @Schema(description = "제목", example = "톡픽 제목")
         private String title;
@@ -53,8 +55,14 @@ public class TalkPickDto {
         @Schema(description = "선택지 B 이름", example = "선택지 B 이름")
         private String optionB; // TODO "X"로 자동 지정
 
+        @Schema(description = "선택지 A 투표수", example = "12")
+        private long votesCountOfOptionA;
+
+        @Schema(description = "선택지 B 투표수", example = "12")
+        private long votesCountOfOptionB;
+
         @Schema(description = "조회수", example = "152")
-        private Long views;
+        private long views;
 
         @Schema(description = "북마크 여부", example = "true")
         private Boolean myBookmark;
@@ -70,6 +78,8 @@ public class TalkPickDto {
                     .summary(new SummaryDto(entity.getSummary()))
                     .optionA(entity.getOptionA())
                     .optionB(entity.getOptionB())
+                    .votesCountOfOptionA(entity.votesCountOf(A))
+                    .votesCountOfOptionB(entity.votesCountOf(B))
                     .views(entity.getViews())
                     .myBookmark(myBookmark)
                     .votedOption(votedOption)

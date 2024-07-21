@@ -4,6 +4,7 @@ import balancetalk.global.utils.AuthPrincipal;
 import balancetalk.member.dto.GuestOrApiMember;
 import balancetalk.talkpick.application.TalkPickService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -24,10 +25,11 @@ public class TalkPickController {
     public void createTalkPick(@RequestBody final CreateTalkPickRequest request) {
     }
 
+    // TODO 투표수 포함
     @Operation(summary = "톡픽 상세 조회", description = "톡픽 상세 페이지를 조회합니다.")
     @GetMapping("/{talkPickId}")
     public TalkPickDetailResponse findTalkPickDetail(@PathVariable final Long talkPickId,
-                                                     @AuthPrincipal final GuestOrApiMember guestOrApiMember) {
+                                                     @Parameter(hidden = true) @AuthPrincipal final GuestOrApiMember guestOrApiMember) {
         return talkPickService.findById(talkPickId, guestOrApiMember);
     }
 

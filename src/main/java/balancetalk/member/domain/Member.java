@@ -75,4 +75,9 @@ public class Member extends BaseTimeEntity {
                 .filter(vote -> vote.matchesTalkPick(talkPick))
                 .findAny();
     }
+
+    public boolean hasVoted(TalkPick talkPick) {
+        return votes.stream()
+                .anyMatch(vote -> vote.matchesTalkPick(talkPick));
+    }
 }

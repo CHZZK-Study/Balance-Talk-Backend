@@ -10,9 +10,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @OpenAPIDefinition(info = @Info(title = "Balance Talk API 명세서", version = "v1"))
-
 @Configuration
-public class SwaggerConfig{
+public class SwaggerConfig {
     @Bean
     public OpenAPI openAPI() {
 

@@ -1,11 +1,11 @@
 package balancetalk.vote.presentation;
 
-import balancetalk.vote.dto.VoteDto.VoteResponse;
+import balancetalk.vote.dto.VoteGameDto.VoteResultResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.*;
 
-import static balancetalk.vote.dto.VoteDto.VoteRequest;
+import static balancetalk.vote.dto.VoteGameDto.VoteRequest;
 
 @RestController
 @RequestMapping("/votes/games/{gameId}")
@@ -19,8 +19,8 @@ public class VoteGameController {
 
     @Operation(summary = "밸런스 게임 투표 결과 조회", description = "밸런스 게임 투표 결과를 조회합니다.")
     @GetMapping
-    public VoteResponse getVoteResultGame(@PathVariable Long gameId) {
-        return new VoteResponse(23, 12);
+    public VoteResultResponse getVoteResultGame(@PathVariable Long gameId) {
+        return new VoteResultResponse(23, 12);
     }
 
     @Operation(summary = "밸런스 게임 투표 수정", description = "밸런스 게임 투표를 수정합니다.")
