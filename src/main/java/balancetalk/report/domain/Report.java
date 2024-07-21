@@ -30,6 +30,7 @@ public class Report extends BaseTimeEntity {
     private Long id;
 
     @Enumerated(value = EnumType.STRING)
+    @NotNull
     private ReportType reportType;
 
     @NotNull
