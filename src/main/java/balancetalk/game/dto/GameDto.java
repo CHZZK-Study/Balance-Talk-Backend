@@ -28,7 +28,7 @@ public class GameDto {
         private String optionB;
 
         @Schema(description = "밸런스 게임 주제", example = "커플")
-        private String name;
+        private String gameTopic;
 
         public Game toEntity(GameTopic topic, Member member) {
             return Game.builder()
@@ -88,7 +88,7 @@ public class GameDto {
         private VoteOption votedOption;
 
         @Schema(description = "밸런스 게임 주제", example = "커플")
-        private String name;
+        private String gameTopic;
 
         public static GameDetailResponse from(Game game, boolean myBookmark, VoteOption votedOption) {
             return GameDetailResponse.builder()
@@ -99,7 +99,7 @@ public class GameDto {
                     .views(game.getViews())
                     .myBookmark(myBookmark)
                     .votedOption(votedOption)
-                    .name(game.getGameTopic().getName())
+                    .gameTopic(game.getGameTopic().getName())
                     .build();
         }
     }

@@ -34,7 +34,7 @@ public class GameService {
     public void createBalanceGame(CreateGameRequest request, ApiMember apiMember) {
         Member member = apiMember.toMember(memberRepository);
 
-        GameTopic gameTopic = gameTopicRepository.findByName(request.getName())
+        GameTopic gameTopic = gameTopicRepository.findByName(request.getGameTopic())
                 .orElseThrow(() -> new BalanceTalkException(ErrorCode.NOT_FOUND_GAME_TOPIC));
 
         Game game = request.toEntity(gameTopic, member);
