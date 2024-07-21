@@ -27,7 +27,6 @@ public class Game extends BaseTimeEntity {
     @JoinColumn(name = "member_id")
     private Member member;
 
-    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "game_topic_id")
     private GameTopic gameTopic;
