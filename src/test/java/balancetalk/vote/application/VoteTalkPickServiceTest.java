@@ -7,21 +7,18 @@ import balancetalk.member.dto.GuestOrApiMember;
 import balancetalk.talkpick.domain.TalkPick;
 import balancetalk.talkpick.domain.TalkPickReader;
 import balancetalk.vote.domain.Vote;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
-import java.util.Optional;
 
-import static org.assertj.core.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class VoteTalkPickServiceTest {
@@ -39,7 +36,7 @@ class VoteTalkPickServiceTest {
     ApiMember apiMember;
 
     @Test
-    @DisplayName("회원이 이미 투표한 톡픽일 경우 실패한다.")
+    @DisplayName("회원이 이미 투표한 톡픽일 경우 투표 생성은 실패한다.")
     void createVote_Fail_ByAlreadyVote() {
         // given
         TalkPick talkPick = TalkPick.builder().id(1L).build();
