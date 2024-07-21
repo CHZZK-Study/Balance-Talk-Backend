@@ -53,4 +53,8 @@ public class Game extends BaseTimeEntity {
 
     @OneToMany(mappedBy = "game")
     private List<Vote> votes = new ArrayList<>();
+
+    public void increaseViews() {
+        this.views++;
+    }
 }
