@@ -47,9 +47,6 @@ public class Comment extends BaseTimeEntity {
     @NotNull
     private int reportedCount;
 
-    @OneToMany(mappedBy = "comment")
-    private List<Report> reports;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
