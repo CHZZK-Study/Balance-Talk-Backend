@@ -17,7 +17,7 @@ public class TalkPickRepositoryImpl implements TalkPickRepositoryCustom {
     public TodayTalkPickResponse findTodayTalkPick() {
         return queryFactory
                 .select(new QTodayTalkPickDto_TodayTalkPickResponse(
-                        talkPick.id, talkPick.title, talkPick.summary, talkPick.optionA, talkPick.optionB
+                        talkPick.id, talkPick.title, talkPick.optionA, talkPick.optionB
                 ))
                 .from(vote)
                 .join(vote.talkPick, talkPick)

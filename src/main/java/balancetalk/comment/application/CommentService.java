@@ -9,6 +9,8 @@ import balancetalk.like.domain.LikeRepository;
 import balancetalk.like.domain.LikeType;
 import balancetalk.member.domain.Member;
 import balancetalk.member.domain.MemberRepository;
+import balancetalk.member.dto.ApiMember;
+import balancetalk.member.dto.GuestOrApiMember;
 import balancetalk.talkpick.domain.TalkPick;
 import balancetalk.talkpick.domain.repository.TalkPickRepository;
 import balancetalk.vote.domain.VoteOption;
@@ -44,9 +46,9 @@ public class CommentService {
     @Value("${comments.max-depth}")
     private int maxDepth;
 
-    public void createComment(@Valid CommentDto.CreateCommentRequest createCommentRequest, Long talkPickId) {
+    public void createComment(@Valid CommentDto.CreateCommentRequest createCommentRequest, Long talkPickId, ApiMember apiMember) {
         //TODO : Vote 기능 구현 완료 후 추가 예외 처리 필요
-        Member member = getCurrentMember(memberRepository);
+        Member member = apiMember.toMember(memberRepository);
         TalkPick talkPick = validateTalkPickId(talkPickId);
 
         // option이 VoteOption에 존재하는 값인지 확인 및 예외 처리
@@ -60,8 +62,9 @@ public class CommentService {
     }
 
     @Transactional
-    public void createCommentReply(CommentDto.CreateCommentRequest createCommentRequest, Long talkPickId, Long commentId) {
-        Member member = getCurrentMember(memberRepository);
+    public void createCommentReply(CommentDto.CreateCommentRequest createCommentRequest, Long talkPickId, Long commentId,
+                                   ApiMember apiMember) {
+        Member member = apiMember.toMember(memberRepository);
         TalkPick talkPick = validateTalkPickId(talkPickId);
         Comment parentComment = validateCommentId(commentId);
 
@@ -78,18 +81,21 @@ public class CommentService {
     }
 
     @Transactional(readOnly = true)
-    public Page<CommentDto.CommentResponse> findAllComments(Long talkPickId, String token, Pageable pageable) {
+    public Page<CommentDto.CommentResponse> findAllComments(Long talkPickId, Pageable pageable,
+                                                            GuestOrApiMember guestOrApiMember) {
         validateTalkPickId(talkPickId);
 
         Page<Comment> comments = commentRepository.findAllByTalkPickId(talkPickId, pageable);
+
         return comments.map(comment -> {
             int likesCount = likeRepository.countByResourceIdAndLikeType(comment.getId(), LikeType.COMMENT);
-            return CommentDto.CommentResponse.fromEntity(comment, likesCount, false);
+            boolean myLike = isCommentMyLiked(comment.getId(), guestOrApiMember);
+            return CommentDto.CommentResponse.fromEntity(comment, likesCount, myLike);
         });
     }
 
     @Transactional(readOnly = true)
-    public Page<CommentDto.CommentResponse> findAllBestComments(Long talkPickId, Pageable pageable) {
+    public Page<CommentDto.CommentResponse> findAllBestComments(Long talkPickId, Pageable pageable, GuestOrApiMember guestOrApiMember) {
         validateTalkPickId(talkPickId);
 
         List<Comment> allComments = commentRepository.findByTalkPickIdOrderByLikesCountDescCreatedAtDesc(talkPickId, LikeType.COMMENT);
@@ -105,7 +111,7 @@ public class CommentService {
         // 좋아요 10개 이상인 댓글이 있는 경우
         if (maxLikes >= MIN_COUNT_FOR_BEST_COMMENT) {
             for (Comment comment : allComments) {
-                boolean myLike = false;
+                boolean myLike = isCommentMyLiked(comment.getId(), guestOrApiMember);
                 int likeCount = likeRepository.countByResourceIdAndLikeType(comment.getId(), LikeType.COMMENT);
                 comment.setIsBest(likeCount >= MIN_COUNT_FOR_BEST_COMMENT);
                 CommentDto.CommentResponse response = CommentDto.CommentResponse.fromEntity(comment, likeCount, myLike);
@@ -117,7 +123,7 @@ public class CommentService {
             }
         } else {
             for (Comment comment : allComments) {
-                boolean myLike = false;
+                boolean myLike = isCommentMyLiked(comment.getId(), guestOrApiMember);
                 int likeCount = likeRepository.countByResourceIdAndLikeType(comment.getId(), LikeType.COMMENT);
                 comment.setIsBest(likeCount == maxLikes);
                 CommentDto.CommentResponse response = CommentDto.CommentResponse.fromEntity(comment, likeCount, myLike);
@@ -142,18 +148,18 @@ public class CommentService {
         return new PageImpl<>(result.subList(start, end), pageable, result.size());
     }
 
-    public void updateComment(Long commentId, Long talkPickId, String content) {
-        Comment comment = validateCommentByMemberAndTalkPick(commentId, talkPickId, FORBIDDEN_COMMENT_MODIFY);
+    public void updateComment(Long commentId, Long talkPickId, String content, ApiMember apiMember) {
+        Comment comment = validateCommentByMemberAndTalkPick(commentId, talkPickId, apiMember, FORBIDDEN_COMMENT_MODIFY);
         comment.updateContent(content);
     }
 
-    public void deleteComment(Long commentId, Long talkPickId) {
-        validateCommentByMemberAndTalkPick(commentId, talkPickId, FORBIDDEN_COMMENT_DELETE);
+    public void deleteComment(Long commentId, Long talkPickId, ApiMember apiMember) {
+        validateCommentByMemberAndTalkPick(commentId, talkPickId, apiMember, FORBIDDEN_COMMENT_DELETE);
         commentRepository.deleteById(commentId);
     }
 
-    private Comment validateCommentByMemberAndTalkPick(Long commentId, Long talkPickId, ErrorCode errorCode) {
-        Member member = getCurrentMember(memberRepository);
+    private Comment validateCommentByMemberAndTalkPick(Long commentId, Long talkPickId, ApiMember apiMember, ErrorCode errorCode) {
+        Member member = apiMember.toMember(memberRepository);
         Comment comment = validateCommentId(commentId);
         validateTalkPickId(talkPickId);
 
@@ -176,6 +182,16 @@ public class CommentService {
     private Comment validateCommentId(Long commentId) {
         return commentRepository.findById(commentId)
                 .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_COMMENT));
+    }
+
+    private boolean isCommentMyLiked(Long commentId, GuestOrApiMember guestOrApiMember) {
+        if (guestOrApiMember.isGuest()) {
+            return false;
+        }
+
+        Long memberId = guestOrApiMember.toMember(memberRepository).getId();
+
+        return likeRepository.existsByResourceIdAndMemberId(commentId, memberId);
     }
 
     private void validateDepth(Comment parentComment) {

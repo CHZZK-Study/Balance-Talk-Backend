@@ -30,6 +30,10 @@ public class Like extends BaseTimeEntity {
 
     private Boolean active = true;
 
+    public void activate() {
+        this.active = true;
+    }
+
     public void deActive() {
         this.active = false;
     }
