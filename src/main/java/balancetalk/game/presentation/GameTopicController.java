@@ -2,7 +2,10 @@ package balancetalk.game.presentation;
 
 import static balancetalk.game.dto.GameDto.*;
 import balancetalk.game.application.GameService;
+import balancetalk.global.utils.AuthPrincipal;
+import balancetalk.member.dto.ApiMember;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -23,7 +26,8 @@ public class GameTopicController {
 
     @PostMapping("/topic")
     @Operation(summary = "새로운 밸런스 게임 주제 생성", description = "새로운 밸런스 게임 주제를 생성합니다.")
-    public void createGameTopic(@Valid @RequestBody CreateGameTopicRequest request) {
-        gameService.createGameTopic(request);
+    public void createGameTopic(@Valid @RequestBody CreateGameTopicRequest request,
+                                @Parameter(hidden = true) @AuthPrincipal final ApiMember apiMember) {
+        gameService.createGameTopic(request, apiMember);
     }
 }

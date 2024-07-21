@@ -62,7 +62,8 @@ import org.springframework.stereotype.Service;
             return GameDetailResponse.from(game, hasBookmarked, myVote.get().getVoteOption());
         }
 
-        public void createGameTopic(CreateGameTopicRequest request) {
+        public void createGameTopic(CreateGameTopicRequest request, ApiMember apiMember) {
+            Member member = apiMember.toMember(memberRepository);
             GameTopic gameTopic = request.toEntity();
             gameTopicRepository.save(gameTopic);
         }
