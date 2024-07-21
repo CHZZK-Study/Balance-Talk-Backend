@@ -1,7 +1,10 @@
 package balancetalk.game.presentation;
 
 import balancetalk.game.application.GameService;
+import balancetalk.global.utils.AuthPrincipal;
+import balancetalk.member.dto.GuestOrApiMember;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -12,7 +15,6 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Arrays;
 import java.util.List;
 import static balancetalk.game.dto.GameDto.*;
-import static balancetalk.vote.domain.VoteOption.*;
 
 @Slf4j
 @RestController
@@ -31,8 +33,9 @@ public class GameController {
 
     @GetMapping("/{gameId}")
     @Operation(summary = "밸런스 게임 상세 조회", description = "밸런스 게임을 조회합니다.")
-    public GameResponse findGame(@PathVariable final Long gameId) {
-        return new GameResponse(1L, "제목1", "O", "X", false, false, A);
+    public GameDetailResponse findGame(@PathVariable final Long gameId,
+                                       @Parameter(hidden = true) @AuthPrincipal final GuestOrApiMember guestOrApiMember) {
+        return gameService.findBalanceGame(gameId, guestOrApiMember);
     }
 
     @PutMapping("/{gameId}")
@@ -48,8 +51,8 @@ public class GameController {
     @GetMapping("/best")
     @Operation(summary = "인기 밸런스 게임 조회", description = "인기 있는 밸런스 게임 목록을 조회합니다.")
     public Page<GameResponse> findBestPosts(Pageable pageable) {
-        GameResponse GameResponse1 = new GameResponse(1L, "제목1", "O", "X", false, false, A);
-        GameResponse GameResponse2 = new GameResponse(2L, "제목2", "X", "O", false, false, B);
+        GameResponse GameResponse1 = new GameResponse(1L, "제목1", "O", "X");
+        GameResponse GameResponse2 = new GameResponse(2L, "제목2", "X", "O");
         List<GameResponse> GameDetailResponses = Arrays.asList(GameResponse1, GameResponse2);
         return new PageImpl<>(GameDetailResponses, pageable, 1);
     }
@@ -57,8 +60,8 @@ public class GameController {
     @GetMapping("/new")
     @Operation(summary = "새로운 밸런스 게임 조회", description = "새로 업로드 된 밸런스 게임 목록들을 조회합니다.")
     public List<GameResponse> findNewPosts() {
-        GameResponse GameResponse1 = new GameResponse(1L, "제목1", "O", "X", false, false, A);
-        GameResponse GameResponse2 = new GameResponse(2L, "제목2", "X", "O", false, false, B);
+        GameResponse GameResponse1 = new GameResponse(1L, "제목1", "O", "X");
+        GameResponse GameResponse2 = new GameResponse(2L, "제목2", "X", "O");
         return Arrays.asList(GameResponse1, GameResponse2);
     }
 }
