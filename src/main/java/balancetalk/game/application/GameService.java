@@ -21,50 +21,49 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-    @Slf4j
-    @Service
-    @Transactional
-    @RequiredArgsConstructor
-    public class GameService {
+@Slf4j
+@Service
+@Transactional
+@RequiredArgsConstructor
+public class GameService {
 
-        private final GameRepository gameRepository;
-        private final MemberRepository memberRepository;
-        private final GameTopicRepository gameTopicRepository;
+    private final GameRepository gameRepository;
+    private final MemberRepository memberRepository;
+    private final GameTopicRepository gameTopicRepository;
 
-        public void createBalanceGame(CreateGameRequest request, ApiMember apiMember) {
-            Member member = apiMember.toMember(memberRepository);
+    public void createBalanceGame(CreateGameRequest request, ApiMember apiMember) {
+        Member member = apiMember.toMember(memberRepository);
 
-            GameTopic gameTopic = gameTopicRepository.findByName(request.getName());
-            if (gameTopic == null) {
-                throw new BalanceTalkException(ErrorCode.NOT_FOUND_GAME_TOPIC);
-            }
-            Game game = request.toEntity(gameTopic, member);
-            gameRepository.save(game);
-        }
+        GameTopic gameTopic = gameTopicRepository.findByName(request.getName())
+                .orElseThrow(() -> new BalanceTalkException(ErrorCode.NOT_FOUND_GAME_TOPIC));
 
-        public GameDetailResponse findBalanceGame(Long gameId, GuestOrApiMember guestOrApiMember) {
-            Game game = gameRepository.findById(gameId)
-                    .orElseThrow(() -> new BalanceTalkException(ErrorCode.NOT_FOUND_BALANCE_GAME));
-            game.increaseViews();
-
-            if (guestOrApiMember.isGuest()) {
-                return GameDetailResponse.from(game, false, null); // 게스트인 경우 북마크, 선택 옵션 없음
-            }
-
-            Member member = guestOrApiMember.toMember(memberRepository);
-            boolean hasBookmarked = member.hasBookmarked(gameId, GAME);
-            Optional<Vote> myVote = member.getVoteOnGame(game);
-
-            if (myVote.isEmpty()) {
-                return GameDetailResponse.from(game, hasBookmarked, null); // 투표한 게시글이 아닌경우 투표한 선택지는 null
-            }
-
-            return GameDetailResponse.from(game, hasBookmarked, myVote.get().getVoteOption());
-        }
-
-        public void createGameTopic(CreateGameTopicRequest request, ApiMember apiMember) {
-            Member member = apiMember.toMember(memberRepository);
-            GameTopic gameTopic = request.toEntity();
-            gameTopicRepository.save(gameTopic);
-        }
+        Game game = request.toEntity(gameTopic, member);
+        gameRepository.save(game);
     }
+
+    public GameDetailResponse findBalanceGame(Long gameId, GuestOrApiMember guestOrApiMember) {
+        Game game = gameRepository.findById(gameId)
+                .orElseThrow(() -> new BalanceTalkException(ErrorCode.NOT_FOUND_BALANCE_GAME));
+        game.increaseViews();
+
+        if (guestOrApiMember.isGuest()) {
+            return GameDetailResponse.from(game, false, null); // 게스트인 경우 북마크, 선택 옵션 없음
+        }
+
+        Member member = guestOrApiMember.toMember(memberRepository);
+        boolean hasBookmarked = member.hasBookmarked(gameId, GAME);
+        Optional<Vote> myVote = member.getVoteOnGame(game);
+
+        if (myVote.isEmpty()) {
+            return GameDetailResponse.from(game, hasBookmarked, null); // 투표한 게시글이 아닌경우 투표한 선택지는 null
+        }
+
+        return GameDetailResponse.from(game, hasBookmarked, myVote.get().getVoteOption());
+    }
+
+    public void createGameTopic(CreateGameTopicRequest request, ApiMember apiMember) {
+        Member member = apiMember.toMember(memberRepository);
+        GameTopic gameTopic = request.toEntity();
+        gameTopicRepository.save(gameTopic);
+    }
+}
