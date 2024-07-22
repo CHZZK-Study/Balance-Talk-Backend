@@ -20,10 +20,10 @@ public class LikeDto {
     public static class CreateLikeRequest {
 
         @Schema(description = "좋아요 타입", example = "COMMENT")
-        private LikeType likeType;
+        private LikeType likeType; // TODO : 변경 필
 
         @Schema(description = "좋아요한 댓글 id", example = "1")
-        private Long commentId;
+        private Long commentId; // TODO : 변경 필
 
         public static Like toEntity(Long resourceId, Member member) {
             return Like.builder()
