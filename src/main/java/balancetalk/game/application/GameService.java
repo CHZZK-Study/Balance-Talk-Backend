@@ -73,6 +73,11 @@ public class GameService {
         return gameRepository.findAllByOrderByCreatedAtDesc(pageable);
     }
 
+    public Page<GameResponse> findGamesOrderByViews(int page) {
+        Pageable pageable = PageRequest.of(page, GAME_SIZE, Sort.by(Direction.DESC, "views"));
+        return gameRepository.findAllByOrderByViewsDesc(pageable);
+    }
+
     public void createGameTopic(CreateGameTopicRequest request, ApiMember apiMember) {
         Member member = apiMember.toMember(memberRepository);
         GameTopic gameTopic = request.toEntity();

@@ -60,12 +60,9 @@ public class GameController {
     }
 
     @GetMapping("/best")
-    @Operation(summary = "인기 밸런스 게임 조회", description = "인기 있는 밸런스 게임 목록을 조회합니다.")
-    public Page<GameResponse> findBestPosts(Pageable pageable) {
-        GameResponse GameResponse1 = new GameResponse(1L, "제목1", "O", "X");
-        GameResponse GameResponse2 = new GameResponse(2L, "제목2", "X", "O");
-        List<GameResponse> GameDetailResponses = Arrays.asList(GameResponse1, GameResponse2);
-        return new PageImpl<>(GameDetailResponses, pageable, 1);
+    @Operation(summary = "인기순으로 밸런스 게임 조회", description = "인기순으로 정렬된 16개의 게임 목록을 리턴합니다.")
+    public Page<GameResponse> findBestPosts(int page) {
+        return gameService.findGamesOrderByViews(page);
     }
 
     @GetMapping("/new")

@@ -9,4 +9,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface GameRepository extends JpaRepository<Game, Long> {
 
     Page<GameResponse> findAllByOrderByCreatedAtDesc(Pageable pageable);
+
+    Page<GameResponse> findAllByOrderByViewsDesc(Pageable pageable);
 }
