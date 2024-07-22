@@ -2,6 +2,7 @@ package balancetalk.member.domain;
 
 import balancetalk.bookmark.domain.Bookmark;
 import balancetalk.bookmark.domain.BookmarkType;
+import balancetalk.game.domain.Game;
 import balancetalk.global.common.BaseTimeEntity;
 import balancetalk.like.domain.Like;
 import balancetalk.talkpick.domain.TalkPick;
@@ -11,7 +12,6 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.*;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -55,6 +55,9 @@ public class Member extends BaseTimeEntity {
     private List<TalkPick> talkPicks = new ArrayList<>();
 
     @OneToMany(mappedBy = "member")
+    private List<Game> games = new ArrayList<>();
+
+    @OneToMany(mappedBy = "member")
     private List<Like> likes = new ArrayList<>();
 
     public void updateNickname(String nickname) {
@@ -76,8 +79,19 @@ public class Member extends BaseTimeEntity {
                 .findAny();
     }
 
-    public boolean hasVoted(TalkPick talkPick) {
+    public boolean hasVotedTalkPick(TalkPick talkPick) {
         return votes.stream()
                 .anyMatch(vote -> vote.matchesTalkPick(talkPick));
+    }
+
+    public Optional<Vote> getVoteOnGame(Game game) {
+        return this.votes.stream()
+                .filter(vote -> vote.matchesGame(game))
+                .findAny();
+    }
+
+    public boolean hasVotedGame(Game game) {
+        return votes.stream()
+                .anyMatch(vote -> vote.matchesGame(game));
     }
 }

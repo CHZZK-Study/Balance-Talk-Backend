@@ -35,7 +35,7 @@ public class VoteTalkPickService {
         }
 
         Member member = guestOrApiMember.toMember(memberRepository);
-        if (member.hasVoted(talkPick)) {
+        if (member.hasVotedTalkPick(talkPick)) {
             throw new BalanceTalkException(ErrorCode.ALREADY_VOTE);
         }
 

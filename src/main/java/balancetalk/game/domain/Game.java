@@ -3,11 +3,12 @@ package balancetalk.game.domain;
 import balancetalk.global.common.BaseTimeEntity;
 import balancetalk.member.domain.Member;
 import balancetalk.vote.domain.Vote;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.PositiveOrZero;
 import jakarta.validation.constraints.Size;
 import lombok.*;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -46,6 +47,13 @@ public class Game extends BaseTimeEntity {
 
     private String optionBImg;
 
+    @PositiveOrZero
+    private long views = 0L;
+
     @OneToMany(mappedBy = "game")
     private List<Vote> votes = new ArrayList<>();
+
+    public void increaseViews() {
+        this.views++;
+    }
 }
