@@ -64,12 +64,4 @@ public class GameController {
     public Page<GameResponse> findBestPosts(int page) {
         return gameService.findGamesOrderByViews(page);
     }
-
-    @GetMapping("/new")
-    @Operation(summary = "새로운 밸런스 게임 조회", description = "새로 업로드 된 밸런스 게임 목록들을 조회합니다.")
-    public List<GameResponse> findNewPosts() {
-        GameResponse GameResponse1 = new GameResponse(1L, "제목1", "O", "X");
-        GameResponse GameResponse2 = new GameResponse(2L, "제목2", "X", "O");
-        return Arrays.asList(GameResponse1, GameResponse2);
-    }
 }
