@@ -1,6 +1,9 @@
 package balancetalk.game.application;
 
 import static balancetalk.bookmark.domain.BookmarkType.GAME;
+
+import balancetalk.file.domain.File;
+import balancetalk.file.domain.FileRepository;
 import balancetalk.game.domain.Game;
 import balancetalk.game.domain.GameTopic;
 import balancetalk.game.domain.repository.GameRepository;
@@ -16,6 +19,7 @@ import balancetalk.member.dto.ApiMember;
 import balancetalk.member.dto.GuestOrApiMember;
 import balancetalk.vote.domain.Vote;
 import jakarta.transaction.Transactional;
+import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,6 +31,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class GameService {
 
+    private final FileRepository fileRepository;
     private final GameRepository gameRepository;
     private final MemberRepository memberRepository;
     private final GameTopicRepository gameTopicRepository;
@@ -38,6 +43,11 @@ public class GameService {
                 .orElseThrow(() -> new BalanceTalkException(ErrorCode.NOT_FOUND_GAME_TOPIC));
 
         Game game = request.toEntity(gameTopic, member);
+
+        List<File> gameFiles = fileRepository.findAllByStoredNameIn(game.getImages());
+        if (gameFiles.size() < 2) {
+            throw new BalanceTalkException(ErrorCode.NOT_FOUND_FILE);
+        }
         gameRepository.save(game);
     }
 
