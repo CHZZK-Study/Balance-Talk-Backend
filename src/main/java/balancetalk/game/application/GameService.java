@@ -73,7 +73,7 @@ public class GameService {
         return gameRepository.findAllByOrderByCreatedAtDesc(pageable);
     }
 
-    public Page<GameResponse> findGamesOrderByViews(int page) {
+    public Page<GameResponse> findBestGames(int page) {
         Pageable pageable = PageRequest.of(page, GAME_SIZE, Sort.by(Direction.DESC, "views"));
         return gameRepository.findAllByOrderByViewsDesc(pageable);
     }
