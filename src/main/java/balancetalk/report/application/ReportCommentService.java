@@ -27,12 +27,12 @@ public class ReportCommentService {
 
     @Transactional
     public void createCommentReport(@Valid CreateReportRequest createReportRequest, ApiMember apiMember,
-                                    Long commentId, Long talkPickId) {
+                                    Long resourceId, Long talkPickId) {
 
         Member reporter = apiMember.toMember(memberRepository);
 
         // 댓글과 톡픽 검증
-        Comment comment = validateCommentOnTalkPick(commentId, talkPickId);
+        Comment comment = validateCommentOnTalkPick(resourceId, talkPickId);
         Member reported = comment.getMember();
 
         // 본인의 댓글을 신고할 수 없음 예외 처리
@@ -41,18 +41,18 @@ public class ReportCommentService {
         }
 
         // 중복 신고 방지
-        if (reportRepository.existsByReporterAndReportedAndResourceId(reporter, reported, commentId)) {
+        if (reportRepository.existsByReporterAndReportedAndResourceId(reporter, reported, resourceId)) {
             throw new BalanceTalkException(ALREADY_REPORTED_COMMENT);
         }
 
-        Report report = createReportRequest.toEntity(reporter, reported, commentId, comment.getContent());
+        Report report = createReportRequest.toEntity(reporter, reported, resourceId, comment.getContent());
 
         reportRepository.save(report);
         comment.incrementReportCount();
     }
 
-    private Comment validateCommentOnTalkPick(Long commentId, Long talkPickId) {
-        Comment comment = commentRepository.findById(commentId)
+    private Comment validateCommentOnTalkPick(Long resourceId, Long talkPickId) {
+        Comment comment = commentRepository.findById(resourceId)
                 .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_COMMENT));
 
         if (!comment.getTalkPick().getId().equals(talkPickId)) {
