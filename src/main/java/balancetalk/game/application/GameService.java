@@ -21,10 +21,7 @@ import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 
 @Slf4j
@@ -33,7 +30,6 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class GameService {
 
-    private static final int GAME_SIZE = 16;
     private final GameRepository gameRepository;
     private final MemberRepository memberRepository;
     private final GameTopicRepository gameTopicRepository;
@@ -68,13 +64,11 @@ public class GameService {
         return GameDetailResponse.from(game, hasBookmarked, myVote.get().getVoteOption());
     }
 
-    public Page<GameResponse> findLatestGames(int page) {
-        Pageable pageable = PageRequest.of(page, GAME_SIZE, Sort.by(Direction.DESC, "createdAt"));
+    public Page<GameResponse> findLatestGames(Pageable pageable) {
         return gameRepository.findAllByOrderByCreatedAtDesc(pageable);
     }
 
-    public Page<GameResponse> findBestGames(int page) {
-        Pageable pageable = PageRequest.of(page, GAME_SIZE, Sort.by(Direction.DESC, "views"));
+    public Page<GameResponse> findBestGames(Pageable pageable) {
         return gameRepository.findAllByOrderByViewsDesc(pageable);
     }
 
