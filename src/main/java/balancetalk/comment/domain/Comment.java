@@ -42,8 +42,6 @@ public class Comment extends BaseTimeEntity {
 
     private Boolean isBest;
 
-    private Boolean isBlind;
-
     @NotNull
     private int reportedCount;
 
@@ -71,12 +69,16 @@ public class Comment extends BaseTimeEntity {
         this.isBest = isBest;
     }
 
-    public void incrementReportCount() { // TODO : 옵저버 패턴 도입 해도 좋을지도
+    public boolean isBlind() {
+        return this.viewStatus.equals(ViewStatus.BLIND);
+    }
+
+    public void incrementReportCount() {
         this.reportedCount++;
 
         if (this.reportedCount >= MIN_COUNT_FOR_BLIND) {
             this.content = "신고된 댓글입니다.";
-            this.isBlind = true;
+            this.viewStatus = ViewStatus.BLIND;
         }
     }
 }

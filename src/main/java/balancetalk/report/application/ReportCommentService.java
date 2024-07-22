@@ -34,7 +34,7 @@ public class ReportCommentService {
         Member reporter = apiMember.toMember(memberRepository);
 
         // 댓글과 톡픽 검증
-        Comment comment = validateCommentByTalkPick(commentId, talkPickId);
+        Comment comment = validateCommentOnTalkPick(commentId, talkPickId);
         Member reported = comment.getMember();
 
         // 본인의 댓글을 신고할 수 없음 예외 처리
@@ -47,7 +47,7 @@ public class ReportCommentService {
         reportRepository.save(report);
     }
 
-    private Comment validateCommentByTalkPick(Long commentId, Long talkPickId) {
+    private Comment validateCommentOnTalkPick(Long commentId, Long talkPickId) {
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_COMMENT));
 

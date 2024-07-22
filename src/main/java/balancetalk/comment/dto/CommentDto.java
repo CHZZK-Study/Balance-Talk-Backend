@@ -3,6 +3,7 @@ package balancetalk.comment.dto;
 import balancetalk.comment.domain.Comment;
 import balancetalk.member.domain.Member;
 import balancetalk.talkpick.domain.TalkPick;
+import balancetalk.talkpick.domain.ViewStatus;
 import balancetalk.vote.domain.VoteOption;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
@@ -35,7 +36,7 @@ public class CommentDto {
                     .talkPick(talkPick)
                     .voteOption(option) // TODO : Vote 구현 완료 후 member와 talkPick 이용해서 선택한 option 가져오기
                     .isBest(false)
-                    .isBlind(false)
+                    .viewStatus(ViewStatus.NORMAL)
                     .reportedCount(0)
                     .build();
         }
@@ -129,7 +130,7 @@ public class CommentDto {
                     .replyCount(comment.getReplies() == null ? 0 : comment.getReplies().size())
                     .reportedCount(comment.getReportedCount())
                     .isBest(comment.getIsBest())
-                    .isBlind(comment.getIsBlind())
+                    .isBlind(comment.isBlind())
                     .createdAt(comment.getCreatedAt())
                     .lastModifiedAt(comment.getLastModifiedAt())
                     .build();
