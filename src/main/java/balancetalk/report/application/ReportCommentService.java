@@ -48,6 +48,7 @@ public class ReportCommentService {
         Report report = createReportRequest.toEntity(reporter, reported, commentId, comment.getContent());
 
         reportRepository.save(report);
+        comment.incrementReportCount();
     }
 
     private Comment validateCommentOnTalkPick(Long commentId, Long talkPickId) {
