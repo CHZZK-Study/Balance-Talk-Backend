@@ -2,6 +2,7 @@ package balancetalk.game.presentation;
 
 import balancetalk.game.application.GameService;
 import balancetalk.global.utils.AuthPrincipal;
+import balancetalk.member.application.MemberService;
 import balancetalk.member.dto.ApiMember;
 import balancetalk.member.dto.GuestOrApiMember;
 import io.swagger.v3.oas.annotations.Operation;
@@ -10,11 +11,9 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
-import java.util.Arrays;
-import java.util.List;
 import static balancetalk.game.dto.GameDto.*;
 
 @Slf4j
@@ -25,6 +24,7 @@ import static balancetalk.game.dto.GameDto.*;
 public class GameController {
 
     private final GameService gameService;
+    private final MemberService memberService;
 
     @PostMapping
     @Operation(summary = "밸런스 게임 생성", description = "밸런스 게임을 생성합니다.")
@@ -48,22 +48,22 @@ public class GameController {
     @DeleteMapping("/{gameId}")
     @Operation(summary = "밸런스 게임 삭제", description = "밸런스 게임을 삭제합니다.")
     public void deleteGame(@PathVariable final Long gameId) {
+
+    }
+
+    @GetMapping("/latest")
+    @Operation(summary = "최신순으로 밸런스 게임 조회", description = "최신순으로 정렬된 16개의 게임 목록을 리턴합니다.")
+    public Page<GameResponse> findLatestGames(@RequestParam(value = "page", defaultValue = "0") int page,
+                                              @RequestParam(value = "size", defaultValue = "16") int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return gameService.findLatestGames(pageable);
     }
 
     @GetMapping("/best")
-    @Operation(summary = "인기 밸런스 게임 조회", description = "인기 있는 밸런스 게임 목록을 조회합니다.")
-    public Page<GameResponse> findBestPosts(Pageable pageable) {
-        GameResponse GameResponse1 = new GameResponse(1L, "제목1", "O", "X");
-        GameResponse GameResponse2 = new GameResponse(2L, "제목2", "X", "O");
-        List<GameResponse> GameDetailResponses = Arrays.asList(GameResponse1, GameResponse2);
-        return new PageImpl<>(GameDetailResponses, pageable, 1);
-    }
-
-    @GetMapping("/new")
-    @Operation(summary = "새로운 밸런스 게임 조회", description = "새로 업로드 된 밸런스 게임 목록들을 조회합니다.")
-    public List<GameResponse> findNewPosts() {
-        GameResponse GameResponse1 = new GameResponse(1L, "제목1", "O", "X");
-        GameResponse GameResponse2 = new GameResponse(2L, "제목2", "X", "O");
-        return Arrays.asList(GameResponse1, GameResponse2);
+    @Operation(summary = "인기순으로 밸런스 게임 조회", description = "인기순으로 정렬된 16개의 게임 목록을 리턴합니다.")
+    public Page<GameResponse> findBestGames(@RequestParam(value = "page", defaultValue = "0") int page,
+                                            @RequestParam(value = "size", defaultValue = "16") int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return gameService.findBestGames(pageable);
     }
 }
