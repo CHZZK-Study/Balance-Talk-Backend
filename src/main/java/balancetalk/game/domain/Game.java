@@ -56,4 +56,11 @@ public class Game extends BaseTimeEntity {
     public void increaseViews() {
         this.views++;
     }
+
+    public List<String> getImages() {
+        List<String> images = new ArrayList<>();
+        images.add(optionAImg);
+        images.add(optionBImg);
+        return images;
+    }
 }
