@@ -11,6 +11,7 @@ import balancetalk.game.domain.repository.GameTopicRepository;
 import balancetalk.game.dto.GameDto.CreateGameRequest;
 import balancetalk.game.dto.GameDto.CreateGameTopicRequest;
 import balancetalk.game.dto.GameDto.GameDetailResponse;
+import balancetalk.game.dto.GameDto.GameResponse;
 import balancetalk.global.exception.BalanceTalkException;
 import balancetalk.global.exception.ErrorCode;
 import balancetalk.member.domain.Member;
@@ -23,6 +24,8 @@ import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 @Slf4j
@@ -70,6 +73,14 @@ public class GameService {
         }
 
         return GameDetailResponse.from(game, hasBookmarked, myVote.get().getVoteOption());
+    }
+
+    public Page<GameResponse> findLatestGames(Pageable pageable) {
+        return gameRepository.findAllByOrderByCreatedAtDesc(pageable);
+    }
+
+    public Page<GameResponse> findBestGames(Pageable pageable) {
+        return gameRepository.findAllByOrderByViewsDesc(pageable);
     }
 
     public void createGameTopic(CreateGameTopicRequest request, ApiMember apiMember) {
