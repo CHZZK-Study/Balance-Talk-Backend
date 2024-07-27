@@ -31,6 +31,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class GameService {
 
+    private static final int GAME_IMAGE_SIZE = 2;
     private final FileRepository fileRepository;
     private final GameRepository gameRepository;
     private final MemberRepository memberRepository;
@@ -45,7 +46,7 @@ public class GameService {
         Game game = request.toEntity(gameTopic, member);
 
         List<File> gameFiles = fileRepository.findAllByStoredNameIn(game.getImages());
-        if (gameFiles.size() < 2) {
+        if (gameFiles.size() < GAME_IMAGE_SIZE) {
             throw new BalanceTalkException(ErrorCode.NOT_FOUND_FILE);
         }
         gameRepository.save(game);
