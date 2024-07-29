@@ -1,7 +1,6 @@
 package balancetalk.global.oauth2.service;
 
 import static balancetalk.global.config.SecurityConfig.*;
-
 import balancetalk.global.oauth2.dto.CustomOAuth2User;
 import balancetalk.global.oauth2.dto.GoogleResponse;
 import balancetalk.global.oauth2.dto.KakaoResponse;
@@ -47,9 +46,8 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
         if (findMember == null) {
             String encodedPassword = passwordEncoder().encode(OAUTH2_PASSWORD);
-            String hideEmail = hideEmail(oauth2Response.getEmail());
             Oauth2Dto oauth2Dto = Oauth2Dto.builder()
-                    .name(hideEmail)
+                    .name(hideNickname(oauth2Response.getEmail()))
                     .email(oauth2Response.getEmail())
                     .username(username)
                     .role(Role.USER)
@@ -58,7 +56,6 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
             Member newMember = oauth2Dto.toEntity();
             memberRepository.save(newMember);
-
             return new CustomOAuth2User(oauth2Dto);
         }
 
@@ -73,10 +70,10 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         }
     }
 
-    private String hideEmail(String email) {
-        StringBuilder sb = new StringBuilder(email);
-        for (int i = 3; i < email.length(); i++) {
-            if (email.charAt(i) == '@') {
+    private String hideNickname(String nickname) {
+        StringBuilder sb = new StringBuilder(nickname);
+        for (int i = 3; i < nickname.length(); i++) {
+            if (nickname.charAt(i) == '@') {
                 break;
             }
             sb.setCharAt(i, '*');
