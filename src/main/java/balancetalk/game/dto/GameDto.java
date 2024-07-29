@@ -24,8 +24,14 @@ public class GameDto {
         @Schema(description = "선택지 A 이름", example = "선택지 A 이름")
         private String optionA;
 
+        @Schema(description = "선택지 A 이미지", example = "https://pikko-image.s3.ap-northeast-2.amazonaws.com/balance-game/067cc56e-21b7-468f-a2c1-4839036ee7cd_unnamed.png")
+        private String optionAImg;
+
         @Schema(description = "선택지 B 이름", example = "선택지 B 이름")
         private String optionB;
+
+        @Schema(description = "선택지 B 이미지", example = "https://pikko-image.s3.ap-northeast-2.amazonaws.com/balance-game/1157461e-a685-42fd-837e-7ed490894ca6_unnamed.png")
+        private String optionBImg;
 
         @Schema(description = "밸런스 게임 주제", example = "커플")
         private String gameTopic;
@@ -34,7 +40,9 @@ public class GameDto {
             return Game.builder()
                     .title(title)
                     .optionA(optionA)
+                    .optionAImg(optionAImg)
                     .optionB(optionB)
+                    .optionBImg(optionBImg)
                     .gameTopic(topic)
                     .member(member)
                     .build();
@@ -75,8 +83,14 @@ public class GameDto {
         @Schema(description = "선택지 A 이름", example = "선택지 A 이름")
         private String optionA;
 
+        @Schema(description = "선택지 A 이미지", example = "https://pikko-image.s3.ap-northeast-2.amazonaws.com/balance-game/067cc56e-21b7-468f-a2c1-4839036ee7cd_unnamed.png")
+        private String optionAImg;
+
         @Schema(description = "선택지 B 이름", example = "선택지 B 이름")
         private String optionB;
+
+        @Schema(description = "선택지 B 이미지", example = "https://pikko-image.s3.ap-northeast-2.amazonaws.com/balance-game/1157461e-a685-42fd-837e-7ed490894ca6_unnamed.png")
+        private String optionBImg;
 
         @Schema(description = "조회수", example = "3")
         private long views;
@@ -95,7 +109,9 @@ public class GameDto {
                     .id(game.getId())
                     .title(game.getTitle())
                     .optionA(game.getOptionA())
+                    .optionAImg(game.getOptionAImg())
                     .optionB(game.getOptionB())
+                    .optionBImg(game.getOptionBImg())
                     .views(game.getViews())
                     .myBookmark(myBookmark)
                     .votedOption(votedOption)
