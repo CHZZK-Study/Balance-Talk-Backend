@@ -47,7 +47,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         if (findMember == null) {
             String encodedPassword = passwordEncoder().encode(OAUTH2_PASSWORD);
             Oauth2Dto oauth2Dto = Oauth2Dto.builder()
-                    .name(oauth2Response.getEmail())
+                    .name(hideNickname(oauth2Response.getEmail()))
                     .email(oauth2Response.getEmail())
                     .username(username)
                     .role(Role.USER)
@@ -56,7 +56,6 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
             Member newMember = oauth2Dto.toEntity();
             memberRepository.save(newMember);
-            newMember.updateNickname(hideNickname(newMember.getNickname()));
             return new CustomOAuth2User(oauth2Dto);
         }
 

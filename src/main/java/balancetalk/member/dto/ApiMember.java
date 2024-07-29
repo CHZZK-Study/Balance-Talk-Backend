@@ -11,10 +11,10 @@ import lombok.Data;
 @AllArgsConstructor
 public class ApiMember {
 
-    private String email;
+    private Long memberId;
 
     public Member toMember(MemberRepository memberRepository) {
-        return memberRepository.findByEmail(email)
+        return memberRepository.findById(memberId)
                 .orElseThrow(() -> new BalanceTalkException(ErrorCode.NOT_FOUND_MEMBER));
     }
 }

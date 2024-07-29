@@ -170,7 +170,7 @@ public class JwtTokenProvider {
         return null;
     }
 
-    private Long getMemberId(String token) {
+    public Long getMemberId(String token) {
         Claims claims = Jwts.parserBuilder().setSigningKey(secretKey).build().parseClaimsJws(token).getBody();
         return claims.get("memberId", Long.class);
     }
