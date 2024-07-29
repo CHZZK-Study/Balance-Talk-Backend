@@ -36,8 +36,9 @@ public class Report extends BaseTimeEntity {
     @NotNull
     private Long resourceId;
 
-    @NotBlank
-    private String reason;
+    @Enumerated(value = EnumType.STRING)
+    @NotNull
+    private ReportReason reason;
 
     @NotBlank
     private String reportedContent;

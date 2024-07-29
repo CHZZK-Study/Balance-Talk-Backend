@@ -76,7 +76,7 @@ public class Comment extends BaseTimeEntity {
     public void incrementReportCount() {
         this.reportedCount++;
 
-        if (this.reportedCount >= MIN_COUNT_FOR_BLIND) {
+        if (this.reportedCount == MIN_COUNT_FOR_BLIND) {
             this.content = "신고된 댓글입니다.";
             this.viewStatus = ViewStatus.BLIND;
         }
