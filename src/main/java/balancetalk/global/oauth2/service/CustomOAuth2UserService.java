@@ -56,6 +56,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
             Member newMember = oauth2Dto.toEntity();
             memberRepository.save(newMember);
+            newMember.updateNickname(hideNickname(newMember.getNickname()));
             return new CustomOAuth2User(oauth2Dto);
         }
 
@@ -68,5 +69,16 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                     .build();
             return new CustomOAuth2User(oauth2Dto);
         }
+    }
+
+    private String hideNickname(String nickname) {
+        StringBuilder sb = new StringBuilder(nickname);
+        for (int i = 3; i < nickname.length(); i++) {
+            if (nickname.charAt(i) == '@') {
+                break;
+            }
+            sb.setCharAt(i, '*');
+        }
+        return sb.toString();
     }
 }

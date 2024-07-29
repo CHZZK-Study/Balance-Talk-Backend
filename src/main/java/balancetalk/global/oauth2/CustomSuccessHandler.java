@@ -44,22 +44,9 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         String accessToken = jwtTokenProvider.createAccessToken(authentication, member.getId());
         String refreshToken = jwtTokenProvider.createRefreshToken(authentication);
 
-        member.updateNickname(hideNickname(member.getNickname()));
-        memberRepository.save(member); // FIXME: 저장 쿼리를 하나 더 날리는데 비효율적인 방법 -> 개선할 수 있나?
-
         response.addCookie(createCookie(refreshToken));
         response.addCookie(createAccessCookie(accessToken));
         response.sendRedirect("http://localhost:3000/");
     }
 
-    private String hideNickname(String nickname) {
-        StringBuilder sb = new StringBuilder(nickname);
-        for (int i = 3; i < nickname.length(); i++) {
-            if (nickname.charAt(i) == '@') {
-                break;
-            }
-            sb.setCharAt(i, '*');
-        }
-        return sb.toString();
-    }
 }
