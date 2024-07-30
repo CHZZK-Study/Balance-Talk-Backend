@@ -12,7 +12,7 @@ public class TalkPickReader {
 
     private final TalkPickRepository talkPickRepository;
 
-    public TalkPick readTalkPickById(Long id) {
+    public TalkPick readById(Long id) {
         return talkPickRepository.findById(id)
                 .orElseThrow(() -> new BalanceTalkException(ErrorCode.NOT_FOUND_TALK_PICK));
     }
