@@ -1,7 +1,9 @@
 package balancetalk.global.notification.domain;
 
+import balancetalk.global.common.BaseTimeEntity;
 import balancetalk.member.domain.Member;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
 @Entity
@@ -9,7 +11,7 @@ import lombok.*;
 @Getter
 @RequiredArgsConstructor
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class Notification {
+public class Notification extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -19,6 +21,7 @@ public class Notification {
     @JoinColumn(name = "member_id")
     private Member member;
 
+    @NotBlank
     private String message;
 
     private boolean isRead;
