@@ -25,7 +25,7 @@ public class Bookmark extends BaseTimeEntity {
     private Long resourceId;
 
     @NotNull
-    private Boolean active = true;
+    private Boolean active;
 
     @NotNull
     @Enumerated(EnumType.STRING)
@@ -41,5 +41,9 @@ public class Bookmark extends BaseTimeEntity {
 
     private boolean isEqualsType(BookmarkType bookmarkType) {
         return this.bookmarkType == bookmarkType;
+    }
+
+    public boolean isActive() {
+        return active;
     }
 }
