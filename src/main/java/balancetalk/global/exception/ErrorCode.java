@@ -93,7 +93,8 @@ public enum ErrorCode {
     // 500
     REDIS_CONNECTION_FAIL(INTERNAL_SERVER_ERROR, "Redis 연결에 실패했습니다."),
     FAIL_SEND_EMAIL(INTERNAL_SERVER_ERROR, "이메일 발송에 실패했습니다."),
-    NOT_UPLOADED_IMAGE_FOR_DB_ERROR(INTERNAL_SERVER_ERROR, "이미지 정보를 저장하던 중 문제가 생겨 업로드에 실패했습니다.");
+    NOT_UPLOADED_IMAGE_FOR_DB_ERROR(INTERNAL_SERVER_ERROR, "이미지 정보를 저장하던 중 문제가 생겨 업로드에 실패했습니다."),
+    SEND_NOTIFICATION_FAIL(INTERNAL_SERVER_ERROR, "알림 전송에 실패했습니다.");
 
     private final HttpStatus httpStatus;
     private final String message;
