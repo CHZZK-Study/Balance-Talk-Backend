@@ -40,7 +40,7 @@ class TalkPickServiceTest {
                 .views(0L)
                 .build();
 
-        when(talkPickReader.readTalkPickById(1L)).thenReturn(talkPick);
+        when(talkPickReader.readById(1L)).thenReturn(talkPick);
         when(guestOrApiMember.isGuest()).thenReturn(true);
 
         // when
@@ -61,7 +61,7 @@ class TalkPickServiceTest {
                 .views(0L)
                 .build();
 
-        when(talkPickReader.readTalkPickById(1L)).thenReturn(talkPick);
+        when(talkPickReader.readById(1L)).thenReturn(talkPick);
         when(guestOrApiMember.isGuest()).thenReturn(true);
 
         // when
@@ -82,7 +82,7 @@ class TalkPickServiceTest {
                 .views(0L)
                 .build();
 
-        when(talkPickReader.readTalkPickById(1L)).thenReturn(talkPick);
+        when(talkPickReader.readById(1L)).thenReturn(talkPick);
         when(guestOrApiMember.isGuest()).thenReturn(true);
 
         // when
