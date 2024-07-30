@@ -13,15 +13,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import static balancetalk.bookmark.domain.BookmarkType.TALK_PICK;
-import static balancetalk.global.exception.ErrorCode.ALREADY_BOOKMARK;
 import static balancetalk.global.exception.ErrorCode.CANNOT_BOOKMARK_MY_RESOURCE;
 
 @Service
 @RequiredArgsConstructor
 public class BookmarkTalkPickService {
 
-    private final MemberRepository memberRepository;
     private final TalkPickValidator talkPickValidator;
+    private final MemberRepository memberRepository;
     private final BookmarkGenerator bookmarkGenerator;
     private final BookmarkRepository bookmarkRepository;
 
@@ -30,14 +29,12 @@ public class BookmarkTalkPickService {
         talkPickValidator.validateExistence(talkPickId);
 
         Member member = apiMember.toMember(memberRepository);
-        if (member.hasBookmarked(talkPickId, TALK_PICK)) {
-            throw new BalanceTalkException(ALREADY_BOOKMARK);
-        }
         if (member.isMyTalkPick(talkPickId)) {
             throw new BalanceTalkException(CANNOT_BOOKMARK_MY_RESOURCE);
         }
 
-        Bookmark bookmark = bookmarkGenerator.generate(talkPickId, TALK_PICK, member);
-        bookmarkRepository.save(bookmark);
+        member.getBookmarkOf(talkPickId, TALK_PICK)
+                .ifPresentOrElse(Bookmark::activate,
+                        () -> bookmarkRepository.save(bookmarkGenerator.generate(talkPickId, TALK_PICK, member)));
     }
 }
