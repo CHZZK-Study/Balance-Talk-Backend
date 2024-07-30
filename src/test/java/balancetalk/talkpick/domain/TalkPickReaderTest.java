@@ -33,7 +33,7 @@ class TalkPickReaderTest {
         when(talkPickRepository.findById(any())).thenReturn(Optional.of(talkPick));
 
         // when
-        TalkPick result = talkPickReader.readTalkPickById(1L);
+        TalkPick result = talkPickReader.readById(1L);
 
         // then
         assertThat(result).isEqualTo(talkPick);
@@ -43,7 +43,7 @@ class TalkPickReaderTest {
     @DisplayName("존재하지 않는 톡픽의 ID를 통해 톡픽을 조회하려 하면 실패한다.")
     void readTalkPickById_Fail_ByNotFoundTalkPick() {
         // when, then
-        assertThatThrownBy(() -> talkPickReader.readTalkPickById(1L))
+        assertThatThrownBy(() -> talkPickReader.readById(1L))
                 .isInstanceOf(BalanceTalkException.class);
     }
 }
