@@ -1,6 +1,5 @@
 package balancetalk.member.application;
 
-import balancetalk.file.domain.FileRepository;
 import balancetalk.global.exception.BalanceTalkException;
 import balancetalk.global.exception.ErrorCode;
 import balancetalk.global.jwt.JwtTokenProvider;
@@ -21,10 +20,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.util.List;
 import java.util.stream.Collectors;
-
 import static balancetalk.global.exception.ErrorCode.ALREADY_REGISTERED_EMAIL;
 import static balancetalk.global.exception.ErrorCode.ALREADY_REGISTERED_NICKNAME;
 
@@ -36,7 +33,6 @@ public class MemberService {
 
     private final JwtTokenProvider jwtTokenProvider;
     private final MemberRepository memberRepository;
-    private final FileRepository fileRepository;
     private final PasswordEncoder passwordEncoder;
     private final RedisService redisService;
 
@@ -48,11 +44,6 @@ public class MemberService {
             throw new BalanceTalkException(ALREADY_REGISTERED_NICKNAME);
         }
         joinRequest.setPassword(passwordEncoder.encode(joinRequest.getPassword()));
-//        File profilePhoto = null;
-        if (joinRequest.getProfilePhoto() != null && !joinRequest.getProfilePhoto().isEmpty()) {
-//            profilePhoto = fileRepository.findByStoredName(joinRequest.getProfilePhoto())
-//                    .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_FILE));
-        }
         Member member = joinRequest.toEntity();
         return memberRepository.save(member).getId();
     }
@@ -103,13 +94,10 @@ public class MemberService {
         member.updatePassword(passwordEncoder.encode(newPassword));
     }
 
-//    public void updateImage(String storedFileName, TokenDto tokenDto) {
-//        Member member = memberRepository.findByEmail(tokenDto.getEmail())
-//                .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_MEMBER));
-//        File file = fileRepository.findByStoredName(storedFileName)
-//                .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_FILE));
-//        member.updateImage(file);
-//    }
+    public void updateImage(final String profileImgUrl, ApiMember apiMember) {
+        Member member = apiMember.toMember(memberRepository);
+        member.updateImgUrl(profileImgUrl);
+    }
 
     public void delete(final LoginRequest loginRequest, ApiMember apiMember) {
         Member member = apiMember.toMember(memberRepository);
