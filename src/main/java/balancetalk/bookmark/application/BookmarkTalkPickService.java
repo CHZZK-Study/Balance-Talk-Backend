@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import static balancetalk.bookmark.domain.BookmarkType.TALK_PICK;
 import static balancetalk.global.exception.ErrorCode.CANNOT_BOOKMARK_MY_RESOURCE;
+import static balancetalk.global.exception.ErrorCode.NOT_FOUND_BOOKMARK;
 
 @Service
 @RequiredArgsConstructor
@@ -36,5 +37,17 @@ public class BookmarkTalkPickService {
         member.getBookmarkOf(talkPickId, TALK_PICK)
                 .ifPresentOrElse(Bookmark::activate,
                         () -> bookmarkRepository.save(bookmarkGenerator.generate(talkPickId, TALK_PICK, member)));
+    }
+
+    @Transactional
+    public void deleteBookmark(Long talkPickId, ApiMember apiMember) {
+        talkPickValidator.validateExistence(talkPickId);
+
+        Member member = apiMember.toMember(memberRepository);
+
+        Bookmark bookmark = member.getBookmarkOf(talkPickId, TALK_PICK)
+                .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_BOOKMARK));
+
+        bookmark.deactivate();
     }
 }

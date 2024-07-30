@@ -43,11 +43,15 @@ public class Bookmark extends BaseTimeEntity {
         return this.bookmarkType == bookmarkType;
     }
 
+    public boolean isActive() {
+        return active;
+    }
+
     public void activate() {
         this.active = true;
     }
 
-    public boolean isActive() {
-        return active;
+    public void deactivate() {
+        this.active = false;
     }
 }
