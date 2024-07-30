@@ -67,4 +67,8 @@ public class TalkPick extends BaseTimeEntity {
                 .filter(vote -> vote.isVoteOptionEquals(voteOption))
                 .count();
     }
+
+    public boolean isSameId(long id) {
+        return this.id.equals(id);
+    }
 }

@@ -3,7 +3,6 @@ package balancetalk.bookmark.domain;
 import balancetalk.global.common.BaseTimeEntity;
 import balancetalk.member.domain.Member;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
@@ -28,7 +27,7 @@ public class Bookmark extends BaseTimeEntity {
     @NotNull
     private Boolean active = true;
 
-    @NotBlank
+    @NotNull
     @Enumerated(EnumType.STRING)
     private BookmarkType bookmarkType;
 

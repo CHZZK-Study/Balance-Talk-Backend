@@ -94,4 +94,14 @@ public class Member extends BaseTimeEntity {
         return votes.stream()
                 .anyMatch(vote -> vote.matchesGame(game));
     }
+
+    public boolean isMyTalkPick(long talkPickId) {
+        return talkPicks.stream()
+                .anyMatch(talkPick -> talkPick.isSameId(talkPickId));
+    }
+
+    public boolean isMyGame(long talkPickId) {
+        return talkPicks.stream()
+                .anyMatch(talkPick -> talkPick.isSameId(talkPickId));
+    }
 }

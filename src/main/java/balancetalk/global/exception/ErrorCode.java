@@ -33,6 +33,7 @@ public enum ErrorCode {
     REPORT_MY_COMMENT(BAD_REQUEST, "본인의 댓글을 신고할 수 없습니다"),
     INVALID_REPORT_REASON(BAD_REQUEST, "신고 사유가 올바르지 않습니다."),
     INVALID_REPORT_TYPE(BAD_REQUEST, "신고 타입이 올바르지 않습니다."),
+    CANNOT_BOOKMARK_MY_RESOURCE(BAD_REQUEST, "본인이 생성한 자원에는 북마크가 불가능합니다."),
 
     // 401
     MISMATCHED_EMAIL_OR_PASSWORD(UNAUTHORIZED, "이메일 또는 비밀번호가 잘못되었습니다."),
@@ -76,7 +77,6 @@ public enum ErrorCode {
     NOT_FOUND_LIKE(NOT_FOUND, "해당 좋아요가 존재하지 않습니다."),
     NOT_FOUND_BALANCE_GAME(NOT_FOUND, "존재하지 않는 밸런스 게임입니다."),
     NOT_FOUND_GAME_TOPIC(NOT_FOUND, "존재하지 않는 밸런스 게임 주제입니다."),
-
 
     // 409
     ALREADY_VOTE(CONFLICT, "이미 투표한 게시글입니다."),
