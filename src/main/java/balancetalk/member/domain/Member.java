@@ -45,6 +45,8 @@ public class Member extends BaseTimeEntity {
     @Enumerated(value = EnumType.STRING)
     private Role role;
 
+    private String profileImgUrl;
+
     @OneToMany(mappedBy = "member")
     private List<Vote> votes = new ArrayList<>();
 
@@ -66,6 +68,10 @@ public class Member extends BaseTimeEntity {
 
     public void updatePassword(String password) {
         this.password = password;
+    }
+
+    public void updateImgUrl(String profileImgUrl) {
+        this.profileImgUrl = profileImgUrl;
     }
 
     public boolean hasBookmarked(Long resourceId, BookmarkType bookmarkType) {

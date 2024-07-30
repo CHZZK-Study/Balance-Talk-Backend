@@ -76,12 +76,12 @@ public class MemberController {
         memberService.updatePassword(newPassword, apiMember);
     }
 
-//    @ResponseStatus(HttpStatus.OK)
-//    @PutMapping(value = "/image", consumes = "text/plain")
-//    @Operation(summary = "회원 이미지 변경", description = "회원 프로필 이미지를 변경한다.")
-//    public void updateImage(@RequestBody String storedFileName, @AuthPrincipal TokenDto tokenDto) {
-//        memberService.updateImage(storedFileName, tokenDto);
-//    }
+    @ResponseStatus(HttpStatus.OK)
+    @PutMapping(value = "/image", consumes = "text/plain")
+    @Operation(summary = "회원 이미지 변경", description = "회원 프로필 이미지를 변경한다.")
+    public void updateImage(@RequestBody String profileImgUrl, @AuthPrincipal ApiMember apiMember) {
+        memberService.updateImage(profileImgUrl, apiMember);
+    }
 
     @ResponseStatus(HttpStatus.OK)
     @DeleteMapping

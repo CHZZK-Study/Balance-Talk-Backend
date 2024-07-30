@@ -37,8 +37,8 @@ public class MemberDto {
         @Schema(description = "회원 권한", example = "USER")
         private Role role;
 
-        @Schema(description = "회원 프로필 사진", example = "4df23447-2355-45h2-8783-7f6gd2ceb848_프로필사진.jpg")
-        private String profilePhoto;
+        @Schema(description = "회원 프로필 url", example = "https://pikko-image.s3.ap-northeast-2.amazonaws.com/member/511ca5c7-4367-40d1-ab18-3a8f0f4332a7_unnamed.png")
+        private String profileImgUrl;
 
         public Member toEntity() {
             return Member.builder()
@@ -46,6 +46,7 @@ public class MemberDto {
                     .email(email)
                     .password(password)
                     .role(Role.USER)
+                    .profileImgUrl(profileImgUrl)
                     .build();
         }
     }
@@ -82,7 +83,7 @@ public class MemberDto {
         @Schema(description = "회원 닉네임", example = "닉네임")
         private String nickname;
 
-        @Schema(description = "회원 프로필 URL", example = "https://balance-talk-static-files.s3.ap-northeast-2.amazonaws.com/balance-talk-images/balance-option/a723b360-f42f-4dc9-be69-72904b6861d9_강아지.jpeg")
+        @Schema(description = "회원 프로필 URL", example = "https://pikko-image.s3.ap-northeast-2.amazonaws.com/member/511ca5c7-4367-40d1-ab18-3a8f0f4332a7_unnamed.pn")
         private String profileImageUrl;
 
         @Schema(description = "가입일", example = "2024-02-16 13:37:17.391706")
