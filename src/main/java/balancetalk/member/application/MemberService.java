@@ -36,7 +36,6 @@ public class MemberService {
 
     private final JwtTokenProvider jwtTokenProvider;
     private final MemberRepository memberRepository;
-    private final FileRepository fileRepository;
     private final PasswordEncoder passwordEncoder;
     private final RedisService redisService;
 
@@ -48,11 +47,6 @@ public class MemberService {
             throw new BalanceTalkException(ALREADY_REGISTERED_NICKNAME);
         }
         joinRequest.setPassword(passwordEncoder.encode(joinRequest.getPassword()));
-//        File profilePhoto = null;
-        if (joinRequest.getProfilePhoto() != null && !joinRequest.getProfilePhoto().isEmpty()) {
-//            profilePhoto = fileRepository.findByStoredName(joinRequest.getProfilePhoto())
-//                    .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_FILE));
-        }
         Member member = joinRequest.toEntity();
         return memberRepository.save(member).getId();
     }

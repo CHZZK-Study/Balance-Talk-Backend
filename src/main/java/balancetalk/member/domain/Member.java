@@ -45,6 +45,8 @@ public class Member extends BaseTimeEntity {
     @Enumerated(value = EnumType.STRING)
     private Role role;
 
+    private String profileImgUrl;
+
     @OneToMany(mappedBy = "member")
     private List<Vote> votes = new ArrayList<>();
 
