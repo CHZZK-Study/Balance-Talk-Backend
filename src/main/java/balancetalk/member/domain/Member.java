@@ -70,6 +70,10 @@ public class Member extends BaseTimeEntity {
         this.password = password;
     }
 
+    public void updateImgUrl(String profileImgUrl) {
+        this.profileImgUrl = profileImgUrl;
+    }
+
     public boolean hasBookmarked(Long resourceId, BookmarkType bookmarkType) {
         return this.bookmarks.stream()
                 .anyMatch(bookmark -> bookmark.matches(resourceId, bookmarkType));

@@ -97,13 +97,10 @@ public class MemberService {
         member.updatePassword(passwordEncoder.encode(newPassword));
     }
 
-//    public void updateImage(String storedFileName, TokenDto tokenDto) {
-//        Member member = memberRepository.findByEmail(tokenDto.getEmail())
-//                .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_MEMBER));
-//        File file = fileRepository.findByStoredName(storedFileName)
-//                .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_FILE));
-//        member.updateImage(file);
-//    }
+    public void updateImage(final String profileImgUrl, ApiMember apiMember) {
+        Member member = apiMember.toMember(memberRepository);
+        member.updateImgUrl(profileImgUrl);
+    }
 
     public void delete(final LoginRequest loginRequest, ApiMember apiMember) {
         Member member = apiMember.toMember(memberRepository);
