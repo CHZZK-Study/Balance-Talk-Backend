@@ -5,6 +5,7 @@ import balancetalk.comment.domain.CommentRepository;
 import balancetalk.comment.dto.CommentDto;
 import balancetalk.global.exception.BalanceTalkException;
 import balancetalk.global.exception.ErrorCode;
+import balancetalk.global.notification.application.NotificationService;
 import balancetalk.like.domain.LikeRepository;
 import balancetalk.like.domain.LikeType;
 import balancetalk.member.domain.Member;
@@ -29,7 +30,8 @@ import java.util.EnumSet;
 import java.util.List;
 
 import static balancetalk.global.exception.ErrorCode.*;
-import static balancetalk.global.utils.SecurityUtils.getCurrentMember;
+import static balancetalk.global.notification.domain.NotificationMessage.COMMENT_REPLY;
+import static balancetalk.global.notification.domain.NotificationMessage.FIRST_COMMENT_REPLY;
 
 @Service
 @Transactional
@@ -37,11 +39,15 @@ import static balancetalk.global.utils.SecurityUtils.getCurrentMember;
 public class CommentService {
 
     private static final int MIN_COUNT_FOR_BEST_COMMENT = 10;
+    private static final int FIRST_COUNT_OF_REPLY_NOTIFICATION = 10;
+    private static final int SECOND_COUNT_OF_REPLY_NOTIFICATION = 50;
+    private static final int THIRD_COUNT_OF_REPLY_NOTIFICATION = 100;
 
     private final CommentRepository commentRepository;
     private final MemberRepository memberRepository;
     private final TalkPickRepository talkPickRepository;
     private final LikeRepository likeRepository;
+    private final NotificationService notificationService;
 
     @Value("${comments.max-depth}")
     private int maxDepth;
@@ -78,6 +84,10 @@ public class CommentService {
 
         Comment commentReply = createCommentRequest.toEntity(member, talkPick, parentComment);
         commentRepository.save(commentReply);
+
+        // 알림 전송
+
+        sendReplyNotification(parentComment);
     }
 
     @Transactional(readOnly = true)
@@ -208,5 +218,24 @@ public class CommentService {
             comment = comment.getParent();
         }
         return depth;
+    }
+
+    private void sendReplyNotification(Comment parentComment) {
+        long replyCount = parentComment.getReplies().size();
+        Member parentCommentAuthor = parentComment.getMember();
+
+        // 모든 답글 중 원래 댓글 작성자가 아닌 다른 사용자가 처음으로 답글을 달았는지 확인
+        boolean isFirstReplyFromOther = parentComment.getReplies().stream()
+                .anyMatch(reply -> !reply.getMember().equals(parentCommentAuthor));
+
+        // 첫 답글 알림
+        if (isFirstReplyFromOther && !parentComment.getIsNotifiedForFirstReply()) {
+            notificationService.sendNotification(parentComment.getMember(), FIRST_COMMENT_REPLY.getMessage());
+            parentComment.setIsNotifiedForFirstReplyTrue();
+            // 10, 50, 100개 답글 알림
+        } else if (replyCount == FIRST_COUNT_OF_REPLY_NOTIFICATION ||
+                replyCount == SECOND_COUNT_OF_REPLY_NOTIFICATION || replyCount == THIRD_COUNT_OF_REPLY_NOTIFICATION) {
+            notificationService.sendNotification(parentComment.getMember(), COMMENT_REPLY.format(replyCount));
+        }
     }
 }
