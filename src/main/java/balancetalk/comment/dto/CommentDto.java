@@ -38,6 +38,7 @@ public class CommentDto {
                     .isBest(false)
                     .viewStatus(ViewStatus.NORMAL)
                     .reportedCount(0)
+                    .isNotifiedForFirstReply(false)
                     .build();
         }
 

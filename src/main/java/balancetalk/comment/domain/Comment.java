@@ -61,6 +61,8 @@ public class Comment extends BaseTimeEntity {
     @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL)
     private List<Comment> replies = new ArrayList<>();
 
+    private Boolean isNotifiedForFirstReply;
+
     public void updateContent(String content) {
         this.content = content;
     }
@@ -80,5 +82,9 @@ public class Comment extends BaseTimeEntity {
             this.content = "신고된 댓글입니다.";
             this.viewStatus = ViewStatus.BLIND;
         }
+    }
+
+    public void setIsNotifiedForFirstReplyTrue() {
+        this.isNotifiedForFirstReply = true;
     }
 }
