@@ -24,10 +24,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.EnumSet;
-import java.util.List;
+import java.util.*;
 
 import static balancetalk.global.exception.ErrorCode.*;
 import static balancetalk.global.notification.domain.NotificationMessage.COMMENT_REPLY;
@@ -223,19 +220,27 @@ public class CommentService {
     private void sendReplyNotification(Comment parentComment) {
         long replyCount = parentComment.getReplies().size();
         Member parentCommentAuthor = parentComment.getMember();
+        String replyCountKey = "REPLY_" + replyCount;
+        String firstReplyKey = "FIRST_REPLY";
+        Map<String, Boolean> notificationHistory = parentComment.getNotificationHistory();
 
         // 모든 답글 중 원래 댓글 작성자가 아닌 다른 사용자가 처음으로 답글을 달았는지 확인
         boolean isFirstReplyFromOther = parentComment.getReplies().stream()
                 .anyMatch(reply -> !reply.getMember().equals(parentCommentAuthor));
 
         // 첫 답글 알림
-        if (isFirstReplyFromOther && !parentComment.getIsNotifiedForFirstReply()) {
+        if ((isFirstReplyFromOther && !parentComment.getIsNotifiedForFirstReply()) && !notificationHistory.getOrDefault(firstReplyKey, false)) {
             notificationService.sendNotification(parentComment.getMember(), FIRST_COMMENT_REPLY.getMessage());
             parentComment.setIsNotifiedForFirstReplyTrue();
+            notificationHistory.put(firstReplyKey, true);
+            parentComment.setNotificationHistory(notificationHistory);
             // 10, 50, 100개 답글 알림
-        } else if (replyCount == FIRST_COUNT_OF_REPLY_NOTIFICATION ||
-                replyCount == SECOND_COUNT_OF_REPLY_NOTIFICATION || replyCount == THIRD_COUNT_OF_REPLY_NOTIFICATION) {
+        } else if ((replyCount == FIRST_COUNT_OF_REPLY_NOTIFICATION ||
+                replyCount == SECOND_COUNT_OF_REPLY_NOTIFICATION || replyCount == THIRD_COUNT_OF_REPLY_NOTIFICATION) &&
+                !notificationHistory.getOrDefault(replyCountKey, false)) {
             notificationService.sendNotification(parentComment.getMember(), COMMENT_REPLY.format(replyCount));
+            notificationHistory.put(replyCountKey, true);
+            parentComment.setNotificationHistory(notificationHistory);
         }
     }
 }
