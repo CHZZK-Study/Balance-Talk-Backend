@@ -27,7 +27,7 @@ public class VoteTalkPickService {
 
     @Transactional
     public void createVote(long talkPickId, VoteRequest request, GuestOrApiMember guestOrApiMember) {
-        TalkPick talkPick = talkPickReader.readTalkPickById(talkPickId);
+        TalkPick talkPick = talkPickReader.readById(talkPickId);
 
         if (guestOrApiMember.isGuest()) {
             voteRepository.save(request.toEntity(null, talkPick));
@@ -44,7 +44,7 @@ public class VoteTalkPickService {
 
     @Transactional
     public void updateVote(long talkPickId, VoteRequest request, ApiMember apiMember) {
-        TalkPick talkPick = talkPickReader.readTalkPickById(talkPickId);
+        TalkPick talkPick = talkPickReader.readById(talkPickId);
         Member member = apiMember.toMember(memberRepository);
 
         Optional<Vote> vote = member.getVoteOnTalkPick(talkPick);
@@ -57,7 +57,7 @@ public class VoteTalkPickService {
 
     @Transactional
     public void deleteVote(long talkPickId, ApiMember apiMember) {
-        TalkPick talkPick = talkPickReader.readTalkPickById(talkPickId);
+        TalkPick talkPick = talkPickReader.readById(talkPickId);
         Member member = apiMember.toMember(memberRepository);
 
         Optional<Vote> vote = member.getVoteOnTalkPick(talkPick);

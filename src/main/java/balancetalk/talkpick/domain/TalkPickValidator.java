@@ -8,12 +8,13 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class TalkPickReader {
+public class TalkPickValidator {
 
     private final TalkPickRepository talkPickRepository;
 
-    public TalkPick readById(Long id) {
-        return talkPickRepository.findById(id)
-                .orElseThrow(() -> new BalanceTalkException(ErrorCode.NOT_FOUND_TALK_PICK));
+    public void validateExistence(final long id) {
+        if (!talkPickRepository.existsById(id)) {
+            throw new BalanceTalkException(ErrorCode.NOT_FOUND_TALK_PICK);
+        }
     }
 }

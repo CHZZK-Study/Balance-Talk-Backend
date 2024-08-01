@@ -43,7 +43,7 @@ class VoteTalkPickServiceTest {
         Vote vote = Vote.builder().talkPick(talkPick).build();
         Member member = Member.builder().votes(List.of(vote)).build();
 
-        when(talkPickReader.readTalkPickById(any())).thenReturn(talkPick);
+        when(talkPickReader.readById(any())).thenReturn(talkPick);
         when(guestOrApiMember.isGuest()).thenReturn(false);
         when(guestOrApiMember.toMember(any())).thenReturn(member);
 
@@ -59,7 +59,7 @@ class VoteTalkPickServiceTest {
         TalkPick talkPick = TalkPick.builder().id(1L).build();
         Member member = Member.builder().votes(List.of()).build();
 
-        when(talkPickReader.readTalkPickById(any())).thenReturn(talkPick);
+        when(talkPickReader.readById(any())).thenReturn(talkPick);
         when(apiMember.toMember(any())).thenReturn(member);
 
         // when, then
@@ -74,7 +74,7 @@ class VoteTalkPickServiceTest {
         TalkPick talkPick = TalkPick.builder().id(1L).build();
         Member member = Member.builder().votes(List.of()).build();
 
-        when(talkPickReader.readTalkPickById(any())).thenReturn(talkPick);
+        when(talkPickReader.readById(any())).thenReturn(talkPick);
         when(apiMember.toMember(any())).thenReturn(member);
 
         // when, then
