@@ -112,18 +112,18 @@ public class CommentLikeService {
         return comment;
     }
 
-    private void sendLikeNotification(Comment parentComment) {
-        long likeCount = likeRepository.countByResourceIdAndLikeType(parentComment.getId(), LikeType.COMMENT);
+    private void sendLikeNotification(Comment comment) {
+        long likeCount = likeRepository.countByResourceIdAndLikeType(comment.getId(), LikeType.COMMENT);
         String likeCountKey = "LIKE_" + likeCount;
-        Map<String, Boolean> notificationHistory = parentComment.getNotificationHistory();
+        Map<String, Boolean> notificationHistory = comment.getNotificationHistory();
 
-        if ((likeCount == 1 ||
+        if ((likeCount == FIRST_COUNT_OF_LIKE_NOTIFICATION ||
                 likeCount == SECOND_COUNT_OF_LIKE_NOTIFICATION ||
                 likeCount == THIRD_COUNT_OF_LIKE_NOTIFICATION) && !notificationHistory.getOrDefault(likeCountKey, false)) {
 
-            notificationService.sendNotification(parentComment.getMember(), COMMENT_LIKE.format(likeCount));
+            notificationService.sendNotification(comment.getMember(), COMMENT_LIKE.format(likeCount));
             notificationHistory.put(likeCountKey, true);
-            parentComment.setNotificationHistory(notificationHistory);
+            comment.setNotificationHistory(notificationHistory);
         }
     }
 }
