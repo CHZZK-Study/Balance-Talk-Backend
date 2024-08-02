@@ -3,8 +3,10 @@ package balancetalk.like.application;
 import balancetalk.comment.domain.Comment;
 import balancetalk.comment.domain.CommentRepository;
 import balancetalk.global.exception.BalanceTalkException;
+import balancetalk.global.notification.application.NotificationService;
 import balancetalk.like.domain.Like;
 import balancetalk.like.domain.LikeRepository;
+import balancetalk.like.domain.LikeType;
 import balancetalk.like.dto.LikeDto;
 import balancetalk.member.domain.Member;
 import balancetalk.member.domain.MemberRepository;
@@ -13,9 +15,12 @@ import balancetalk.talkpick.domain.repository.TalkPickRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Map;
 import java.util.Optional;
 
 import static balancetalk.global.exception.ErrorCode.*;
+import static balancetalk.global.notification.domain.NotificationMessage.*;
 
 @Service
 @Transactional
@@ -29,6 +34,14 @@ public class CommentLikeService {
     private final MemberRepository memberRepository;
 
     private final TalkPickRepository talkPickRepository;
+
+    private final NotificationService notificationService;
+
+    private static final int FIRST_COUNT_OF_LIKE_NOTIFICATION = 10;
+
+    private static final int SECOND_COUNT_OF_LIKE_NOTIFICATION = 50;
+
+    private static final int THIRD_COUNT_OF_LIKE_NOTIFICATION = 100;
 
     @Transactional
     public void likeComment(Long commentId, Long talkPickId, ApiMember apiMember) {
@@ -58,6 +71,9 @@ public class CommentLikeService {
         } else {
             Like commentLike = LikeDto.CreateLikeRequest.toEntity(commentId, member);
             likeRepository.save(commentLike);
+
+            sendLikeNotification(comment);
+
         }
     }
 
@@ -94,5 +110,20 @@ public class CommentLikeService {
         }
 
         return comment;
+    }
+
+    private void sendLikeNotification(Comment comment) {
+        long likeCount = likeRepository.countByResourceIdAndLikeType(comment.getId(), LikeType.COMMENT);
+        String likeCountKey = "LIKE_" + likeCount;
+        Map<String, Boolean> notificationHistory = comment.getNotificationHistory();
+
+        if ((likeCount == FIRST_COUNT_OF_LIKE_NOTIFICATION ||
+                likeCount == SECOND_COUNT_OF_LIKE_NOTIFICATION ||
+                likeCount == THIRD_COUNT_OF_LIKE_NOTIFICATION) && !notificationHistory.getOrDefault(likeCountKey, false)) {
+
+            notificationService.sendNotification(comment.getMember(), COMMENT_LIKE.format(likeCount));
+            notificationHistory.put(likeCountKey, true);
+            comment.setNotificationHistory(notificationHistory);
+        }
     }
 }
