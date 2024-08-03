@@ -1,5 +1,6 @@
 package balancetalk.talkpick.application;
 
+import balancetalk.bookmark.domain.repository.BookmarkRepository;
 import balancetalk.member.dto.GuestOrApiMember;
 import balancetalk.talkpick.domain.Summary;
 import balancetalk.talkpick.domain.TalkPick;
@@ -14,6 +15,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
 
+import static balancetalk.bookmark.domain.BookmarkType.TALK_PICK;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
@@ -25,6 +27,9 @@ class TalkPickServiceTest {
 
     @Mock
     TalkPickReader talkPickReader;
+
+    @Mock
+    BookmarkRepository bookmarkRepository;
 
     @Mock
     GuestOrApiMember guestOrApiMember;
@@ -41,6 +46,7 @@ class TalkPickServiceTest {
                 .build();
 
         when(talkPickReader.readById(1L)).thenReturn(talkPick);
+        when(bookmarkRepository.countBookmarksByResourceIdAndType(1L, TALK_PICK)).thenReturn(1L);
         when(guestOrApiMember.isGuest()).thenReturn(true);
 
         // when
@@ -62,6 +68,7 @@ class TalkPickServiceTest {
                 .build();
 
         when(talkPickReader.readById(1L)).thenReturn(talkPick);
+        when(bookmarkRepository.countBookmarksByResourceIdAndType(1L, TALK_PICK)).thenReturn(1L);
         when(guestOrApiMember.isGuest()).thenReturn(true);
 
         // when
@@ -83,6 +90,7 @@ class TalkPickServiceTest {
                 .build();
 
         when(talkPickReader.readById(1L)).thenReturn(talkPick);
+        when(bookmarkRepository.countBookmarksByResourceIdAndType(1L, TALK_PICK)).thenReturn(1L);
         when(guestOrApiMember.isGuest()).thenReturn(true);
 
         // when
