@@ -4,5 +4,5 @@ import balancetalk.bookmark.domain.BookmarkType;
 
 public interface BookmarkRepositoryCustom {
 
-    long countBookmarksByResourceIdAndType(long resourceId, BookmarkType type);
+    Long countBookmarksByResourceIdAndType(long resourceId, BookmarkType type);
 }

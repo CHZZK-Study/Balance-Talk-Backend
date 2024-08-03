@@ -12,11 +12,11 @@ public class BookmarkRepositoryImpl implements BookmarkRepositoryCustom {
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public long countBookmarksByResourceIdAndType(long resourceId, BookmarkType type) {
+    public Long countBookmarksByResourceIdAndType(long resourceId, BookmarkType type) {
         return queryFactory
-                .select(bookmark)
+                .select(bookmark.count())
                 .from(bookmark)
                 .where(bookmark.resourceId.eq(resourceId), bookmark.bookmarkType.eq(type))
-                .stream().count();
+                .fetchOne();
     }
 }
