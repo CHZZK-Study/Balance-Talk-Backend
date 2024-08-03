@@ -2,12 +2,14 @@ package balancetalk.talkpick.dto;
 
 import balancetalk.talkpick.domain.TalkPick;
 import balancetalk.vote.domain.VoteOption;
+import com.querydsl.core.annotations.QueryProjection;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import static balancetalk.vote.domain.VoteOption.A;
 import static balancetalk.vote.domain.VoteOption.B;
@@ -67,7 +69,7 @@ public class TalkPickDto {
         @Schema(description = "조회수", example = "152")
         private long views;
 
-        @Schema(description = "북마크 개수", example = "143")
+        @Schema(description = "저장수", example = "143")
         private long bookmarks;
 
         @Schema(description = "북마크 여부", example = "true")
@@ -102,6 +104,41 @@ public class TalkPickDto {
                     .writer(entity.getWriterNickname())
                     .lastModifiedAt(entity.getLastModifiedAt().toLocalDate())
                     .build();
+        }
+    }
+
+    @Schema(description = "톡픽 목록 조회 응답")
+    @Data
+    @AllArgsConstructor
+    @Builder
+    public static class TalkPickResponse {
+
+        @Schema(description = "톡픽 ID", example = "톡픽 ID")
+        private long id;
+
+        @Schema(description = "제목", example = "톡픽 제목")
+        private String title;
+
+        @Schema(description = "작성자 닉네임", example = "hj30")
+        private String writer;
+
+        @Schema(description = "작성일", example = "2024-08-04")
+        private LocalDate createdAt;
+
+        @Schema(description = "조회수", example = "152")
+        private long views;
+
+        @Schema(description = "저장수", example = "143")
+        private long bookmarks;
+
+        @QueryProjection
+        public TalkPickResponse(Long id, String title, String writer, LocalDateTime createdAt, long views, long bookmarks) {
+            this.id = id;
+            this.title = title;
+            this.writer = writer;
+            this.createdAt = createdAt.toLocalDate();
+            this.views = views;
+            this.bookmarks = bookmarks;
         }
     }
 }
