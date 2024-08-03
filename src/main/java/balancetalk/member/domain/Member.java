@@ -12,6 +12,7 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.*;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -76,7 +77,7 @@ public class Member extends BaseTimeEntity {
 
     public boolean hasBookmarked(Long resourceId, BookmarkType bookmarkType) {
         return this.bookmarks.stream()
-                .anyMatch(bookmark -> bookmark.matches(resourceId, bookmarkType));
+                .anyMatch(bookmark -> bookmark.matches(resourceId, bookmarkType) && bookmark.isActive());
     }
 
     public Optional<Vote> getVoteOnTalkPick(TalkPick talkPick) {
@@ -99,5 +100,16 @@ public class Member extends BaseTimeEntity {
     public boolean hasVotedGame(Game game) {
         return votes.stream()
                 .anyMatch(vote -> vote.matchesGame(game));
+    }
+
+    public boolean isMyTalkPick(long talkPickId) {
+        return talkPicks.stream()
+                .anyMatch(talkPick -> talkPick.isSameId(talkPickId));
+    }
+
+    public Optional<Bookmark> getBookmarkOf(long resourceId, BookmarkType type) {
+        return bookmarks.stream()
+                .filter(bookmark -> bookmark.matches(resourceId, type))
+                .findFirst();
     }
 }

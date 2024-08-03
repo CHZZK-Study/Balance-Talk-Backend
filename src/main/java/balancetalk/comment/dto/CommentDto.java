@@ -38,6 +38,7 @@ public class CommentDto {
                     .isBest(false)
                     .viewStatus(ViewStatus.NORMAL)
                     .reportedCount(0)
+                    .isNotifiedForFirstReply(false)
                     .build();
         }
 
@@ -48,6 +49,8 @@ public class CommentDto {
                     .talkPick(talkPick)
                     .voteOption(option) // TODO : Vote 구현 완료 후 member와 talkPick 이용해서 선택한 option 가져오기
                     .isBest(false)
+                    .viewStatus(ViewStatus.NORMAL)
+                    .reportedCount(0)
                     .parent(parent)
                     .build();
         }

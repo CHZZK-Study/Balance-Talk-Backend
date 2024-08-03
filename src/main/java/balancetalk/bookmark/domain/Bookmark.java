@@ -3,7 +3,6 @@ package balancetalk.bookmark.domain;
 import balancetalk.global.common.BaseTimeEntity;
 import balancetalk.member.domain.Member;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
@@ -26,9 +25,9 @@ public class Bookmark extends BaseTimeEntity {
     private Long resourceId;
 
     @NotNull
-    private Boolean active = true;
+    private Boolean active;
 
-    @NotBlank
+    @NotNull
     @Enumerated(EnumType.STRING)
     private BookmarkType bookmarkType;
 
@@ -42,5 +41,17 @@ public class Bookmark extends BaseTimeEntity {
 
     private boolean isEqualsType(BookmarkType bookmarkType) {
         return this.bookmarkType == bookmarkType;
+    }
+
+    public boolean isActive() {
+        return active;
+    }
+
+    public void activate() {
+        this.active = true;
+    }
+
+    public void deactivate() {
+        this.active = false;
     }
 }

@@ -24,7 +24,7 @@ public class TalkPickService {
 
     @Transactional
     public TalkPickDetailResponse findById(Long talkPickId, GuestOrApiMember guestOrApiMember) {
-        TalkPick talkPick = talkPickReader.readTalkPickById(talkPickId);
+        TalkPick talkPick = talkPickReader.readById(talkPickId);
         talkPick.increaseViews();
 
         if (guestOrApiMember.isGuest()) {

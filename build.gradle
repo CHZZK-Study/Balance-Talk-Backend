@@ -56,6 +56,7 @@ dependencies {
 
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'org.springframework.boot:spring-boot-starter-web-services'
 	testImplementation 'org.projectlombok:lombok:1.18.26'
 	compileOnly 'org.projectlombok:lombok'
 	runtimeOnly 'com.mysql:mysql-connector-j'
@@ -71,7 +72,6 @@ dependencies {
 
 	// oauth2
 	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
-
 }
 
 tasks.named('test') {
