@@ -7,7 +7,10 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 
-import static balancetalk.vote.domain.VoteOption.*;
+import java.time.LocalDate;
+
+import static balancetalk.vote.domain.VoteOption.A;
+import static balancetalk.vote.domain.VoteOption.B;
 
 public class TalkPickDto {
 
@@ -26,10 +29,10 @@ public class TalkPickDto {
         private String summary;
 
         @Schema(description = "선택지 A 이름", example = "선택지 A 이름")
-        private String optionA; // TODO "O"로 자동 지정
+        private String optionA;
 
         @Schema(description = "선택지 B 이름", example = "선택지 B 이름")
-        private String optionB; // TODO "X"로 자동 지정
+        private String optionB;
     }
 
     @Schema(description = "톡픽 상세 조회 응답")
@@ -50,10 +53,10 @@ public class TalkPickDto {
         private SummaryDto summary;
 
         @Schema(description = "선택지 A 이름", example = "선택지 A 이름")
-        private String optionA; // TODO "O"로 자동 지정
+        private String optionA;
 
         @Schema(description = "선택지 B 이름", example = "선택지 B 이름")
-        private String optionB; // TODO "X"로 자동 지정
+        private String optionB;
 
         @Schema(description = "선택지 A 투표수", example = "12")
         private long votesCountOfOptionA;
@@ -64,13 +67,25 @@ public class TalkPickDto {
         @Schema(description = "조회수", example = "152")
         private long views;
 
+        @Schema(description = "북마크 개수", example = "143")
+        private long bookmarks;
+
         @Schema(description = "북마크 여부", example = "true")
         private Boolean myBookmark;
 
         @Schema(description = "투표한 선택지", example = "A")
         private VoteOption votedOption;
 
-        public static TalkPickDetailResponse from(TalkPick entity, boolean myBookmark, VoteOption votedOption) {
+        @Schema(description = "작성자 닉네임", example = "hj30")
+        private String writer;
+
+        @Schema(description = "최근 수정일", example = "2024-08-04")
+        private LocalDate lastModifiedAt;
+
+        public static TalkPickDetailResponse from(TalkPick entity,
+                                                  long bookmarks,
+                                                  boolean myBookmark,
+                                                  VoteOption votedOption) {
             return TalkPickDetailResponse.builder()
                     .id(entity.getId())
                     .title(entity.getTitle())
@@ -81,8 +96,11 @@ public class TalkPickDto {
                     .votesCountOfOptionA(entity.votesCountOf(A))
                     .votesCountOfOptionB(entity.votesCountOf(B))
                     .views(entity.getViews())
+                    .bookmarks(bookmarks)
                     .myBookmark(myBookmark)
                     .votedOption(votedOption)
+                    .writer(entity.getWriterNickname())
+                    .lastModifiedAt(entity.getLastModifiedAt().toLocalDate())
                     .build();
         }
     }
