@@ -71,4 +71,8 @@ public class TalkPick extends BaseTimeEntity {
     public boolean isSameId(long id) {
         return this.id.equals(id);
     }
+
+    public String getWriterNickname() {
+        return this.member.getNickname();
+    }
 }

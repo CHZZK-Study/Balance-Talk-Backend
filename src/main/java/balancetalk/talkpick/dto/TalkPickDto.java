@@ -7,7 +7,10 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 
-import static balancetalk.vote.domain.VoteOption.*;
+import java.time.LocalDate;
+
+import static balancetalk.vote.domain.VoteOption.A;
+import static balancetalk.vote.domain.VoteOption.B;
 
 public class TalkPickDto {
 
@@ -73,6 +76,12 @@ public class TalkPickDto {
         @Schema(description = "투표한 선택지", example = "A")
         private VoteOption votedOption;
 
+        @Schema(description = "작성자 닉네임", example = "hj30")
+        private String writer;
+
+        @Schema(description = "최근 수정일", example = "2024-08-04")
+        private LocalDate lastModifiedAt;
+
         public static TalkPickDetailResponse from(TalkPick entity,
                                                   long bookmarks,
                                                   boolean myBookmark,
@@ -90,6 +99,8 @@ public class TalkPickDto {
                     .bookmarks(bookmarks)
                     .myBookmark(myBookmark)
                     .votedOption(votedOption)
+                    .writer(entity.getWriterNickname())
+                    .lastModifiedAt(entity.getLastModifiedAt().toLocalDate())
                     .build();
         }
     }
