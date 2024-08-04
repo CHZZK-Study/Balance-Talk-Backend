@@ -2,7 +2,7 @@ package balancetalk.bookmark.application;
 
 import balancetalk.bookmark.domain.Bookmark;
 import balancetalk.bookmark.domain.BookmarkGenerator;
-import balancetalk.bookmark.domain.repository.BookmarkRepository;
+import balancetalk.bookmark.domain.BookmarkRepository;
 import balancetalk.global.exception.BalanceTalkException;
 import balancetalk.member.domain.Member;
 import balancetalk.member.domain.MemberRepository;

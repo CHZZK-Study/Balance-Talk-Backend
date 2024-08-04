@@ -1,6 +1,6 @@
 package balancetalk.talkpick.application;
 
-import balancetalk.bookmark.domain.repository.BookmarkRepository;
+import balancetalk.bookmark.domain.BookmarkRepository;
 import balancetalk.member.domain.Member;
 import balancetalk.member.dto.GuestOrApiMember;
 import balancetalk.talkpick.domain.Summary;
