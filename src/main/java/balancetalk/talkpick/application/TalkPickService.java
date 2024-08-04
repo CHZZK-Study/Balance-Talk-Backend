@@ -50,4 +50,8 @@ public class TalkPickService {
     public Page<TalkPickResponse> findPaged(Pageable pageable) {
         return talkPickRepository.findPagedTalkPicks(pageable);
     }
+
+    public Page<TalkPickResponse> findPaged(Pageable pageable) {
+        return talkPickRepository.findPagedTalkPicks(pageable);
+    }
 }
