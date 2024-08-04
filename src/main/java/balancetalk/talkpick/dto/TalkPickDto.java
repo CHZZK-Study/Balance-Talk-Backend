@@ -84,6 +84,9 @@ public class TalkPickDto {
         @Schema(description = "최근 수정일", example = "2024-08-04")
         private LocalDate lastModifiedAt;
 
+        @Schema(description = "수정 여부", example = "true")
+        private Boolean isUpdated;
+
         public static TalkPickDetailResponse from(TalkPick entity, boolean myBookmark, VoteOption votedOption) {
             return TalkPickDetailResponse.builder()
                     .id(entity.getId())
@@ -100,6 +103,7 @@ public class TalkPickDto {
                     .votedOption(votedOption)
                     .writer(entity.getWriterNickname())
                     .lastModifiedAt(entity.getLastModifiedAt().toLocalDate())
+                    .isUpdated(entity.getLastModifiedAt().isAfter(entity.getCreatedAt()))
                     .build();
         }
     }
