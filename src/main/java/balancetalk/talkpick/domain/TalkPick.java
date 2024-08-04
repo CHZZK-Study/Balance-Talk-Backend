@@ -9,6 +9,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.PositiveOrZero;
 import jakarta.validation.constraints.Size;
 import lombok.*;
+import org.hibernate.annotations.ColumnDefault;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -50,9 +51,11 @@ public class TalkPick extends BaseTimeEntity {
     private String optionB;
 
     @PositiveOrZero
+    @ColumnDefault("0")
     private Long views;
 
     @PositiveOrZero
+    @ColumnDefault("0")
     private Long bookmarks;
 
     @Enumerated(value = EnumType.STRING)
@@ -71,11 +74,15 @@ public class TalkPick extends BaseTimeEntity {
                 .count();
     }
 
-    public boolean isSameId(long id) {
-        return this.id.equals(id);
-    }
-
     public String getWriterNickname() {
         return this.member.getNickname();
+    }
+
+    public void increaseBookmarks() {
+        this.bookmarks++;
+    }
+
+    public void decreaseBookmarks() {
+        this.bookmarks--;
     }
 }
