@@ -52,6 +52,9 @@ public class TalkPick extends BaseTimeEntity {
     @PositiveOrZero
     private Long views;
 
+    @PositiveOrZero
+    private Long bookmarks;
+
     @Enumerated(value = EnumType.STRING)
     private ViewStatus viewStatus = ViewStatus.NORMAL;
 
