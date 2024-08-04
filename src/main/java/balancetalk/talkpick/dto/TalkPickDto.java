@@ -84,10 +84,7 @@ public class TalkPickDto {
         @Schema(description = "최근 수정일", example = "2024-08-04")
         private LocalDate lastModifiedAt;
 
-        public static TalkPickDetailResponse from(TalkPick entity,
-                                                  long bookmarks,
-                                                  boolean myBookmark,
-                                                  VoteOption votedOption) {
+        public static TalkPickDetailResponse from(TalkPick entity, boolean myBookmark, VoteOption votedOption) {
             return TalkPickDetailResponse.builder()
                     .id(entity.getId())
                     .title(entity.getTitle())
@@ -98,7 +95,7 @@ public class TalkPickDto {
                     .votesCountOfOptionA(entity.votesCountOf(A))
                     .votesCountOfOptionB(entity.votesCountOf(B))
                     .views(entity.getViews())
-                    .bookmarks(bookmarks)
+                    .bookmarks(entity.getBookmarks())
                     .myBookmark(myBookmark)
                     .votedOption(votedOption)
                     .writer(entity.getWriterNickname())

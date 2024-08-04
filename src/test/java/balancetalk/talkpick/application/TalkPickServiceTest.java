@@ -1,6 +1,5 @@
 package balancetalk.talkpick.application;
 
-import balancetalk.bookmark.domain.repository.BookmarkRepository;
 import balancetalk.member.domain.Member;
 import balancetalk.member.dto.GuestOrApiMember;
 import balancetalk.talkpick.domain.Summary;
@@ -17,7 +16,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDateTime;
 
-import static balancetalk.bookmark.domain.BookmarkType.TALK_PICK;
 import static balancetalk.vote.domain.VoteOption.A;
 import static balancetalk.vote.domain.VoteOption.B;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -31,9 +29,6 @@ class TalkPickServiceTest {
 
     @Mock
     TalkPickReader talkPickReader;
-
-    @Mock
-    BookmarkRepository bookmarkRepository;
 
     TalkPick talkPick;
     GuestOrApiMember guestOrApiMember;
@@ -63,7 +58,6 @@ class TalkPickServiceTest {
     void findById_Success_ThenIncreaseViews() {
         // given
         when(talkPickReader.readById(1L)).thenReturn(talkPick);
-        when(bookmarkRepository.countBookmarksByResourceIdAndType(1L, TALK_PICK)).thenReturn(1L);
         when(guestOrApiMember.isGuest()).thenReturn(true);
 
         // when
@@ -78,7 +72,6 @@ class TalkPickServiceTest {
     void findById_Success_ThenMyBookmarkIsFalse_ByGuest() {
         // given
         when(talkPickReader.readById(1L)).thenReturn(talkPick);
-        when(bookmarkRepository.countBookmarksByResourceIdAndType(1L, TALK_PICK)).thenReturn(1L);
         when(guestOrApiMember.isGuest()).thenReturn(true);
 
         // when
@@ -93,7 +86,6 @@ class TalkPickServiceTest {
     void findById_Success_ThenVoteOptionIsNull_ByGuest() {
         // given
         when(talkPickReader.readById(1L)).thenReturn(talkPick);
-        when(bookmarkRepository.countBookmarksByResourceIdAndType(1L, TALK_PICK)).thenReturn(1L);
         when(guestOrApiMember.isGuest()).thenReturn(true);
 
         // when

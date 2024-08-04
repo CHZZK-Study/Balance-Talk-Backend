@@ -102,9 +102,8 @@ public class Member extends BaseTimeEntity {
                 .anyMatch(vote -> vote.matchesGame(game));
     }
 
-    public boolean isMyTalkPick(long talkPickId) {
-        return talkPicks.stream()
-                .anyMatch(talkPick -> talkPick.isSameId(talkPickId));
+    public boolean isMyTalkPick(TalkPick talkPick) {
+        return talkPicks.contains(talkPick);
     }
 
     public Optional<Bookmark> getBookmarkOf(long resourceId, BookmarkType type) {

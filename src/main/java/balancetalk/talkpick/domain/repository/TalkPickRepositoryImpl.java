@@ -48,7 +48,8 @@ public class TalkPickRepositoryImpl implements TalkPickRepositoryCustom {
 
         List<TalkPickResponse> content = queryFactory
                 .select(new QTalkPickDto_TalkPickResponse(
-                        talkPick.id, talkPick.title, talkPick.member.nickname, talkPick.createdAt, talkPick.views, Expressions.nullExpression()
+                        talkPick.id, talkPick.title, talkPick.member.nickname,
+                        talkPick.createdAt, talkPick.views, talkPick.bookmarks
                 ))
                 .from(talkPick)
                 .orderBy(orderSpecifiers.toArray(OrderSpecifier[]::new))

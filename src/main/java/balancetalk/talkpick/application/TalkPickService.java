@@ -1,6 +1,5 @@
 package balancetalk.talkpick.application;
 
-import balancetalk.bookmark.domain.repository.BookmarkRepository;
 import balancetalk.member.domain.Member;
 import balancetalk.member.domain.MemberRepository;
 import balancetalk.member.dto.GuestOrApiMember;
@@ -25,7 +24,6 @@ import static balancetalk.talkpick.dto.TalkPickDto.TalkPickResponse;
 public class TalkPickService {
 
     private final TalkPickReader talkPickReader;
-    private final BookmarkRepository bookmarkRepository;
     private final MemberRepository memberRepository;
     private final TalkPickRepository talkPickRepository;
 
@@ -34,10 +32,8 @@ public class TalkPickService {
         TalkPick talkPick = talkPickReader.readById(talkPickId);
         talkPick.increaseViews();
 
-        long bookmarksCount = bookmarkRepository.countBookmarksByResourceIdAndType(talkPickId, TALK_PICK);
-
         if (guestOrApiMember.isGuest()) {
-            return TalkPickDetailResponse.from(talkPick, bookmarksCount, false, null);
+            return TalkPickDetailResponse.from(talkPick, false, null);
         }
 
         Member member = guestOrApiMember.toMember(memberRepository);
@@ -45,10 +41,10 @@ public class TalkPickService {
         Optional<Vote> myVote = member.getVoteOnTalkPick(talkPick);
 
         if (myVote.isEmpty()) {
-            return TalkPickDetailResponse.from(talkPick, bookmarksCount, hasBookmarked, null);
+            return TalkPickDetailResponse.from(talkPick, hasBookmarked, null);
         }
 
-        return TalkPickDetailResponse.from(talkPick, bookmarksCount, hasBookmarked, myVote.get().getVoteOption());
+        return TalkPickDetailResponse.from(talkPick, hasBookmarked, myVote.get().getVoteOption());
     }
 
     public Page<TalkPickResponse> findPaged(Pageable pageable) {
