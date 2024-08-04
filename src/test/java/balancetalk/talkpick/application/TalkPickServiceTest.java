@@ -50,6 +50,7 @@ class TalkPickServiceTest {
         when(talkPick.votesCountOf(B)).thenReturn(12L);
         when(talkPick.getViews()).thenReturn(152L);
         when(talkPick.getWriterNickname()).thenReturn("writer");
+        when(talkPick.getCreatedAt()).thenReturn(LocalDateTime.now());
         when(talkPick.getLastModifiedAt()).thenReturn(LocalDateTime.now());
     }
 
