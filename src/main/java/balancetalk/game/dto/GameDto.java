@@ -64,6 +64,9 @@ public class GameDto {
         @Schema(description = "선택지 A 이미지", example = "https://pikko-image.s3.ap-northeast-2.amazonaws.com/balance-game/067cc56e-21b7-468f-a2c1-4839036ee7cd_unnamed.png")
         private String optionAImg;
 
+        @Schema(description = "선택지 A 이름", example = "선택지 A 이름")
+        private String optionA;
+
         @Schema(description = "선택지 B 이름", example = "선택지 B 이름")
         private String optionB;
 

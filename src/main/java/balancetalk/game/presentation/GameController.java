@@ -8,12 +8,11 @@ import balancetalk.member.dto.GuestOrApiMember;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
+
 import static balancetalk.game.dto.GameDto.*;
 
 @Slf4j
@@ -52,18 +51,14 @@ public class GameController {
     }
 
     @GetMapping("/latest")
-    @Operation(summary = "최신순으로 밸런스 게임 조회", description = "최신순으로 정렬된 16개의 게임 목록을 리턴합니다.")
-    public Page<GameResponse> findLatestGames(@RequestParam(value = "page", defaultValue = "0") int page,
-                                              @RequestParam(value = "size", defaultValue = "16") int size) {
-        Pageable pageable = PageRequest.of(page, size);
-        return gameService.findLatestGames(pageable);
+    @Operation(summary = "최신순으로 밸런스 게임 조회", description = "최신순으로 정렬된 16개의 게임 목록을 카테고리 별로 리턴합니다.")
+    public List<GameResponse> findLatestGames(@RequestParam int gameTopicId) {
+        return gameService.findLatestGames(gameTopicId);
     }
 
     @GetMapping("/best")
-    @Operation(summary = "인기순으로 밸런스 게임 조회", description = "인기순으로 정렬된 16개의 게임 목록을 리턴합니다.")
-    public Page<GameResponse> findBestGames(@RequestParam(value = "page", defaultValue = "0") int page,
-                                            @RequestParam(value = "size", defaultValue = "16") int size) {
-        Pageable pageable = PageRequest.of(page, size);
-        return gameService.findBestGames(pageable);
+    @Operation(summary = "인기순으로 밸런스 게임 조회", description = "인기순으로 정렬된 16개의 게임 목록을 카테고리 별로 리턴합니다.")
+    public List<GameResponse> findBestGames(@RequestParam int gameTopicId) {
+        return gameService.findBestGames(gameTopicId);
     }
 }
