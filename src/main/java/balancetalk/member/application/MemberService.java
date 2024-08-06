@@ -63,18 +63,7 @@ public class MemberService {
         String accessToken = jwtTokenProvider.createAccessToken(authentication, member.getId());
         String refreshToken = jwtTokenProvider.createRefreshToken(authentication, member.getId());
 
-        log.info(CacheType.RefreshToken.getCacheName());
         cacheManager.getCache(CacheType.RefreshToken.getCacheName()).put(member.getId(), refreshToken);
-
-        for (String cacheName : cacheManager.getCacheNames()) {
-            CaffeineCache caffeineCache = (CaffeineCache) cacheManager.getCache(cacheName);
-
-            Cache<Object, Object> cache = caffeineCache.getNativeCache();
-            log.info("Cache Name: {}", cacheName);
-            cache.asMap().forEach((key, value) -> {
-                log.info("key: {} - value: {}", key, value != null ? value.toString() : "null");
-            });
-        }
 
         Cookie cookie = jwtTokenProvider.createCookie(refreshToken);
         response.addCookie(cookie);
