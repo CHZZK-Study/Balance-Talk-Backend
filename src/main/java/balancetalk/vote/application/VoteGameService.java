@@ -50,7 +50,7 @@ public class VoteGameService {
             throw new BalanceTalkException(ErrorCode.NOT_FOUND_VOTE);
         }
 
-        voteRepository.save(request.toEntity(member, game));
+        voteOnGame.get().updateVoteOption(request.getVoteOption());
     }
 
     public void deleteVote(Long gameId, ApiMember apiMember) {
