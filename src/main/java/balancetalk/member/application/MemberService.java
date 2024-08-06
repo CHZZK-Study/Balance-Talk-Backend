@@ -1,20 +1,23 @@
 package balancetalk.member.application;
 
+import balancetalk.global.caffeine.CacheType;
 import balancetalk.global.exception.BalanceTalkException;
 import balancetalk.global.exception.ErrorCode;
 import balancetalk.global.jwt.JwtTokenProvider;
-import balancetalk.global.redis.application.RedisService;
 import balancetalk.member.domain.Member;
 import balancetalk.member.domain.MemberRepository;
 import balancetalk.member.dto.ApiMember;
 import balancetalk.member.dto.MemberDto.JoinRequest;
 import balancetalk.member.dto.MemberDto.LoginRequest;
 import balancetalk.member.dto.MemberDto.MemberResponse;
+import com.github.benmanes.caffeine.cache.Cache;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.CacheManager;
+import org.springframework.cache.caffeine.CaffeineCache;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -22,6 +25,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
+
 import static balancetalk.global.exception.ErrorCode.ALREADY_REGISTERED_EMAIL;
 import static balancetalk.global.exception.ErrorCode.ALREADY_REGISTERED_NICKNAME;
 
@@ -34,7 +38,7 @@ public class MemberService {
     private final JwtTokenProvider jwtTokenProvider;
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
-    private final RedisService redisService;
+    private final CacheManager cacheManager;
 
     public Long join(final JoinRequest joinRequest) {
         if (memberRepository.existsByEmail(joinRequest.getEmail())) {
@@ -57,15 +61,29 @@ public class MemberService {
 
         Authentication authentication = jwtTokenProvider.getAuthenticationByEmail(loginRequest.getEmail());
         String accessToken = jwtTokenProvider.createAccessToken(authentication, member.getId());
-        String refreshToken = jwtTokenProvider.createRefreshToken(authentication);
+        String refreshToken = jwtTokenProvider.createRefreshToken(authentication, member.getId());
+
+        log.info(CacheType.RefreshToken.getCacheName());
+        cacheManager.getCache(CacheType.RefreshToken.getCacheName()).put(member.getId(), refreshToken);
+
+        for (String cacheName : cacheManager.getCacheNames()) {
+            CaffeineCache caffeineCache = (CaffeineCache) cacheManager.getCache(cacheName);
+
+            Cache<Object, Object> cache = caffeineCache.getNativeCache();
+            log.info("Cache Name: {}", cacheName);
+            cache.asMap().forEach((key, value) -> {
+                log.info("key: {} - value: {}", key, value != null ? value.toString() : "null");
+            });
+        }
+
         Cookie cookie = jwtTokenProvider.createCookie(refreshToken);
         response.addCookie(cookie);
         return accessToken;
     }
 
     @Transactional(readOnly = true)
-    public MemberResponse findById(Long id) {
-        Member member = memberRepository.findById(id)
+    public MemberResponse findById(Long memberId) {
+        Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new BalanceTalkException(ErrorCode.NOT_FOUND_MEMBER));
         return MemberResponse.fromEntity(member);
     }
@@ -115,8 +133,6 @@ public class MemberService {
         if (authentication == null) {
             throw new BalanceTalkException(ErrorCode.AUTHENTICATION_REQUIRED);
         }
-        String username = authentication.getName();
-        redisService.deleteValues(username);
     }
 
     public void verifyNickname(String nickname) {
@@ -131,9 +147,8 @@ public class MemberService {
             String name = cookie.getName();
             if (name.equals("refreshToken")) {
                 String refreshToken = cookie.getValue();
-                Long memberId = jwtTokenProvider.extractMemberId(refreshToken);
                 jwtTokenProvider.validateToken(refreshToken);
-                return jwtTokenProvider.reissueAccessToken(refreshToken, memberId);
+                return jwtTokenProvider.reissueAccessToken(refreshToken);
             }
         }
         return null;
