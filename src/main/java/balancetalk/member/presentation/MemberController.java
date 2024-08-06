@@ -84,7 +84,7 @@ public class MemberController {
     }
 
     @ResponseStatus(HttpStatus.OK)
-    @DeleteMapping
+    @DeleteMapping("/delete")
     @Operation(summary = "회원 삭제", description = "회원 정보를 삭제한다.")
     public void deleteMember(@Valid @RequestBody LoginRequest loginRequest, @AuthPrincipal ApiMember apiMember) {
         memberService.delete(loginRequest, apiMember);
