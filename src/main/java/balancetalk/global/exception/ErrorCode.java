@@ -34,6 +34,7 @@ public enum ErrorCode {
     INVALID_REPORT_TYPE(BAD_REQUEST, "신고 타입이 올바르지 않습니다."),
     CANNOT_BOOKMARK_MY_RESOURCE(BAD_REQUEST, "본인이 생성한 자원에는 북마크가 불가능합니다."),
     ALREADY_BOOKMARKED(BAD_REQUEST, "이미 북마크한 게시글입니다."),
+    ALREADY_DELETED_BOOKMARK(BAD_REQUEST, "이미 북마크가 취소된 상태입니다."),
 
     // 401
     MISMATCHED_EMAIL_OR_PASSWORD(UNAUTHORIZED, "이메일 또는 비밀번호가 잘못되었습니다."),
