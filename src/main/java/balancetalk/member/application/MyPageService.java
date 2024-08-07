@@ -3,9 +3,12 @@ package balancetalk.member.application;
 import balancetalk.bookmark.domain.Bookmark;
 import balancetalk.bookmark.domain.BookmarkRepository;
 import balancetalk.bookmark.domain.BookmarkType;
+import balancetalk.comment.domain.Comment;
+import balancetalk.comment.domain.CommentRepository;
 import balancetalk.member.domain.Member;
 import balancetalk.member.domain.MemberRepository;
 import balancetalk.member.dto.ApiMember;
+import balancetalk.talkpick.domain.TalkPick;
 import balancetalk.talkpick.domain.repository.TalkPickRepository;
 import balancetalk.talkpick.dto.TalkPickDto.TalkPickMyPageResponse;
 import balancetalk.vote.domain.Vote;
@@ -29,6 +32,7 @@ public class MyPageService {
     private final TalkPickRepository talkPickRepository;
     private final BookmarkRepository bookmarkRepository;
     private final VoteRepository voteRepository;
+    private final CommentRepository commentRepository;
 
     public Page<TalkPickMyPageResponse> findAllBookmarkedTalkPicks(ApiMember apiMember, Pageable pageable) {
         Member member = apiMember.toMember(memberRepository);
@@ -47,6 +51,17 @@ public class MyPageService {
 
         List<TalkPickMyPageResponse> responses = votes.stream()
                 .map(vote -> TalkPickMyPageResponse.from(vote.getTalkPick(), vote))
+                .collect(Collectors.toList());
+
+        return new PageImpl<>(responses, pageable, responses.size());
+    }
+
+    public Page<TalkPickMyPageResponse> findAllCommentedTalkPicks(ApiMember apiMember, Pageable pageable) {
+        Member member = apiMember.toMember(memberRepository);
+        List<Comment> comments = commentRepository.findAllByMemberIdDesc(member.getId());
+
+        List<TalkPickMyPageResponse> responses = comments.stream()
+                .map(comment -> TalkPickMyPageResponse.from(comment.getTalkPick(), comment))
                 .collect(Collectors.toList());
 
         return new PageImpl<>(responses, pageable, responses.size());
