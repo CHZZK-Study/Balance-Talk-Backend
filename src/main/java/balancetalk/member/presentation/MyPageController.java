@@ -31,7 +31,7 @@ public class MyPageController {
             @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "6", required = false) int size,
             @Parameter(hidden = true) @AuthPrincipal ApiMember apiMember) {
 
-        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
+        Pageable pageable = PageRequest.of(page, size);
         return myPageService.findAllBookmarkedTalkPicks(apiMember, pageable);
     }
 }

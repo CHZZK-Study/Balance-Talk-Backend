@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -38,16 +39,17 @@ public class MyPageService {
                 .map(Bookmark::getResourceId)
                 .collect(Collectors.toList());
 
-        List<TalkPick> talkPicks = talkPickRepository.findByIdInOrderByCreatedAtDesc(talkPickIds);
+        if (talkPickIds.isEmpty()) {
+            return Page.empty(pageable);
+        }
 
-        // talkPickIds 순서에 맞게 talkPicks를 정렬
+        List<TalkPick> talkPicks = talkPickRepository.findByIdIn(talkPickIds);
         Map<Long, TalkPick> talkPickMap = talkPicks.stream()
                 .collect(Collectors.toMap(TalkPick::getId, Function.identity()));
-        List<TalkPick> sortedTalkPicks = talkPickIds.stream()
-                .map(talkPickMap::get)
-                .toList();
 
-        List<TalkPickMyPageResponse> responses = sortedTalkPicks.stream()
+        List<TalkPickMyPageResponse> responses = talkPickIds.stream()
+                .map(talkPickMap::get)
+                .filter(Objects::nonNull)
                 .map(TalkPickMyPageResponse::from)
                 .collect(Collectors.toList());
 
