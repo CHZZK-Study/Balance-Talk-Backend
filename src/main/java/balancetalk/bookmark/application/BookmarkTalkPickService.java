@@ -34,6 +34,9 @@ public class BookmarkTalkPickService {
         if (member.isMyTalkPick(talkPick)) {
             throw new BalanceTalkException(CANNOT_BOOKMARK_MY_RESOURCE);
         }
+        if (member.hasBookmarked(talkPickId, TALK_PICK)) {
+            throw new BalanceTalkException(ALREADY_BOOKMARKED);
+        }
 
         member.getBookmarkOf(talkPickId, TALK_PICK)
                 .ifPresentOrElse(Bookmark::activate,

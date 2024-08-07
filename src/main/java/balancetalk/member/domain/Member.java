@@ -108,7 +108,7 @@ public class Member extends BaseTimeEntity {
 
     public Optional<Bookmark> getBookmarkOf(long resourceId, BookmarkType type) {
         return bookmarks.stream()
-                .filter(bookmark -> bookmark.matches(resourceId, type))
+                .filter(bookmark -> bookmark.matches(resourceId, type) && bookmark.isActive())
                 .findFirst();
     }
 }
