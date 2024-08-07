@@ -8,7 +8,7 @@ import org.springframework.data.repository.query.Param;
 
 public interface BookmarkRepository extends JpaRepository<Bookmark, Long> {
 
-    @Query("SELECT b FROM Bookmark b WHERE b.member.id = :memberId AND b.bookmarkType = :bookmarkType AND b.active = true ORDER BY b.createdAt DESC")
+    @Query("SELECT b FROM Bookmark b WHERE b.member.id = :memberId AND b.bookmarkType = :bookmarkType AND b.active = true ORDER BY b.lastModifiedAt DESC")
     Page<Bookmark> findAllByMemberId(@Param("memberId") Long memberId, @Param("bookmarkType") BookmarkType bookmarkType, Pageable pageable);
 
 }
