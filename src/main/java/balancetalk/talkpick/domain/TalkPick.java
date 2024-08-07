@@ -30,23 +30,23 @@ public class TalkPick extends BaseTimeEntity {
     private Member member;
 
     @NotBlank
-    @Size(max = 255)
+    @Size(max = 50)
     private String title;
 
     @Embedded
     private Summary summary;
 
     @NotBlank
-    @Size(max = 255)
+    @Column(columnDefinition = "LONGTEXT")
     private String content;
 
     @NotBlank
-    @Size(max = 50)
+    @Size(max = 10)
     @Column(name = "option_a")
     private String optionA;
 
     @NotBlank
-    @Size(max = 50)
+    @Size(max = 10)
     @Column(name = "option_b")
     private String optionB;
 

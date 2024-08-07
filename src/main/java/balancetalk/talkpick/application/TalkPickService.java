@@ -2,6 +2,7 @@ package balancetalk.talkpick.application;
 
 import balancetalk.member.domain.Member;
 import balancetalk.member.domain.MemberRepository;
+import balancetalk.member.dto.ApiMember;
 import balancetalk.member.dto.GuestOrApiMember;
 import balancetalk.talkpick.domain.TalkPick;
 import balancetalk.talkpick.domain.TalkPickReader;
@@ -18,6 +19,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static balancetalk.bookmark.domain.BookmarkType.TALK_PICK;
+import static balancetalk.talkpick.dto.TalkPickDto.CreateTalkPickRequest;
 import static balancetalk.talkpick.dto.TalkPickDto.TalkPickResponse;
 
 @Service
@@ -27,6 +29,12 @@ public class TalkPickService {
     private final TalkPickReader talkPickReader;
     private final MemberRepository memberRepository;
     private final TalkPickRepository talkPickRepository;
+
+    @Transactional
+    public void createTalkPick(CreateTalkPickRequest request, ApiMember apiMember) {
+        Member member = apiMember.toMember(memberRepository);
+        talkPickRepository.save(request.toEntity(member));
+    }
 
     @Transactional
     public TalkPickDetailResponse findById(Long talkPickId, GuestOrApiMember guestOrApiMember) {
