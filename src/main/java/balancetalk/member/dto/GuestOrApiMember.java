@@ -11,14 +11,14 @@ import lombok.Data;
 @AllArgsConstructor
 public class GuestOrApiMember {
 
-    private String username;
+    private Long memberId;
 
     public boolean isGuest() {
-        return username.equals("guest");
+        return memberId.equals(-1L);
     }
 
     public Member toMember(MemberRepository memberRepository) {
-        return memberRepository.findByEmail(username)
+        return memberRepository.findById(memberId)
                 .orElseThrow(() -> new BalanceTalkException(ErrorCode.NOT_FOUND_MEMBER));
     }
 }
