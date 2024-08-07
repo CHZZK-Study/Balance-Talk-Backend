@@ -165,6 +165,12 @@ public class TalkPickDto {
         @Schema(description = "댓글 내용", example = "댓글 내용")
         private String commentContent;
 
+        @Schema(description = "북마크 된 개수", example = "12")
+        private long bookmarks;
+
+        @Schema(description = "댓글 개수", example = "2")
+        private long commentCount;
+
         /*
         @Schema(description = "선택지 A 이미지", example = "https://pikko-image.s3.ap-northeast-2.amazonaws.com/balance-game/067cc56e-21b7-468f-a2c1-4839036ee7cd_unnamed.png")
         private String optionAImg;
@@ -194,6 +200,15 @@ public class TalkPickDto {
                     .id(talkPick.getId())
                     .title(talkPick.getTitle())
                     .commentContent(comment.getContent())
+                    .build();
+        }
+
+        public static TalkPickMyPageResponse fromMyTalkPick(TalkPick talkPick) {
+            return TalkPickMyPageResponse.builder()
+                    .id(talkPick.getId())
+                    .title(talkPick.getTitle())
+                    .bookmarks(talkPick.getBookmarks())
+                    .commentCount(!talkPick.getComments().isEmpty() ? talkPick.getComments().size() : 0)
                     .build();
         }
     }
