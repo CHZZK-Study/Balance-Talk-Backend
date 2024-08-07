@@ -11,6 +11,6 @@ import java.util.List;
 public interface BookmarkRepository extends JpaRepository<Bookmark, Long> {
 
     @Query("SELECT b FROM Bookmark b WHERE b.member.id = :memberId AND b.bookmarkType = :bookmarkType AND b.active = true ORDER BY b.lastModifiedAt DESC")
-    List<Bookmark> findAllByMemberId(@Param("memberId") Long memberId, @Param("bookmarkType") BookmarkType bookmarkType, Pageable pageable);
+    List<Bookmark> findAllByMemberId(@Param("memberId") Long memberId, @Param("bookmarkType") BookmarkType bookmarkType);
 
 }

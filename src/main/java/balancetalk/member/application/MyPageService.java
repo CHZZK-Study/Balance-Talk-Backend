@@ -33,7 +33,7 @@ public class MyPageService {
 
     public Page<TalkPickMyPageResponse> findAllBookmarkedTalkPicks(ApiMember apiMember, Pageable pageable) {
         Member member = apiMember.toMember(memberRepository);
-        List<Bookmark> bookmarks = bookmarkRepository.findAllByMemberId(member.getId(), BookmarkType.TALK_PICK, pageable);
+        List<Bookmark> bookmarks = bookmarkRepository.findAllByMemberId(member.getId(), BookmarkType.TALK_PICK);
 
         List<Long> talkPickIds = bookmarks.stream()
                 .map(Bookmark::getResourceId)
