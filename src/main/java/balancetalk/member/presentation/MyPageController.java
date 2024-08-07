@@ -3,7 +3,7 @@ package balancetalk.member.presentation;
 import balancetalk.global.utils.AuthPrincipal;
 import balancetalk.member.application.MyPageService;
 import balancetalk.member.dto.ApiMember;
-import balancetalk.talkpick.dto.TalkPickDto;
+import balancetalk.talkpick.dto.TalkPickDto.TalkPickMyPageResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -25,13 +25,23 @@ public class MyPageController {
 
     private final MyPageService myPageService;
 
-    @GetMapping("/talks/bookmark")
+    @GetMapping("/talks/bookmarks")
     @Operation(summary = "북마크한 톡픽 목록 조회", description = "로그인한 회원이 북마크한 톡픽 목록을 조회한다.")
-    public Page<TalkPickDto.TalkPickMyPageResponse> findAllBookmarkedTalkPicks(
+    public Page<TalkPickMyPageResponse> findAllBookmarkedTalkPicks(
             @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "6", required = false) int size,
             @Parameter(hidden = true) @AuthPrincipal ApiMember apiMember) {
 
         Pageable pageable = PageRequest.of(page, size);
         return myPageService.findAllBookmarkedTalkPicks(apiMember, pageable);
+    }
+
+    @GetMapping("/talks/votes")
+    @Operation(summary = "투표한 톡픽 목록 조회", description = "로그인한 회원이 투표한 톡픽 목록을 조회한다.")
+    public Page<TalkPickMyPageResponse> findAllVotedTalkPicks(
+            @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "6", required = false) int size,
+            @Parameter(hidden = true) @AuthPrincipal ApiMember apiMember) {
+
+        Pageable pageable = PageRequest.of(page, size);
+        return myPageService.findAllVotedTalkPicks(apiMember, pageable);
     }
 }
