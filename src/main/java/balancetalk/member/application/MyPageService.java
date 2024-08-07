@@ -47,7 +47,7 @@ public class MyPageService {
 
     public Page<TalkPickMyPageResponse> findAllVotedTalkPicks(ApiMember apiMember, Pageable pageable) {
         Member member = apiMember.toMember(memberRepository);
-        List<Vote> votes = voteRepository.findByMemberIdAndTalkPickIsNotNullOrderByLastModifiedAtDesc(member.getId());
+        List<Vote> votes = voteRepository.findAllByMemberIdDesc(member.getId());
 
         List<TalkPickMyPageResponse> responses = votes.stream()
                 .map(vote -> TalkPickMyPageResponse.from(vote.getTalkPick(), vote))
