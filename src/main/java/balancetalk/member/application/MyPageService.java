@@ -33,7 +33,7 @@ public class MyPageService {
 
     public Page<TalkPickMyPageResponse> findAllBookmarkedTalkPicks(ApiMember apiMember, Pageable pageable) {
         Member member = apiMember.toMember(memberRepository);
-        Page<Bookmark> bookmarks = bookmarkRepository.findAllByMemberId(member.getId(), BookmarkType.TALK_PICK, pageable);
+        List<Bookmark> bookmarks = bookmarkRepository.findAllByMemberId(member.getId(), BookmarkType.TALK_PICK, pageable);
 
         List<Long> talkPickIds = bookmarks.stream()
                 .map(Bookmark::getResourceId)
@@ -53,6 +53,6 @@ public class MyPageService {
                 .map(TalkPickMyPageResponse::from)
                 .collect(Collectors.toList());
 
-        return new PageImpl<>(responses, pageable, bookmarks.getTotalElements());
+        return new PageImpl<>(responses, pageable, responses.size());
     }
 }
