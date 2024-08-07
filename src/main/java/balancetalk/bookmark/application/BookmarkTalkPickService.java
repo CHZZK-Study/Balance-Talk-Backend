@@ -8,7 +8,7 @@ import balancetalk.member.domain.Member;
 import balancetalk.member.domain.MemberRepository;
 import balancetalk.member.dto.ApiMember;
 import balancetalk.talkpick.domain.TalkPick;
-import balancetalk.talkpick.domain.repository.TalkPickRepository;
+import balancetalk.talkpick.domain.TalkPickReader;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,40 +20,46 @@ import static balancetalk.global.exception.ErrorCode.*;
 @RequiredArgsConstructor
 public class BookmarkTalkPickService {
 
-    private final TalkPickRepository talkPickRepository;
+    private final TalkPickReader talkPickReader;
     private final MemberRepository memberRepository;
     private final BookmarkGenerator bookmarkGenerator;
     private final BookmarkRepository bookmarkRepository;
 
     @Transactional
     public void createBookmark(final long talkPickId, final ApiMember apiMember) {
-        TalkPick talkPick = talkPickRepository.findById(talkPickId)
-                .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_TALK_PICK));
-
+        TalkPick talkPick = talkPickReader.readById(talkPickId);
         Member member = apiMember.toMember(memberRepository);
+
         if (member.isMyTalkPick(talkPick)) {
             throw new BalanceTalkException(CANNOT_BOOKMARK_MY_RESOURCE);
+        }
+        if (member.hasBookmarked(talkPickId, TALK_PICK)) {
+            throw new BalanceTalkException(ALREADY_BOOKMARKED);
         }
 
         member.getBookmarkOf(talkPickId, TALK_PICK)
                 .ifPresentOrElse(Bookmark::activate,
                         () -> bookmarkRepository.save(bookmarkGenerator.generate(talkPickId, TALK_PICK, member)));
-
         talkPick.increaseBookmarks();
     }
 
     @Transactional
     public void deleteBookmark(Long talkPickId, ApiMember apiMember) {
-        TalkPick talkPick = talkPickRepository.findById(talkPickId)
-                .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_TALK_PICK));
-
+        TalkPick talkPick = talkPickReader.readById(talkPickId);
         Member member = apiMember.toMember(memberRepository);
 
         Bookmark bookmark = member.getBookmarkOf(talkPickId, TALK_PICK)
                 .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_BOOKMARK));
 
-        bookmark.deactivate();
+        if (isNotActivated(bookmark)) {
+            throw new BalanceTalkException(ALREADY_DELETED_BOOKMARK);
+        }
 
+        bookmark.deactivate();
         talkPick.decreaseBookmarks();
+    }
+
+    private boolean isNotActivated(Bookmark bookmark) {
+        return !bookmark.isActive();
     }
 }
