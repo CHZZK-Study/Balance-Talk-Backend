@@ -2,23 +2,25 @@ package balancetalk.authmail.application;
 
 import balancetalk.authmail.dto.EmailRequest;
 import balancetalk.authmail.dto.EmailVerification;
+import balancetalk.global.caffeine.CacheType;
 import balancetalk.global.exception.BalanceTalkException;
 import balancetalk.global.exception.ErrorCode;
-import balancetalk.global.redis.application.RedisService;
 import balancetalk.member.domain.Member;
 import balancetalk.member.domain.MemberRepository;
+import com.github.benmanes.caffeine.cache.Cache;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.CacheManager;
+import org.springframework.cache.caffeine.CaffeineCache;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.security.SecureRandom;
-import java.time.Duration;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -30,7 +32,6 @@ import java.util.stream.IntStream;
 @Transactional
 public class MailService {
 
-    private static final String TEMP = "temp ";
     private static final String SENDER_EMAIL = "bootsprng@gmail.com";
     private static final int AUTH_NUMBER_MIN = 0;
     private static final int AUTH_NUMBER_MAX = 6;
@@ -39,7 +40,7 @@ public class MailService {
     private static final int RANDOM_GENERATOR_LENGTH = 10;
 
     private final JavaMailSender javaMailSender;
-    private final RedisService redisService;
+    private final CacheManager cacheManager;
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
 
@@ -56,15 +57,18 @@ public class MailService {
     }
 
     public void verifyCode(EmailVerification request) {
-        String key = TEMP + request.getEmail();
-        Optional<Member> member = memberRepository.findByEmail(key);
+        Optional<Member> member = memberRepository.findByEmail(request.getEmail());
         if (member.isPresent()) {
             throw new BalanceTalkException(ErrorCode.ALREADY_REGISTERED_EMAIL);
         }
-        String redisValue = redisService.getValues(key);
-        Optional.ofNullable(redisValue)
-                .filter(code -> code.equals(request.getVerificationCode()))
-                .orElseThrow(() -> new BalanceTalkException(ErrorCode.AUTHORIZATION_CODE_MISMATCH));
+
+        CaffeineCache cache = (CaffeineCache) cacheManager.getCache(CacheType.TempCode.getCacheName());
+        Cache<Object, Object> nativeCache = cache.getNativeCache();
+        Object value = nativeCache.getIfPresent(request.getEmail());
+
+        if (!request.getVerificationCode().equals(value)) {
+            throw new BalanceTalkException(ErrorCode.AUTHORIZATION_CODE_MISMATCH);
+        }
     }
 
     public void sendTempPassword(EmailRequest request) {
@@ -87,9 +91,8 @@ public class MailService {
         } catch (MessagingException e) {
             throw new BalanceTalkException(ErrorCode.FAIL_SEND_EMAIL);
         }
-        // 로그인 할 때 유저 이메일을 key로 토큰이 저장되기 때문에 key 중복
-        String key = TEMP + request.getEmail();
-        redisService.setValues(key, authCode, Duration.ofMillis(authCodeExpirationMillis));
+
+        cacheManager.getCache(CacheType.TempCode.getCacheName()).put(request.getEmail(), authCode);
         return message;
     }
 
