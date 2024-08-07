@@ -194,7 +194,7 @@ public class TalkPickDto {
                     .voteOption(vote.getVoteOption())
                     .build();
         }
-
+      
         public static TalkPickMyPageResponse from(TalkPick talkPick, Comment comment) {
             return TalkPickMyPageResponse.builder()
                     .id(talkPick.getId())

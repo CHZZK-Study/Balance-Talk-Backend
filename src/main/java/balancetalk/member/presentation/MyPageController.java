@@ -44,7 +44,7 @@ public class MyPageController {
         Pageable pageable = PageRequest.of(page, size);
         return myPageService.findAllVotedTalkPicks(apiMember, pageable);
     }
-
+  
     @GetMapping("/talks/comments")
     @Operation(summary = "내가 댓글 단 톡픽 목록 조회", description = "로그인한 회원이 댓글을 단 톡픽 목록을 조회한다.")
     public Page<TalkPickMyPageResponse> findAllCommentedTalkPicks(

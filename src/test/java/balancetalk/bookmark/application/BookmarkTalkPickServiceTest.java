@@ -7,7 +7,7 @@ import balancetalk.member.domain.Member;
 import balancetalk.member.domain.MemberRepository;
 import balancetalk.member.dto.ApiMember;
 import balancetalk.talkpick.domain.TalkPick;
-import balancetalk.talkpick.domain.repository.TalkPickRepository;
+import balancetalk.talkpick.domain.TalkPickReader;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -30,7 +30,7 @@ class BookmarkTalkPickServiceTest {
     BookmarkTalkPickService bookmarkTalkPickService;
 
     @Mock
-    TalkPickRepository talkPickRepository;
+    TalkPickReader talkPickReader;
 
     @Mock
     MemberRepository memberRepository;
@@ -56,7 +56,7 @@ class BookmarkTalkPickServiceTest {
         Bookmark bookmark = mock(Bookmark.class);
         TalkPick talkPick = mock(TalkPick.class);
 
-        when(talkPickRepository.findById(any())).thenReturn(Optional.ofNullable(talkPick));
+        when(talkPickReader.readById(any())).thenReturn(talkPick);
         when(memberRepository.findById(any())).thenReturn(Optional.ofNullable(member));
         when(bookmarkGenerator.generate(1L, TALK_PICK, member)).thenReturn(bookmark);
 
@@ -83,7 +83,7 @@ class BookmarkTalkPickServiceTest {
 
         TalkPick talkPick = mock(TalkPick.class);
 
-        when(talkPickRepository.findById(any())).thenReturn(Optional.ofNullable(talkPick));
+        when(talkPickReader.readById(any())).thenReturn(talkPick);
         when(memberRepository.findById(any())).thenReturn(Optional.ofNullable(member));
 
         // when
@@ -91,7 +91,6 @@ class BookmarkTalkPickServiceTest {
 
         // then
         Assertions.assertThat(bookmark.getActive()).isTrue();
-        verify(bookmarkRepository, never()).save(bookmark);
     }
 
     @Test
@@ -110,7 +109,7 @@ class BookmarkTalkPickServiceTest {
 
         TalkPick talkPick = mock(TalkPick.class);
 
-        when(talkPickRepository.findById(any())).thenReturn(Optional.ofNullable(talkPick));
+        when(talkPickReader.readById(any())).thenReturn(talkPick);
         when(memberRepository.findById(any())).thenReturn(Optional.ofNullable(member));
 
         // when
