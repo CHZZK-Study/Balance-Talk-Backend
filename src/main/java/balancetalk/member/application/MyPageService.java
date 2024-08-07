@@ -9,6 +9,8 @@ import balancetalk.member.dto.ApiMember;
 import balancetalk.talkpick.domain.TalkPick;
 import balancetalk.talkpick.domain.repository.TalkPickRepository;
 import balancetalk.talkpick.dto.TalkPickDto.TalkPickMyPageResponse;
+import balancetalk.vote.domain.Vote;
+import balancetalk.vote.domain.VoteRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -30,27 +32,25 @@ public class MyPageService {
     private final MemberRepository memberRepository;
     private final TalkPickRepository talkPickRepository;
     private final BookmarkRepository bookmarkRepository;
+    private final VoteRepository voteRepository;
 
     public Page<TalkPickMyPageResponse> findAllBookmarkedTalkPicks(ApiMember apiMember, Pageable pageable) {
         Member member = apiMember.toMember(memberRepository);
         List<Bookmark> bookmarks = bookmarkRepository.findAllByMemberId(member.getId(), BookmarkType.TALK_PICK);
 
-        List<Long> talkPickIds = bookmarks.stream()
-                .map(Bookmark::getResourceId)
+        List<TalkPickMyPageResponse> responses = bookmarks.stream()
+                .map(bookmark -> TalkPickMyPageResponse.from(talkPickRepository.findById(bookmark.getResourceId()).get()))
                 .collect(Collectors.toList());
 
-        if (talkPickIds.isEmpty()) {
-            return Page.empty(pageable);
-        }
+        return new PageImpl<>(responses, pageable, responses.size());
+    }
 
-        List<TalkPick> talkPicks = talkPickRepository.findByIdIn(talkPickIds);
-        Map<Long, TalkPick> talkPickMap = talkPicks.stream()
-                .collect(Collectors.toMap(TalkPick::getId, Function.identity()));
+    public Page<TalkPickMyPageResponse> findAllVotedTalkPicks(ApiMember apiMember, Pageable pageable) {
+        Member member = apiMember.toMember(memberRepository);
+        List<Vote> votes = voteRepository.findByMemberIdAndTalkPickIsNotNullOrderByLastModifiedAtDesc(member.getId());
 
-        List<TalkPickMyPageResponse> responses = talkPickIds.stream()
-                .map(talkPickMap::get)
-                .filter(Objects::nonNull)
-                .map(TalkPickMyPageResponse::from)
+        List<TalkPickMyPageResponse> responses = votes.stream()
+                .map(vote -> TalkPickMyPageResponse.from(vote.getTalkPick(), vote))
                 .collect(Collectors.toList());
 
         return new PageImpl<>(responses, pageable, responses.size());
