@@ -72,6 +72,9 @@ public class GameDto {
 
         @Schema(description = "선택지 B 이미지", example = "https://pikko-image.s3.ap-northeast-2.amazonaws.com/balance-game/1157461e-a685-42fd-837e-7ed490894ca6_unnamed.png")
         private String optionBImg;
+
+        @Schema(description = "카테고리", example = "월드컵")
+        private String topicName;
     }
 
     @Data
