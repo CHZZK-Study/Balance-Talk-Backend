@@ -2,7 +2,6 @@ package balancetalk.global.jwt;
 
 import balancetalk.global.exception.BalanceTalkException;
 import balancetalk.global.exception.ErrorCode;
-import balancetalk.global.redis.application.RedisService;
 import balancetalk.member.application.MyUserDetailService;
 import balancetalk.member.domain.CustomUserDetails;
 import io.jsonwebtoken.*;
@@ -14,17 +13,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
-import java.time.Duration;
 import java.util.Date;
 
 @Slf4j
 @Component
 @RequiredArgsConstructor
 public class JwtTokenProvider {
-
-    private final RedisService redisService;
 
     @Value("${spring.jwt.secret}")
     private String secretKey;
@@ -59,9 +54,10 @@ public class JwtTokenProvider {
     /**
      * Refresh 토큰 생성
      */
-    public String createRefreshToken(Authentication authentication) {
+    public String createRefreshToken(Authentication authentication, Long memberId) {
         validateAuthentication(authentication);
         Claims claims = Jwts.claims();
+        claims.put("memberId", memberId);
         claims.setSubject(authentication.getName());
         Date now = new Date();
         Date expireDate = new Date(now.getTime() + refreshExpirationTime);
@@ -73,7 +69,7 @@ public class JwtTokenProvider {
                 .signWith(SignatureAlgorithm.HS512, secretKey)
                 .compact();
         // redis에 refresh token 저장
-        redisService.setValues(authentication.getName(), refreshToken, Duration.ofMillis(refreshExpirationTime));
+//        redisService.setValues(authentication.getName(), refreshToken, Duration.ofMillis(refreshExpirationTime));
         return refreshToken;
     }
 
@@ -97,17 +93,6 @@ public class JwtTokenProvider {
         return cookie;
     }
 
-    public Authentication getAuthenticationByEmail(String email) {
-        CustomUserDetails customUserDetails = myUserDetailService.loadUserByUsername(email);
-        return new UsernamePasswordAuthenticationToken(customUserDetails, "", customUserDetails.getAuthorities());
-    }
-
-    public Authentication getAuthenticationByToken(String token) {
-        Long memberId = getMemberId(token);
-        CustomUserDetails customUserDetails = myUserDetailService.loadByMemberId(memberId);
-        return new UsernamePasswordAuthenticationToken(customUserDetails, "", customUserDetails.getAuthorities());
-    }
-
     public String resolveToken(HttpServletRequest request) {
         String bearerToken = request.getHeader("Authorization");
         if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
@@ -117,7 +102,8 @@ public class JwtTokenProvider {
     }
 
     public String getRole(String token) {
-        return Jwts.parserBuilder().setSigningKey(secretKey).build().parseClaimsJws(token).getBody().get("role", String.class);
+        return Jwts.parserBuilder().setSigningKey(secretKey).build().parseClaimsJws(token).getBody()
+                .get("role", String.class);
     }
 
     public String getPayload(String token) {
@@ -144,30 +130,23 @@ public class JwtTokenProvider {
     }
 
 
-    public String reissueAccessToken(String refreshToken, Long memberId) {
+    public String reissueAccessToken(String refreshToken) {
         validateToken(refreshToken);
         Authentication authentication = getAuthenticationByToken(refreshToken);
-        // redis에 저장된 RefreshToken 값을 가져옴
-        String redisRefreshToken = redisService.getValues(authentication.getName());
-        if (redisRefreshToken == null) {
-            throw new BalanceTalkException(ErrorCode.UNAUTHORIZED_REISSUE_TOKEN);
-        }
-
-        if (!redisRefreshToken.equals(refreshToken)) {
-            throw new BalanceTalkException(ErrorCode.INVALID_REFRESH_TOKEN);
-        }
+        CustomUserDetails customUserDetails = myUserDetailService.loadUserByUsername(authentication.getName());
+        Long memberId = customUserDetails.getMemberId();
         return createAccessToken(authentication, memberId);
     }
 
-    public Long extractMemberId(String refreshToken) {
-        Authentication authentication = getAuthenticationByToken(refreshToken);
-        String name = authentication.getName();
-        UserDetails userDetails = myUserDetailService.loadUserByUsername(name);
-        if (userDetails instanceof CustomUserDetails) {
-            CustomUserDetails customUserDetails = (CustomUserDetails) userDetails;
-            return customUserDetails.getMemberId();
-        }
-        return null;
+    public Authentication getAuthenticationByEmail(String email) {
+        CustomUserDetails customUserDetails = myUserDetailService.loadUserByUsername(email);
+        return new UsernamePasswordAuthenticationToken(customUserDetails, "", customUserDetails.getAuthorities());
+    }
+
+    public Authentication getAuthenticationByToken(String token) {
+        Long memberId = getMemberId(token);
+        CustomUserDetails customUserDetails = myUserDetailService.loadByMemberId(memberId);
+        return new UsernamePasswordAuthenticationToken(customUserDetails, "", customUserDetails.getAuthorities());
     }
 
     public Long getMemberId(String token) {

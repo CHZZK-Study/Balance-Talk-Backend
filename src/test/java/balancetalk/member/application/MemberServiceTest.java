@@ -2,6 +2,8 @@ package balancetalk.member.application;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.*;
+
+import balancetalk.global.caffeine.CacheType;
 import balancetalk.global.jwt.JwtTokenProvider;
 import balancetalk.member.domain.Member;
 import balancetalk.member.domain.MemberRepository;
@@ -21,6 +23,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.cache.Cache;
+import org.springframework.cache.CacheManager;
+import org.springframework.cache.caffeine.CaffeineCache;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -39,6 +44,12 @@ class MemberServiceTest {
 
     @Mock
     PasswordEncoder passwordEncoder;
+
+    @Mock
+    CacheManager cacheManager;
+
+    @Mock
+    Cache cache;
 
     @Mock
     HttpServletResponse response;
@@ -65,10 +76,10 @@ class MemberServiceTest {
     @DisplayName("회원가입을 성공적으로 완료할 때 성공적으로 memberId 값을 리턴한다.")
     void createMember_Success() {
         // given
-        Mockito.when(memberRepository.existsByEmail(any())).thenReturn(false);
-        Mockito.when(memberRepository.existsByNickname(any())).thenReturn(false);
-        Mockito.when(passwordEncoder.encode(any())).thenReturn("encodedPassword");
-        Mockito.when(memberRepository.save(any())).thenReturn(member);
+        when(memberRepository.existsByEmail(any())).thenReturn(false);
+        when(memberRepository.existsByNickname(any())).thenReturn(false);
+        when(passwordEncoder.encode(any())).thenReturn("encodedPassword");
+        when(memberRepository.save(any())).thenReturn(member);
 
         // when
         Long memberId = memberService.join(joinRequest);
@@ -86,20 +97,22 @@ class MemberServiceTest {
                 .password("rawPassword")
                 .build();
 
-        Mockito.when(memberRepository.findByEmail(any())).thenReturn(Optional.of(member));
-        Mockito.when(passwordEncoder.matches(loginRequest.getPassword() , member.getPassword())).thenReturn(true);
+        when(memberRepository.findByEmail(any())).thenReturn(Optional.of(member));
+        when(passwordEncoder.matches(loginRequest.getPassword() , member.getPassword())).thenReturn(true);
 
         Authentication authentication = new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), "",
                 Collections.emptyList());
-        Mockito.when(jwtTokenProvider.getAuthenticationByEmail(loginRequest.getEmail())).thenReturn(authentication);
-        Mockito.when(jwtTokenProvider.createAccessToken(authentication, member.getId())).thenReturn("accessToken");
-        Mockito.when(jwtTokenProvider.createRefreshToken(authentication)).thenReturn("refreshToken");
+        when(jwtTokenProvider.getAuthenticationByEmail(loginRequest.getEmail())).thenReturn(authentication);
+        when(jwtTokenProvider.createAccessToken(authentication, member.getId())).thenReturn("accessToken");
+        when(jwtTokenProvider.createRefreshToken(authentication, member.getId())).thenReturn("refreshToken");
+        when(cacheManager.getCache(CacheType.RefreshToken.getCacheName())).thenReturn(cache);
 
         // when
         String accessToken = memberService.login(loginRequest, response);
 
         // then
         assertEquals(accessToken, "accessToken");
+        verify(cache).put(member.getId(), "refreshToken");
     }
 
     @Test
@@ -107,7 +120,7 @@ class MemberServiceTest {
     void updateMemberNickname_Success() {
         // given
         String newNickname = "newNickname";
-        Mockito.when(apiMember.toMember(any())).thenReturn(member);
+        when(apiMember.toMember(any())).thenReturn(member);
 
         // when
         memberService.updateNickname(newNickname, apiMember);
@@ -121,7 +134,7 @@ class MemberServiceTest {
     void updateMemberImage_Success() {
         // given
         String newImgUrl = "./newImage.png";
-        Mockito.when(apiMember.toMember(any())).thenReturn(member);
+        when(apiMember.toMember(any())).thenReturn(member);
 
         // when
         memberService.updateImage(newImgUrl, apiMember);
@@ -135,8 +148,8 @@ class MemberServiceTest {
     void updateMemberPassword_Success() {
         // given
         String newPassword = "newPassword";
-        Mockito.when(apiMember.toMember(any())).thenReturn(member);
-        Mockito.when(passwordEncoder.encode(any())).thenReturn(newPassword);
+        when(apiMember.toMember(any())).thenReturn(member);
+        when(passwordEncoder.encode(any())).thenReturn(newPassword);
 
         // when
         memberService.updatePassword(newPassword, apiMember);
@@ -153,8 +166,8 @@ class MemberServiceTest {
                 .email(member.getEmail())
                 .password(member.getPassword())
                 .build();
-        Mockito.when(apiMember.toMember(any())).thenReturn(member);
-        Mockito.when(passwordEncoder.matches(any(), any())).thenReturn(true);
+        when(apiMember.toMember(any())).thenReturn(member);
+        when(passwordEncoder.matches(any(), any())).thenReturn(true);
 
         // when
         memberService.delete(loginRequest, apiMember);

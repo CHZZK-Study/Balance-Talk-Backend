@@ -14,7 +14,6 @@ public enum ErrorCode {
     MISMATCHED_BALANCE_OPTION(BAD_REQUEST, "투표한 선택지는 다른 게시글에 속해 있습니다."),
     EXPIRED_POST_DEADLINE(BAD_REQUEST, "투표가 이미 종료된 게시글입니다."),
     UNMODIFIABLE_VOTE(BAD_REQUEST, "투표 수정이 불가능한 게시글입니다."),
-    ALREADY_BOOKMARK(BAD_REQUEST, "이미 북마크한 게시글입니다."),
     INCORRECT_PASSWORD(BAD_REQUEST, "비밀번호가 잘못되었거나 요청 형식이 올바르지 않습니다"),
     MIME_TYPE_NULL(BAD_REQUEST, "MIME 타입이 null입니다."),
     FILE_UPLOAD_FAILED(BAD_REQUEST, "파일 업로드에 실패했습니다."),
@@ -34,6 +33,8 @@ public enum ErrorCode {
     INVALID_REPORT_REASON(BAD_REQUEST, "신고 사유가 올바르지 않습니다."),
     INVALID_REPORT_TYPE(BAD_REQUEST, "신고 타입이 올바르지 않습니다."),
     CANNOT_BOOKMARK_MY_RESOURCE(BAD_REQUEST, "본인이 생성한 자원에는 북마크가 불가능합니다."),
+    ALREADY_BOOKMARKED(BAD_REQUEST, "이미 북마크한 게시글입니다."),
+    ALREADY_DELETED_BOOKMARK(BAD_REQUEST, "이미 북마크가 취소된 상태입니다."),
 
     // 401
     MISMATCHED_EMAIL_OR_PASSWORD(UNAUTHORIZED, "이메일 또는 비밀번호가 잘못되었습니다."),

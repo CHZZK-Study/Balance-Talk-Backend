@@ -3,7 +3,7 @@ package balancetalk.game.domain;
 import balancetalk.global.common.BaseTimeEntity;
 import balancetalk.member.domain.Member;
 import balancetalk.vote.domain.Vote;
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import balancetalk.vote.domain.VoteOption;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.PositiveOrZero;
@@ -57,10 +57,9 @@ public class Game extends BaseTimeEntity {
         this.views++;
     }
 
-    public List<String> getImages() {
-        List<String> images = new ArrayList<>();
-        images.add(optionAImg);
-        images.add(optionBImg);
-        return images;
+    public long getVoteCounts(VoteOption voteOption) {
+        return votes.stream()
+                .filter(vote -> vote.isVoteOptionEquals(voteOption))
+                .count();
     }
 }
