@@ -1,7 +1,9 @@
 package balancetalk.talkpick.dto;
 
 import balancetalk.talkpick.domain.TalkPick;
+import balancetalk.vote.domain.Vote;
 import balancetalk.vote.domain.VoteOption;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.querydsl.core.annotations.QueryProjection;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
@@ -147,6 +149,7 @@ public class TalkPickDto {
     @Data
     @AllArgsConstructor
     @Builder
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     public static class TalkPickMyPageResponse {
 
         @Schema(description = "톡픽 ID", example = "톡픽 ID")
@@ -154,6 +157,9 @@ public class TalkPickDto {
 
         @Schema(description = "제목", example = "톡픽 제목")
         private String title;
+
+        @Schema(description = "투표한 선택지", example = "A")
+        private VoteOption voteOption;
 
         /*
         @Schema(description = "선택지 A 이미지", example = "https://pikko-image.s3.ap-northeast-2.amazonaws.com/balance-game/067cc56e-21b7-468f-a2c1-4839036ee7cd_unnamed.png")
@@ -168,6 +174,14 @@ public class TalkPickDto {
             return TalkPickMyPageResponse.builder()
                     .id(talkPick.getId())
                     .title(talkPick.getTitle())
+                    .build();
+        }
+
+        public static TalkPickMyPageResponse from(TalkPick talkPick, Vote vote) {
+            return TalkPickMyPageResponse.builder()
+                    .id(talkPick.getId())
+                    .title(talkPick.getTitle())
+                    .voteOption(vote.getVoteOption())
                     .build();
         }
     }
