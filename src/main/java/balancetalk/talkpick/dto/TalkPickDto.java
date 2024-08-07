@@ -1,5 +1,6 @@
 package balancetalk.talkpick.dto;
 
+import balancetalk.comment.domain.Comment;
 import balancetalk.talkpick.domain.TalkPick;
 import balancetalk.vote.domain.Vote;
 import balancetalk.vote.domain.VoteOption;
@@ -161,6 +162,15 @@ public class TalkPickDto {
         @Schema(description = "투표한 선택지", example = "A")
         private VoteOption voteOption;
 
+        @Schema(description = "댓글 내용", example = "댓글 내용")
+        private String commentContent;
+
+        @Schema(description = "북마크 된 개수", example = "12")
+        private long bookmarks;
+
+        @Schema(description = "댓글 개수", example = "2")
+        private long commentCount;
+
         /*
         @Schema(description = "선택지 A 이미지", example = "https://pikko-image.s3.ap-northeast-2.amazonaws.com/balance-game/067cc56e-21b7-468f-a2c1-4839036ee7cd_unnamed.png")
         private String optionAImg;
@@ -182,6 +192,23 @@ public class TalkPickDto {
                     .id(talkPick.getId())
                     .title(talkPick.getTitle())
                     .voteOption(vote.getVoteOption())
+                    .build();
+        }
+      
+        public static TalkPickMyPageResponse from(TalkPick talkPick, Comment comment) {
+            return TalkPickMyPageResponse.builder()
+                    .id(talkPick.getId())
+                    .title(talkPick.getTitle())
+                    .commentContent(comment.getContent())
+                    .build();
+        }
+
+        public static TalkPickMyPageResponse fromMyTalkPick(TalkPick talkPick) {
+            return TalkPickMyPageResponse.builder()
+                    .id(talkPick.getId())
+                    .title(talkPick.getTitle())
+                    .bookmarks(talkPick.getBookmarks())
+                    .commentCount(!talkPick.getComments().isEmpty() ? talkPick.getComments().size() : 0)
                     .build();
         }
     }
