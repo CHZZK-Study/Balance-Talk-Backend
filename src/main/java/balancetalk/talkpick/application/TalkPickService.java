@@ -7,10 +7,7 @@ import balancetalk.member.domain.MemberRepository;
 import balancetalk.member.dto.ApiMember;
 import balancetalk.member.dto.GuestOrApiMember;
 import balancetalk.talkpick.domain.TalkPick;
-import balancetalk.talkpick.domain.TalkPickReader;
 import balancetalk.talkpick.domain.repository.TalkPickRepository;
-import balancetalk.talkpick.dto.TalkPickDto;
-import balancetalk.talkpick.dto.TalkPickDto.TalkPickDetailResponse;
 import balancetalk.vote.domain.Vote;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -23,8 +20,6 @@ import java.util.Optional;
 
 import static balancetalk.bookmark.domain.BookmarkType.TALK_PICK;
 import static balancetalk.talkpick.dto.TalkPickDto.*;
-import static balancetalk.talkpick.dto.TalkPickDto.CreateTalkPickRequest;
-import static balancetalk.talkpick.dto.TalkPickDto.TalkPickResponse;
 
 @Service
 @RequiredArgsConstructor
@@ -70,10 +65,15 @@ public class TalkPickService {
 
     @Transactional
     public void updateTalkPick(Long talkPickId, UpdateTalkPickRequest request, ApiMember apiMember) {
-        TalkPick talkPick = talkPickRepository.findById(talkPickId)
-                .orElseThrow(() -> new BalanceTalkException(ErrorCode.NOT_FOUND_TALK_PICK));
-        apiMember.toMember(memberRepository);
-
+        Member member = apiMember.toMember(memberRepository);
+        TalkPick talkPick = member.getTalkPickById(talkPickId);
         talkPick.update(request.getTitle(), request.getContent(), request.getOptionA(), request.getOptionB());
+    }
+
+    @Transactional
+    public void deleteTalkPick(Long talkPickId, ApiMember apiMember) {
+        Member member = apiMember.toMember(memberRepository);
+        TalkPick talkPick = member.getTalkPickById(talkPickId);
+        talkPickRepository.delete(talkPick);
     }
 }

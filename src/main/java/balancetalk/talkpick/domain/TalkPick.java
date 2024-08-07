@@ -92,4 +92,8 @@ public class TalkPick extends BaseTimeEntity {
         this.optionA = optionA;
         this.optionB = optionB;
     }
+
+    public boolean matchesId(long id) {
+        return this.id == id;
+    }
 }

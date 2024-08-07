@@ -58,7 +58,9 @@ public class TalkPickController {
 
     @Operation(summary = "톡픽 삭제", description = "톡픽을 삭제합니다.")
     @DeleteMapping("/{talkPickId}")
-    public void deleteTalkPick(@PathVariable final Long talkPickId) {
+    public void deleteTalkPick(@PathVariable final Long talkPickId,
+                               @Parameter(hidden = true) @AuthPrincipal final ApiMember apiMember) {
+        talkPickService.deleteTalkPick(talkPickId, apiMember);
     }
 
     @Operation(summary = "인기 톡픽 조회", description = "인기 톡픽들을 조회합니다.")
