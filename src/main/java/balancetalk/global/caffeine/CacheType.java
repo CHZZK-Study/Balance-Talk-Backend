@@ -5,7 +5,8 @@ import lombok.Getter;
 @Getter
 public enum CacheType {
 
-    RefreshToken("refreshToken", 604800000, 10000);
+    RefreshToken("refreshToken", 604800000, 10000),
+    TempCode("tempCode", 1800, 10000);
 
     private String cacheName;
     private int expiredAfterWrite;
