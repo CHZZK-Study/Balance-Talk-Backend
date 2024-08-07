@@ -89,4 +89,17 @@ public class TalkPickRepositoryImpl implements TalkPickRepositoryCustom {
         Path<Boolean> fieldPath = Expressions.path(Boolean.class, parent, fieldName);
         return new OrderSpecifier<>(direction, fieldPath);
     }
+
+    @Override
+    public List<TalkPickResponse> findBestTalkPicks() {
+        return queryFactory
+                .select(new QTalkPickDto_TalkPickResponse(
+                        talkPick.id, talkPick.title, talkPick.member.nickname,
+                        talkPick.createdAt, talkPick.views, talkPick.bookmarks
+                ))
+                .from(talkPick)
+                .orderBy(talkPick.views.desc(), talkPick.createdAt.desc())
+                .limit(3)
+                .fetch();
+    }
 }

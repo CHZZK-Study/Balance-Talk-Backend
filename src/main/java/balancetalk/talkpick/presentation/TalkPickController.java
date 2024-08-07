@@ -12,6 +12,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 import static balancetalk.talkpick.dto.TalkPickDto.*;
 import static org.springframework.data.domain.Sort.Direction.DESC;
 
@@ -52,5 +54,11 @@ public class TalkPickController {
     @Operation(summary = "톡픽 삭제", description = "톡픽을 삭제합니다.")
     @DeleteMapping("/{talkPickId}")
     public void deleteTalkPick(@PathVariable final Long talkPickId) {
+    }
+
+    @Operation(summary = "인기 톡픽 조회", description = "인기 톡픽들을 조회합니다.")
+    @GetMapping("/best")
+    public List<TalkPickResponse> findBestTalkPicks() {
+        return talkPickService.findBestTalkPicks();
     }
 }
