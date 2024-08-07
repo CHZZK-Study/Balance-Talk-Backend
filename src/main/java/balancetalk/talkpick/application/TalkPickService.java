@@ -1,5 +1,7 @@
 package balancetalk.talkpick.application;
 
+import balancetalk.global.exception.BalanceTalkException;
+import balancetalk.global.exception.ErrorCode;
 import balancetalk.member.domain.Member;
 import balancetalk.member.domain.MemberRepository;
 import balancetalk.member.dto.ApiMember;
@@ -7,6 +9,7 @@ import balancetalk.member.dto.GuestOrApiMember;
 import balancetalk.talkpick.domain.TalkPick;
 import balancetalk.talkpick.domain.TalkPickReader;
 import balancetalk.talkpick.domain.repository.TalkPickRepository;
+import balancetalk.talkpick.dto.TalkPickDto;
 import balancetalk.talkpick.dto.TalkPickDto.TalkPickDetailResponse;
 import balancetalk.vote.domain.Vote;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +22,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static balancetalk.bookmark.domain.BookmarkType.TALK_PICK;
+import static balancetalk.talkpick.dto.TalkPickDto.*;
 import static balancetalk.talkpick.dto.TalkPickDto.CreateTalkPickRequest;
 import static balancetalk.talkpick.dto.TalkPickDto.TalkPickResponse;
 
@@ -26,7 +30,6 @@ import static balancetalk.talkpick.dto.TalkPickDto.TalkPickResponse;
 @RequiredArgsConstructor
 public class TalkPickService {
 
-    private final TalkPickReader talkPickReader;
     private final MemberRepository memberRepository;
     private final TalkPickRepository talkPickRepository;
 
@@ -38,7 +41,8 @@ public class TalkPickService {
 
     @Transactional
     public TalkPickDetailResponse findById(Long talkPickId, GuestOrApiMember guestOrApiMember) {
-        TalkPick talkPick = talkPickReader.readById(talkPickId);
+        TalkPick talkPick = talkPickRepository.findById(talkPickId)
+                .orElseThrow(() -> new BalanceTalkException(ErrorCode.NOT_FOUND_TALK_PICK));
         talkPick.increaseViews();
 
         if (guestOrApiMember.isGuest()) {
@@ -62,5 +66,14 @@ public class TalkPickService {
 
     public List<TalkPickResponse> findBestTalkPicks() {
         return talkPickRepository.findBestTalkPicks();
+    }
+
+    @Transactional
+    public void updateTalkPick(Long talkPickId, UpdateTalkPickRequest request, ApiMember apiMember) {
+        TalkPick talkPick = talkPickRepository.findById(talkPickId)
+                .orElseThrow(() -> new BalanceTalkException(ErrorCode.NOT_FOUND_TALK_PICK));
+        apiMember.toMember(memberRepository);
+
+        talkPick.update(request.getTitle(), request.getContent(), request.getOptionA(), request.getOptionB());
     }
 }

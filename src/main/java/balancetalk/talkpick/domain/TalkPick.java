@@ -85,4 +85,11 @@ public class TalkPick extends BaseTimeEntity {
     public void decreaseBookmarks() {
         this.bookmarks--;
     }
+
+    public void update(String title, String content, String optionA, String optionB) {
+        this.title = title;
+        this.content = content;
+        this.optionA = optionA;
+        this.optionB = optionB;
+    }
 }
