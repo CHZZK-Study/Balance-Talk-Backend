@@ -69,21 +69,21 @@ public class GameService {
         return GameDetailResponse.from(game, hasBookmarked, myVote.get().getVoteOption());
     }
 
-    public List<GameResponse> findLatestGames(int gameTopicId) {
+    public List<GameResponse> findLatestGames(String topicName) {
         Pageable pageable = PageRequest.of(START_PAGE, END_PAGE);
-        List<Game> games = gameRepository.findGamesByCreated(gameTopicId, pageable);
+        List<Game> games = gameRepository.findGamesByCreated(topicName, pageable);
         return games.stream()
                 .map(game -> new GameResponse(game.getId(), game.getTitle(), game.getOptionA(), game.getOptionAImg(),
-                        game.getOptionB(), game.getOptionBImg()))
+                        game.getOptionB(), game.getOptionBImg(), null))
                 .collect(Collectors.toUnmodifiableList());
     }
 
-    public List<GameResponse> findBestGames(int gameTopicId) {
+    public List<GameResponse> findBestGames(String topicName) {
         Pageable pageable = PageRequest.of(START_PAGE, END_PAGE);
-        List<Game> games = gameRepository.findGamesByViews(gameTopicId, pageable);
+        List<Game> games = gameRepository.findGamesByViews(topicName, pageable);
         return games.stream()
                 .map(game -> new GameResponse(game.getId(), game.getTitle(), game.getOptionA(), game.getOptionAImg(),
-                        game.getOptionB(), game.getOptionBImg()))
+                        game.getOptionB(), game.getOptionBImg() , topicName))
                 .collect(Collectors.toUnmodifiableList());
     }
 

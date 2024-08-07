@@ -52,13 +52,13 @@ public class GameController {
 
     @GetMapping("/latest")
     @Operation(summary = "최신순으로 밸런스 게임 조회", description = "gameTopicId에 해당하면서 최신순으로 정렬된 16개의 게임 목록을 리턴합니다.")
-    public List<GameResponse> findLatestGames(@RequestParam int gameTopicId) {
-        return gameService.findLatestGames(gameTopicId);
+    public List<GameResponse> findLatestGames(@RequestParam String topicName) {
+        return gameService.findLatestGames(topicName);
     }
 
     @GetMapping("/best")
     @Operation(summary = "인기순으로 밸런스 게임 조회", description = "gameTopicId에 해당하면서 인기순으로 정렬된 16개의 게임 목록을 리턴합니다.")
-    public List<GameResponse> findBestGames(@RequestParam int gameTopicId) {
-        return gameService.findBestGames(gameTopicId);
+    public List<GameResponse> findBestGames(@RequestParam String topicName) {
+        return gameService.findBestGames(topicName);
     }
 }

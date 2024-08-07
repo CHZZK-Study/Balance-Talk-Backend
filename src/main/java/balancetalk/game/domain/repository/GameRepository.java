@@ -9,10 +9,20 @@ import org.springframework.data.repository.query.Param;
 
 public interface GameRepository extends JpaRepository<Game, Long> {
 
-    @Query("SELECT g FROM Game g WHERE g.gameTopic.id = :gameTopicId ORDER BY g.createdAt DESC")
-    List<Game> findGamesByCreated(@Param("gameTopicId") int gameTopicId, Pageable pageable);
+    @Query("SELECT g FROM Game g " +
+            "WHERE g.gameTopic.id IN (" +
+            "    SELECT gt.id FROM GameTopic gt " +
+            "    WHERE gt.name = :topicName" +
+            ") " +
+            "ORDER BY g.createdAt DESC")
+    List<Game> findGamesByCreated(@Param("topicName") String topicName, Pageable pageable);
 
-    @Query("SELECT g FROM Game g WHERE g.gameTopic.id = :gameTopicId ORDER BY g.views DESC")
-    List<Game> findGamesByViews(@Param("gameTopicId") int gameTopicId, Pageable pageable);
+    @Query("SELECT g FROM Game g " +
+            "WHERE g.gameTopic.id IN (" +
+            "    SELECT gt.id FROM GameTopic gt " +
+            "    WHERE gt.name = :topicName" +
+            ") " +
+            "ORDER BY g.views DESC, g.createdAt DESC")
+    List<Game> findGamesByViews(@Param("topicName") String topicName, Pageable pageable);
 
 }
