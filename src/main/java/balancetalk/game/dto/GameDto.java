@@ -1,5 +1,7 @@
 package balancetalk.game.dto;
 
+import static balancetalk.vote.domain.VoteOption.*;
+
 import balancetalk.game.domain.Game;
 import balancetalk.game.domain.GameTopic;
 import balancetalk.member.domain.Member;
@@ -104,6 +106,12 @@ public class GameDto {
         @Schema(description = "조회수", example = "3")
         private long views;
 
+        @Schema(description = "선택지 A 투표수", example = "98")
+        private long votesCountOfOptionA;
+
+        @Schema(description = "선택지 B 투표수", example = "95")
+        private long votesCountOfOptionB;
+
         @Schema(description = "북마크 여부", example = "false")
         private Boolean myBookmark;
 
@@ -122,6 +130,8 @@ public class GameDto {
                     .optionB(game.getOptionB())
                     .optionBImg(game.getOptionBImg())
                     .views(game.getViews())
+                    .votesCountOfOptionA(game.getVoteCounts(A))
+                    .votesCountOfOptionB(game.getVoteCounts(B))
                     .myBookmark(myBookmark)
                     .votedOption(votedOption)
                     .gameTopic(game.getGameTopic().getName())

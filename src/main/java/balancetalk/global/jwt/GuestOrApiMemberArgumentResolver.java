@@ -32,13 +32,13 @@ public class GuestOrApiMemberArgumentResolver implements HandlerMethodArgumentRe
         String accessToken = jwtTokenProvider.resolveToken(request);
 
         if (accessToken == null) { // 비회원일 때
-            return new GuestOrApiMember("guest");
+            return new GuestOrApiMember(-1L);
         }
 
         String token = jwtTokenProvider.resolveToken(request);
         jwtTokenProvider.validateToken(token);
-        String email = jwtTokenProvider.getPayload(token);
+        Long memberId = jwtTokenProvider.getMemberId(token);
 
-        return new GuestOrApiMember(email);
+        return new GuestOrApiMember(memberId);
     }
 }

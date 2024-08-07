@@ -1,7 +1,9 @@
 package balancetalk.game.application;
 
 import static balancetalk.bookmark.domain.BookmarkType.GAME;
+
 import balancetalk.game.domain.Game;
+import balancetalk.game.domain.GameReader;
 import balancetalk.game.domain.GameTopic;
 import balancetalk.game.domain.repository.GameRepository;
 import balancetalk.game.domain.repository.GameTopicRepository;
@@ -34,6 +36,7 @@ public class GameService {
 
     private static final int START_PAGE = 0;
     private static final int END_PAGE = 16;
+    private final GameReader gameReader;
     private final GameRepository gameRepository;
     private final MemberRepository memberRepository;
     private final GameTopicRepository gameTopicRepository;
@@ -50,8 +53,7 @@ public class GameService {
     }
 
     public GameDetailResponse findBalanceGame(Long gameId, GuestOrApiMember guestOrApiMember) {
-        Game game = gameRepository.findById(gameId)
-                .orElseThrow(() -> new BalanceTalkException(ErrorCode.NOT_FOUND_BALANCE_GAME));
+        Game game = gameReader.readById(gameId);
         game.increaseViews();
 
         if (guestOrApiMember.isGuest()) {
