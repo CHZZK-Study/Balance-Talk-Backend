@@ -18,13 +18,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-@Transactional
 @RequiredArgsConstructor
 public class MyPageService {
 
@@ -36,7 +34,7 @@ public class MyPageService {
 
     public Page<TalkPickMyPageResponse> findAllBookmarkedTalkPicks(ApiMember apiMember, Pageable pageable) {
         Member member = apiMember.toMember(memberRepository);
-        List<Bookmark> bookmarks = bookmarkRepository.findAllByMemberIdDesc(member.getId(), BookmarkType.TALK_PICK);
+        List<Bookmark> bookmarks = bookmarkRepository.findActivatedByMemberOrderByDesc(member, BookmarkType.TALK_PICK);
 
         List<TalkPickMyPageResponse> responses = bookmarks.stream()
                 .map(bookmark -> TalkPickMyPageResponse.from(talkPickRepository.findById(bookmark.getResourceId()).get()))
@@ -62,6 +60,17 @@ public class MyPageService {
 
         List<TalkPickMyPageResponse> responses = comments.stream()
                 .map(comment -> TalkPickMyPageResponse.from(comment.getTalkPick(), comment))
+                .collect(Collectors.toList());
+
+        return new PageImpl<>(responses, pageable, responses.size());
+    }
+
+    public Page<TalkPickMyPageResponse> findAllTalkPicksByMember(ApiMember apiMember, Pageable pageable) {
+        Member member = apiMember.toMember(memberRepository);
+        List<TalkPick> talkPicks = talkPickRepository.findAllByMemberIdOrderByLastModifiedAtDesc(member.getId());
+
+        List<TalkPickMyPageResponse> responses = talkPicks.stream()
+                .map(TalkPickMyPageResponse::fromMyTalkPick)
                 .collect(Collectors.toList());
 
         return new PageImpl<>(responses, pageable, responses.size());

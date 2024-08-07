@@ -6,5 +6,5 @@ import java.util.List;
 
 public interface TalkPickRepository extends JpaRepository<TalkPick, Long>, TalkPickRepositoryCustom {
 
-    List<TalkPick> findByIdIn(List<Long> ids);
+    List<TalkPick> findAllByMemberIdOrderByLastModifiedAtDesc(Long memberId);
 }
