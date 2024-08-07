@@ -14,6 +14,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 import static balancetalk.bookmark.domain.BookmarkType.TALK_PICK;
@@ -49,5 +50,9 @@ public class TalkPickService {
 
     public Page<TalkPickResponse> findPaged(Pageable pageable) {
         return talkPickRepository.findPagedTalkPicks(pageable);
+    }
+
+    public List<TalkPickResponse> findBestTalkPicks() {
+        return talkPickRepository.findBestTalkPicks();
     }
 }
