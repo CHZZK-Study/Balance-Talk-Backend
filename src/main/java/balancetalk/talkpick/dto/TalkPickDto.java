@@ -142,4 +142,33 @@ public class TalkPickDto {
             this.bookmarks = bookmarks;
         }
     }
+
+    @Schema(description = "마이페이지 톡픽 응답")
+    @Data
+    @AllArgsConstructor
+    @Builder
+    public static class TalkPickMyPageResponse {
+
+        @Schema(description = "톡픽 ID", example = "톡픽 ID")
+        private long id;
+
+        @Schema(description = "제목", example = "톡픽 제목")
+        private String title;
+
+        /*
+        @Schema(description = "선택지 A 이미지", example = "https://pikko-image.s3.ap-northeast-2.amazonaws.com/balance-game/067cc56e-21b7-468f-a2c1-4839036ee7cd_unnamed.png")
+        private String optionAImg;
+
+        @Schema(description = "선택지 B 이미지", example = "https://pikko-image.s3.ap-northeast-2.amazonaws.com/balance-game/1157461e-a685-42fd-837e-7ed490894ca6_unnamed.png")
+        private String optionBImg;
+
+         */ // TODO : 톡픽 선택지 이미지 저장 구현 시 완성 가능
+
+        public static TalkPickMyPageResponse from(TalkPick talkPick) {
+            return TalkPickMyPageResponse.builder()
+                    .id(talkPick.getId())
+                    .title(talkPick.getTitle())
+                    .build();
+        }
+    }
 }
