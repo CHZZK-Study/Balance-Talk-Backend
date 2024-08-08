@@ -104,4 +104,8 @@ public class TalkPick extends BaseTimeEntity {
     public boolean matchesId(long id) {
         return this.id == id;
     }
+
+    public boolean isEdited() {
+        return editedAt != null;
+    }
 }
