@@ -131,7 +131,7 @@ public class TalkPickDto {
         private String writer;
 
         @Schema(description = "최근 수정일", example = "2024-08-04")
-        private LocalDate lastModifiedAt;
+        private LocalDate editedAt;
 
         @Schema(description = "수정 여부", example = "true")
         private Boolean isUpdated;
@@ -151,8 +151,8 @@ public class TalkPickDto {
                     .myBookmark(myBookmark)
                     .votedOption(votedOption)
                     .writer(entity.getWriterNickname())
-                    .lastModifiedAt(entity.getLastModifiedAt().toLocalDate())
-                    .isUpdated(entity.getLastModifiedAt().isAfter(entity.getCreatedAt()))
+                    .editedAt(entity.getEditedAt().toLocalDate())
+                    .isUpdated(entity.getEditedAt().isAfter(entity.getCreatedAt()))
                     .build();
         }
     }
