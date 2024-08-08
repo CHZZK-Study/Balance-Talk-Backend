@@ -152,7 +152,7 @@ public class TalkPickDto {
                     .votedOption(votedOption)
                     .writer(entity.getWriterNickname())
                     .editedAt(entity.getEditedAt().toLocalDate())
-                    .isUpdated(entity.getLastModifiedAt().isAfter(entity.getCreatedAt()))
+                    .isUpdated(entity.getEditedAt().isAfter(entity.getCreatedAt()))
                     .build();
         }
     }
