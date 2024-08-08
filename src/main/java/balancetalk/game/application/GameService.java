@@ -19,10 +19,12 @@ import balancetalk.member.dto.ApiMember;
 import balancetalk.member.dto.GuestOrApiMember;
 import balancetalk.vote.domain.Vote;
 import jakarta.transaction.Transactional;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -32,6 +34,8 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class GameService {
 
+    private static final int START_PAGE = 0;
+    private static final int END_PAGE = 16;
     private final GameReader gameReader;
     private final GameRepository gameRepository;
     private final MemberRepository memberRepository;
@@ -67,12 +71,22 @@ public class GameService {
         return GameDetailResponse.from(game, hasBookmarked, myVote.get().getVoteOption());
     }
 
-    public Page<GameResponse> findLatestGames(Pageable pageable) {
-        return gameRepository.findAllByOrderByCreatedAtDesc(pageable);
+    public List<GameResponse> findLatestGames(String topicName) {
+        Pageable pageable = PageRequest.of(START_PAGE, END_PAGE);
+        List<Game> games = gameRepository.findGamesByCreated(topicName, pageable);
+        return games.stream()
+                .map(game -> new GameResponse(game.getId(), game.getTitle(), game.getOptionA(), game.getOptionAImg(),
+                        game.getOptionB(), game.getOptionBImg(), null))
+                .collect(Collectors.toUnmodifiableList());
     }
 
-    public Page<GameResponse> findBestGames(Pageable pageable) {
-        return gameRepository.findAllByOrderByViewsDesc(pageable);
+    public List<GameResponse> findBestGames(String topicName) {
+        Pageable pageable = PageRequest.of(START_PAGE, END_PAGE);
+        List<Game> games = gameRepository.findGamesByViews(topicName, pageable);
+        return games.stream()
+                .map(game -> new GameResponse(game.getId(), game.getTitle(), game.getOptionA(), game.getOptionAImg(),
+                        game.getOptionB(), game.getOptionBImg() , topicName))
+                .collect(Collectors.toUnmodifiableList());
     }
 
     public void createGameTopic(CreateGameTopicRequest request, ApiMember apiMember) {

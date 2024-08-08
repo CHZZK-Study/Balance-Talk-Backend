@@ -63,11 +63,20 @@ public class GameDto {
         @Schema(description = "밸런스 게임 제목", example = "제목")
         private String title;
 
+        @Schema(description = "선택지 A 이미지", example = "https://pikko-image.s3.ap-northeast-2.amazonaws.com/balance-game/067cc56e-21b7-468f-a2c1-4839036ee7cd_unnamed.png")
+        private String optionAImg;
+
         @Schema(description = "선택지 A 이름", example = "선택지 A 이름")
         private String optionA;
 
         @Schema(description = "선택지 B 이름", example = "선택지 B 이름")
         private String optionB;
+
+        @Schema(description = "선택지 B 이미지", example = "https://pikko-image.s3.ap-northeast-2.amazonaws.com/balance-game/1157461e-a685-42fd-837e-7ed490894ca6_unnamed.png")
+        private String optionBImg;
+
+        @Schema(description = "카테고리", example = "월드컵")
+        private String topicName;
     }
 
     @Data
