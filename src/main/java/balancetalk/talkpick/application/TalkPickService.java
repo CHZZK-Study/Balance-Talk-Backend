@@ -67,7 +67,7 @@ public class TalkPickService {
     public void updateTalkPick(Long talkPickId, UpdateTalkPickRequest request, ApiMember apiMember) {
         Member member = apiMember.toMember(memberRepository);
         TalkPick talkPick = member.getTalkPickById(talkPickId);
-        talkPick.update(request.getTitle(), request.getContent(), request.getOptionA(), request.getOptionB());
+        talkPick.edit(request.getTitle(), request.getContent(), request.getOptionA(), request.getOptionB());
     }
 
     @Transactional
