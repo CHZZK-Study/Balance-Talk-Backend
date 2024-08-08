@@ -1,6 +1,7 @@
 package balancetalk.talkpick.presentation;
 
 import balancetalk.global.utils.AuthPrincipal;
+import balancetalk.member.dto.ApiMember;
 import balancetalk.member.dto.GuestOrApiMember;
 import balancetalk.talkpick.application.TalkPickService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -27,7 +28,9 @@ public class TalkPickController {
 
     @Operation(summary = "톡픽 생성", description = "톡픽을 생성합니다.")
     @PostMapping
-    public void createTalkPick(@RequestBody final CreateTalkPickRequest request) {
+    public void createTalkPick(@RequestBody final CreateTalkPickRequest request,
+                               @Parameter(hidden = true) @AuthPrincipal final ApiMember apiMember) {
+        talkPickService.createTalkPick(request, apiMember);
     }
 
     @Operation(summary = "톡픽 상세 조회", description = "톡픽 상세 페이지를 조회합니다.")
@@ -48,12 +51,16 @@ public class TalkPickController {
     @Operation(summary = "톡픽 수정", description = "톡픽을 수정합니다.")
     @PutMapping("/{talkPickId}")
     public void updateTalkPick(@PathVariable final Long talkPickId,
-                               @RequestBody final CreateTalkPickRequest request) {
+                               @RequestBody final UpdateTalkPickRequest request,
+                               @Parameter(hidden = true) @AuthPrincipal final ApiMember apiMember) {
+        talkPickService.updateTalkPick(talkPickId, request, apiMember);
     }
 
     @Operation(summary = "톡픽 삭제", description = "톡픽을 삭제합니다.")
     @DeleteMapping("/{talkPickId}")
-    public void deleteTalkPick(@PathVariable final Long talkPickId) {
+    public void deleteTalkPick(@PathVariable final Long talkPickId,
+                               @Parameter(hidden = true) @AuthPrincipal final ApiMember apiMember) {
+        talkPickService.deleteTalkPick(talkPickId, apiMember);
     }
 
     @Operation(summary = "인기 톡픽 조회", description = "인기 톡픽들을 조회합니다.")
