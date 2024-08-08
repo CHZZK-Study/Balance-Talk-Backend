@@ -4,7 +4,7 @@ import balancetalk.member.domain.Member;
 import balancetalk.member.dto.GuestOrApiMember;
 import balancetalk.talkpick.domain.Summary;
 import balancetalk.talkpick.domain.TalkPick;
-import balancetalk.talkpick.domain.TalkPickReader;
+import balancetalk.talkpick.domain.repository.TalkPickRepository;
 import balancetalk.talkpick.dto.TalkPickDto.TalkPickDetailResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -15,6 +15,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 import static balancetalk.vote.domain.VoteOption.A;
 import static balancetalk.vote.domain.VoteOption.B;
@@ -28,7 +29,7 @@ class TalkPickServiceTest {
     TalkPickService talkPickService;
 
     @Mock
-    TalkPickReader talkPickReader;
+    TalkPickRepository talkPickRepository;
 
     TalkPick talkPick;
     GuestOrApiMember guestOrApiMember;
@@ -58,7 +59,7 @@ class TalkPickServiceTest {
     @DisplayName("톡픽을 조회하면 해당 톡픽의 조회수가 1 증가한다.")
     void findById_Success_ThenIncreaseViews() {
         // given
-        when(talkPickReader.readById(1L)).thenReturn(talkPick);
+        when(talkPickRepository.findById(1L)).thenReturn(Optional.ofNullable(talkPick));
         when(guestOrApiMember.isGuest()).thenReturn(true);
 
         // when
@@ -72,7 +73,7 @@ class TalkPickServiceTest {
     @DisplayName("비회원이 톡픽을 조회하면 그 응답의 북마크 여부는 false가 된다.")
     void findById_Success_ThenMyBookmarkIsFalse_ByGuest() {
         // given
-        when(talkPickReader.readById(1L)).thenReturn(talkPick);
+        when(talkPickRepository.findById(1L)).thenReturn(Optional.ofNullable(talkPick));
         when(guestOrApiMember.isGuest()).thenReturn(true);
 
         // when
@@ -86,7 +87,7 @@ class TalkPickServiceTest {
     @DisplayName("비회원이 톡픽을 조회하면 그 응답의 투표 선택지는 null이 된다.")
     void findById_Success_ThenVoteOptionIsNull_ByGuest() {
         // given
-        when(talkPickReader.readById(1L)).thenReturn(talkPick);
+        when(talkPickRepository.findById(1L)).thenReturn(Optional.ofNullable(talkPick));
         when(guestOrApiMember.isGuest()).thenReturn(true);
 
         // when

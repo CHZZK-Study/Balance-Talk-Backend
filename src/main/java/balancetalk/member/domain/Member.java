@@ -4,6 +4,8 @@ import balancetalk.bookmark.domain.Bookmark;
 import balancetalk.bookmark.domain.BookmarkType;
 import balancetalk.game.domain.Game;
 import balancetalk.global.common.BaseTimeEntity;
+import balancetalk.global.exception.BalanceTalkException;
+import balancetalk.global.exception.ErrorCode;
 import balancetalk.like.domain.Like;
 import balancetalk.talkpick.domain.TalkPick;
 import balancetalk.vote.domain.Vote;
@@ -110,5 +112,12 @@ public class Member extends BaseTimeEntity {
         return bookmarks.stream()
                 .filter(bookmark -> bookmark.matches(resourceId, type))
                 .findFirst();
+    }
+
+    public TalkPick getTalkPickById(long talkPickId) {
+        return talkPicks.stream()
+                .filter(talkPick -> talkPick.matchesId(talkPickId))
+                .findFirst()
+                .orElseThrow(() -> new BalanceTalkException(ErrorCode.NOT_FOUND_TALK_PICK_THAT_MEMBER));
     }
 }

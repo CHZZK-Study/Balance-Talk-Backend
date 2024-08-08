@@ -12,6 +12,7 @@ import jakarta.validation.constraints.Size;
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,23 +32,23 @@ public class TalkPick extends BaseTimeEntity {
     private Member member;
 
     @NotBlank
-    @Size(max = 255)
+    @Size(max = 50)
     private String title;
 
     @Embedded
     private Summary summary;
 
     @NotBlank
-    @Size(max = 255)
+    @Column(columnDefinition = "LONGTEXT")
     private String content;
 
     @NotBlank
-    @Size(max = 50)
+    @Size(max = 10)
     @Column(name = "option_a")
     private String optionA;
 
     @NotBlank
-    @Size(max = 50)
+    @Size(max = 10)
     @Column(name = "option_b")
     private String optionB;
 
@@ -58,6 +59,8 @@ public class TalkPick extends BaseTimeEntity {
     @PositiveOrZero
     @ColumnDefault("0")
     private Long bookmarks;
+
+    private LocalDateTime editedAt;
 
     @Enumerated(value = EnumType.STRING)
     private ViewStatus viewStatus = ViewStatus.NORMAL;
@@ -88,5 +91,17 @@ public class TalkPick extends BaseTimeEntity {
 
     public void decreaseBookmarks() {
         this.bookmarks--;
+    }
+
+    public void edit(String title, String content, String optionA, String optionB) {
+        this.title = title;
+        this.content = content;
+        this.optionA = optionA;
+        this.optionB = optionB;
+        this.editedAt = LocalDateTime.now();
+    }
+
+    public boolean matchesId(long id) {
+        return this.id == id;
     }
 }
