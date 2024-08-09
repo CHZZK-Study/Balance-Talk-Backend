@@ -63,11 +63,11 @@ public class GameDto {
         @Schema(description = "밸런스 게임 제목", example = "제목")
         private String title;
 
-        @Schema(description = "선택지 A 이미지", example = "https://pikko-image.s3.ap-northeast-2.amazonaws.com/balance-game/067cc56e-21b7-468f-a2c1-4839036ee7cd_unnamed.png")
-        private String optionAImg;
-
         @Schema(description = "선택지 A 이름", example = "선택지 A 이름")
         private String optionA;
+
+        @Schema(description = "선택지 A 이미지", example = "https://pikko-image.s3.ap-northeast-2.amazonaws.com/balance-game/067cc56e-21b7-468f-a2c1-4839036ee7cd_unnamed.png")
+        private String optionAImg;
 
         @Schema(description = "선택지 B 이름", example = "선택지 B 이름")
         private String optionB;
@@ -77,6 +77,22 @@ public class GameDto {
 
         @Schema(description = "카테고리", example = "월드컵")
         private String topicName;
+
+        @Schema(description = "북마크 여부", example = "false")
+        private Boolean myBookmark;
+
+        public static GameResponse fromEntity(Game game, Member member, boolean isBookmarked) {
+            return GameResponse.builder()
+                    .id(game.getId())
+                    .title(game.getTitle())
+                    .optionA(game.getOptionA())
+                    .optionAImg(game.getOptionAImg())
+                    .optionB(game.getOptionB())
+                    .optionBImg(game.getOptionBImg())
+                    .topicName(game.getGameTopic().getName())
+                    .myBookmark(isBookmarked)
+                    .build();
+        }
     }
 
     @Data
