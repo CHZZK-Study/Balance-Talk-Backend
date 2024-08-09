@@ -41,7 +41,7 @@ public class GameService {
     private final MemberRepository memberRepository;
     private final GameTopicRepository gameTopicRepository;
 
-    public void createBalanceGame(CreateGameRequest request, ApiMember apiMember) {
+    public void createBalanceGame(final CreateGameRequest request, final ApiMember apiMember) {
         Member member = apiMember.toMember(memberRepository);
 
         GameTopic gameTopic = gameTopicRepository.findByName(request.getGameTopic())
@@ -52,7 +52,7 @@ public class GameService {
         gameRepository.save(game);
     }
 
-    public GameDetailResponse findBalanceGame(Long gameId, GuestOrApiMember guestOrApiMember) {
+    public GameDetailResponse findBalanceGame(final Long gameId, final GuestOrApiMember guestOrApiMember) {
         Game game = gameReader.readById(gameId);
         game.increaseViews();
 
@@ -71,25 +71,41 @@ public class GameService {
         return GameDetailResponse.from(game, hasBookmarked, myVote.get().getVoteOption());
     }
 
-    public List<GameResponse> findLatestGames(String topicName) {
+    public List<GameResponse> findLatestGames(final String topicName, GuestOrApiMember guestOrApiMember) {
         Pageable pageable = PageRequest.of(START_PAGE, END_PAGE);
         List<Game> games = gameRepository.findGamesByCreated(topicName, pageable);
+
+        if (guestOrApiMember.isGuest()) {
+            return games.stream()
+                    .map(game -> GameResponse.fromEntity(game, null, false)).collect(Collectors.toUnmodifiableList());
+        }
+
+        Member member = guestOrApiMember.toMember(memberRepository);
         return games.stream()
-                .map(game -> new GameResponse(game.getId(), game.getTitle(), game.getOptionA(), game.getOptionAImg(),
-                        game.getOptionB(), game.getOptionBImg(), null))
-                .collect(Collectors.toUnmodifiableList());
+                .map(game -> {
+                    boolean bookmarked = member.hasBookmarked(game.getId(), GAME);
+                    return GameResponse.fromEntity(game, member, bookmarked);
+                }).collect(Collectors.toUnmodifiableList());
     }
 
-    public List<GameResponse> findBestGames(String topicName) {
+    public List<GameResponse> findBestGames(final String topicName, GuestOrApiMember guestOrApiMember) {
         Pageable pageable = PageRequest.of(START_PAGE, END_PAGE);
         List<Game> games = gameRepository.findGamesByViews(topicName, pageable);
+
+        if (guestOrApiMember.isGuest()) {
+            return games.stream()
+                    .map(game -> GameResponse.fromEntity(game, null, false)).collect(Collectors.toUnmodifiableList());
+        }
+
+        Member member = guestOrApiMember.toMember(memberRepository);
         return games.stream()
-                .map(game -> new GameResponse(game.getId(), game.getTitle(), game.getOptionA(), game.getOptionAImg(),
-                        game.getOptionB(), game.getOptionBImg() , topicName))
-                .collect(Collectors.toUnmodifiableList());
+                .map(game -> {
+                    boolean bookmarked = member.hasBookmarked(game.getId(), GAME);
+                    return GameResponse.fromEntity(game, member, bookmarked);
+                }).collect(Collectors.toUnmodifiableList());
     }
 
-    public void createGameTopic(CreateGameTopicRequest request, ApiMember apiMember) {
+    public void createGameTopic(final CreateGameTopicRequest request, final ApiMember apiMember) {
         Member member = apiMember.toMember(memberRepository);
         GameTopic gameTopic = request.toEntity();
         gameTopicRepository.save(gameTopic);
