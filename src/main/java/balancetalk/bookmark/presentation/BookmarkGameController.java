@@ -26,6 +26,7 @@ public class BookmarkGameController {
 
     @Operation(summary = "밸런스 게임 북마크 취소", description = "밸런스 게임 북마크를 취소합니다.")
     @DeleteMapping
-    public void deleteBookmarkGame(@PathVariable final Long gameId) {
+    public void deleteBookmarkGame(@PathVariable final Long gameId, @AuthPrincipal ApiMember apiMember) {
+        bookmarkGameService.deleteBookmark(gameId, apiMember);
     }
 }

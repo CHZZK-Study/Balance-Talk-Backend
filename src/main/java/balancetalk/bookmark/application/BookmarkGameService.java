@@ -5,7 +5,6 @@ import static balancetalk.bookmark.domain.BookmarkType.*;
 import balancetalk.bookmark.domain.Bookmark;
 import balancetalk.bookmark.domain.BookmarkGenerator;
 import balancetalk.bookmark.domain.BookmarkRepository;
-import balancetalk.bookmark.domain.BookmarkType;
 import balancetalk.game.domain.Game;
 import balancetalk.game.domain.GameReader;
 import balancetalk.global.exception.BalanceTalkException;
