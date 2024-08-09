@@ -5,6 +5,7 @@ import static balancetalk.vote.domain.VoteOption.*;
 import balancetalk.game.domain.Game;
 import balancetalk.game.domain.GameTopic;
 import balancetalk.member.domain.Member;
+import balancetalk.vote.domain.Vote;
 import balancetalk.vote.domain.VoteOption;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -170,10 +171,21 @@ public class GameDto {
         @Schema(description = "밸런스 게임 제목", example = "제목")
         private String title;
 
+        @Schema(description = "투표한 선택지", example = "A")
+        private VoteOption voteOption;
+
         public static GameMyPageResponse from(Game game) {
             return GameMyPageResponse.builder()
                     .id(game.getId())
                     .title(game.getTitle())
+                    .build();
+        }
+
+        public static GameMyPageResponse from(Game game, Vote vote) {
+            return GameMyPageResponse.builder()
+                    .id(game.getId())
+                    .title(game.getTitle())
+                    .voteOption(vote.getVoteOption())
                     .build();
         }
     }
