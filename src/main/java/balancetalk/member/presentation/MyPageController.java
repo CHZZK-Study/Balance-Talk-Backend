@@ -1,6 +1,6 @@
 package balancetalk.member.presentation;
 
-import balancetalk.game.dto.GameDto;
+import balancetalk.game.dto.GameDto.GameMyPageResponse;
 import balancetalk.global.utils.AuthPrincipal;
 import balancetalk.member.application.MyPageService;
 import balancetalk.member.dto.ApiMember;
@@ -67,11 +67,21 @@ public class MyPageController {
 
     @GetMapping("/games/bookmarks")
     @Operation(summary = "북마크한 밸런스 게임 목록 조회", description = "로그인한 회원이 북마크한 밸런스 게임 목록을 조회한다.")
-    public Page<GameDto.GameMyPageResponse  > findAllBookmarkedGames(
+    public Page<GameMyPageResponse  > findAllBookmarkedGames(
             @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "6", required = false) int size,
             @Parameter(hidden = true) @AuthPrincipal ApiMember apiMember) {
 
         Pageable pageable = PageRequest.of(page, size);
         return myPageService.findAllBookmarkedGames(apiMember, pageable);
+    }
+
+    @GetMapping("/games/votes")
+    @Operation(summary = "투표한 밸런스 게임 목록 조회", description = "로그인한 회원이 투표한 밸런스 게임 목록을 조회한다.")
+    public Page<GameMyPageResponse> findAllVotedGames(
+            @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "6", required = false) int size,
+            @Parameter(hidden = true) @AuthPrincipal ApiMember apiMember) {
+
+        Pageable pageable = PageRequest.of(page, size);
+        return myPageService.findAllVotedGames(apiMember, pageable);
     }
 }

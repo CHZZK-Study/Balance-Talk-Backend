@@ -47,7 +47,7 @@ public class MyPageService {
 
     public Page<TalkPickMyPageResponse> findAllVotedTalkPicks(ApiMember apiMember, Pageable pageable) {
         Member member = apiMember.toMember(memberRepository);
-        List<Vote> votes = voteRepository.findAllByMemberIdDesc(member.getId());
+        List<Vote> votes = voteRepository.findAllByMemberIdAndTalkPickDesc(member.getId());
 
         List<TalkPickMyPageResponse> responses = votes.stream()
                 .map(vote -> TalkPickMyPageResponse.from(vote.getTalkPick(), vote))
@@ -84,6 +84,17 @@ public class MyPageService {
 
         List<GameMyPageResponse> responses = bookmarks.stream()
                 .map(bookmark -> GameMyPageResponse.from(gameRepository.findById(bookmark.getResourceId()).get()))
+                .collect(Collectors.toList());
+
+        return new PageImpl<>(responses, pageable, responses.size());
+    }
+
+    public Page<GameMyPageResponse> findAllVotedGames(ApiMember apiMember, Pageable pageable) {
+        Member member = apiMember.toMember(memberRepository);
+        List<Vote> votes = voteRepository.findAllByMemberIdAndGameDesc(member.getId());
+
+        List<GameMyPageResponse> responses = votes.stream()
+                .map(vote -> GameMyPageResponse.from(vote.getGame(), vote))
                 .collect(Collectors.toList());
 
         return new PageImpl<>(responses, pageable, responses.size());
