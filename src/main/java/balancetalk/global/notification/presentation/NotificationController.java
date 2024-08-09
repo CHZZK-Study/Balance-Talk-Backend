@@ -4,6 +4,7 @@ import balancetalk.global.notification.application.NotificationService;
 import balancetalk.global.utils.AuthPrincipal;
 import balancetalk.member.dto.ApiMember;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -11,6 +12,7 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 @RestController
 @RequiredArgsConstructor
+@Tag(name = "notification", description = "알림 API")
 public class NotificationController {
 
     private final NotificationService notificationService;

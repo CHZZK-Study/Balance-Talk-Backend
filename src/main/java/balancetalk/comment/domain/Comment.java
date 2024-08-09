@@ -17,6 +17,7 @@ import lombok.*;
 import org.springframework.lang.Nullable;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -78,8 +79,11 @@ public class Comment extends BaseTimeEntity {
     @Column(columnDefinition = "TEXT")
     private String notificationHistory;
 
+    private LocalDateTime editedAt;
+
     public void updateContent(String content) {
         this.content = content;
+        this.editedAt = LocalDateTime.now();
     }
 
     public void setIsBest(boolean isBest) {
