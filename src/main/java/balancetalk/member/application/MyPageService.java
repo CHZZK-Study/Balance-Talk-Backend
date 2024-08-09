@@ -5,6 +5,7 @@ import balancetalk.bookmark.domain.BookmarkRepository;
 import balancetalk.bookmark.domain.BookmarkType;
 import balancetalk.comment.domain.Comment;
 import balancetalk.comment.domain.CommentRepository;
+import balancetalk.game.domain.Game;
 import balancetalk.game.domain.repository.GameRepository;
 import balancetalk.game.dto.GameDto.GameMyPageResponse;
 import balancetalk.member.domain.Member;
@@ -95,6 +96,17 @@ public class MyPageService {
 
         List<GameMyPageResponse> responses = votes.stream()
                 .map(vote -> GameMyPageResponse.from(vote.getGame(), vote))
+                .collect(Collectors.toList());
+
+        return new PageImpl<>(responses, pageable, responses.size());
+    }
+
+    public Page<GameMyPageResponse> findAllGamesByMember(ApiMember apiMember, Pageable pageable) {
+        Member member = apiMember.toMember(memberRepository);
+        List<Game> games = gameRepository.findAllByMemberIdOrderByEditedAtDesc(member.getId());
+
+        List<GameMyPageResponse> responses = games.stream()
+                .map(GameMyPageResponse::from)
                 .collect(Collectors.toList());
 
         return new PageImpl<>(responses, pageable, responses.size());

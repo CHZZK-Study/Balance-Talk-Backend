@@ -84,4 +84,14 @@ public class MyPageController {
         Pageable pageable = PageRequest.of(page, size);
         return myPageService.findAllVotedGames(apiMember, pageable);
     }
+
+    @GetMapping("/games/my")
+    @Operation(summary = "내가 작성한 밸런스 게임 목록 조회", description = "로그인한 회원이 작성한 밸런스 게임 목록을 조회한다.")
+    public Page<GameMyPageResponse> findAllMyGames(
+            @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "6", required = false) int size,
+            @Parameter(hidden = true) @AuthPrincipal ApiMember apiMember) {
+
+        Pageable pageable = PageRequest.of(page, size);
+        return myPageService.findAllGamesByMember(apiMember, pageable);
+    }
 }
