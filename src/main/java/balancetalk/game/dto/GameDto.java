@@ -6,6 +6,7 @@ import balancetalk.game.domain.Game;
 import balancetalk.game.domain.GameTopic;
 import balancetalk.member.domain.Member;
 import balancetalk.vote.domain.VoteOption;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -155,4 +156,26 @@ public class GameDto {
                     .build();
         }
     }
+
+    @Schema(description = "마이페이지 밸런스 게임 응답")
+    @Data
+    @AllArgsConstructor
+    @Builder
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    public static class GameMyPageResponse {
+
+        @Schema(description = "밸런스 게임 ID", example = "1")
+        private long id;
+
+        @Schema(description = "밸런스 게임 제목", example = "제목")
+        private String title;
+
+        public static GameMyPageResponse from(Game game) {
+            return GameMyPageResponse.builder()
+                    .id(game.getId())
+                    .title(game.getTitle())
+                    .build();
+        }
+    }
+
 }
