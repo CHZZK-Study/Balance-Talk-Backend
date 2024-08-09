@@ -108,6 +108,10 @@ public class Member extends BaseTimeEntity {
         return talkPicks.contains(talkPick);
     }
 
+    public boolean isMyGame(Game game) {
+        return games.contains(game);
+    }
+
     public Optional<Bookmark> getBookmarkOf(long resourceId, BookmarkType type) {
         return bookmarks.stream()
                 .filter(bookmark -> bookmark.matches(resourceId, type))
