@@ -57,6 +57,7 @@ public class TalkPickDto {
                     .views(0L)
                     .bookmarks(0L)
                     .viewStatus(NORMAL)
+                    .editedAt(LocalDateTime.now())
                     .build();
         }
     }
