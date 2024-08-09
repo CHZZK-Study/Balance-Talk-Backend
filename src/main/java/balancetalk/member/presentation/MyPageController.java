@@ -1,5 +1,6 @@
 package balancetalk.member.presentation;
 
+import balancetalk.game.dto.GameDto;
 import balancetalk.global.utils.AuthPrincipal;
 import balancetalk.member.application.MyPageService;
 import balancetalk.member.dto.ApiMember;
@@ -11,7 +12,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -63,5 +63,15 @@ public class MyPageController {
 
         Pageable pageable = PageRequest.of(page, size);
         return myPageService.findAllTalkPicksByMember(apiMember, pageable);
+    }
+
+    @GetMapping("/games/bookmarks")
+    @Operation(summary = "북마크한 밸런스 게임 목록 조회", description = "로그인한 회원이 북마크한 밸런스 게임 목록을 조회한다.")
+    public Page<GameDto.GameMyPageResponse  > findAllBookmarkedGames(
+            @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "6", required = false) int size,
+            @Parameter(hidden = true) @AuthPrincipal ApiMember apiMember) {
+
+        Pageable pageable = PageRequest.of(page, size);
+        return myPageService.findAllBookmarkedGames(apiMember, pageable);
     }
 }

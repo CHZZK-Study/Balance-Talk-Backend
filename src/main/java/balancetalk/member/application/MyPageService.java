@@ -5,6 +5,8 @@ import balancetalk.bookmark.domain.BookmarkRepository;
 import balancetalk.bookmark.domain.BookmarkType;
 import balancetalk.comment.domain.Comment;
 import balancetalk.comment.domain.CommentRepository;
+import balancetalk.game.domain.repository.GameRepository;
+import balancetalk.game.dto.GameDto.GameMyPageResponse;
 import balancetalk.member.domain.Member;
 import balancetalk.member.domain.MemberRepository;
 import balancetalk.member.dto.ApiMember;
@@ -30,6 +32,7 @@ public class MyPageService {
     private final BookmarkRepository bookmarkRepository;
     private final VoteRepository voteRepository;
     private final CommentRepository commentRepository;
+    private final GameRepository gameRepository;
 
     public Page<TalkPickMyPageResponse> findAllBookmarkedTalkPicks(ApiMember apiMember, Pageable pageable) {
         Member member = apiMember.toMember(memberRepository);
@@ -70,6 +73,17 @@ public class MyPageService {
 
         List<TalkPickMyPageResponse> responses = talkPicks.stream()
                 .map(TalkPickMyPageResponse::fromMyTalkPick)
+                .collect(Collectors.toList());
+
+        return new PageImpl<>(responses, pageable, responses.size());
+    }
+
+    public Page<GameMyPageResponse> findAllBookmarkedGames(ApiMember apiMember, Pageable pageable) {
+        Member member = apiMember.toMember(memberRepository);
+        List<Bookmark> bookmarks = bookmarkRepository.findActivatedByMemberOrderByDesc(member, BookmarkType.GAME);
+
+        List<GameMyPageResponse> responses = bookmarks.stream()
+                .map(bookmark -> GameMyPageResponse.from(gameRepository.findById(bookmark.getResourceId()).get()))
                 .collect(Collectors.toList());
 
         return new PageImpl<>(responses, pageable, responses.size());
