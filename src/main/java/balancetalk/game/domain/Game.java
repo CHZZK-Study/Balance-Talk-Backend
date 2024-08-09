@@ -73,4 +73,8 @@ public class Game extends BaseTimeEntity {
     public void increaseBookmarks() {
         this.bookmarks++;
     }
+
+    public void decreaseBookmarks() {
+        this.bookmarks--;
+    }
 }
