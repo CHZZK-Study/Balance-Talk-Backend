@@ -14,6 +14,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 public class GameDto {
 
     @Data
@@ -49,6 +51,7 @@ public class GameDto {
                     .optionBImg(optionBImg)
                     .gameTopic(topic)
                     .member(member)
+                    .editedAt(LocalDateTime.now())
                     .build();
         }
     }
@@ -174,10 +177,18 @@ public class GameDto {
         @Schema(description = "투표한 선택지", example = "A")
         private VoteOption voteOption;
 
-        public static GameMyPageResponse from(Game game) {
+        @Schema(description = "선택지 A 이미지", example = "https://pikko-image.s3.ap-northeast-2.amazonaws.com/balance-game/067cc56e-21b7-468f-a2c1-4839036ee7cd_unnamed.png")
+        private String optionAImg;
+
+        @Schema(description = "선택지 B 이미지", example = "https://pikko-image.s3.ap-northeast-2.amazonaws.com/balance-game/1157461e-a685-42fd-837e-7ed490894ca6_unnamed.png")
+        private String optionBImg;
+
+        public static GameMyPageResponse from(Game game) { // TODO : 클라이언트에게 어떤 정보를 제공할지 추후 기능명세서 업데이트 후 결정
             return GameMyPageResponse.builder()
                     .id(game.getId())
                     .title(game.getTitle())
+                    .optionAImg(game.getOptionAImg())
+                    .optionBImg(game.getOptionBImg())
                     .build();
         }
 
@@ -185,6 +196,8 @@ public class GameDto {
             return GameMyPageResponse.builder()
                     .id(game.getId())
                     .title(game.getTitle())
+                    .optionAImg(game.getOptionAImg())
+                    .optionBImg(game.getOptionBImg())
                     .voteOption(vote.getVoteOption())
                     .build();
         }
