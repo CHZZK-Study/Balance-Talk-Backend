@@ -7,12 +7,10 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import static balancetalk.talkpick.dto.TempTalkPickDto.Request;
+import static balancetalk.talkpick.dto.TempTalkPickDto.Response;
 
 @RestController
 @RequiredArgsConstructor
@@ -27,5 +25,11 @@ public class TempTalkPickController {
     public void saveTempTalkPick(@RequestBody final Request request,
                                  @Parameter(hidden = true) @AuthPrincipal ApiMember apiMember) {
         tempTalkPickService.createTempTalkPick(request, apiMember);
+    }
+
+    @Operation(summary = "임시 저장한 톡픽 조회", description = "임시 저장한 톡픽을 불러옵니다.")
+    @GetMapping
+    public Response findTempTalkPick(@Parameter(hidden = true) @AuthPrincipal ApiMember apiMember) {
+        return tempTalkPickService.findTempTalkPick(apiMember);
     }
 }
