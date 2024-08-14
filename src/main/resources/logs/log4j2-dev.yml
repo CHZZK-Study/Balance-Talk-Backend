@@ -37,8 +37,8 @@ Configuration:
       level: info
       AppenderRef:
         ref: RollingFile_Appender
-    AsyncLogger:
-      name: asyncLogger
+    Logger:
+      name: com.pick-o
       additivity: false
       level: info
       includeLocation: false
