@@ -79,6 +79,7 @@ public class Game extends BaseTimeEntity {
         // this.optionA = optionA;
         // this.optionB = optionB;
         this.editedAt = LocalDateTime.now();
+    }
 
     public void increaseBookmarks() {
         this.bookmarks++;
