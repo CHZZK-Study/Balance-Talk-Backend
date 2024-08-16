@@ -13,6 +13,7 @@ import lombok.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import org.hibernate.annotations.ColumnDefault;
 
 @Entity
 @Getter
@@ -52,7 +53,13 @@ public class Game extends BaseTimeEntity {
     private LocalDateTime editedAt;
 
     @PositiveOrZero
-    private long views = 0L;
+    @ColumnDefault("0")
+    private long views;
+
+    @PositiveOrZero
+    @ColumnDefault("0")
+    private Long bookmarks;
+
 
     @OneToMany(mappedBy = "game")
     private List<Vote> votes = new ArrayList<>();
@@ -72,5 +79,12 @@ public class Game extends BaseTimeEntity {
         // this.optionA = optionA;
         // this.optionB = optionB;
         this.editedAt = LocalDateTime.now();
+
+    public void increaseBookmarks() {
+        this.bookmarks++;
+    }
+
+    public void decreaseBookmarks() {
+        this.bookmarks--;
     }
 }
