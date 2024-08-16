@@ -59,7 +59,7 @@ public class MyPageService {
 
     public Page<TalkPickMyPageResponse> findAllCommentedTalkPicks(ApiMember apiMember, Pageable pageable) {
         Member member = apiMember.toMember(memberRepository);
-        List<Comment> comments = commentRepository.findAllByMemberIdDesc(member.getId());
+        List<Comment> comments = commentRepository.findAllLatestCommentsByMemberIdAndOrderByDesc(member.getId());
 
         List<TalkPickMyPageResponse> responses = comments.stream()
                 .map(comment -> TalkPickMyPageResponse.from(comment.getTalkPick(), comment))
