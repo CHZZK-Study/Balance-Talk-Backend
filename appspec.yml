@@ -4,7 +4,7 @@ files:
   - source:  / # 수정 버전의 모든 파일이 인스턴스에 복사된다.
     destination: /home/ubuntu/Balance-Talk-Backend
     overwrite: yes # 현재 배포 중인 애플리케이션 수정 버전의 파일 버전이 인스턴스에 이미 있는 버전을 대체한다.
-
+file_exists_behavior: OVERWRITE
 permissions:
   - object: /
     pattern: "**"
