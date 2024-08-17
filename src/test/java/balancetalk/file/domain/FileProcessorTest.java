@@ -29,10 +29,9 @@ class FileProcessorTest {
                 new MockMultipartFile("mockFile", "강아지", "image/png", "content".getBytes());
 
         // when
-        File result = fileProcessor.process(multipartFile, "https://process.test/path/", 1L, TALK_PICK);
+        File result = fileProcessor.process(multipartFile, "https://process.test/path/", TALK_PICK);
 
         // then
-        assertThat(result.getResourceId()).isEqualTo(1L);
         assertThat(result.getFileType()).isEqualTo(TALK_PICK);
         assertThat(result.getFileFormat()).isEqualTo(PNG);
         assertThat(result.getPath()).isEqualTo("https://process.test/path/");
@@ -48,7 +47,7 @@ class FileProcessorTest {
 
         // when, then
         Assertions.assertThatThrownBy(() ->
-                        fileProcessor.process(multipartFile, "https://process.test/path/", 1L, TALK_PICK))
+                        fileProcessor.process(multipartFile, "https://process.test/path/", TALK_PICK))
                 .isInstanceOf(BalanceTalkException.class);
     }
 }

@@ -36,12 +36,12 @@ public class FileService {
     private String bucket;
 
     @Transactional
-    public String uploadImage(MultipartFile multipartFile, Long resourceId, FileType fileType) {
+    public String uploadImage(MultipartFile multipartFile, FileType fileType) {
         if (multipartFile.isEmpty()) {
             throw new BalanceTalkException(NOT_ATTACH_IMAGE);
         }
 
-        File file = fileProcessor.process(multipartFile, s3EndPoint + fileType.getUploadDir(), resourceId, fileType);
+        File file = fileProcessor.process(multipartFile, s3EndPoint + fileType.getUploadDir(), fileType);
 
         String s3Key = fileType.getUploadDir() + file.getStoredName();
 

@@ -18,7 +18,6 @@ public class File {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotNull
     private Long resourceId;
 
     @NotNull
