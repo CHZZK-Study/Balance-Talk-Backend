@@ -1,0 +1,46 @@
+Configuration:
+  name: Logger-dev
+  status: info
+
+  Properties:
+    Property:
+      name: log-path
+      value: "logs"
+
+  Appenders:
+    RollingFile:
+      name: RollingFile_Appender
+      fileName: ${log-path}/logfile.log
+      filePattern: "${log-dir}logfile-%d{yyyy-MM-dd}.%i.txt"
+      PatternLayout:
+        pattern: "%style{%d{yyyy-MM-dd HH:mm:ss.SSS}}{cyan} %highlight{[%-5p]}{FATAL=bg_red,
+            ERROR=red, INFO=green, DEBUG=blue, TRACE=bg_yellow} [%C] %style{[%t]}{yellow}- %m%n"
+      immediateFlush: false   # async 방식으로 버퍼를 통해 로그 남기기
+
+      Policies:
+        SizeBasedTriggeringPolicy:
+          size: "10 MB"
+        TimeBasedTriggeringPolicy:
+          Interval: 1   # 하루마다 rollover 발생
+          modulate: true
+
+      DefaultRollOverStrategy:
+        max: 10
+        Delete:
+          basePath: "${log-dir}"
+          maxDepth: "1"   # 디렉토리 깊이
+          IfLastModified:
+            age: "P7D"   # 파일을 7일동안 보관
+
+  Loggers:
+    Root:
+      level: info
+      AppenderRef:
+        ref: RollingFile_Appender
+    Logger:
+      name: com.pick-o
+      additivity: false
+      level: info
+      includeLocation: false
+      AppenderRef:
+        ref: RollingFile_Appender
