@@ -11,8 +11,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import static balancetalk.talkpick.dto.TempTalkPickDto.Request;
-import static balancetalk.talkpick.dto.TempTalkPickDto.Response;
+import static balancetalk.talkpick.dto.TempTalkPickDto.FindTempTalkPickResponse;
+import static balancetalk.talkpick.dto.TempTalkPickDto.SaveTempTalkPickRequest;
 
 @Service
 @RequiredArgsConstructor
@@ -22,7 +22,7 @@ public class TempTalkPickService {
     private final TempTalkPickRepository tempTalkPickRepository;
 
     @Transactional
-    public void createTempTalkPick(Request request, ApiMember apiMember) {
+    public void createTempTalkPick(SaveTempTalkPickRequest request, ApiMember apiMember) {
         Member member = apiMember.toMember(memberRepository);
         TempTalkPick tempTalkPick = request.toEntity(member);
 
@@ -32,11 +32,11 @@ public class TempTalkPickService {
                         () -> tempTalkPickRepository.save(tempTalkPick));
     }
 
-    public Response findTempTalkPick(ApiMember apiMember) {
+    public FindTempTalkPickResponse findTempTalkPick(ApiMember apiMember) {
         Member member = apiMember.toMember(memberRepository);
         TempTalkPick tempTalkPick = tempTalkPickRepository.findByMember(member)
                 .orElseThrow(() -> new BalanceTalkException(ErrorCode.NOT_FOUND_TEMP_TALK_PICK));
 
-        return Response.from(tempTalkPick);
+        return FindTempTalkPickResponse.from(tempTalkPick);
     }
 }
