@@ -40,12 +40,12 @@ jobs:
           aws-region: ${{ secrets.AWS_REGION }}
 
       - name: Upload to S3
-        run: aws s3 cp --region ap-northeast-2 ./$GITHUB_SHA.zip s3://pikko-deploy/$GITHUB_SHA.zip
+        run: aws s3 cp --region ap-northeast-2 ./$GITHUB_SHA.zip s3://picko-build/$GITHUB_SHA.zip
 
       - name: Code deploy
         run: |
           aws deploy create-deployment \
           --deployment-config-name CodeDeployDefault.AllAtOnce \
-          --application-name pikko \
-          --deployment-group-name pikko-deploy \
-          --s3-location bucket=pikko-deploy,bundleType=zip,key=$GITHUB_SHA.zip
+          --application-name picko-cicd \
+          --deployment-group-name picko-server \
+          --s3-location bucket=picko-build,bundleType=zip,key=$GITHUB_SHA.zip
