@@ -25,11 +25,9 @@ public class File {
     private Long size;
 
     @NotBlank
-    @Size(max = 50)
     private String uploadName;
 
     @NotBlank
-    @Size(max = 50)
     private String storedName;
 
     @NotBlank

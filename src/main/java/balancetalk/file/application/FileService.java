@@ -1,23 +1,25 @@
 package balancetalk.file.application;
 
-import balancetalk.file.domain.File;
-import balancetalk.file.domain.FileProcessor;
-import balancetalk.file.domain.FileRepository;
-import balancetalk.file.domain.FileType;
+import balancetalk.file.domain.*;
 import balancetalk.file.domain.s3.S3ImageRemover;
 import balancetalk.file.domain.s3.S3ImageUploader;
 import balancetalk.file.domain.s3.S3ImageUrlGetter;
+import balancetalk.file.dto.UploadFileResponse;
 import balancetalk.global.exception.BalanceTalkException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import software.amazon.awssdk.services.s3.S3Client;
 
-import static balancetalk.global.exception.ErrorCode.NOT_ATTACH_IMAGE;
+import java.util.ArrayList;
+import java.util.List;
+
 import static balancetalk.global.exception.ErrorCode.NOT_UPLOADED_IMAGE_FOR_DB_ERROR;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class FileService {
@@ -36,28 +38,37 @@ public class FileService {
     private String bucket;
 
     @Transactional
-    public String uploadImage(MultipartFile multipartFile, FileType fileType) {
-        if (multipartFile.isEmpty()) {
-            throw new BalanceTalkException(NOT_ATTACH_IMAGE);
+    public UploadFileResponse uploadImages(MultipartFiles multipartFiles) {
+        FileType fileType = multipartFiles.fileType();
+
+        List<String> s3Keys = new ArrayList<>();
+        for (MultipartFile multipartFile : multipartFiles.multipartFiles()) {
+            try {
+                File file = fileProcessor.process(multipartFile, s3EndPoint + fileType.getUploadDir(), fileType);
+                String s3Key = fileType.getUploadDir() + file.getStoredName();
+
+                // S3에 이미지 파일 업로드
+                s3ImageUploader.uploadImageToBucket(s3Client, bucket, s3Key, multipartFile);
+
+                // DB에 메타 데이터 저장
+                fileRepository.save(file);
+
+                // 이미지 URL 반환
+                s3Keys.add(s3Key);
+            } catch (Exception e) {
+                // DB에 메타 데이터 저장 중 예외가 발생하면 S3에 업로드된 이미지 제거 후 커스텀 예외로 변환
+                for (String key : s3Keys) {
+                    s3ImageRemover.removeImageFromBucket(s3Client, bucket, key);
+                }
+
+                throw new BalanceTalkException(NOT_UPLOADED_IMAGE_FOR_DB_ERROR);
+            }
         }
 
-        File file = fileProcessor.process(multipartFile, s3EndPoint + fileType.getUploadDir(), fileType);
+        List<String> imgUrls = s3Keys.stream()
+                .map(key -> s3ImageUrlGetter.getImageUrl(s3Client, bucket, key))
+                .toList();
 
-        String s3Key = fileType.getUploadDir() + file.getStoredName();
-
-        // S3에 이미지 파일 업로드
-        s3ImageUploader.uploadImageToBucket(s3Client, bucket, s3Key, multipartFile);
-
-        // DB에 메타 데이터 저장
-        try {
-            fileRepository.save(file);
-        } catch (Exception e) {
-            // DB에 메타 데이터 저장 중 예외가 발생하면 S3에 업로드된 이미지 제거
-            s3ImageRemover.removeImageFromBucket(s3Client, bucket, s3Key);
-            throw new BalanceTalkException(NOT_UPLOADED_IMAGE_FOR_DB_ERROR);
-        }
-
-        // 이미지 URL 반환
-        return s3ImageUrlGetter.getImageUrl(s3Client, bucket, s3Key);
+        return new UploadFileResponse(imgUrls);
     }
 }
