@@ -1,7 +1,6 @@
 package balancetalk.file.domain;
 
 import balancetalk.global.exception.BalanceTalkException;
-import lombok.Getter;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -9,7 +8,6 @@ import java.util.List;
 import static balancetalk.global.exception.ErrorCode.EXCEEDED_IMAGES_SIZE;
 import static balancetalk.global.exception.ErrorCode.NOT_ATTACH_IMAGE;
 
-@Getter
 public record MultipartFiles(List<MultipartFile> multipartFiles, FileType fileType) {
 
     public MultipartFiles {
