@@ -4,6 +4,7 @@ import balancetalk.global.utils.AuthPrincipal;
 import balancetalk.member.application.MemberService;
 import balancetalk.member.dto.ApiMember;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -32,14 +33,14 @@ public class MemberController {
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/join")
     @Operation(summary = "회원 가입", description = "닉네임, 이메일, 비밀번호를 입력하여 회원 가입을 한다.")
-    public void join(@Valid @RequestBody JoinRequest joinRequest) {
+    public void join(@Valid @RequestBody final JoinRequest joinRequest) {
         memberService.join(joinRequest);
     }
 
     @ResponseStatus(HttpStatus.OK)
     @PostMapping("/login")
     @Operation(summary = "로그인", description = "회원 가입 한 이메일과 패스워드를 사용하여 로그인 한다.")
-    public String login(@Valid @RequestBody LoginRequest loginRequest, HttpServletResponse response) {
+    public String login(@Valid @RequestBody final LoginRequest loginRequest, HttpServletResponse response) {
         return memberService.login(loginRequest, response);
     }
 
@@ -60,8 +61,8 @@ public class MemberController {
     @ResponseStatus(HttpStatus.OK)
     @PutMapping(value = "/nickname", consumes = "text/plain")
     @Operation(summary = "회원 닉네임 수정", description = "회원 닉네임을 수정한다.")
-    public void updateNickname(@Valid @NotBlank @RequestBody @Size(min = 2, max = 10) String newNickname, @AuthPrincipal
-    ApiMember apiMember) {
+    public void updateNickname(@Valid @NotBlank @RequestBody @Size(min = 2, max = 10) final String newNickname,
+                               @Parameter(hidden = true) @AuthPrincipal ApiMember apiMember) {
         // TODO: RequestBody 빈 값일 때 에러체킹 x
         memberService.updateNickname(newNickname, apiMember);
     }
@@ -70,8 +71,8 @@ public class MemberController {
     @PutMapping(value = "/password", consumes = "text/plain")
     @Operation(summary = "회원 비밀번호 수정", description = "회원 패스워드를 수정한다.")
     public void updatePassword(@RequestBody @Size(min = 10, max = 20)
-                               @Pattern(regexp = "^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d@$!%*#?&]{10,20}$")
-                               String newPassword, @AuthPrincipal ApiMember apiMember) {
+                               @Pattern(regexp = "^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d@$!%*#?&]{10,20}$") final String newPassword,
+                               @Parameter(hidden = true) @AuthPrincipal ApiMember apiMember) {
         // TODO: RequestBody 빈 값일 때 에러체킹 x
         memberService.updatePassword(newPassword, apiMember);
     }
@@ -79,14 +80,16 @@ public class MemberController {
     @ResponseStatus(HttpStatus.OK)
     @PutMapping(value = "/image", consumes = "text/plain")
     @Operation(summary = "회원 이미지 변경", description = "회원 프로필 이미지를 변경한다.")
-    public void updateImage(@RequestBody String profileImgUrl, @AuthPrincipal ApiMember apiMember) {
+    public void updateImage(@RequestBody final String profileImgUrl,
+                            @Parameter(hidden = true) @AuthPrincipal ApiMember apiMember) {
         memberService.updateImage(profileImgUrl, apiMember);
     }
 
     @ResponseStatus(HttpStatus.OK)
     @DeleteMapping("/delete")
     @Operation(summary = "회원 삭제", description = "회원 정보를 삭제한다.")
-    public void deleteMember(@Valid @RequestBody LoginRequest loginRequest, @AuthPrincipal ApiMember apiMember) {
+    public void deleteMember(@Valid @RequestBody final LoginRequest loginRequest,
+                             @Parameter(hidden = true) @AuthPrincipal ApiMember apiMember) {
         memberService.delete(loginRequest, apiMember);
     }
 
