@@ -28,6 +28,7 @@ public enum ErrorCode {
     NOT_INPUT_PARENT_COMMENT_ID(BAD_REQUEST, "원 댓글 ID가 입력되지 않았습니다."),
     INVALID_VOTE_OPTION(BAD_REQUEST, "존재하지 않는 선택지입니다."),
     NOT_ATTACH_IMAGE(BAD_REQUEST, "이미지를 첨부하지 않아 문제가 발생했습니다."),
+    EXCEEDED_IMAGES_SIZE(BAD_REQUEST, "첨부 가능한 이미지 개수를 초과했습니다."),
     NOT_SUPPORTED_FILE_FORMAT(BAD_REQUEST, "지원하지 않는 파일 형식입니다."),
     REPORT_MY_COMMENT(BAD_REQUEST, "본인의 댓글을 신고할 수 없습니다"),
     INVALID_REPORT_REASON(BAD_REQUEST, "신고 사유가 올바르지 않습니다."),

@@ -18,7 +18,6 @@ public class File {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotNull
     private Long resourceId;
 
     @NotNull
@@ -26,11 +25,9 @@ public class File {
     private Long size;
 
     @NotBlank
-    @Size(max = 50)
     private String uploadName;
 
     @NotBlank
-    @Size(max = 50)
     private String storedName;
 
     @NotBlank
