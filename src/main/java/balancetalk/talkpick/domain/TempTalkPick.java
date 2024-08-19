@@ -1,0 +1,48 @@
+package balancetalk.talkpick.domain;
+
+import balancetalk.member.domain.Member;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
+import lombok.*;
+
+@Entity
+@Getter
+@Builder
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+public class TempTalkPick {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @OneToOne
+    @JoinColumn(name = "member_id")
+    private Member member;
+
+    @NotBlank
+    @Size(max = 50)
+    private String title;
+
+    @NotBlank
+    @Column(columnDefinition = "LONGTEXT")
+    private String content;
+
+    @NotBlank
+    @Size(max = 10)
+    @Column(name = "option_a")
+    private String optionA;
+
+    @NotBlank
+    @Size(max = 10)
+    @Column(name = "option_b")
+    private String optionB;
+
+    public void update(TempTalkPick newTempTalkPick) {
+        this.title = newTempTalkPick.getTitle();
+        this.content = newTempTalkPick.getContent();
+        this.optionA = newTempTalkPick.getOptionA();
+        this.optionB = newTempTalkPick.getOptionB();
+    }
+}

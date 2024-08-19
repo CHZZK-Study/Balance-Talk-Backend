@@ -11,12 +11,12 @@ import java.util.UUID;
 @Component
 public class FileProcessor {
 
-    public File process(MultipartFile multipartFile, String path, long resourceId, FileType fileType) {
+    public File process(MultipartFile multipartFile, String path, FileType fileType) {
         String originalName = multipartFile.getOriginalFilename();
         String storedName = createRandomName(originalName);
         long size = multipartFile.getSize();
         FileFormat FileFormat = convertMimeTypeToFileFormat(multipartFile.getContentType());
-        return createFile(resourceId, originalName, storedName, FileFormat, path, fileType, size);
+        return createFile(originalName, storedName, FileFormat, path, fileType, size);
     }
 
     private String createRandomName(String originalName) {
@@ -30,15 +30,13 @@ public class FileProcessor {
                 .orElseThrow(() -> new BalanceTalkException(ErrorCode.NOT_SUPPORTED_FILE_FORMAT));
     }
 
-    private File createFile(long resourceId,
-                            String uploadName,
+    private File createFile(String uploadName,
                             String storedName,
                             FileFormat FileFormat,
                             String path,
                             FileType fileType,
                             long size) {
         return File.builder()
-                .resourceId(resourceId)
                 .uploadName(uploadName)
                 .storedName(storedName)
                 .fileFormat(FileFormat)
