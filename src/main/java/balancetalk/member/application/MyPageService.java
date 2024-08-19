@@ -5,6 +5,9 @@ import balancetalk.bookmark.domain.BookmarkRepository;
 import balancetalk.bookmark.domain.BookmarkType;
 import balancetalk.comment.domain.Comment;
 import balancetalk.comment.domain.CommentRepository;
+import balancetalk.game.domain.Game;
+import balancetalk.game.domain.repository.GameRepository;
+import balancetalk.game.dto.GameDto.GameMyPageResponse;
 import balancetalk.member.domain.Member;
 import balancetalk.member.domain.MemberRepository;
 import balancetalk.member.dto.ApiMember;
@@ -30,6 +33,7 @@ public class MyPageService {
     private final BookmarkRepository bookmarkRepository;
     private final VoteRepository voteRepository;
     private final CommentRepository commentRepository;
+    private final GameRepository gameRepository;
 
     public Page<TalkPickMyPageResponse> findAllBookmarkedTalkPicks(ApiMember apiMember, Pageable pageable) {
         Member member = apiMember.toMember(memberRepository);
@@ -44,7 +48,7 @@ public class MyPageService {
 
     public Page<TalkPickMyPageResponse> findAllVotedTalkPicks(ApiMember apiMember, Pageable pageable) {
         Member member = apiMember.toMember(memberRepository);
-        List<Vote> votes = voteRepository.findAllByMemberIdDesc(member.getId());
+        List<Vote> votes = voteRepository.findAllByMemberIdAndTalkPickDesc(member.getId());
 
         List<TalkPickMyPageResponse> responses = votes.stream()
                 .map(vote -> TalkPickMyPageResponse.from(vote.getTalkPick(), vote))
@@ -55,7 +59,7 @@ public class MyPageService {
 
     public Page<TalkPickMyPageResponse> findAllCommentedTalkPicks(ApiMember apiMember, Pageable pageable) {
         Member member = apiMember.toMember(memberRepository);
-        List<Comment> comments = commentRepository.findAllByMemberIdDesc(member.getId());
+        List<Comment> comments = commentRepository.findAllLatestCommentsByMemberIdAndOrderByDesc(member.getId());
 
         List<TalkPickMyPageResponse> responses = comments.stream()
                 .map(comment -> TalkPickMyPageResponse.from(comment.getTalkPick(), comment))
@@ -66,10 +70,43 @@ public class MyPageService {
 
     public Page<TalkPickMyPageResponse> findAllTalkPicksByMember(ApiMember apiMember, Pageable pageable) {
         Member member = apiMember.toMember(memberRepository);
-        List<TalkPick> talkPicks = talkPickRepository.findAllByMemberIdOrderByLastModifiedAtDesc(member.getId());
+        List<TalkPick> talkPicks = talkPickRepository.findAllByMemberIdOrderByEditedAtDesc(member.getId());
 
         List<TalkPickMyPageResponse> responses = talkPicks.stream()
                 .map(TalkPickMyPageResponse::fromMyTalkPick)
+                .collect(Collectors.toList());
+
+        return new PageImpl<>(responses, pageable, responses.size());
+    }
+
+    public Page<GameMyPageResponse> findAllBookmarkedGames(ApiMember apiMember, Pageable pageable) {
+        Member member = apiMember.toMember(memberRepository);
+        List<Bookmark> bookmarks = bookmarkRepository.findActivatedByMemberOrderByDesc(member, BookmarkType.GAME);
+
+        List<GameMyPageResponse> responses = bookmarks.stream()
+                .map(bookmark -> GameMyPageResponse.from(gameRepository.findById(bookmark.getResourceId()).get()))
+                .collect(Collectors.toList());
+
+        return new PageImpl<>(responses, pageable, responses.size());
+    }
+
+    public Page<GameMyPageResponse> findAllVotedGames(ApiMember apiMember, Pageable pageable) {
+        Member member = apiMember.toMember(memberRepository);
+        List<Vote> votes = voteRepository.findAllByMemberIdAndGameDesc(member.getId());
+
+        List<GameMyPageResponse> responses = votes.stream()
+                .map(vote -> GameMyPageResponse.from(vote.getGame(), vote))
+                .collect(Collectors.toList());
+
+        return new PageImpl<>(responses, pageable, responses.size());
+    }
+
+    public Page<GameMyPageResponse> findAllGamesByMember(ApiMember apiMember, Pageable pageable) {
+        Member member = apiMember.toMember(memberRepository);
+        List<Game> games = gameRepository.findAllByMemberIdOrderByEditedAtDesc(member.getId());
+
+        List<GameMyPageResponse> responses = games.stream()
+                .map(GameMyPageResponse::from)
                 .collect(Collectors.toList());
 
         return new PageImpl<>(responses, pageable, responses.size());
