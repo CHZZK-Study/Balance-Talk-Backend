@@ -52,6 +52,8 @@ public class TalkPick extends BaseTimeEntity {
     @Column(name = "option_b")
     private String optionB;
 
+    private String sourceUrl;
+
     @PositiveOrZero
     @ColumnDefault("0")
     private Long views;

@@ -28,7 +28,7 @@ public class TalkPickController {
 
     @Operation(summary = "톡픽 생성", description = "톡픽을 생성합니다.")
     @PostMapping
-    public void createTalkPick(@RequestBody final CreateTalkPickRequest request,
+    public void createTalkPick(@RequestBody final CreateOrUpdateTalkPickRequest request,
                                @Parameter(hidden = true) @AuthPrincipal final ApiMember apiMember) {
         talkPickService.createTalkPick(request, apiMember);
     }
@@ -51,7 +51,7 @@ public class TalkPickController {
     @Operation(summary = "톡픽 수정", description = "톡픽을 수정합니다.")
     @PutMapping("/{talkPickId}")
     public void updateTalkPick(@PathVariable final Long talkPickId,
-                               @RequestBody final UpdateTalkPickRequest request,
+                               @RequestBody final CreateOrUpdateTalkPickRequest request,
                                @Parameter(hidden = true) @AuthPrincipal final ApiMember apiMember) {
         talkPickService.updateTalkPick(talkPickId, request, apiMember);
     }

@@ -29,7 +29,7 @@ public class TalkPickService {
     private final TalkPickRepository talkPickRepository;
 
     @Transactional
-    public void createTalkPick(CreateTalkPickRequest request, ApiMember apiMember) {
+    public void createTalkPick(CreateOrUpdateTalkPickRequest request, ApiMember apiMember) {
         Member member = apiMember.toMember(memberRepository);
         talkPickRepository.save(request.toEntity(member));
     }
@@ -64,7 +64,7 @@ public class TalkPickService {
     }
 
     @Transactional
-    public void updateTalkPick(Long talkPickId, UpdateTalkPickRequest request, ApiMember apiMember) {
+    public void updateTalkPick(Long talkPickId, CreateOrUpdateTalkPickRequest request, ApiMember apiMember) {
         Member member = apiMember.toMember(memberRepository);
         TalkPick talkPick = member.getTalkPickById(talkPickId);
         talkPick.edit(request.getTitle(), request.getContent(), request.getOptionA(), request.getOptionB());
