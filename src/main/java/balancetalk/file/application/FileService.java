@@ -1,6 +1,7 @@
 package balancetalk.file.application;
 
 import balancetalk.file.domain.*;
+import balancetalk.file.domain.repository.FileRepository;
 import balancetalk.file.domain.s3.S3ImageRemover;
 import balancetalk.file.domain.s3.S3ImageUploader;
 import balancetalk.file.domain.s3.S3ImageUrlGetter;
@@ -42,6 +43,7 @@ public class FileService {
         FileType fileType = multipartFiles.fileType();
 
         List<String> s3Keys = new ArrayList<>();
+        List<String> storedNames = new ArrayList<>();
         for (MultipartFile multipartFile : multipartFiles.multipartFiles()) {
             try {
                 File file = fileProcessor.process(multipartFile, s3EndPoint + fileType.getUploadDir(), fileType);
@@ -53,8 +55,9 @@ public class FileService {
                 // DB에 메타 데이터 저장
                 fileRepository.save(file);
 
-                // 이미지 URL 반환
+                // 이미지 URL 및 고유 이름 저장
                 s3Keys.add(s3Key);
+                storedNames.add(file.getStoredName());
             } catch (Exception e) {
                 // DB에 메타 데이터 저장 중 예외가 발생하면 S3에 업로드된 이미지 제거 후 커스텀 예외로 변환
                 for (String key : s3Keys) {
@@ -69,6 +72,6 @@ public class FileService {
                 .map(key -> s3ImageUrlGetter.getImageUrl(s3Client, bucket, key))
                 .toList();
 
-        return new UploadFileResponse(imgUrls);
+        return new UploadFileResponse(imgUrls, storedNames);
     }
 }
