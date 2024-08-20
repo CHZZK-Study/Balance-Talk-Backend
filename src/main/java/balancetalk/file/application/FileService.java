@@ -1,6 +1,7 @@
 package balancetalk.file.application;
 
 import balancetalk.file.domain.*;
+import balancetalk.file.domain.repository.FileRepository;
 import balancetalk.file.domain.s3.S3ImageRemover;
 import balancetalk.file.domain.s3.S3ImageUploader;
 import balancetalk.file.domain.s3.S3ImageUrlGetter;

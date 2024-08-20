@@ -1,5 +1,6 @@
 package balancetalk.talkpick.application;
 
+import balancetalk.file.domain.repository.FileRepository;
 import balancetalk.global.exception.BalanceTalkException;
 import balancetalk.global.exception.ErrorCode;
 import balancetalk.member.domain.Member;
@@ -27,11 +28,13 @@ public class TalkPickService {
 
     private final MemberRepository memberRepository;
     private final TalkPickRepository talkPickRepository;
+    private final FileRepository fileRepository;
 
     @Transactional
     public void createTalkPick(CreateOrUpdateTalkPickRequest request, ApiMember apiMember) {
         Member member = apiMember.toMember(memberRepository);
-        talkPickRepository.save(request.toEntity(member));
+        TalkPick savedTalkPick = talkPickRepository.save(request.toEntity(member));
+        fileRepository.updateResourceIdByStoredNames(savedTalkPick.getId(), request.getStoredNames());
     }
 
     @Transactional
@@ -68,6 +71,7 @@ public class TalkPickService {
         Member member = apiMember.toMember(memberRepository);
         TalkPick talkPick = member.getTalkPickById(talkPickId);
         talkPick.edit(request.getTitle(), request.getContent(), request.getOptionA(), request.getOptionB());
+        fileRepository.updateResourceIdByStoredNames(talkPickId, request.getStoredNames());
     }
 
     @Transactional
