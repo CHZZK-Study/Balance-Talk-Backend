@@ -9,6 +9,8 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.PositiveOrZero;
 import jakarta.validation.constraints.Size;
 import lombok.*;
+
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import org.hibernate.annotations.ColumnDefault;
@@ -48,6 +50,8 @@ public class Game extends BaseTimeEntity {
 
     private String optionBImg;
 
+    private LocalDateTime editedAt;
+
     @PositiveOrZero
     @ColumnDefault("0")
     private long views;
@@ -68,6 +72,13 @@ public class Game extends BaseTimeEntity {
         return votes.stream()
                 .filter(vote -> vote.isVoteOptionEquals(voteOption))
                 .count();
+    }
+
+    public void edit() { // 밸런스 게임 수정 시 호출
+        // this.title = title;
+        // this.optionA = optionA;
+        // this.optionB = optionB;
+        this.editedAt = LocalDateTime.now();
     }
 
     public void increaseBookmarks() {

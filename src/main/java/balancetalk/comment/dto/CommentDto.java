@@ -39,6 +39,7 @@ public class CommentDto {
                     .viewStatus(ViewStatus.NORMAL)
                     .reportedCount(0)
                     .isNotifiedForFirstReply(false)
+                    .editedAt(LocalDateTime.now())
                     .build();
         }
 

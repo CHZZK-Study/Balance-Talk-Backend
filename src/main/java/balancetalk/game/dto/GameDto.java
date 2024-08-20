@@ -5,12 +5,16 @@ import static balancetalk.vote.domain.VoteOption.*;
 import balancetalk.game.domain.Game;
 import balancetalk.game.domain.GameTopic;
 import balancetalk.member.domain.Member;
+import balancetalk.vote.domain.Vote;
 import balancetalk.vote.domain.VoteOption;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.time.LocalDateTime;
 
 public class GameDto {
 
@@ -47,6 +51,7 @@ public class GameDto {
                     .optionBImg(optionBImg)
                     .gameTopic(topic)
                     .member(member)
+                    .editedAt(LocalDateTime.now())
                     .build();
         }
     }
@@ -171,4 +176,47 @@ public class GameDto {
                     .build();
         }
     }
+
+    @Schema(description = "마이페이지 밸런스 게임 응답")
+    @Data
+    @AllArgsConstructor
+    @Builder
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    public static class GameMyPageResponse {
+
+        @Schema(description = "밸런스 게임 ID", example = "1")
+        private long id;
+
+        @Schema(description = "밸런스 게임 제목", example = "제목")
+        private String title;
+
+        @Schema(description = "투표한 선택지", example = "A")
+        private VoteOption voteOption;
+
+        @Schema(description = "선택지 A 이미지", example = "https://pikko-image.s3.ap-northeast-2.amazonaws.com/balance-game/067cc56e-21b7-468f-a2c1-4839036ee7cd_unnamed.png")
+        private String optionAImg;
+
+        @Schema(description = "선택지 B 이미지", example = "https://pikko-image.s3.ap-northeast-2.amazonaws.com/balance-game/1157461e-a685-42fd-837e-7ed490894ca6_unnamed.png")
+        private String optionBImg;
+
+        public static GameMyPageResponse from(Game game) { // TODO : 클라이언트에게 어떤 정보를 제공할지 추후 기능명세서 업데이트 후 결정
+            return GameMyPageResponse.builder()
+                    .id(game.getId())
+                    .title(game.getTitle())
+                    .optionAImg(game.getOptionAImg())
+                    .optionBImg(game.getOptionBImg())
+                    .build();
+        }
+
+        public static GameMyPageResponse from(Game game, Vote vote) {
+            return GameMyPageResponse.builder()
+                    .id(game.getId())
+                    .title(game.getTitle())
+                    .optionAImg(game.getOptionAImg())
+                    .optionBImg(game.getOptionBImg())
+                    .voteOption(vote.getVoteOption())
+                    .build();
+        }
+    }
+
 }

@@ -69,6 +69,7 @@ public class TalkPickDto {
                     .views(0L)
                     .bookmarks(0L)
                     .viewStatus(NORMAL)
+                    .editedAt(LocalDateTime.now())
                     .build();
         }
     }
@@ -190,7 +191,7 @@ public class TalkPickDto {
     @JsonInclude(JsonInclude.Include.NON_NULL)
     public static class TalkPickMyPageResponse {
 
-        @Schema(description = "톡픽 ID", example = "톡픽 ID")
+        @Schema(description = "톡픽 ID", example = "1")
         private long id;
 
         @Schema(description = "제목", example = "톡픽 제목")
