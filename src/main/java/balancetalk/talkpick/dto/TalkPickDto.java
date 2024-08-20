@@ -1,7 +1,7 @@
 package balancetalk.talkpick.dto;
 
-import balancetalk.member.domain.Member;
 import balancetalk.comment.domain.Comment;
+import balancetalk.member.domain.Member;
 import balancetalk.talkpick.domain.TalkPick;
 import balancetalk.vote.domain.Vote;
 import balancetalk.vote.domain.VoteOption;
@@ -16,6 +16,7 @@ import lombok.Data;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 import static balancetalk.talkpick.domain.ViewStatus.NORMAL;
 import static balancetalk.vote.domain.VoteOption.A;
@@ -23,10 +24,10 @@ import static balancetalk.vote.domain.VoteOption.B;
 
 public class TalkPickDto {
 
-    @Schema(description = "톡픽 생성 요청")
+    @Schema(description = "톡픽 생성/수정 요청")
     @Data
     @AllArgsConstructor
-    public static class CreateTalkPickRequest {
+    public static class CreateOrUpdateTalkPickRequest {
 
         @Schema(description = "제목", example = "제목")
         @NotBlank(message = "제목은 공백을 허용하지 않습니다.")
@@ -46,6 +47,16 @@ public class TalkPickDto {
         @NotBlank(message = "선택지 이름은 공백을 허용하지 않습니다.")
         @Size(max = 10, message = "선택지 이름은 10자 이하여야 합니다.")
         private String optionB;
+
+        @Schema(description = "출처 URL", example = "https://github.com/CHZZK-Study/Balance-Talk-Backend/issues/506")
+        private String sourceUrl;
+
+        @Schema(description = "첨부한 이미지 고유 이름 목록",
+                example = "[" +
+                        "\"9b4856fe-b624-4e54-ad80-a94e083301d2_czz.png\",\n" +
+                        "\"fdcbd97b-f9be-45d1-b855-43f3fd17d5a6_6d588490-d5d4-4e47-b5d0-957e6ed4830b_prom.jpeg\"" +
+                        "]")
+        private List<String> storedNames;
 
         public TalkPick toEntity(Member member) {
             return TalkPick.builder()
@@ -54,37 +65,13 @@ public class TalkPickDto {
                     .content(content)
                     .optionA(optionA)
                     .optionB(optionB)
+                    .sourceUrl(sourceUrl)
                     .views(0L)
                     .bookmarks(0L)
                     .viewStatus(NORMAL)
                     .editedAt(LocalDateTime.now())
                     .build();
         }
-    }
-
-    @Schema(description = "톡픽 수정 요청")
-    @Data
-    @AllArgsConstructor
-    public static class UpdateTalkPickRequest {
-
-        @Schema(description = "제목", example = "제목")
-        @NotBlank(message = "제목은 공백을 허용하지 않습니다.")
-        @Size(max = 50, message = "제목은 50자 이하여야 합니다.")
-        private String title;
-
-        @Schema(description = "본문 내용", example = "본문 내용")
-        @NotBlank(message = "본문 내용은 공백을 허용하지 않습니다.")
-        private String content;
-
-        @Schema(description = "선택지 A 이름", example = "선택지 A 이름")
-        @NotBlank(message = "선택지 이름은 공백을 허용하지 않습니다.")
-        @Size(max = 10, message = "선택지 이름은 10자 이하여야 합니다.")
-        private String optionA;
-
-        @Schema(description = "선택지 B 이름", example = "선택지 B 이름")
-        @NotBlank(message = "선택지 이름은 공백을 허용하지 않습니다.")
-        @Size(max = 10, message = "선택지 이름은 10자 이하여야 합니다.")
-        private String optionB;
     }
 
     @Schema(description = "톡픽 상세 조회 응답")
@@ -109,6 +96,9 @@ public class TalkPickDto {
 
         @Schema(description = "선택지 B 이름", example = "선택지 B 이름")
         private String optionB;
+
+        @Schema(description = "출처 URL", example = "https://github.com/CHZZK-Study/Balance-Talk-Backend/issues/506")
+        private String sourceUrl;
 
         @Schema(description = "선택지 A 투표수", example = "12")
         private long votesCountOfOptionA;
@@ -145,6 +135,7 @@ public class TalkPickDto {
                     .summary(new SummaryDto(entity.getSummary()))
                     .optionA(entity.getOptionA())
                     .optionB(entity.getOptionB())
+                    .sourceUrl(entity.getSourceUrl())
                     .votesCountOfOptionA(entity.votesCountOf(A))
                     .votesCountOfOptionB(entity.votesCountOf(B))
                     .views(entity.getViews())
@@ -241,7 +232,7 @@ public class TalkPickDto {
                     .voteOption(vote.getVoteOption())
                     .build();
         }
-      
+
         public static TalkPickMyPageResponse from(TalkPick talkPick, Comment comment) {
             return TalkPickMyPageResponse.builder()
                     .id(talkPick.getId())
