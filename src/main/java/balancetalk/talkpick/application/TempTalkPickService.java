@@ -32,12 +32,12 @@ public class TempTalkPickService {
 
         if (member.hasTempTalkPick()) {
             Long prevTempTalkPickId = member.updateTempTalkPick(request.toEntity(member));
-            fileRepository.updateResourceIdByStoredNames(prevTempTalkPickId, request.getStoredNames());
+            fileRepository.updateResourceIdAndTypeByStoredNames(prevTempTalkPickId, TEMP_TALK_PICK, request.getStoredNames());
             return;
         }
 
         TempTalkPick savedTempTalkPick = tempTalkPickRepository.save(request.toEntity(member));
-        fileRepository.updateResourceIdByStoredNames(savedTempTalkPick.getId(), request.getStoredNames());
+        fileRepository.updateResourceIdAndTypeByStoredNames(savedTempTalkPick.getId(), TEMP_TALK_PICK, request.getStoredNames());
     }
 
     public FindTempTalkPickResponse findTempTalkPick(ApiMember apiMember) {

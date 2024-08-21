@@ -35,7 +35,7 @@ public class TalkPickService {
     public void createTalkPick(CreateOrUpdateTalkPickRequest request, ApiMember apiMember) {
         Member member = apiMember.toMember(memberRepository);
         TalkPick savedTalkPick = talkPickRepository.save(request.toEntity(member));
-        fileRepository.updateResourceIdByStoredNames(savedTalkPick.getId(), request.getStoredNames());
+        fileRepository.updateResourceIdAndTypeByStoredNames(savedTalkPick.getId(), FileType.TALK_PICK, request.getStoredNames());
     }
 
     @Transactional
@@ -74,7 +74,7 @@ public class TalkPickService {
         Member member = apiMember.toMember(memberRepository);
         TalkPick talkPick = member.getTalkPickById(talkPickId);
         talkPick.update(request.toEntity(member));
-        fileRepository.updateResourceIdByStoredNames(talkPickId, request.getStoredNames());
+        fileRepository.updateResourceIdAndTypeByStoredNames(talkPickId, FileType.TALK_PICK, request.getStoredNames());
     }
 
     @Transactional
