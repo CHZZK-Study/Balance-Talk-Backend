@@ -3,6 +3,7 @@ package balancetalk.game.application;
 import static balancetalk.bookmark.domain.BookmarkType.GAME;
 
 import balancetalk.game.domain.Game;
+import balancetalk.game.domain.GameOption;
 import balancetalk.game.domain.GameReader;
 import balancetalk.game.domain.GameTopic;
 import balancetalk.game.domain.repository.GameRepository;
@@ -48,6 +49,10 @@ public class GameService {
                 .orElseThrow(() -> new BalanceTalkException(ErrorCode.NOT_FOUND_GAME_TOPIC));
 
         Game game = request.toEntity(gameTopic, member);
+        List<GameOption> gameOptions = game.getGameOptions();
+        for (GameOption gameOption : gameOptions) {
+            gameOption.addGame(game);
+        }
 
         gameRepository.save(game);
     }
