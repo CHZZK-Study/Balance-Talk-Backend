@@ -1,5 +1,6 @@
 package balancetalk.talkpick.application;
 
+import balancetalk.file.domain.repository.FileRepository;
 import balancetalk.global.exception.BalanceTalkException;
 import balancetalk.global.exception.ErrorCode;
 import balancetalk.member.domain.Member;
@@ -20,16 +21,20 @@ public class TempTalkPickService {
 
     private final MemberRepository memberRepository;
     private final TempTalkPickRepository tempTalkPickRepository;
+    private final FileRepository fileRepository;
 
     @Transactional
     public void createTempTalkPick(SaveTempTalkPickRequest request, ApiMember apiMember) {
         Member member = apiMember.toMember(memberRepository);
-        TempTalkPick tempTalkPick = request.toEntity(member);
 
-        tempTalkPickRepository.findByMember(member)
-                .ifPresentOrElse(
-                        prevTempTalkPick -> prevTempTalkPick.update(tempTalkPick),
-                        () -> tempTalkPickRepository.save(tempTalkPick));
+        if (member.hasTempTalkPick()) {
+            Long prevTempTalkPickId = member.updateTempTalkPick(request.toEntity(member));
+            fileRepository.updateResourceIdByStoredNames(prevTempTalkPickId, request.getStoredNames());
+            return;
+        }
+
+        TempTalkPick savedTempTalkPick = tempTalkPickRepository.save(request.toEntity(member));
+        fileRepository.updateResourceIdByStoredNames(savedTempTalkPick.getId(), request.getStoredNames());
     }
 
     public FindTempTalkPickResponse findTempTalkPick(ApiMember apiMember) {

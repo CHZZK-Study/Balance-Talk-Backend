@@ -9,6 +9,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 
+import java.util.List;
+
 public class TempTalkPickDto {
 
     @Schema(description = "톡픽 임시 저장 요청")
@@ -35,14 +37,29 @@ public class TempTalkPickDto {
         @Size(max = 10)
         private String optionB;
 
+        @Schema(description = "출처 URL", example = "https://github.com/CHZZK-Study/Balance-Talk-Backend/issues/506")
+        private String sourceUrl;
+
+        @Schema(description = "첨부한 이미지 고유 이름 목록",
+                example = "[" +
+                        "\"9b4856fe-b624-4e54-ad80-a94e083301d2_czz.png\",\n" +
+                        "\"fdcbd97b-f9be-45d1-b855-43f3fd17d5a6_6d588490-d5d4-4e47-b5d0-957e6ed4830b_prom.jpeg\"" +
+                        "]")
+        private List<String> storedNames;
+
         public TempTalkPick toEntity(Member member) {
             return TempTalkPick.builder()
                     .title(title)
                     .content(content)
                     .optionA(optionA)
                     .optionB(optionB)
+                    .sourceUrl(sourceUrl)
                     .member(member)
                     .build();
+        }
+
+        public boolean hasImages() {
+            return storedNames != null;
         }
     }
 

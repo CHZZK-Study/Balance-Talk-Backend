@@ -15,7 +15,11 @@ public class FileRepositoryImpl implements FileRepositoryCustom {
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public void updateResourceIdByStoredNames(long resourceId, List<String> storedNames) {
+    public void updateResourceIdByStoredNames(Long resourceId, List<String> storedNames) {
+        if (storedNames == null) {
+            return;
+        }
+
         queryFactory.update(file)
                 .set(file.resourceId, resourceId)
                 .where(file.storedName.in(storedNames))
