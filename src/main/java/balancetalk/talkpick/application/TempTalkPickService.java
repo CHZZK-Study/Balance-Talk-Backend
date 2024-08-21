@@ -12,6 +12,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
+import static balancetalk.file.domain.FileType.TEMP_TALK_PICK;
 import static balancetalk.talkpick.dto.TempTalkPickDto.FindTempTalkPickResponse;
 import static balancetalk.talkpick.dto.TempTalkPickDto.SaveTempTalkPickRequest;
 
@@ -42,6 +45,11 @@ public class TempTalkPickService {
         TempTalkPick tempTalkPick = tempTalkPickRepository.findByMember(member)
                 .orElseThrow(() -> new BalanceTalkException(ErrorCode.NOT_FOUND_TEMP_TALK_PICK));
 
-        return FindTempTalkPickResponse.from(tempTalkPick);
+        List<String> imgUrls =
+                fileRepository.findImgUrlsByResourceIdAndFileType(tempTalkPick.getId(), TEMP_TALK_PICK);
+        List<String> storedNames =
+                fileRepository.findStoredNamesByResourceIdAndFileType(tempTalkPick.getId(), TEMP_TALK_PICK);
+
+        return FindTempTalkPickResponse.from(tempTalkPick, imgUrls, storedNames);
     }
 }

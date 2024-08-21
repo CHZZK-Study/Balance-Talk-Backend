@@ -57,10 +57,6 @@ public class TempTalkPickDto {
                     .member(member)
                     .build();
         }
-
-        public boolean hasImages() {
-            return storedNames != null;
-        }
     }
 
     @Schema(description = "임시 저장한 톡픽 조회 응답")
@@ -81,12 +77,32 @@ public class TempTalkPickDto {
         @Schema(description = "선택지 B 이름", example = "선택지 B 이름")
         private String optionB;
 
-        public static FindTempTalkPickResponse from(TempTalkPick entity) {
+        @Schema(description = "출처 URL", example = "https://github.com/CHZZK-Study/Balance-Talk-Backend/issues/506")
+        private String sourceUrl;
+
+        @Schema(description = "톡픽 작성 시 첨부한 이미지 URL 목록",
+                example = "[" +
+                        "\"https://picko-image.s3.ap-northeast-2.amazonaws.com/temp-talk-pick/9b4856fe-b624-4e54-ad80-a94e083301d2_czz.png\",\n" +
+                        "\"https://picko-image.s3.ap-northeast-2.amazonaws.com/temp-talk-pick/fdcbd97b-f9be-45d1-b855-43f3fd17d5a6_6d588490-d5d4-4e47-b5d0-957e6ed4830b_prom.jpeg\"" +
+                        "]")
+        private List<String> imgUrls;
+
+        @Schema(description = "첨부한 이미지 고유 이름 목록",
+                example = "[" +
+                        "\"9b4856fe-b624-4e54-ad80-a94e083301d2_czz.png\",\n" +
+                        "\"fdcbd97b-f9be-45d1-b855-43f3fd17d5a6_6d588490-d5d4-4e47-b5d0-957e6ed4830b_prom.jpeg\"" +
+                        "]")
+        private List<String> storedNames;
+
+        public static FindTempTalkPickResponse from(TempTalkPick entity, List<String> imgUrls, List<String> storedNames) {
             return FindTempTalkPickResponse.builder()
                     .title(entity.getTitle())
                     .content(entity.getContent())
                     .optionA(entity.getOptionA())
                     .optionB(entity.getOptionB())
+                    .sourceUrl(entity.getSourceUrl())
+                    .imgUrls(imgUrls)
+                    .storedNames(storedNames)
                     .build();
         }
     }

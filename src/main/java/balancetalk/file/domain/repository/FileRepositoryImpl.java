@@ -36,4 +36,12 @@ public class FileRepositoryImpl implements FileRepositoryCustom {
                 .map(image -> "%s%s".formatted(image.getPath(), image.getStoredName()))
                 .toList();
     }
+
+    @Override
+    public List<String> findStoredNamesByResourceIdAndFileType(Long resourceId, FileType fileType) {
+        return queryFactory.select(file.storedName)
+                .from(file)
+                .where(file.fileType.eq(fileType), file.resourceId.eq(resourceId))
+                .fetch();
+    }
 }
