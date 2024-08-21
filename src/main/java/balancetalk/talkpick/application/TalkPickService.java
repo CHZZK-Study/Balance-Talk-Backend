@@ -1,6 +1,5 @@
 package balancetalk.talkpick.application;
 
-import balancetalk.file.domain.File;
 import balancetalk.file.domain.FileType;
 import balancetalk.file.domain.repository.FileRepository;
 import balancetalk.global.exception.BalanceTalkException;
@@ -74,7 +73,7 @@ public class TalkPickService {
     public void updateTalkPick(Long talkPickId, CreateOrUpdateTalkPickRequest request, ApiMember apiMember) {
         Member member = apiMember.toMember(memberRepository);
         TalkPick talkPick = member.getTalkPickById(talkPickId);
-        talkPick.edit(request.getTitle(), request.getContent(), request.getOptionA(), request.getOptionB());
+        talkPick.update(request.toEntity(member));
         fileRepository.updateResourceIdByStoredNames(talkPickId, request.getStoredNames());
     }
 

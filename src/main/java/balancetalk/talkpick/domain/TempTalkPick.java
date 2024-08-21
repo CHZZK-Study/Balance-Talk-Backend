@@ -39,10 +39,14 @@ public class TempTalkPick {
     @Column(name = "option_b")
     private String optionB;
 
-    public void update(TempTalkPick newTempTalkPick) {
+    private String sourceUrl;
+
+    public Long update(TempTalkPick newTempTalkPick) {
         this.title = newTempTalkPick.getTitle();
         this.content = newTempTalkPick.getContent();
         this.optionA = newTempTalkPick.getOptionA();
         this.optionB = newTempTalkPick.getOptionB();
+        this.sourceUrl = newTempTalkPick.getSourceUrl();
+        return id;
     }
 }

@@ -15,7 +15,11 @@ public class FileRepositoryImpl implements FileRepositoryCustom {
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public void updateResourceIdByStoredNames(long resourceId, List<String> storedNames) {
+    public void updateResourceIdByStoredNames(Long resourceId, List<String> storedNames) {
+        if (storedNames == null) {
+            return;
+        }
+
         queryFactory.update(file)
                 .set(file.resourceId, resourceId)
                 .where(file.storedName.in(storedNames))
@@ -31,5 +35,13 @@ public class FileRepositoryImpl implements FileRepositoryCustom {
         return images.stream()
                 .map(image -> "%s%s".formatted(image.getPath(), image.getStoredName()))
                 .toList();
+    }
+
+    @Override
+    public List<String> findStoredNamesByResourceIdAndFileType(Long resourceId, FileType fileType) {
+        return queryFactory.select(file.storedName)
+                .from(file)
+                .where(file.fileType.eq(fileType), file.resourceId.eq(resourceId))
+                .fetch();
     }
 }
