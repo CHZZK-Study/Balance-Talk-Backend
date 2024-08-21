@@ -40,4 +40,8 @@ public class GameOption {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "game_id")
     private Game game;
+
+    public void addGame(Game game) {
+        this.game = game;
+    }
 }

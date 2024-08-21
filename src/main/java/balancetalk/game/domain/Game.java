@@ -34,21 +34,19 @@ public class Game extends BaseTimeEntity {
     @JoinColumn(name = "game_topic_id")
     private GameTopic gameTopic;
 
+    @OneToMany(mappedBy = "game", cascade = CascadeType.ALL)
+    private List<GameOption> gameOptions = new ArrayList<>();
+
     @NotBlank
-    @Size(max = 255)
+    @Size(max = 50)
     private String title;
 
     @NotBlank
-    @Size(max = 50)
-    private String optionA;
+    @Size(max = 100)
+    private String description;
 
-    @NotBlank
-    @Size(max = 50)
-    private String optionB;
-
-    private String optionAImg;
-
-    private String optionBImg;
+    @Size(max = 10)
+    private String tag;
 
     private LocalDateTime editedAt;
 
