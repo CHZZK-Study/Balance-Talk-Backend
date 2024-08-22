@@ -1,6 +1,6 @@
 package balancetalk.vote.domain;
 
-import balancetalk.game.domain.Game;
+import balancetalk.game.domain.GameOption;
 import balancetalk.global.common.BaseTimeEntity;
 import balancetalk.member.domain.Member;
 import balancetalk.talkpick.domain.TalkPick;
@@ -27,18 +27,14 @@ public class Vote extends BaseTimeEntity {
     private TalkPick talkPick;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "game_id")
-    private Game game;
+    @JoinColumn(name = "game_option_id")
+    private GameOption gameOption;
 
     @Enumerated(value = EnumType.STRING)
     private VoteOption voteOption;
 
     public boolean matchesTalkPick(TalkPick talkPick) {
         return this.talkPick.equals(talkPick);
-    }
-
-    public boolean matchesGame(Game game) {
-        return this.game.equals(game);
     }
 
     public void updateVoteOption(VoteOption newVoteOption) {

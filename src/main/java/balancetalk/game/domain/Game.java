@@ -2,14 +2,12 @@ package balancetalk.game.domain;
 
 import balancetalk.global.common.BaseTimeEntity;
 import balancetalk.member.domain.Member;
-import balancetalk.vote.domain.Vote;
 import balancetalk.vote.domain.VoteOption;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.PositiveOrZero;
 import jakarta.validation.constraints.Size;
 import lombok.*;
-
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -58,17 +56,14 @@ public class Game extends BaseTimeEntity {
     @ColumnDefault("0")
     private Long bookmarks;
 
-
-    @OneToMany(mappedBy = "game")
-    private List<Vote> votes = new ArrayList<>();
-
     public void increaseViews() {
         this.views++;
     }
 
     public long getVoteCounts(VoteOption voteOption) {
-        return votes.stream()
-                .filter(vote -> vote.isVoteOptionEquals(voteOption))
+        return gameOptions.stream()
+                .flatMap(option -> option.getVotes().stream())
+                .filter(vote -> vote.getVoteOption().equals(voteOption))
                 .count();
     }
 

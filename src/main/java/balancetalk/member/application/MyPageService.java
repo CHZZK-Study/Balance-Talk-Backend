@@ -95,7 +95,7 @@ public class MyPageService {
         List<Vote> votes = voteRepository.findAllByMemberIdAndGameDesc(member.getId());
 
         List<GameMyPageResponse> responses = votes.stream()
-                .map(vote -> GameMyPageResponse.from(vote.getGame(), vote))
+                .map(vote -> GameMyPageResponse.from(vote.getGameOption().getGame(), vote))
                 .collect(Collectors.toList());
 
         return new PageImpl<>(responses, pageable, responses.size());

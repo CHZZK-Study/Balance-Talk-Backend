@@ -1,6 +1,7 @@
 package balancetalk.vote.application;
 
 import balancetalk.game.domain.Game;
+import balancetalk.game.domain.GameOption;
 import balancetalk.game.domain.GameReader;
 import balancetalk.global.exception.BalanceTalkException;
 import balancetalk.global.exception.ErrorCode;
@@ -12,6 +13,7 @@ import balancetalk.vote.domain.Vote;
 import balancetalk.vote.domain.VoteRepository;
 import balancetalk.vote.dto.VoteGameDto.VoteRequest;
 import jakarta.transaction.Transactional;
+import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -27,9 +29,10 @@ public class VoteGameService {
 
     public void createVote(Long gameId, VoteRequest request, GuestOrApiMember guestOrApiMember) {
         Game game = gameReader.readById(gameId);
+        GameOption gameOption = getGameOption(game, request);
 
         if (guestOrApiMember.isGuest()) {
-            voteRepository.save(request.toEntity(null, game));
+            voteRepository.save(request.toEntity(null, gameOption));
             return;
         }
 
@@ -37,7 +40,7 @@ public class VoteGameService {
         if (member.hasVotedGame(game)) {
             throw new BalanceTalkException(ErrorCode.ALREADY_VOTE);
         }
-        voteRepository.save(request.toEntity(member, game));
+        voteRepository.save(request.toEntity(member, gameOption));
     }
 
     public void updateVote(Long gameId, VoteRequest request, ApiMember apiMember) {
@@ -63,5 +66,12 @@ public class VoteGameService {
             throw new BalanceTalkException(ErrorCode.NOT_FOUND_VOTE);
         }
         voteRepository.delete(voteOnGame.get());
+    }
+
+    private GameOption getGameOption(Game game, VoteRequest request) {
+        return game.getGameOptions().stream()
+                .filter(option -> option.getOptionType().equals(request.getVoteOption()))
+                .findFirst()
+                .orElseThrow(() -> new BalanceTalkException(ErrorCode.NOT_FOUND_VOTE_OPTION));
     }
 }

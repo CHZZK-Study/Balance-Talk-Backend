@@ -67,7 +67,8 @@ public class GameService {
 
         Member member = guestOrApiMember.toMember(memberRepository);
         boolean hasBookmarked = member.hasBookmarked(gameId, GAME);
-        Optional<Vote> myVote = member.getVoteOnGame(game);
+
+        Optional<Vote> myVote = member.getVoteOnGameOption(member, game);
 
         if (myVote.isEmpty()) {
             return GameDetailResponse.from(game, hasBookmarked, null); // 투표한 게시글이 아닌경우 투표한 선택지는 null

@@ -9,11 +9,13 @@ import balancetalk.vote.domain.Vote;
 import balancetalk.vote.domain.VoteOption;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.v3.oas.annotations.media.Schema;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
 import java.time.LocalDateTime;
 
 public class GameDto {
@@ -27,29 +29,24 @@ public class GameDto {
         @Schema(description = "제목", example = "제목")
         private String title;
 
-        @Schema(description = "선택지 A 이름", example = "선택지 A 이름")
-        private String optionA;
+        @Schema(description = "게임 추가 설명", example = "추가 설명")
+        private String description;
 
-        @Schema(description = "선택지 A 이미지", example = "https://pikko-image.s3.ap-northeast-2.amazonaws.com/balance-game/067cc56e-21b7-468f-a2c1-4839036ee7cd_unnamed.png")
-        private String optionAImg;
+        @Schema(description = "밸런스 게임 서브 태그", example = "커플지옥")
+        private String tag;
 
-        @Schema(description = "선택지 B 이름", example = "선택지 B 이름")
-        private String optionB;
-
-        @Schema(description = "선택지 B 이미지", example = "https://pikko-image.s3.ap-northeast-2.amazonaws.com/balance-game/1157461e-a685-42fd-837e-7ed490894ca6_unnamed.png")
-        private String optionBImg;
-
-        @Schema(description = "밸런스 게임 주제", example = "커플")
+        @Schema(description = "밸런스 게임 메인 태그", example = "커플")
         private String gameTopic;
 
-        public Game toEntity(GameTopic topic, Member member) {
+        private List<GameOptionDto> gameOptions;
+
+        public Game toEntity(GameTopic gameTopic, Member member) {
             return Game.builder()
                     .title(title)
-                    .optionA(optionA)
-                    .optionAImg(optionAImg)
-                    .optionB(optionB)
-                    .optionBImg(optionBImg)
-                    .gameTopic(topic)
+                    .description(description)
+                    .tag(Optional.ofNullable(tag).orElse(""))
+                    .gameTopic(gameTopic)
+                    .gameOptions(gameOptions.stream().map(GameOptionDto::toEntity).collect(Collectors.toUnmodifiableList()))
                     .member(member)
                     .editedAt(LocalDateTime.now())
                     .build();
@@ -68,20 +65,16 @@ public class GameDto {
         @Schema(description = "밸런스 게임 제목", example = "제목")
         private String title;
 
-        @Schema(description = "선택지 A 이름", example = "선택지 A 이름")
-        private String optionA;
+        @Schema(description = "게임 추가 설명", example = "추가 설명")
+        private String description;
 
-        @Schema(description = "선택지 A 이미지", example = "https://pikko-image.s3.ap-northeast-2.amazonaws.com/balance-game/067cc56e-21b7-468f-a2c1-4839036ee7cd_unnamed.png")
-        private String optionAImg;
+        @Schema(description = "밸런스 게임 서브 태그", example = "커플지옥")
+        private String tag;
 
-        @Schema(description = "선택지 B 이름", example = "선택지 B 이름")
-        private String optionB;
-
-        @Schema(description = "선택지 B 이미지", example = "https://pikko-image.s3.ap-northeast-2.amazonaws.com/balance-game/1157461e-a685-42fd-837e-7ed490894ca6_unnamed.png")
-        private String optionBImg;
+        private List<GameOptionDto> gameOptions;
 
         @Schema(description = "카테고리", example = "월드컵")
-        private String topicName;
+        private String gameTopic;
 
         @Schema(description = "북마크 여부", example = "false")
         private Boolean myBookmark;
@@ -90,11 +83,10 @@ public class GameDto {
             return GameResponse.builder()
                     .id(game.getId())
                     .title(game.getTitle())
-                    .optionA(game.getOptionA())
-                    .optionAImg(game.getOptionAImg())
-                    .optionB(game.getOptionB())
-                    .optionBImg(game.getOptionBImg())
-                    .topicName(game.getGameTopic().getName())
+                    .description(game.getDescription())
+                    .tag(game.getTag())
+                    .gameOptions(game.getGameOptions().stream().map(GameOptionDto::fromEntity).collect(Collectors.toUnmodifiableList()))
+                    .gameTopic(game.getGameTopic().getName())
                     .myBookmark(isBookmarked)
                     .build();
         }
@@ -112,17 +104,13 @@ public class GameDto {
         @Schema(description = "밸런스 게임 제목", example = "제목")
         private String title;
 
-        @Schema(description = "선택지 A 이름", example = "선택지 A 이름")
-        private String optionA;
+        @Schema(description = "게임 추가 설명", example = "추가 설명")
+        private String description;
 
-        @Schema(description = "선택지 A 이미지", example = "https://pikko-image.s3.ap-northeast-2.amazonaws.com/balance-game/067cc56e-21b7-468f-a2c1-4839036ee7cd_unnamed.png")
-        private String optionAImg;
+        @Schema(description = "밸런스 게임 서브 태그", example = "커플지옥")
+        private String tag;
 
-        @Schema(description = "선택지 B 이름", example = "선택지 B 이름")
-        private String optionB;
-
-        @Schema(description = "선택지 B 이미지", example = "https://pikko-image.s3.ap-northeast-2.amazonaws.com/balance-game/1157461e-a685-42fd-837e-7ed490894ca6_unnamed.png")
-        private String optionBImg;
+        private List<GameOptionDto> gameOptions;
 
         @Schema(description = "조회수", example = "3")
         private long views;
@@ -139,17 +127,17 @@ public class GameDto {
         @Schema(description = "투표한 선택지", example = "A")
         private VoteOption votedOption;
 
-        @Schema(description = "밸런스 게임 주제", example = "커플")
+        @Schema(description = "카테고리", example = "월드컵")
         private String gameTopic;
 
         public static GameDetailResponse from(Game game, boolean myBookmark, VoteOption votedOption) {
             return GameDetailResponse.builder()
                     .id(game.getId())
                     .title(game.getTitle())
-                    .optionA(game.getOptionA())
-                    .optionAImg(game.getOptionAImg())
-                    .optionB(game.getOptionB())
-                    .optionBImg(game.getOptionBImg())
+                    .description(game.getDescription())
+                    .tag(Optional.ofNullable(game.getTag()).orElse(""))
+                    .gameOptions(game.getGameOptions().stream().map(GameOptionDto::fromEntity)
+                            .collect(Collectors.toUnmodifiableList()))
                     .views(game.getViews())
                     .votesCountOfOptionA(game.getVoteCounts(A))
                     .votesCountOfOptionB(game.getVoteCounts(B))
@@ -203,8 +191,8 @@ public class GameDto {
             return GameMyPageResponse.builder()
                     .id(game.getId())
                     .title(game.getTitle())
-                    .optionAImg(game.getOptionAImg())
-                    .optionBImg(game.getOptionBImg())
+//                    .optionAImg(game.getOptionAImg())
+//                    .optionBImg(game.getOptionBImg())
                     .build();
         }
 
@@ -212,8 +200,8 @@ public class GameDto {
             return GameMyPageResponse.builder()
                     .id(game.getId())
                     .title(game.getTitle())
-                    .optionAImg(game.getOptionAImg())
-                    .optionBImg(game.getOptionBImg())
+//                    .optionAImg(game.getOptionAImg())
+//                    .optionBImg(game.getOptionBImg())
                     .voteOption(vote.getVoteOption())
                     .build();
         }
