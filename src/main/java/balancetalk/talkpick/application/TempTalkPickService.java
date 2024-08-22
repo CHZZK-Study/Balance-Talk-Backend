@@ -32,24 +32,35 @@ public class TempTalkPickService {
 
         if (member.hasTempTalkPick()) {
             Long prevTempTalkPickId = member.updateTempTalkPick(request.toEntity(member));
-            fileRepository.updateResourceIdByStoredNames(prevTempTalkPickId, request.getStoredNames());
+            updateFileResourceIdByStoredNames(prevTempTalkPickId, request.getStoredNames());
             return;
         }
 
         TempTalkPick savedTempTalkPick = tempTalkPickRepository.save(request.toEntity(member));
-        fileRepository.updateResourceIdByStoredNames(savedTempTalkPick.getId(), request.getStoredNames());
+        updateFileResourceIdByStoredNames(savedTempTalkPick.getId(), request.getStoredNames());
+    }
+
+    private void updateFileResourceIdByStoredNames(Long resourceId, List<String> storedNames) {
+        fileRepository.updateResourceIdAndTypeByStoredNames(resourceId, TEMP_TALK_PICK, storedNames);
     }
 
     public FindTempTalkPickResponse findTempTalkPick(ApiMember apiMember) {
         Member member = apiMember.toMember(memberRepository);
-        TempTalkPick tempTalkPick = tempTalkPickRepository.findByMember(member)
+        TempTalkPick tempTalkPick = getTempTalkPick(member);
+
+        return FindTempTalkPickResponse.from(tempTalkPick, getImgUrls(tempTalkPick), getStoredNames(tempTalkPick));
+    }
+
+    private TempTalkPick getTempTalkPick(Member member) {
+        return tempTalkPickRepository.findByMember(member)
                 .orElseThrow(() -> new BalanceTalkException(ErrorCode.NOT_FOUND_TEMP_TALK_PICK));
+    }
 
-        List<String> imgUrls =
-                fileRepository.findImgUrlsByResourceIdAndFileType(tempTalkPick.getId(), TEMP_TALK_PICK);
-        List<String> storedNames =
-                fileRepository.findStoredNamesByResourceIdAndFileType(tempTalkPick.getId(), TEMP_TALK_PICK);
+    private List<String> getImgUrls(TempTalkPick tempTalkPick) {
+        return fileRepository.findImgUrlsByResourceIdAndFileType(tempTalkPick.getId(), TEMP_TALK_PICK);
+    }
 
-        return FindTempTalkPickResponse.from(tempTalkPick, imgUrls, storedNames);
+    private List<String> getStoredNames(TempTalkPick tempTalkPick) {
+        return fileRepository.findStoredNamesByResourceIdAndFileType(tempTalkPick.getId(), TEMP_TALK_PICK);
     }
 }
