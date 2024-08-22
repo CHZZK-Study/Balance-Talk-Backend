@@ -11,7 +11,7 @@ Configuration:
     RollingFile:
       name: RollingFile_Appender
       fileName: ${log-dir}/logfile.log
-      filePattern: "${log-dir}logfile-%d{yyyy-MM-dd}.%i.txt"
+      filePattern: "logfile-%d{yyyy-MM-dd}.%i.txt"
       PatternLayout:
         pattern: "%style{%d{yyyy-MM-dd HH:mm:ss.SSS}}{cyan} %highlight{[%-5p]}{FATAL=bg_red,
             ERROR=red, INFO=green, DEBUG=blue, TRACE=bg_yellow} [%C] %style{[%t]}{yellow}- %m%n"
