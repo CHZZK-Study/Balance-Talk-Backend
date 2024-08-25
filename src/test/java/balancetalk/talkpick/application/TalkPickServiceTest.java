@@ -1,5 +1,6 @@
 package balancetalk.talkpick.application;
 
+import balancetalk.file.domain.repository.FileRepository;
 import balancetalk.member.domain.Member;
 import balancetalk.member.dto.GuestOrApiMember;
 import balancetalk.talkpick.domain.Summary;
@@ -15,6 +16,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 import static balancetalk.vote.domain.VoteOption.A;
@@ -30,6 +32,9 @@ class TalkPickServiceTest {
 
     @Mock
     TalkPickRepository talkPickRepository;
+
+    @Mock
+    FileRepository fileRepository;
 
     TalkPick talkPick;
     GuestOrApiMember guestOrApiMember;
@@ -75,6 +80,7 @@ class TalkPickServiceTest {
         // given
         when(talkPickRepository.findById(1L)).thenReturn(Optional.ofNullable(talkPick));
         when(guestOrApiMember.isGuest()).thenReturn(true);
+        when(fileRepository.findImgUrlsByResourceIdAndFileType(any(), any())).thenReturn(List.of());
 
         // when
         TalkPickDetailResponse result = talkPickService.findById(1L, guestOrApiMember);

@@ -89,9 +89,12 @@ public class MemberDto {
         @Schema(description = "가입일", example = "2024-02-16 13:37:17.391706")
         private LocalDateTime createdAt;
 
-//    @Schema(description = "작성한 게시글 수", example = "11")
-//    private int postsCount;
-//
+        @Schema(description = "작성한 게시글 수", example = "23")
+        private int postsCount;
+
+        @Schema(description = "저장한 게시글 수", example = "21")
+        private int bookmarkedPostsCount;
+
 //    @Schema(description = "작성한 게시글의 받은 추천 수", example = "119")
 //    private int totalPostLike;
 //
@@ -106,6 +109,8 @@ public class MemberDto {
             return MemberResponse.builder()
                     .id(member.getId())
                     .nickname(member.getNickname())
+                    .postsCount(member.getPostsCount())
+                    .bookmarkedPostsCount(member.getBookmarkedPostsCount())
 //                .createdAt(member.getCreatedAt())
 //                .postsCount(member.getPostCount())
 //                .totalPostLike(member.getPostLikes())

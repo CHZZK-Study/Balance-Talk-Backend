@@ -1,8 +1,8 @@
 package balancetalk.talkpick.application;
 
+import balancetalk.file.domain.FileType;
 import balancetalk.file.domain.repository.FileRepository;
 import balancetalk.global.exception.BalanceTalkException;
-import balancetalk.global.exception.ErrorCode;
 import balancetalk.member.domain.Member;
 import balancetalk.member.domain.MemberRepository;
 import balancetalk.member.dto.ApiMember;
@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static balancetalk.bookmark.domain.BookmarkType.TALK_PICK;
+import static balancetalk.global.exception.ErrorCode.NOT_FOUND_TALK_PICK;
 import static balancetalk.talkpick.dto.TalkPickDto.*;
 
 @Service
@@ -34,17 +35,19 @@ public class TalkPickService {
     public void createTalkPick(CreateOrUpdateTalkPickRequest request, ApiMember apiMember) {
         Member member = apiMember.toMember(memberRepository);
         TalkPick savedTalkPick = talkPickRepository.save(request.toEntity(member));
-        fileRepository.updateResourceIdByStoredNames(savedTalkPick.getId(), request.getStoredNames());
+        fileRepository.updateResourceIdAndTypeByStoredNames(savedTalkPick.getId(), FileType.TALK_PICK, request.getStoredNames());
     }
 
     @Transactional
     public TalkPickDetailResponse findById(Long talkPickId, GuestOrApiMember guestOrApiMember) {
         TalkPick talkPick = talkPickRepository.findById(talkPickId)
-                .orElseThrow(() -> new BalanceTalkException(ErrorCode.NOT_FOUND_TALK_PICK));
+                .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_TALK_PICK));
         talkPick.increaseViews();
 
+        List<String> imgUrls = fileRepository.findImgUrlsByResourceIdAndFileType(talkPickId, FileType.TALK_PICK);
+
         if (guestOrApiMember.isGuest()) {
-            return TalkPickDetailResponse.from(talkPick, false, null);
+            return TalkPickDetailResponse.from(talkPick, imgUrls, false, null);
         }
 
         Member member = guestOrApiMember.toMember(memberRepository);
@@ -52,10 +55,10 @@ public class TalkPickService {
         Optional<Vote> myVote = member.getVoteOnTalkPick(talkPick);
 
         if (myVote.isEmpty()) {
-            return TalkPickDetailResponse.from(talkPick, hasBookmarked, null);
+            return TalkPickDetailResponse.from(talkPick, imgUrls, hasBookmarked, null);
         }
 
-        return TalkPickDetailResponse.from(talkPick, hasBookmarked, myVote.get().getVoteOption());
+        return TalkPickDetailResponse.from(talkPick, imgUrls, hasBookmarked, myVote.get().getVoteOption());
     }
 
     public Page<TalkPickResponse> findPaged(Pageable pageable) {
@@ -70,8 +73,8 @@ public class TalkPickService {
     public void updateTalkPick(Long talkPickId, CreateOrUpdateTalkPickRequest request, ApiMember apiMember) {
         Member member = apiMember.toMember(memberRepository);
         TalkPick talkPick = member.getTalkPickById(talkPickId);
-        talkPick.edit(request.getTitle(), request.getContent(), request.getOptionA(), request.getOptionB());
-        fileRepository.updateResourceIdByStoredNames(talkPickId, request.getStoredNames());
+        talkPick.update(request.toEntity(member));
+        fileRepository.updateResourceIdAndTypeByStoredNames(talkPickId, FileType.TALK_PICK, request.getStoredNames());
     }
 
     @Transactional
