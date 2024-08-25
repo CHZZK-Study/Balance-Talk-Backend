@@ -95,11 +95,12 @@ public class TalkPick extends BaseTimeEntity {
         this.bookmarks--;
     }
 
-    public void edit(String title, String content, String optionA, String optionB) {
-        this.title = title;
-        this.content = content;
-        this.optionA = optionA;
-        this.optionB = optionB;
+    public void update(TalkPick newTalkPick) {
+        this.title = newTalkPick.getTitle();
+        this.content = newTalkPick.getContent();
+        this.optionA = newTalkPick.getOptionA();
+        this.optionB = newTalkPick.getOptionB();
+        this.sourceUrl = newTalkPick.getSourceUrl();
         this.editedAt = LocalDateTime.now();
     }
 

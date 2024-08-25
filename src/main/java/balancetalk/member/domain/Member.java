@@ -8,6 +8,7 @@ import balancetalk.global.exception.BalanceTalkException;
 import balancetalk.global.exception.ErrorCode;
 import balancetalk.like.domain.Like;
 import balancetalk.talkpick.domain.TalkPick;
+import balancetalk.talkpick.domain.TempTalkPick;
 import balancetalk.vote.domain.Vote;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
@@ -57,6 +58,9 @@ public class Member extends BaseTimeEntity {
 
     @OneToMany(mappedBy = "member")
     private List<TalkPick> talkPicks = new ArrayList<>();
+
+    @OneToOne(mappedBy = "member")
+    private TempTalkPick tempTalkPick;
 
     @OneToMany(mappedBy = "member")
     private List<Game> games = new ArrayList<>();
@@ -130,5 +134,21 @@ public class Member extends BaseTimeEntity {
                 .filter(talkPick -> talkPick.matchesId(talkPickId))
                 .findFirst()
                 .orElseThrow(() -> new BalanceTalkException(ErrorCode.NOT_FOUND_TALK_PICK_THAT_MEMBER));
+    }
+
+    public boolean hasTempTalkPick() {
+        return tempTalkPick != null;
+    }
+
+    public Long updateTempTalkPick(TempTalkPick newTempTalkPick) {
+        return tempTalkPick.update(newTempTalkPick);
+    }
+
+    public int getPostsCount() {
+        return talkPicks.size() + games.size();
+    }
+
+    public int getBookmarkedPostsCount() {
+        return bookmarks.size();
     }
 }

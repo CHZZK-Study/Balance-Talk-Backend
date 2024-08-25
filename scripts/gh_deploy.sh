@@ -1,8 +1,8 @@
 #!/bin/bash
 PROJECT_PATH="/home/ubuntu/Balance-Talk-Backend"
-DEPLOY_LOG_PATH="$PROJECT_PATH/logs/deploy.log"
-DEPLOY_ERR_LOG_PATH="$PROJECT_PATH/logs/deploy_err.log"
-APPLICATION_LOG_PATH="$PROJECT_PATH/logs/application.log"
+DEPLOY_LOG_PATH="$PROJECT_PATH/deploy-logs/deploy.log"
+DEPLOY_ERR_LOG_PATH="$PROJECT_PATH/deploy-logs/deploy_err.log"
+APPLICATION_LOG_PATH="$PROJECT_PATH/deploy-logs/application.log"
 BUILD_PATH="$PROJECT_PATH/build/libs"
 JAR_PATH="$BUILD_PATH/*.jar"
 BUILD_JAR=$(ls $JAR_PATH)
