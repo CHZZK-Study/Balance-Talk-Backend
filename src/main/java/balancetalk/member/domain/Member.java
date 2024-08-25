@@ -136,4 +136,12 @@ public class Member extends BaseTimeEntity {
     public Long updateTempTalkPick(TempTalkPick newTempTalkPick) {
         return tempTalkPick.update(newTempTalkPick);
     }
+
+    public int getPostsCount() {
+        return talkPicks.size() + games.size();
+    }
+
+    public int getBookmarkedPostsCount() {
+        return bookmarks.size();
+    }
 }
