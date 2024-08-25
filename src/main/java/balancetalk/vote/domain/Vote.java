@@ -41,6 +41,10 @@ public class Vote extends BaseTimeEntity {
         this.voteOption = newVoteOption;
     }
 
+    public void updateGameOption(GameOption gameOption) {
+        this.gameOption = gameOption;
+    }
+
     public boolean isVoteOptionEquals(VoteOption voteOption) {
         return this.voteOption.equals(voteOption);
     }

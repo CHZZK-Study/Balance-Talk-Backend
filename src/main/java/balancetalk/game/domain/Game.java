@@ -1,6 +1,8 @@
 package balancetalk.game.domain;
 
 import balancetalk.global.common.BaseTimeEntity;
+import balancetalk.global.exception.BalanceTalkException;
+import balancetalk.global.exception.ErrorCode;
 import balancetalk.member.domain.Member;
 import balancetalk.vote.domain.VoteOption;
 import jakarta.persistence.*;
@@ -60,11 +62,12 @@ public class Game extends BaseTimeEntity {
         this.views++;
     }
 
-    public long getVoteCounts(VoteOption voteOption) {
-        return gameOptions.stream()
-                .flatMap(option -> option.getVotes().stream())
-                .filter(vote -> vote.getVoteOption().equals(voteOption))
-                .count();
+    public long getVoteCount(VoteOption optionType) {
+        GameOption option = gameOptions.stream()
+                .filter(gameOption -> gameOption.isTypeEqual(optionType))
+                .findFirst()
+                .orElseThrow(() -> new BalanceTalkException(ErrorCode.NOT_FOUND_OPTION_VOTE));
+        return option.votesCount();
     }
 
     public void edit() { // 밸런스 게임 수정 시 호출

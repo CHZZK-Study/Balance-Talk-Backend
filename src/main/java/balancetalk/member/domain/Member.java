@@ -93,7 +93,7 @@ public class Member extends BaseTimeEntity {
     }
 
     public Optional<Vote> getVoteOnGame(Game game) {
-        return this.votes.stream()
+        return votes.stream()
                 .filter(vote -> vote.getGameOption().getGame().getId().equals(game.getId()))
                 .findAny();
     }

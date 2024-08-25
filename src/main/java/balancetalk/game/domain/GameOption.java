@@ -57,4 +57,12 @@ public class GameOption {
     public void addGame(Game game) {
         this.game = game;
     }
+
+    public boolean isTypeEqual(VoteOption voteOption) {
+        return optionType.equals(voteOption);
+    }
+
+    public long votesCount() {
+        return votes.size();
+    }
 }

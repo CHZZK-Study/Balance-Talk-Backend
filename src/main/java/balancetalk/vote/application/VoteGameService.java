@@ -13,7 +13,6 @@ import balancetalk.vote.domain.Vote;
 import balancetalk.vote.domain.VoteRepository;
 import balancetalk.vote.dto.VoteGameDto.VoteRequest;
 import jakarta.transaction.Transactional;
-import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -53,7 +52,11 @@ public class VoteGameService {
             throw new BalanceTalkException(ErrorCode.NOT_FOUND_VOTE);
         }
 
-        voteOnGame.get().updateVoteOption(request.getVoteOption());
+        Vote vote = voteOnGame.get();
+        GameOption gameOption = getGameOption(game, request);
+
+        vote.updateVoteOption(request.getVoteOption());
+        vote.updateGameOption(gameOption);
     }
 
     public void deleteVote(Long gameId, ApiMember apiMember) {
