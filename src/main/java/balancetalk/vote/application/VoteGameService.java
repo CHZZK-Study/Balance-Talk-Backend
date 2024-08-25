@@ -59,6 +59,13 @@ public class VoteGameService {
         vote.updateGameOption(gameOption);
     }
 
+    private GameOption getGameOption(Game game, VoteRequest request) {
+        return game.getGameOptions().stream()
+                .filter(option -> option.getOptionType().equals(request.getVoteOption()))
+                .findFirst()
+                .orElseThrow(() -> new BalanceTalkException(ErrorCode.NOT_FOUND_VOTE_OPTION));
+    }
+
     public void deleteVote(Long gameId, ApiMember apiMember) {
         Game game = gameReader.readById(gameId);
 
@@ -69,12 +76,5 @@ public class VoteGameService {
             throw new BalanceTalkException(ErrorCode.NOT_FOUND_VOTE);
         }
         voteRepository.delete(voteOnGame.get());
-    }
-
-    private GameOption getGameOption(Game game, VoteRequest request) {
-        return game.getGameOptions().stream()
-                .filter(option -> option.getOptionType().equals(request.getVoteOption()))
-                .findFirst()
-                .orElseThrow(() -> new BalanceTalkException(ErrorCode.NOT_FOUND_VOTE_OPTION));
     }
 }

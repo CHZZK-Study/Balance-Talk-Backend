@@ -94,20 +94,21 @@ public class Member extends BaseTimeEntity {
 
     public Optional<Vote> getVoteOnGame(Game game) {
         return votes.stream()
-                .filter(vote -> vote.getGameOption().getGame().getId().equals(game.getId()))
+                .filter(vote -> vote.getGameOption().getGame().equals(game))
                 .findAny();
     }
 
     public Optional<Vote> getVoteOnGameOption(Member member, Game game) {
         return member.getVotes().stream()
                 .filter(vote -> game.getGameOptions().stream()
-                        .anyMatch(option -> option.getId().equals(vote.getGameOption().getId())))
+                        .anyMatch(gameOption -> vote.matchesGameOption(gameOption)))
                 .findAny();
     }
 
     public boolean hasVotedGame(Game game) {
         return votes.stream()
-                .anyMatch(vote -> vote.getGameOption().getGame().getId().equals(game.getId()));
+                .anyMatch(vote -> game.getGameOptions().stream()
+                        .anyMatch(gameOption -> vote.matchesGameOption(gameOption)));
     }
 
     public boolean isMyTalkPick(TalkPick talkPick) {
