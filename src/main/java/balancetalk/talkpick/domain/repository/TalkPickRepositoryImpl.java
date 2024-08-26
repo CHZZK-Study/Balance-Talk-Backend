@@ -33,9 +33,8 @@ public class TalkPickRepositoryImpl implements TalkPickRepositoryCustom {
                 .select(new QTodayTalkPickDto_TodayTalkPickResponse(
                         talkPick.id, talkPick.title, talkPick.optionA, talkPick.optionB
                 ))
-                .from(vote)
-                .join(vote.talkPick, talkPick)
-                .where(talkPick.id.eq(vote.talkPick.id))
+                .from(talkPick)
+                .leftJoin(talkPick.votes, vote)
                 .groupBy(talkPick.id)
                 .orderBy(talkPick.views.desc(), vote.count().desc(), talkPick.createdAt.desc())
                 .limit(1)
