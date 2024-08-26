@@ -3,6 +3,7 @@ package balancetalk.game.application;
 import static balancetalk.bookmark.domain.BookmarkType.GAME;
 
 import balancetalk.game.domain.Game;
+import balancetalk.game.domain.GameOption;
 import balancetalk.game.domain.GameReader;
 import balancetalk.game.domain.GameTopic;
 import balancetalk.game.domain.repository.GameRepository;
@@ -48,6 +49,10 @@ public class GameService {
                 .orElseThrow(() -> new BalanceTalkException(ErrorCode.NOT_FOUND_GAME_TOPIC));
 
         Game game = request.toEntity(gameTopic, member);
+        List<GameOption> gameOptions = game.getGameOptions();
+        for (GameOption gameOption : gameOptions) {
+            gameOption.addGame(game);
+        }
 
         gameRepository.save(game);
     }
@@ -62,7 +67,8 @@ public class GameService {
 
         Member member = guestOrApiMember.toMember(memberRepository);
         boolean hasBookmarked = member.hasBookmarked(gameId, GAME);
-        Optional<Vote> myVote = member.getVoteOnGame(game);
+
+        Optional<Vote> myVote = member.getVoteOnGameOption(member, game);
 
         if (myVote.isEmpty()) {
             return GameDetailResponse.from(game, hasBookmarked, null); // 투표한 게시글이 아닌경우 투표한 선택지는 null

@@ -15,7 +15,6 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.*;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -98,14 +97,22 @@ public class Member extends BaseTimeEntity {
     }
 
     public Optional<Vote> getVoteOnGame(Game game) {
-        return this.votes.stream()
-                .filter(vote -> vote.matchesGame(game))
+        return votes.stream()
+                .filter(vote -> vote.getGameOption().getGame().equals(game))
+                .findAny();
+    }
+
+    public Optional<Vote> getVoteOnGameOption(Member member, Game game) {
+        return member.getVotes().stream()
+                .filter(vote -> game.getGameOptions().stream()
+                        .anyMatch(gameOption -> vote.matchesGameOption(gameOption)))
                 .findAny();
     }
 
     public boolean hasVotedGame(Game game) {
         return votes.stream()
-                .anyMatch(vote -> vote.matchesGame(game));
+                .anyMatch(vote -> game.getGameOptions().stream()
+                        .anyMatch(gameOption -> vote.matchesGameOption(gameOption)));
     }
 
     public boolean isMyTalkPick(TalkPick talkPick) {

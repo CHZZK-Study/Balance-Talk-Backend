@@ -1,6 +1,6 @@
 package balancetalk.vote.dto;
 
-import balancetalk.game.domain.Game;
+import balancetalk.game.domain.GameOption;
 import balancetalk.member.domain.Member;
 import balancetalk.vote.domain.Vote;
 import balancetalk.vote.domain.VoteOption;
@@ -21,10 +21,10 @@ public class VoteGameDto {
         @Schema(description = "투표할 선택지", example = "A")
         private VoteOption voteOption;
 
-        public Vote toEntity(Member member, Game game) {
+        public Vote toEntity(Member member, GameOption gameOption) {
             return Vote.builder()
                     .member(member)
-                    .game(game)
+                    .gameOption(gameOption)
                     .voteOption(voteOption)
                     .build();
         }

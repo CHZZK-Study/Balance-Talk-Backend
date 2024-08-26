@@ -1,15 +1,15 @@
 package balancetalk.game.domain;
 
 import balancetalk.global.common.BaseTimeEntity;
+import balancetalk.global.exception.BalanceTalkException;
+import balancetalk.global.exception.ErrorCode;
 import balancetalk.member.domain.Member;
-import balancetalk.vote.domain.Vote;
 import balancetalk.vote.domain.VoteOption;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.PositiveOrZero;
 import jakarta.validation.constraints.Size;
 import lombok.*;
-
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -34,21 +34,19 @@ public class Game extends BaseTimeEntity {
     @JoinColumn(name = "game_topic_id")
     private GameTopic gameTopic;
 
+    @OneToMany(mappedBy = "game", cascade = CascadeType.ALL)
+    private List<GameOption> gameOptions = new ArrayList<>();
+
     @NotBlank
-    @Size(max = 255)
+    @Size(max = 50)
     private String title;
 
     @NotBlank
-    @Size(max = 50)
-    private String optionA;
+    @Size(max = 100)
+    private String description;
 
-    @NotBlank
-    @Size(max = 50)
-    private String optionB;
-
-    private String optionAImg;
-
-    private String optionBImg;
+    @Size(max = 10)
+    private String tag;
 
     private LocalDateTime editedAt;
 
@@ -60,18 +58,16 @@ public class Game extends BaseTimeEntity {
     @ColumnDefault("0")
     private Long bookmarks;
 
-
-    @OneToMany(mappedBy = "game")
-    private List<Vote> votes = new ArrayList<>();
-
     public void increaseViews() {
         this.views++;
     }
 
-    public long getVoteCounts(VoteOption voteOption) {
-        return votes.stream()
-                .filter(vote -> vote.isVoteOptionEquals(voteOption))
-                .count();
+    public long getVoteCount(VoteOption optionType) {
+        GameOption option = gameOptions.stream()
+                .filter(gameOption -> gameOption.isTypeEqual(optionType))
+                .findFirst()
+                .orElseThrow(() -> new BalanceTalkException(ErrorCode.NOT_FOUND_OPTION_VOTE));
+        return option.votesCount();
     }
 
     public void edit() { // 밸런스 게임 수정 시 호출
