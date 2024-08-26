@@ -220,6 +220,9 @@ public class TalkPickDto {
         @Schema(description = "댓글 개수", example = "2")
         private long commentCount;
 
+        @Schema(description = "최종 수정일(마이페이지 등록 날짜)")
+        private LocalDateTime editedAt;
+
         /*
         @Schema(description = "선택지 A 이미지", example = "https://pikko-image.s3.ap-northeast-2.amazonaws.com/balance-game/067cc56e-21b7-468f-a2c1-4839036ee7cd_unnamed.png")
         private String optionAImg;
@@ -233,6 +236,7 @@ public class TalkPickDto {
             return TalkPickMyPageResponse.builder()
                     .id(talkPick.getId())
                     .title(talkPick.getTitle())
+                    .editedAt(talkPick.getEditedAt())
                     .build();
         }
 
@@ -241,6 +245,7 @@ public class TalkPickDto {
                     .id(talkPick.getId())
                     .title(talkPick.getTitle())
                     .voteOption(vote.getVoteOption())
+                    .editedAt(talkPick.getEditedAt())
                     .build();
         }
 
@@ -249,6 +254,7 @@ public class TalkPickDto {
                     .id(talkPick.getId())
                     .title(talkPick.getTitle())
                     .commentContent(comment.getContent())
+                    .editedAt(talkPick.getEditedAt())
                     .build();
         }
 
@@ -258,6 +264,7 @@ public class TalkPickDto {
                     .title(talkPick.getTitle())
                     .bookmarks(talkPick.getBookmarks())
                     .commentCount(!talkPick.getComments().isEmpty() ? talkPick.getComments().size() : 0)
+                    .editedAt(talkPick.getEditedAt())
                     .build();
         }
     }
