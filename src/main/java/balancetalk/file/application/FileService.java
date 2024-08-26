@@ -1,6 +1,9 @@
 package balancetalk.file.application;
 
-import balancetalk.file.domain.*;
+import balancetalk.file.domain.File;
+import balancetalk.file.domain.FileProcessor;
+import balancetalk.file.domain.FileType;
+import balancetalk.file.domain.MultipartFiles;
 import balancetalk.file.domain.repository.FileRepository;
 import balancetalk.file.domain.s3.S3ImageRemover;
 import balancetalk.file.domain.s3.S3ImageUploader;
@@ -18,6 +21,7 @@ import software.amazon.awssdk.services.s3.S3Client;
 import java.util.ArrayList;
 import java.util.List;
 
+import static balancetalk.global.exception.ErrorCode.NOT_FOUND_FILE;
 import static balancetalk.global.exception.ErrorCode.NOT_UPLOADED_IMAGE_FOR_DB_ERROR;
 
 @Slf4j
@@ -39,7 +43,7 @@ public class FileService {
     private String bucket;
 
     @Transactional
-    public UploadFileResponse uploadImages(MultipartFiles multipartFiles) {
+    public UploadFileResponse uploadImages(MultipartFiles multipartFiles) { // TODO 데이터 일관성 관련 개선 필요
         FileType fileType = multipartFiles.fileType();
 
         List<String> s3Keys = new ArrayList<>();
@@ -73,5 +77,13 @@ public class FileService {
                 .toList();
 
         return new UploadFileResponse(imgUrls, storedNames);
+    }
+
+    @Transactional
+    public void deleteImageByStoredName(String storedName) { // TODO 데이터 일관성 관련 개선 필요
+        File file = fileRepository.findByStoredName(storedName)
+                .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_FILE));
+        fileRepository.delete(file);
+        s3ImageRemover.removeImageFromBucket(s3Client, bucket, file.getS3Key());
     }
 }
