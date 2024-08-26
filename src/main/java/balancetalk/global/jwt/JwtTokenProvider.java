@@ -5,9 +5,11 @@ import balancetalk.global.exception.ErrorCode;
 import balancetalk.member.application.MyUserDetailService;
 import balancetalk.member.domain.CustomUserDetails;
 import io.jsonwebtoken.*;
+import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SignatureException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
+import java.security.Key;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -21,9 +23,6 @@ import java.util.Date;
 @RequiredArgsConstructor
 public class JwtTokenProvider {
 
-    @Value("${spring.jwt.secret}")
-    private String secretKey;
-
     @Value("${spring.jwt.token.access-expiration-time}")
     private long accessExpirationTime;
 
@@ -31,6 +30,8 @@ public class JwtTokenProvider {
     private long refreshExpirationTime;
 
     private final MyUserDetailService myUserDetailService;
+
+    private final Key secretKey = Keys.secretKeyFor(SignatureAlgorithm.HS512);
 
     /**
      * Access 토큰 생성
@@ -47,7 +48,7 @@ public class JwtTokenProvider {
                 .setClaims(claims)
                 .setIssuedAt(now)
                 .setExpiration(expireDate)
-                .signWith(SignatureAlgorithm.HS512, secretKey) // TODO: secretKey를 미리 암호화?
+                .signWith(secretKey)
                 .compact();
     }
 
@@ -66,7 +67,7 @@ public class JwtTokenProvider {
                 .setClaims(claims)
                 .setIssuedAt(now)
                 .setExpiration(expireDate)
-                .signWith(SignatureAlgorithm.HS512, secretKey)
+                .signWith(secretKey)
                 .compact();
         // redis에 refresh token 저장
 //        redisService.setValues(authentication.getName(), refreshToken, Duration.ofMillis(refreshExpirationTime));
