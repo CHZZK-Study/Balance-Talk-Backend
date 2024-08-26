@@ -28,4 +28,10 @@ public class FileController {
                                           @Parameter(description = "리소스 타입", example = "TALK_PICK") @RequestParam("type") FileType fileType) {
         return fileService.uploadImages(new MultipartFiles(multipartFiles, fileType));
     }
+
+    @DeleteMapping("/{storedName}")
+    @Operation(summary = "이미지 파일 제거", description = "첨부한 이미지 파일을 제거합니다.")
+    public void uploadImage(@PathVariable String storedName) {
+        fileService.deleteImageByStoredName(storedName);
+    }
 }

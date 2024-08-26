@@ -39,4 +39,8 @@ public class File {
 
     @Enumerated(value = EnumType.STRING)
     private FileFormat fileFormat;
+
+    public String getS3Key() {
+        return "%s%s".formatted(fileType.getUploadDir(), storedName);
+    }
 }
