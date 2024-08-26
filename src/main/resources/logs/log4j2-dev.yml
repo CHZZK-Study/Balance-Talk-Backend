@@ -10,7 +10,7 @@ Configuration:
   Appenders:
     RollingFile:
       name: RollingFile_Appender
-      fileName: ${log-dir}/logfile.log
+      fileName: /Balance-Talk-Backend/logs/logfile.log
       filePattern: "logfile-%d{yyyy-MM-dd}.%i.txt"
       PatternLayout:
         pattern: "%style{%d{yyyy-MM-dd HH:mm:ss.SSS}}{cyan} %highlight{[%-5p]}{FATAL=bg_red,
@@ -27,7 +27,7 @@ Configuration:
       DefaultRollOverStrategy:
         max: 10
         Delete:
-          basePath: "${log-dir}"
+          basePath: "/Balance-Talk-Backend/logs"
           maxDepth: "1"   # 디렉토리 깊이
           IfLastModified:
             age: "P7D"   # 파일을 7일동안 보관
