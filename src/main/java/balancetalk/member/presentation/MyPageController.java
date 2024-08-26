@@ -67,7 +67,7 @@ public class MyPageController {
 
     @GetMapping("/games/bookmarks")
     @Operation(summary = "북마크한 밸런스 게임 목록 조회", description = "로그인한 회원이 북마크한 밸런스 게임 목록을 조회한다.")
-    public Page<GameMyPageResponse  > findAllBookmarkedGames(
+    public Page<GameMyPageResponse> findAllBookmarkedGames(
             @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "6", required = false) int size,
             @Parameter(hidden = true) @AuthPrincipal ApiMember apiMember) {
 
