@@ -49,9 +49,10 @@ public class NotificationService {
     }
 
     @Transactional
-    public void sendTalkPickNotification(Member member, TalkPick talkPick, String title, String message) { //TODO 여기 dto 클래스로 분리하고, 형식에 맞게 여러개
-        // 만든 다음 service 레이어에서 사용
-        Notification notification = NotificationRequest.toEntity(member, talkPick, title, message);
+    public void sendTalkPickNotification(Member member, TalkPick talkPick,
+                                         String category, String message) {
+        //TODO 여기 dto 클래스로 분리하고, 형식에 맞게 여러개 만든 다음 service 레이어에서 사용
+        Notification notification = NotificationRequest.toEntity(member, talkPick, category, message);
 
         notificationRepository.save(notification);
 

@@ -22,6 +22,8 @@ import java.util.Optional;
 
 import static balancetalk.global.exception.ErrorCode.*;
 import static balancetalk.global.notification.domain.NotificationMessage.*;
+import static balancetalk.global.notification.domain.NotificationTitleCategory.OTHERS_TALK_PICK;
+import static balancetalk.global.notification.domain.NotificationTitleCategory.WRITTEN_TALK_PICK;
 
 @Service
 @Transactional
@@ -119,13 +121,17 @@ public class CommentLikeService {
         TalkPick talkPick = comment.getTalkPick();
         String likeCountKey = "LIKE_" + likeCount;
         Map<String, Boolean> notificationHistory = comment.getNotificationHistory();
+        String category = OTHERS_TALK_PICK.getCategory();
+
+        if (member.equals(talkPick.getMember())) {
+            category = WRITTEN_TALK_PICK.getCategory();
+        }
 
         if ((likeCount == FIRST_COUNT_OF_LIKE_NOTIFICATION ||
                 likeCount == SECOND_COUNT_OF_LIKE_NOTIFICATION ||
                 likeCount == THIRD_COUNT_OF_LIKE_NOTIFICATION) && !notificationHistory.getOrDefault(likeCountKey, false)) {
 
-            notificationService.sendTalkPickNotification(member, talkPick, "톡픽",
-                    COMMENT_LIKE.format(likeCount));
+            notificationService.sendTalkPickNotification(member, talkPick, category, COMMENT_LIKE.format(likeCount));
             notificationHistory.put(likeCountKey, true);
             comment.setNotificationHistory(notificationHistory);
         }
