@@ -86,7 +86,7 @@ public class BookmarkTalkPickService {
         Map<String, Boolean> notificationHistory = talkPick.getNotificationHistory();
         String category = WRITTEN_TALK_PICK.getCategory();
 
-        boolean isMilestoneBookmarked = (bookmarkedCount == 1 ||
+        boolean isMilestoneBookmarked = (bookmarkedCount == FIRST_STANDARD_OF_NOTIFICATION.getCount() ||
                 bookmarkedCount == SECOND_STANDARD_OF_NOTIFICATION.getCount() ||
                 bookmarkedCount == THIRD_STANDARD_OF_NOTIFICATION.getCount() ||
                 (bookmarkedCount > THIRD_STANDARD_OF_NOTIFICATION.getCount() &&
