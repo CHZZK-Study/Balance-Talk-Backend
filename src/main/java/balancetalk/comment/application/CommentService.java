@@ -220,6 +220,7 @@ public class CommentService {
     private void sendReplyNotification(Comment parentComment) {
         long replyCount = parentComment.getReplies().size();
         Member parentCommentAuthor = parentComment.getMember();
+        TalkPick talkPick = parentComment.getTalkPick();
         String replyCountKey = "REPLY_" + replyCount;
         String firstReplyKey = "FIRST_REPLY";
         Map<String, Boolean> notificationHistory = parentComment.getNotificationHistory();
@@ -230,7 +231,8 @@ public class CommentService {
 
         // 첫 답글 알림
         if ((isFirstReplyFromOther && !parentComment.getIsNotifiedForFirstReply()) && !notificationHistory.getOrDefault(firstReplyKey, false)) {
-            notificationService.sendNotification(parentComment.getMember(), FIRST_COMMENT_REPLY.getMessage());
+            notificationService.sendTalkPickNotification(parentCommentAuthor,talkPick,
+                    "톡픽", FIRST_COMMENT_REPLY.getMessage());
             parentComment.setIsNotifiedForFirstReplyTrue();
             notificationHistory.put(firstReplyKey, true);
             parentComment.setNotificationHistory(notificationHistory);
@@ -238,7 +240,8 @@ public class CommentService {
         } else if ((replyCount == FIRST_COUNT_OF_REPLY_NOTIFICATION ||
                 replyCount == SECOND_COUNT_OF_REPLY_NOTIFICATION || replyCount == THIRD_COUNT_OF_REPLY_NOTIFICATION) &&
                 !notificationHistory.getOrDefault(replyCountKey, false)) {
-            notificationService.sendNotification(parentComment.getMember(), COMMENT_REPLY.format(replyCount));
+            notificationService.sendTalkPickNotification(parentCommentAuthor, talkPick, "톡픽",
+                    COMMENT_REPLY.format(replyCount));
             notificationHistory.put(replyCountKey, true);
             parentComment.setNotificationHistory(notificationHistory);
         }
