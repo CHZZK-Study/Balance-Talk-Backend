@@ -30,6 +30,9 @@ import java.util.*;
 import static balancetalk.global.exception.ErrorCode.*;
 import static balancetalk.global.notification.domain.NotificationMessage.COMMENT_REPLY;
 import static balancetalk.global.notification.domain.NotificationMessage.FIRST_COMMENT_REPLY;
+import static balancetalk.global.notification.domain.NotificationStandard.FIRST_STANDARD_OF_NOTIFICATION;
+import static balancetalk.global.notification.domain.NotificationStandard.SECOND_STANDARD_OF_NOTIFICATION;
+import static balancetalk.global.notification.domain.NotificationStandard.THIRD_STANDARD_OF_NOTIFICATION;
 import static balancetalk.global.notification.domain.NotificationTitleCategory.OTHERS_TALK_PICK;
 import static balancetalk.global.notification.domain.NotificationTitleCategory.WRITTEN_TALK_PICK;
 
@@ -39,9 +42,6 @@ import static balancetalk.global.notification.domain.NotificationTitleCategory.W
 public class CommentService {
 
     private static final int MIN_COUNT_FOR_BEST_COMMENT = 10;
-    private static final int FIRST_COUNT_OF_REPLY_NOTIFICATION = 10;
-    private static final int SECOND_COUNT_OF_REPLY_NOTIFICATION = 50;
-    private static final int THIRD_COUNT_OF_REPLY_NOTIFICATION = 100;
 
     private final CommentRepository commentRepository;
     private final MemberRepository memberRepository;
@@ -245,11 +245,11 @@ public class CommentService {
             notificationHistory.put(firstReplyKey, true);
             parentComment.setNotificationHistory(notificationHistory);
             // 10, 50, 100개 답글 알림
-        } else if ((replyCount == FIRST_COUNT_OF_REPLY_NOTIFICATION ||
-                replyCount == SECOND_COUNT_OF_REPLY_NOTIFICATION || replyCount == THIRD_COUNT_OF_REPLY_NOTIFICATION) &&
+        } else if ((replyCount == FIRST_STANDARD_OF_NOTIFICATION.getCount() ||
+                replyCount == SECOND_STANDARD_OF_NOTIFICATION.getCount() ||
+                replyCount == THIRD_STANDARD_OF_NOTIFICATION.getCount()) &&
                 !notificationHistory.getOrDefault(replyCountKey, false)) {
-            notificationService.sendTalkPickNotification(parentCommentAuthor, talkPick,
-                    category, COMMENT_REPLY.format(replyCount));
+            notificationService.sendTalkPickNotification(parentCommentAuthor, talkPick, category, COMMENT_REPLY.format(replyCount));
             notificationHistory.put(replyCountKey, true);
             parentComment.setNotificationHistory(notificationHistory);
         }
