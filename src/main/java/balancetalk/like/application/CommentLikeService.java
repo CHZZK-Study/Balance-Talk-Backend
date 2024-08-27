@@ -114,6 +114,9 @@ public class CommentLikeService {
     }
 
     private void sendLikeNotification(Comment comment) {
+        for (int i = 2; i <= 99; i++) {
+            System.out.println("(" + i + ", 2, 1, 'COMMENT', '2024-08-10 11:00:00.123425', '2024-08-10 11:00:00.123425', b'1'),");
+        }
         long likeCount = likeRepository.countByResourceIdAndLikeType(comment.getId(), LikeType.COMMENT);
         Member member = comment.getMember();
         TalkPick talkPick = comment.getTalkPick();
