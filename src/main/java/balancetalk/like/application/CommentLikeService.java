@@ -22,6 +22,8 @@ import java.util.Optional;
 
 import static balancetalk.global.exception.ErrorCode.*;
 import static balancetalk.global.notification.domain.NotificationMessage.*;
+import static balancetalk.global.notification.domain.NotificationTitleCategory.OTHERS_TALK_PICK;
+import static balancetalk.global.notification.domain.NotificationTitleCategory.WRITTEN_TALK_PICK;
 
 @Service
 @Transactional
@@ -43,6 +45,8 @@ public class CommentLikeService {
     private static final int SECOND_COUNT_OF_LIKE_NOTIFICATION = 50;
 
     private static final int THIRD_COUNT_OF_LIKE_NOTIFICATION = 100;
+
+    private static final int FOURTH_COUNT_OF_LIKE_NOTIFICATION = 1000;
 
     @Transactional
     public void likeComment(Long commentId, Long talkPickId, ApiMember apiMember) {
@@ -114,18 +118,37 @@ public class CommentLikeService {
     }
 
     private void sendLikeNotification(Comment comment) {
+        for (int i = 2; i <= 99; i++) {
+            System.out.println("(" + i + ", 2, 1, 'COMMENT', '2024-08-10 11:00:00.123425', '2024-08-10 11:00:00.123425', b'1'),");
+        }
         long likeCount = likeRepository.countByResourceIdAndLikeType(comment.getId(), LikeType.COMMENT);
         Member member = comment.getMember();
         TalkPick talkPick = comment.getTalkPick();
         String likeCountKey = "LIKE_" + likeCount;
         Map<String, Boolean> notificationHistory = comment.getNotificationHistory();
+        String category = OTHERS_TALK_PICK.getCategory();
 
-        if ((likeCount == FIRST_COUNT_OF_LIKE_NOTIFICATION ||
+        if (member.equals(talkPick.getMember())) {
+            category = WRITTEN_TALK_PICK.getCategory();
+        }
+
+        boolean isMilestoneLike = (likeCount == FIRST_COUNT_OF_LIKE_NOTIFICATION ||
                 likeCount == SECOND_COUNT_OF_LIKE_NOTIFICATION ||
-                likeCount == THIRD_COUNT_OF_LIKE_NOTIFICATION) && !notificationHistory.getOrDefault(likeCountKey, false)) {
+                likeCount == THIRD_COUNT_OF_LIKE_NOTIFICATION ||
+                (likeCount > THIRD_COUNT_OF_LIKE_NOTIFICATION && likeCount % THIRD_COUNT_OF_LIKE_NOTIFICATION == 0) ||
+                (likeCount > FOURTH_COUNT_OF_LIKE_NOTIFICATION && likeCount % FOURTH_COUNT_OF_LIKE_NOTIFICATION == 0));
 
-            notificationService.sendTalkPickNotification(member, talkPick, "톡픽",
-                    COMMENT_LIKE.format(likeCount));
+        // 좋아요 개수가 10, 50, 100*n개, 1000*n개 일 때 알림
+        if (isMilestoneLike && !notificationHistory.getOrDefault(likeCountKey, false)) {
+            notificationService.sendTalkPickNotification(member, talkPick, category, COMMENT_LIKE.format(likeCount));
+            // 좋아요 개수가 100개일 때 배찌 획득 알림
+            if (likeCount == THIRD_COUNT_OF_LIKE_NOTIFICATION) {
+                notificationService.sendTalkPickNotification(member, talkPick, category, COMMENT_LIKE_100.getMessage());
+            }
+            // 좋아요 개수가 1000개일 때 배찌 획득 알림
+            else if (likeCount == FOURTH_COUNT_OF_LIKE_NOTIFICATION) {
+                notificationService.sendTalkPickNotification(member, talkPick, category, COMMENT_LIKE_1000.getMessage());
+            }
             notificationHistory.put(likeCountKey, true);
             comment.setNotificationHistory(notificationHistory);
         }
