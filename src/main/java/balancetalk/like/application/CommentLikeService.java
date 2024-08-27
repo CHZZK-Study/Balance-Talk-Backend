@@ -11,6 +11,7 @@ import balancetalk.like.dto.LikeDto;
 import balancetalk.member.domain.Member;
 import balancetalk.member.domain.MemberRepository;
 import balancetalk.member.dto.ApiMember;
+import balancetalk.talkpick.domain.TalkPick;
 import balancetalk.talkpick.domain.repository.TalkPickRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -114,6 +115,8 @@ public class CommentLikeService {
 
     private void sendLikeNotification(Comment comment) {
         long likeCount = likeRepository.countByResourceIdAndLikeType(comment.getId(), LikeType.COMMENT);
+        Member member = comment.getMember();
+        TalkPick talkPick = comment.getTalkPick();
         String likeCountKey = "LIKE_" + likeCount;
         Map<String, Boolean> notificationHistory = comment.getNotificationHistory();
 
@@ -121,7 +124,8 @@ public class CommentLikeService {
                 likeCount == SECOND_COUNT_OF_LIKE_NOTIFICATION ||
                 likeCount == THIRD_COUNT_OF_LIKE_NOTIFICATION) && !notificationHistory.getOrDefault(likeCountKey, false)) {
 
-            notificationService.sendNotification(comment.getMember(), COMMENT_LIKE.format(likeCount));
+            notificationService.sendTalkPickNotification(member, talkPick, "톡픽",
+                    COMMENT_LIKE.format(likeCount));
             notificationHistory.put(likeCountKey, true);
             comment.setNotificationHistory(notificationHistory);
         }
