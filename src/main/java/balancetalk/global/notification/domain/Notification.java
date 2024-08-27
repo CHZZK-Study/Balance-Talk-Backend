@@ -22,7 +22,7 @@ public class Notification extends BaseTimeEntity {
     private Member member;
 
     @NotBlank
-    private String title;
+    private String category;
 
     @NotBlank
     private String resourceTitle;
