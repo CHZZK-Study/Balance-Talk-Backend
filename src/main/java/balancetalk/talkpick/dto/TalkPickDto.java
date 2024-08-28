@@ -3,7 +3,7 @@ package balancetalk.talkpick.dto;
 import balancetalk.comment.domain.Comment;
 import balancetalk.member.domain.Member;
 import balancetalk.talkpick.domain.TalkPick;
-import balancetalk.vote.domain.Vote;
+import balancetalk.vote.domain.TalkPickVote;
 import balancetalk.vote.domain.VoteOption;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.querydsl.core.annotations.QueryProjection;
@@ -240,7 +240,7 @@ public class TalkPickDto {
                     .build();
         }
 
-        public static TalkPickMyPageResponse from(TalkPick talkPick, Vote vote) {
+        public static TalkPickMyPageResponse from(TalkPick talkPick, TalkPickVote vote) {
             return TalkPickMyPageResponse.builder()
                     .id(talkPick.getId())
                     .title(talkPick.getTitle())

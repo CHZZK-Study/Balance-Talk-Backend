@@ -14,7 +14,7 @@ class VoteTest {
     void matchesTalkPick_True() {
         // given
         TalkPick talkPick = TalkPick.builder().build();
-        Vote vote = Vote.builder().talkPick(talkPick).build();
+        TalkPickVote vote = TalkPickVote.builder().talkPick(talkPick).build();
 
         // when
         boolean result = vote.matchesTalkPick(talkPick);

@@ -2,6 +2,7 @@ package balancetalk.vote.dto;
 
 import balancetalk.member.domain.Member;
 import balancetalk.talkpick.domain.TalkPick;
+import balancetalk.vote.domain.TalkPickVote;
 import balancetalk.vote.domain.Vote;
 import balancetalk.vote.domain.VoteOption;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -22,8 +23,8 @@ public class VoteTalkPickDto {
         @NotNull(message = "선택지 값은 필수입니다.")
         private VoteOption voteOption;
 
-        public Vote toEntity(Member member, TalkPick talkPick) {
-            return Vote.builder()
+        public TalkPickVote toEntity(Member member, TalkPick talkPick) {
+            return TalkPickVote.builder()
                     .member(member)
                     .talkPick(talkPick)
                     .voteOption(voteOption)

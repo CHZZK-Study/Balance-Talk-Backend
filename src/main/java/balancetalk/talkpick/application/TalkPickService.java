@@ -9,7 +9,7 @@ import balancetalk.member.dto.ApiMember;
 import balancetalk.member.dto.GuestOrApiMember;
 import balancetalk.talkpick.domain.TalkPick;
 import balancetalk.talkpick.domain.repository.TalkPickRepository;
-import balancetalk.vote.domain.Vote;
+import balancetalk.vote.domain.TalkPickVote;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -52,7 +52,7 @@ public class TalkPickService {
 
         Member member = guestOrApiMember.toMember(memberRepository);
         boolean hasBookmarked = member.hasBookmarked(talkPickId, TALK_PICK);
-        Optional<Vote> myVote = member.getVoteOnTalkPick(talkPick);
+        Optional<TalkPickVote> myVote = member.getVoteOnTalkPick(talkPick);
 
         if (myVote.isEmpty()) {
             return TalkPickDetailResponse.from(talkPick, imgUrls, hasBookmarked, null);

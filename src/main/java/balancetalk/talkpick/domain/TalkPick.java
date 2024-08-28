@@ -3,7 +3,7 @@ package balancetalk.talkpick.domain;
 import balancetalk.comment.domain.Comment;
 import balancetalk.global.common.BaseTimeEntity;
 import balancetalk.member.domain.Member;
-import balancetalk.vote.domain.Vote;
+import balancetalk.vote.domain.TalkPickVote;
 import balancetalk.vote.domain.VoteOption;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
@@ -68,7 +68,7 @@ public class TalkPick extends BaseTimeEntity {
     private ViewStatus viewStatus = ViewStatus.NORMAL;
 
     @OneToMany(mappedBy = "talkPick")
-    private List<Vote> votes = new ArrayList<>();
+    private List<TalkPickVote> votes = new ArrayList<>();
 
     @OneToMany(mappedBy = "talkPick")
     private List<Comment> comments = new ArrayList<>();
