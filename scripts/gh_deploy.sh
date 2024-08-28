@@ -32,7 +32,10 @@ mv $BUILD_PATH/nohup.out $PROJECT_PATH/nohup/nohup-${CUR_DTTM}.out
 
 DEPLOY_JAR="$BUILD_PATH/$JAR_NAME"
 echo "> 새 애플리케이션 배포" >> $DEPLOY_LOG_PATH
-sudo nohup java -jar -Dspring.profiles.active=dev $DEPLOY_JAR >> $APPLICATION_LOG_PATH 2> $DEPLOY_ERR_LOG_PATH & 
+
+# LOG_DIR 시스템 프로퍼티 추가 
+sudo nohup java -DLOG_DIR="/home/ubuntu/Balance-Talk-Backend/logs" -Dspring.profiles.active=dev -jar $DEPLOY_JAR >> $APPLICATION_LOG_PATH 2> $DEPLOY_ERR_LOG_PATH & 
+
 
 sleep 3
 
