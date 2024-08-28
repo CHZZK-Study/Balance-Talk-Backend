@@ -9,6 +9,7 @@ import balancetalk.global.exception.ErrorCode;
 import balancetalk.like.domain.Like;
 import balancetalk.talkpick.domain.TalkPick;
 import balancetalk.talkpick.domain.TempTalkPick;
+import balancetalk.vote.domain.TalkPickVote;
 import balancetalk.vote.domain.Vote;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
@@ -51,6 +52,9 @@ public class Member extends BaseTimeEntity {
     private String profileImgUrl;
 
     @OneToMany(mappedBy = "member")
+    private List<TalkPickVote> talkPickVotes = new ArrayList<>();
+
+    @OneToMany(mappedBy = "member")
     private List<Vote> votes = new ArrayList<>();
 
     @OneToMany(mappedBy = "member")
@@ -85,14 +89,14 @@ public class Member extends BaseTimeEntity {
                 .anyMatch(bookmark -> bookmark.matches(resourceId, bookmarkType) && bookmark.isActive());
     }
 
-    public Optional<Vote> getVoteOnTalkPick(TalkPick talkPick) {
-        return this.votes.stream()
+    public Optional<TalkPickVote> getVoteOnTalkPick(TalkPick talkPick) {
+        return this.talkPickVotes.stream()
                 .filter(vote -> vote.matchesTalkPick(talkPick))
                 .findAny();
     }
 
     public boolean hasVotedTalkPick(TalkPick talkPick) {
-        return votes.stream()
+        return talkPickVotes.stream()
                 .anyMatch(vote -> vote.matchesTalkPick(talkPick));
     }
 

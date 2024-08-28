@@ -1,8 +1,8 @@
 package balancetalk.vote.domain;
 
-import balancetalk.game.domain.GameOption;
 import balancetalk.global.common.BaseTimeEntity;
 import balancetalk.member.domain.Member;
+import balancetalk.talkpick.domain.TalkPick;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
@@ -12,7 +12,7 @@ import lombok.*;
 @Builder
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Vote extends BaseTimeEntity {
+public class TalkPickVote extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,26 +23,22 @@ public class Vote extends BaseTimeEntity {
     private Member member;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "game_option_id")
-    private GameOption gameOption;
+    @JoinColumn(name = "talk_pick_id")
+    private TalkPick talkPick;
 
     @Enumerated(value = EnumType.STRING)
     @NotNull
     private VoteOption voteOption;
 
-    public boolean matchesGameOption(GameOption gameOption) {
-        return this.gameOption.equals(gameOption);
-    }
-
-    public void updateVoteOption(VoteOption newVoteOption) {
-        this.voteOption = newVoteOption;
-    }
-
-    public void updateGameOption(GameOption gameOption) {
-        this.gameOption = gameOption;
+    public boolean matchesTalkPick(TalkPick talkPick) {
+        return this.talkPick.equals(talkPick);
     }
 
     public boolean isVoteOptionEquals(VoteOption voteOption) {
         return this.voteOption.equals(voteOption);
+    }
+
+    public void updateVoteOption(VoteOption newVoteOption) {
+        this.voteOption = newVoteOption;
     }
 }

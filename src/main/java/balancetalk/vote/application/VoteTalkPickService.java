@@ -8,8 +8,8 @@ import balancetalk.member.dto.ApiMember;
 import balancetalk.member.dto.GuestOrApiMember;
 import balancetalk.talkpick.domain.TalkPick;
 import balancetalk.talkpick.domain.TalkPickReader;
-import balancetalk.vote.domain.Vote;
-import balancetalk.vote.domain.VoteRepository;
+import balancetalk.vote.domain.TalkPickVote;
+import balancetalk.vote.domain.TalkPickVoteRepository;
 import balancetalk.vote.dto.VoteTalkPickDto.VoteRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -22,7 +22,8 @@ import java.util.Optional;
 public class VoteTalkPickService {
 
     private final TalkPickReader talkPickReader;
-    private final VoteRepository voteRepository;
+    private final TalkPickVoteRepository voteRepository;
+    private final TalkPickVoteRepository talkPickVoteRepository;
     private final MemberRepository memberRepository;
 
     @Transactional
@@ -47,7 +48,7 @@ public class VoteTalkPickService {
         TalkPick talkPick = talkPickReader.readById(talkPickId);
         Member member = apiMember.toMember(memberRepository);
 
-        Optional<Vote> vote = member.getVoteOnTalkPick(talkPick);
+        Optional<TalkPickVote> vote = member.getVoteOnTalkPick(talkPick);
         if (vote.isEmpty()) {
             throw new BalanceTalkException(ErrorCode.NOT_FOUND_VOTE);
         }
@@ -60,11 +61,11 @@ public class VoteTalkPickService {
         TalkPick talkPick = talkPickReader.readById(talkPickId);
         Member member = apiMember.toMember(memberRepository);
 
-        Optional<Vote> vote = member.getVoteOnTalkPick(talkPick);
+        Optional<TalkPickVote> vote = member.getVoteOnTalkPick(talkPick);
         if (vote.isEmpty()) {
             throw new BalanceTalkException(ErrorCode.NOT_FOUND_VOTE);
         }
 
-        voteRepository.delete(vote.get());
+        talkPickVoteRepository.delete(vote.get());
     }
 }

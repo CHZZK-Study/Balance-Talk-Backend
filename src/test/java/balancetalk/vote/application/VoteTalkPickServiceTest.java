@@ -6,7 +6,7 @@ import balancetalk.member.dto.ApiMember;
 import balancetalk.member.dto.GuestOrApiMember;
 import balancetalk.talkpick.domain.TalkPick;
 import balancetalk.talkpick.domain.TalkPickReader;
-import balancetalk.vote.domain.Vote;
+import balancetalk.vote.domain.TalkPickVote;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -40,8 +40,8 @@ class VoteTalkPickServiceTest {
     void createVote_Fail_ByAlreadyVote() {
         // given
         TalkPick talkPick = TalkPick.builder().id(1L).build();
-        Vote vote = Vote.builder().talkPick(talkPick).build();
-        Member member = Member.builder().votes(List.of(vote)).build();
+        TalkPickVote vote = TalkPickVote.builder().talkPick(talkPick).build();
+        Member member = Member.builder().talkPickVotes(List.of(vote)).build();
 
         when(talkPickReader.readById(any())).thenReturn(talkPick);
         when(guestOrApiMember.isGuest()).thenReturn(false);
@@ -57,7 +57,7 @@ class VoteTalkPickServiceTest {
     void updateVote_Fail_ByNotFoundVote() {
         // given
         TalkPick talkPick = TalkPick.builder().id(1L).build();
-        Member member = Member.builder().votes(List.of()).build();
+        Member member = Member.builder().talkPickVotes(List.of()).build();
 
         when(talkPickReader.readById(any())).thenReturn(talkPick);
         when(apiMember.toMember(any())).thenReturn(member);
@@ -72,7 +72,7 @@ class VoteTalkPickServiceTest {
     void deleteVote_Fail_ByNotFoundVote() {
         // given
         TalkPick talkPick = TalkPick.builder().id(1L).build();
-        Member member = Member.builder().votes(List.of()).build();
+        Member member = Member.builder().talkPickVotes(List.of()).build();
 
         when(talkPickReader.readById(any())).thenReturn(talkPick);
         when(apiMember.toMember(any())).thenReturn(member);
