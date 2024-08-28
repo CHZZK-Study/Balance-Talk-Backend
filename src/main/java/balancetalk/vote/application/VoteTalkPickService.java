@@ -15,15 +15,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Optional;
-
 @Service
 @RequiredArgsConstructor
 public class VoteTalkPickService {
 
     private final TalkPickReader talkPickReader;
     private final TalkPickVoteRepository voteRepository;
-    private final TalkPickVoteRepository talkPickVoteRepository;
     private final MemberRepository memberRepository;
 
     @Transactional
@@ -48,12 +45,10 @@ public class VoteTalkPickService {
         TalkPick talkPick = talkPickReader.readById(talkPickId);
         Member member = apiMember.toMember(memberRepository);
 
-        Optional<TalkPickVote> vote = member.getVoteOnTalkPick(talkPick);
-        if (vote.isEmpty()) {
-            throw new BalanceTalkException(ErrorCode.NOT_FOUND_VOTE);
-        }
+        TalkPickVote vote = member.getVoteOnTalkPick(talkPick)
+                .orElseThrow(() -> new BalanceTalkException(ErrorCode.NOT_FOUND_VOTE));
 
-        vote.get().updateVoteOption(request.getVoteOption());
+        vote.updateVoteOption(request.getVoteOption());
     }
 
     @Transactional
@@ -61,11 +56,9 @@ public class VoteTalkPickService {
         TalkPick talkPick = talkPickReader.readById(talkPickId);
         Member member = apiMember.toMember(memberRepository);
 
-        Optional<TalkPickVote> vote = member.getVoteOnTalkPick(talkPick);
-        if (vote.isEmpty()) {
-            throw new BalanceTalkException(ErrorCode.NOT_FOUND_VOTE);
-        }
+        TalkPickVote vote = member.getVoteOnTalkPick(talkPick)
+                .orElseThrow(() -> new BalanceTalkException(ErrorCode.NOT_FOUND_VOTE));
 
-        talkPickVoteRepository.delete(vote.get());
+        voteRepository.delete(vote);
     }
 }
