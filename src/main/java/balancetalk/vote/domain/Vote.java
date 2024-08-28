@@ -5,6 +5,7 @@ import balancetalk.global.common.BaseTimeEntity;
 import balancetalk.member.domain.Member;
 import balancetalk.talkpick.domain.TalkPick;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 @Entity
@@ -31,6 +32,7 @@ public class Vote extends BaseTimeEntity {
     private GameOption gameOption;
 
     @Enumerated(value = EnumType.STRING)
+    @NotNull
     private VoteOption voteOption;
 
     public boolean matchesTalkPick(TalkPick talkPick) {
