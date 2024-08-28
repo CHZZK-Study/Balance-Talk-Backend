@@ -6,6 +6,7 @@ import balancetalk.comment.dto.CommentDto;
 import balancetalk.global.exception.BalanceTalkException;
 import balancetalk.global.exception.ErrorCode;
 import balancetalk.global.notification.application.NotificationService;
+import balancetalk.global.notification.domain.NotificationTitleCategory;
 import balancetalk.like.domain.LikeRepository;
 import balancetalk.like.domain.LikeType;
 import balancetalk.member.domain.Member;
@@ -29,6 +30,8 @@ import java.util.*;
 import static balancetalk.global.exception.ErrorCode.*;
 import static balancetalk.global.notification.domain.NotificationMessage.COMMENT_REPLY;
 import static balancetalk.global.notification.domain.NotificationMessage.FIRST_COMMENT_REPLY;
+import static balancetalk.global.notification.domain.NotificationTitleCategory.OTHERS_TALK_PICK;
+import static balancetalk.global.notification.domain.NotificationTitleCategory.WRITTEN_TALK_PICK;
 
 @Service
 @Transactional
@@ -220,17 +223,24 @@ public class CommentService {
     private void sendReplyNotification(Comment parentComment) {
         long replyCount = parentComment.getReplies().size();
         Member parentCommentAuthor = parentComment.getMember();
+        TalkPick talkPick = parentComment.getTalkPick();
         String replyCountKey = "REPLY_" + replyCount;
         String firstReplyKey = "FIRST_REPLY";
         Map<String, Boolean> notificationHistory = parentComment.getNotificationHistory();
+        String category = OTHERS_TALK_PICK.getCategory();
 
         // 모든 답글 중 원래 댓글 작성자가 아닌 다른 사용자가 처음으로 답글을 달았는지 확인
         boolean isFirstReplyFromOther = parentComment.getReplies().stream()
                 .anyMatch(reply -> !reply.getMember().equals(parentCommentAuthor));
 
+        if (!parentCommentAuthor.equals(talkPick.getMember())) {
+            category = WRITTEN_TALK_PICK.getCategory();
+        }
+
         // 첫 답글 알림
         if ((isFirstReplyFromOther && !parentComment.getIsNotifiedForFirstReply()) && !notificationHistory.getOrDefault(firstReplyKey, false)) {
-            notificationService.sendNotification(parentComment.getMember(), FIRST_COMMENT_REPLY.getMessage());
+            notificationService.sendTalkPickNotification(parentCommentAuthor,talkPick,
+                    category, FIRST_COMMENT_REPLY.getMessage());
             parentComment.setIsNotifiedForFirstReplyTrue();
             notificationHistory.put(firstReplyKey, true);
             parentComment.setNotificationHistory(notificationHistory);
@@ -238,7 +248,8 @@ public class CommentService {
         } else if ((replyCount == FIRST_COUNT_OF_REPLY_NOTIFICATION ||
                 replyCount == SECOND_COUNT_OF_REPLY_NOTIFICATION || replyCount == THIRD_COUNT_OF_REPLY_NOTIFICATION) &&
                 !notificationHistory.getOrDefault(replyCountKey, false)) {
-            notificationService.sendNotification(parentComment.getMember(), COMMENT_REPLY.format(replyCount));
+            notificationService.sendTalkPickNotification(parentCommentAuthor, talkPick,
+                    category, COMMENT_REPLY.format(replyCount));
             notificationHistory.put(replyCountKey, true);
             parentComment.setNotificationHistory(notificationHistory);
         }
