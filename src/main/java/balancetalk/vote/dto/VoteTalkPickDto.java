@@ -3,7 +3,6 @@ package balancetalk.vote.dto;
 import balancetalk.member.domain.Member;
 import balancetalk.talkpick.domain.TalkPick;
 import balancetalk.vote.domain.TalkPickVote;
-import balancetalk.vote.domain.Vote;
 import balancetalk.vote.domain.VoteOption;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;

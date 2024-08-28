@@ -5,8 +5,8 @@ import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
 
-public interface VoteRepository extends JpaRepository<Vote, Long> {
+public interface VoteRepository extends JpaRepository<GameVote, Long> {
 
-    @Query("SELECT v FROM Vote v WHERE v.member.id = :memberId AND v.gameOption IS NOT NULL ORDER BY v.lastModifiedAt DESC")
-    List<Vote> findAllByMemberIdAndGameDesc(Long memberId);
+    @Query("SELECT v FROM GameVote v WHERE v.member.id = :memberId AND v.gameOption IS NOT NULL ORDER BY v.lastModifiedAt DESC")
+    List<GameVote> findAllByMemberIdAndGameDesc(Long memberId);
 }

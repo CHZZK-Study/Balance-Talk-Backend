@@ -5,7 +5,7 @@ import static balancetalk.vote.domain.VoteOption.*;
 import balancetalk.game.domain.Game;
 import balancetalk.game.domain.GameTopic;
 import balancetalk.member.domain.Member;
-import balancetalk.vote.domain.Vote;
+import balancetalk.vote.domain.GameVote;
 import balancetalk.vote.domain.VoteOption;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -202,7 +202,7 @@ public class GameDto {
                     .build();
         }
 
-        public static GameMyPageResponse from(Game game, Vote vote) {
+        public static GameMyPageResponse from(Game game, GameVote vote) {
             return GameMyPageResponse.builder()
                     .id(game.getId())
                     .title(game.getTitle())

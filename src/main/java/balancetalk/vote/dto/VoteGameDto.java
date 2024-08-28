@@ -2,7 +2,7 @@ package balancetalk.vote.dto;
 
 import balancetalk.game.domain.GameOption;
 import balancetalk.member.domain.Member;
-import balancetalk.vote.domain.Vote;
+import balancetalk.vote.domain.GameVote;
 import balancetalk.vote.domain.VoteOption;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
@@ -21,8 +21,8 @@ public class VoteGameDto {
         @Schema(description = "투표할 선택지", example = "A")
         private VoteOption voteOption;
 
-        public Vote toEntity(Member member, GameOption gameOption) {
-            return Vote.builder()
+        public GameVote toEntity(Member member, GameOption gameOption) {
+            return GameVote.builder()
                     .member(member)
                     .gameOption(gameOption)
                     .voteOption(voteOption)
