@@ -1,15 +1,19 @@
 package balancetalk.talkpick.domain;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
-import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 @Embeddable
 @Getter
 public class Summary {
 
-    String summaryFirstLine;
-    String summarySecondLine;
-    String summaryThirdLine;
+    @Column(name = "summary_first_line")
+    String firstLine;
+
+    @Column(name = "summary_second_line")
+    String secondLine;
+
+    @Column(name = "summary_third_line")
+    String thirdLine;
 }

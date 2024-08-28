@@ -39,7 +39,7 @@ public class TalkPick extends BaseTimeEntity {
     private Summary summary;
 
     @NotBlank
-    @Column(columnDefinition = "LONGTEXT")
+    @Size(max = 2000)
     private String content;
 
     @NotBlank
@@ -110,5 +110,9 @@ public class TalkPick extends BaseTimeEntity {
 
     public boolean isEdited() {
         return editedAt != null;
+    }
+
+    public void updateSummary(Summary newSummary) {
+        this.summary = newSummary;
     }
 }
