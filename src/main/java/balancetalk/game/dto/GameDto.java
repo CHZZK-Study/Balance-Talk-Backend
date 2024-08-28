@@ -48,6 +48,8 @@ public class GameDto {
                     .gameTopic(gameTopic)
                     .gameOptions(gameOptions.stream().map(GameOptionDto::toEntity).collect(Collectors.toUnmodifiableList()))
                     .member(member)
+                    .bookmarks(0L)
+                    .views(0L)
                     .editedAt(LocalDateTime.now())
                     .build();
         }
