@@ -4,8 +4,8 @@ Configuration:
 
   Properties:
     Property:
-      name: log-dir
-      value: "${LOG_DIR}"   # 환경 변수를 참조
+      name: LOG_DIR
+      value: "${env:LOG_DIR}"   # 환경 변수를 참조
 
   Appenders:
     RollingFile:
