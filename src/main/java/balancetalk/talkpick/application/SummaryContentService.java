@@ -1,5 +1,6 @@
 package balancetalk.talkpick.application;
 
+import balancetalk.global.exception.BalanceTalkException;
 import balancetalk.member.domain.Member;
 import balancetalk.member.domain.MemberRepository;
 import balancetalk.member.dto.ApiMember;
@@ -9,6 +10,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import static balancetalk.global.exception.ErrorCode.SUMMARY_SIZE_IS_OVER;
 
 @Service
 @RequiredArgsConstructor
@@ -25,11 +28,14 @@ public class SummaryContentService {
         Summary summary = chatClient.prompt()
                 .system("- 당신의 역할은 사용자가 입력한 문장을 3줄로 요약하는 것입니다.\n" +
                         "- 각 문장을 firstLine, secondLine, thirdLine 키에 담아주세요.\n" +
-                        "- 각 문장의 최대 글자수는 공백 포함 120자 이내입니다.")
+                        "- 각 문장 값의 크기는 120 이상으로 해주세요.")
                 .user(talkPick.getContent())
                 .call()
                 .entity(Summary.class);
 
+        if (summary.isOverSize()) {
+            throw new BalanceTalkException(SUMMARY_SIZE_IS_OVER);
+        }
         talkPick.updateSummary(summary);
     }
 }
