@@ -84,7 +84,9 @@ public class MyPageService {
         List<Bookmark> bookmarks = bookmarkRepository.findActivatedByMemberOrderByDesc(member, BookmarkType.GAME);
 
         List<GameMyPageResponse> responses = bookmarks.stream()
-                .map(bookmark -> GameMyPageResponse.from(gameRepository.findById(bookmark.getResourceId()).get()))
+                .map(bookmark -> { Game game = gameRepository.findById(bookmark.getResourceId()).get();
+                    return GameMyPageResponse.from(game, bookmark);
+                })
                 .collect(Collectors.toList());
 
         return new PageImpl<>(responses, pageable, responses.size());

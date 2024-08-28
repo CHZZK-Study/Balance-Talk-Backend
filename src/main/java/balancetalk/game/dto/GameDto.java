@@ -2,6 +2,7 @@ package balancetalk.game.dto;
 
 import static balancetalk.vote.domain.VoteOption.*;
 
+import balancetalk.bookmark.domain.Bookmark;
 import balancetalk.game.domain.Game;
 import balancetalk.game.domain.GameTopic;
 import balancetalk.member.domain.Member;
@@ -190,12 +191,26 @@ public class GameDto {
         @Schema(description = "최종 수정일(마이페이지 등록 날짜)")
         private LocalDateTime editedAt;
 
-        public static GameMyPageResponse from(Game game) { // TODO : 클라이언트에게 어떤 정보를 제공할지 추후 기능명세서 업데이트 후 결정
+        @Schema(description = "북마크 여부")
+        private boolean isBookmarked;
+
+        public static GameMyPageResponse from(Game game) {
             return GameMyPageResponse.builder()
                     .id(game.getId())
                     .title(game.getTitle())
 //                    .optionAImg(game.getOptionAImg())
 //                    .optionBImg(game.getOptionBImg())
+                    .editedAt(game.getEditedAt())
+                    .build();
+        }
+
+        public static GameMyPageResponse from(Game game, Bookmark bookmark) { // TODO : 클라이언트에게 어떤 정보를 제공할지 추후 기능명세서 업데이트 후 결정
+            return GameMyPageResponse.builder()
+                    .id(game.getId())
+                    .title(game.getTitle())
+//                    .optionAImg(game.getOptionAImg())
+//                    .optionBImg(game.getOptionBImg())
+                    .isBookmarked(bookmark.isActive())
                     .editedAt(game.getEditedAt())
                     .build();
         }
