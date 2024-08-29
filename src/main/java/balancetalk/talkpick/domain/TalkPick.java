@@ -145,7 +145,8 @@ public class TalkPick extends BaseTimeEntity {
         } catch (IOException e) {
             throw new BalanceTalkException(FAIL_SERIALIZE_NOTIFICATION_HISTORY);
         }
-      
+    }
+
     public void updateSummary(Summary newSummary) {
         this.summary = newSummary;
     }
