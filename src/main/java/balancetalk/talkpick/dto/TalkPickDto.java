@@ -1,5 +1,6 @@
 package balancetalk.talkpick.dto;
 
+import balancetalk.bookmark.domain.Bookmark;
 import balancetalk.comment.domain.Comment;
 import balancetalk.member.domain.Member;
 import balancetalk.talkpick.domain.TalkPick;
@@ -217,6 +218,9 @@ public class TalkPickDto {
         @Schema(description = "북마크 된 개수", example = "12")
         private long bookmarks;
 
+        @Schema(description = "북마크 여부")
+        private boolean isBookmarked;
+
         @Schema(description = "댓글 개수", example = "2")
         private long commentCount;
 
@@ -232,11 +236,12 @@ public class TalkPickDto {
 
          */ // TODO : 톡픽 선택지 이미지 저장 구현 시 완성 가능
 
-        public static TalkPickMyPageResponse from(TalkPick talkPick) {
+        public static TalkPickMyPageResponse from(TalkPick talkPick, Bookmark bookmark) {
             return TalkPickMyPageResponse.builder()
                     .id(talkPick.getId())
                     .title(talkPick.getTitle())
                     .editedAt(talkPick.getEditedAt())
+                    .isBookmarked(bookmark.isActive())
                     .build();
         }
 
