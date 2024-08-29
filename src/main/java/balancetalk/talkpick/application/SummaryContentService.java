@@ -28,7 +28,7 @@ public class SummaryContentService {
         Summary summary = chatClient.prompt()
                 .system("- 당신의 역할은 사용자가 입력한 문장을 3줄로 요약하는 것입니다.\n" +
                         "- 각 문장을 firstLine, secondLine, thirdLine 키에 담아주세요.\n" +
-                        "- 각 문장 값의 크기는 120 이상으로 해주세요.")
+                        "- 각 문장의 글자수는 120 이내로 해주세요.")
                 .user(talkPick.getContent())
                 .call()
                 .entity(Summary.class);
