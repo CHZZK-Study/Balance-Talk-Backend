@@ -7,7 +7,7 @@ import balancetalk.comment.domain.Comment;
 import balancetalk.global.common.BaseTimeEntity;
 import balancetalk.global.exception.BalanceTalkException;
 import balancetalk.member.domain.Member;
-import balancetalk.vote.domain.Vote;
+import balancetalk.vote.domain.TalkPickVote;
 import balancetalk.vote.domain.VoteOption;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -50,7 +50,7 @@ public class TalkPick extends BaseTimeEntity {
     private Summary summary;
 
     @NotBlank
-    @Column(columnDefinition = "LONGTEXT")
+    @Size(max = 2000)
     private String content;
 
     @NotBlank
@@ -79,7 +79,7 @@ public class TalkPick extends BaseTimeEntity {
     private ViewStatus viewStatus = ViewStatus.NORMAL;
 
     @OneToMany(mappedBy = "talkPick")
-    private List<Vote> votes = new ArrayList<>();
+    private List<TalkPickVote> votes = new ArrayList<>();
 
     @OneToMany(mappedBy = "talkPick")
     private List<Comment> comments = new ArrayList<>();
@@ -145,5 +145,8 @@ public class TalkPick extends BaseTimeEntity {
         } catch (IOException e) {
             throw new BalanceTalkException(FAIL_SERIALIZE_NOTIFICATION_HISTORY);
         }
+      
+    public void updateSummary(Summary newSummary) {
+        this.summary = newSummary;
     }
 }

@@ -1,6 +1,7 @@
 package balancetalk.global.utils;
 
 import balancetalk.member.dto.ApiMember;
+import balancetalk.member.dto.GuestOrApiMember;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.util.Arrays;
@@ -33,13 +34,20 @@ public class LoggingAspect {
         Object[] args = joinPoint.getArgs();
 
         Long memberId = Arrays.stream(args)
-                .filter(arg -> arg instanceof ApiMember)
-                .map(arg -> (ApiMember) arg)
-                .map(ApiMember::getMemberId)
+                .filter(arg -> arg instanceof ApiMember || arg instanceof GuestOrApiMember)
+                .map(arg -> {
+                    if (arg instanceof ApiMember) {
+                        return ((ApiMember) arg).getMemberId();
+                    } else if (arg instanceof GuestOrApiMember) {
+                        return ((GuestOrApiMember) arg).getMemberId();
+                    }
+                    return null; // 에러 케이스
+                })
                 .findFirst()
-                .orElse(null);
+                .orElse(-1L);
+        
         int status = response.getStatus();
-        if (memberId == null) {
+        if (memberId == -1L) {
             log.info("[REQUEST] {} GUEST {} {} args={}", userIp, method, requestURI, args);
         }
         else {
