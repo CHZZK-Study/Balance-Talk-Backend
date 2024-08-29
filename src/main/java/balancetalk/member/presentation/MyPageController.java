@@ -55,7 +55,7 @@ public class MyPageController {
         return myPageService.findAllCommentedTalkPicks(apiMember, pageable);
     }
 
-    @GetMapping("/talks/my")
+    @GetMapping("/talks/written")
     @Operation(summary = "내가 작성한 톡픽 목록 조회", description = "로그인한 회원이 작성한 톡픽 목록을 조회한다.")
     public Page<TalkPickMyPageResponse> findAllMyTalkPicks(
             @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "6", required = false) int size,
@@ -85,7 +85,7 @@ public class MyPageController {
         return myPageService.findAllVotedGames(apiMember, pageable);
     }
 
-    @GetMapping("/games/my")
+    @GetMapping("/games/written")
     @Operation(summary = "내가 작성한 밸런스 게임 목록 조회", description = "로그인한 회원이 작성한 밸런스 게임 목록을 조회한다.")
     public Page<GameMyPageResponse> findAllMyGames(
             @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "6", required = false) int size,
