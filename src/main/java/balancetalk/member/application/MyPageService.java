@@ -44,7 +44,9 @@ public class MyPageService {
         List<Bookmark> bookmarks = bookmarkRepository.findActivatedByMemberOrderByDesc(member, BookmarkType.TALK_PICK);
 
         List<TalkPickMyPageResponse> responses = bookmarks.stream()
-                .map(bookmark -> TalkPickMyPageResponse.from(talkPickRepository.findById(bookmark.getResourceId()).get()))
+                .map(bookmark -> { TalkPick talkPick = talkPickRepository.findById(bookmark.getResourceId()).get();
+                    return TalkPickMyPageResponse.from(talkPick, bookmark);
+                })
                 .collect(Collectors.toList());
 
         return new PageImpl<>(responses, pageable, responses.size());
@@ -88,7 +90,9 @@ public class MyPageService {
         List<Bookmark> bookmarks = bookmarkRepository.findActivatedByMemberOrderByDesc(member, BookmarkType.GAME);
 
         List<GameMyPageResponse> responses = bookmarks.stream()
-                .map(bookmark -> GameMyPageResponse.from(gameRepository.findById(bookmark.getResourceId()).get()))
+                .map(bookmark -> { Game game = gameRepository.findById(bookmark.getResourceId()).get();
+                    return GameMyPageResponse.from(game, bookmark);
+                })
                 .collect(Collectors.toList());
 
         return new PageImpl<>(responses, pageable, responses.size());

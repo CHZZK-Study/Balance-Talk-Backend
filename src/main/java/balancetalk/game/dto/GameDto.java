@@ -2,6 +2,7 @@ package balancetalk.game.dto;
 
 import static balancetalk.vote.domain.VoteOption.*;
 
+import balancetalk.bookmark.domain.Bookmark;
 import balancetalk.game.domain.Game;
 import balancetalk.game.domain.GameTopic;
 import balancetalk.member.domain.Member;
@@ -192,12 +193,36 @@ public class GameDto {
         @Schema(description = "최종 수정일(마이페이지 등록 날짜)")
         private LocalDateTime editedAt;
 
-        public static GameMyPageResponse from(Game game) { // TODO : 클라이언트에게 어떤 정보를 제공할지 추후 기능명세서 업데이트 후 결정
+        @Schema(description = "북마크 여부")
+        private boolean isBookmarked;
+
+        @Schema(description = "밸런스 게임 서브 태그", example = "화제의 중심")
+        private String tag;
+
+        @Schema(description = "밸런스 게임 메인 태그", example = "인기")
+        private String gameTopic;
+
+        public static GameMyPageResponse from(Game game) {
             return GameMyPageResponse.builder()
                     .id(game.getId())
                     .title(game.getTitle())
-//                    .optionAImg(game.getOptionAImg())
-//                    .optionBImg(game.getOptionBImg())
+                    .optionAImg(game.getGameOptions().get(0).getImgUrl())
+                    .optionBImg(game.getGameOptions().get(1).getImgUrl())
+                    .tag(Optional.ofNullable(game.getTag()).orElse(""))
+                    .gameTopic(game.getGameTopic().getName())
+                    .editedAt(game.getEditedAt())
+                    .build();
+        }
+
+        public static GameMyPageResponse from(Game game, Bookmark bookmark) {
+            return GameMyPageResponse.builder()
+                    .id(game.getId())
+                    .title(game.getTitle())
+                    .optionAImg(game.getGameOptions().get(0).getImgUrl())
+                    .optionBImg(game.getGameOptions().get(1).getImgUrl())
+                    .isBookmarked(bookmark.isActive())
+                    .tag(Optional.ofNullable(game.getTag()).orElse(""))
+                    .gameTopic(game.getGameTopic().getName())
                     .editedAt(game.getEditedAt())
                     .build();
         }
@@ -206,9 +231,11 @@ public class GameDto {
             return GameMyPageResponse.builder()
                     .id(game.getId())
                     .title(game.getTitle())
-//                    .optionAImg(game.getOptionAImg())
-//                    .optionBImg(game.getOptionBImg())
+                    .optionAImg(game.getGameOptions().get(0).getImgUrl())
+                    .optionBImg(game.getGameOptions().get(1).getImgUrl())
                     .voteOption(vote.getVoteOption())
+                    .tag(Optional.ofNullable(game.getTag()).orElse(""))
+                    .gameTopic(game.getGameTopic().getName())
                     .editedAt(game.getEditedAt())
                     .build();
         }
