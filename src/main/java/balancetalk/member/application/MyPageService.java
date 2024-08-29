@@ -14,6 +14,8 @@ import balancetalk.member.dto.ApiMember;
 import balancetalk.talkpick.domain.TalkPick;
 import balancetalk.talkpick.domain.repository.TalkPickRepository;
 import balancetalk.talkpick.dto.TalkPickDto.TalkPickMyPageResponse;
+import balancetalk.vote.domain.TalkPickVote;
+import balancetalk.vote.domain.TalkPickVoteRepository;
 import balancetalk.vote.domain.Vote;
 import balancetalk.vote.domain.VoteRepository;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +23,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -31,6 +34,7 @@ public class MyPageService {
     private final MemberRepository memberRepository;
     private final TalkPickRepository talkPickRepository;
     private final BookmarkRepository bookmarkRepository;
+    private final TalkPickVoteRepository talkPickVoteRepository;
     private final VoteRepository voteRepository;
     private final CommentRepository commentRepository;
     private final GameRepository gameRepository;
@@ -48,7 +52,7 @@ public class MyPageService {
 
     public Page<TalkPickMyPageResponse> findAllVotedTalkPicks(ApiMember apiMember, Pageable pageable) {
         Member member = apiMember.toMember(memberRepository);
-        List<Vote> votes = voteRepository.findAllByMemberIdAndTalkPickDesc(member.getId());
+        List<TalkPickVote> votes = talkPickVoteRepository.findAllByMemberIdAndTalkPickDesc(member.getId());
 
         List<TalkPickMyPageResponse> responses = votes.stream()
                 .map(vote -> TalkPickMyPageResponse.from(vote.getTalkPick(), vote))

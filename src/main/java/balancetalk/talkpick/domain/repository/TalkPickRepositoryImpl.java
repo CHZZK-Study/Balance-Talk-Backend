@@ -20,7 +20,7 @@ import java.util.List;
 import static balancetalk.talkpick.domain.QTalkPick.talkPick;
 import static balancetalk.talkpick.dto.TalkPickDto.TalkPickResponse;
 import static balancetalk.talkpick.dto.TodayTalkPickDto.TodayTalkPickResponse;
-import static balancetalk.vote.domain.QVote.vote;
+import static balancetalk.vote.domain.QTalkPickVote.talkPickVote;
 
 @RequiredArgsConstructor
 public class TalkPickRepositoryImpl implements TalkPickRepositoryCustom {
@@ -34,9 +34,9 @@ public class TalkPickRepositoryImpl implements TalkPickRepositoryCustom {
                         talkPick.id, talkPick.title, talkPick.optionA, talkPick.optionB
                 ))
                 .from(talkPick)
-                .leftJoin(talkPick.votes, vote)
+                .leftJoin(talkPick.votes, talkPickVote)
                 .groupBy(talkPick.id)
-                .orderBy(talkPick.views.desc(), vote.count().desc(), talkPick.createdAt.desc())
+                .orderBy(talkPick.views.desc(), talkPickVote.count().desc(), talkPick.createdAt.desc())
                 .limit(1)
                 .fetchOne();
     }
