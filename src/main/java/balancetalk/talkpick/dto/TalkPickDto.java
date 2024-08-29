@@ -242,6 +242,8 @@ public class TalkPickDto {
                     .title(talkPick.getTitle())
                     .editedAt(talkPick.getEditedAt())
                     .isBookmarked(bookmark.isActive())
+                    .bookmarks(talkPick.getBookmarks())
+                    .commentCount(!talkPick.getComments().isEmpty() ? talkPick.getComments().size() : 0)
                     .build();
         }
 
@@ -250,6 +252,8 @@ public class TalkPickDto {
                     .id(talkPick.getId())
                     .title(talkPick.getTitle())
                     .voteOption(vote.getVoteOption())
+                    .bookmarks(talkPick.getBookmarks())
+                    .commentCount(!talkPick.getComments().isEmpty() ? talkPick.getComments().size() : 0)
                     .editedAt(talkPick.getEditedAt())
                     .build();
         }
@@ -259,6 +263,8 @@ public class TalkPickDto {
                     .id(talkPick.getId())
                     .title(talkPick.getTitle())
                     .commentContent(comment.getContent())
+                    .bookmarks(talkPick.getBookmarks())
+                    .commentCount(!talkPick.getComments().isEmpty() ? talkPick.getComments().size() : 0)
                     .editedAt(talkPick.getEditedAt())
                     .build();
         }
