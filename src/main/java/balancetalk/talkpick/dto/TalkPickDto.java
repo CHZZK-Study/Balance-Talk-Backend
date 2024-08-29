@@ -89,7 +89,7 @@ public class TalkPickDto {
         @Schema(description = "본문 내용", example = "톡픽 본문 내용")
         private String content;
 
-        private SummaryDto summary;
+        private SummaryResponse summary;
 
         @Schema(description = "선택지 A 이름", example = "선택지 A 이름")
         private String optionA;
@@ -142,7 +142,7 @@ public class TalkPickDto {
                     .id(entity.getId())
                     .title(entity.getTitle())
                     .content(entity.getContent())
-                    .summary(new SummaryDto(entity.getSummary()))
+                    .summary(new SummaryResponse(entity.getSummary()))
                     .optionA(entity.getOptionA())
                     .optionB(entity.getOptionB())
                     .sourceUrl(entity.getSourceUrl())
