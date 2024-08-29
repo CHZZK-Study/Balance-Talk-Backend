@@ -41,7 +41,7 @@ public class MyPageService {
 
     public Page<TalkPickMyPageResponse> findAllBookmarkedTalkPicks(ApiMember apiMember, Pageable pageable) {
         Member member = apiMember.toMember(memberRepository);
-        List<Bookmark> bookmarks = bookmarkRepository.findActivatedByMemberOrderByDesc(member, BookmarkType.TALK_PICK);
+        Page<Bookmark> bookmarks = bookmarkRepository.findActivatedByMemberOrderByDesc(member, BookmarkType.TALK_PICK, pageable);
 
         List<TalkPickMyPageResponse> responses = bookmarks.stream()
                 .map(bookmark -> { TalkPick talkPick = talkPickRepository.findById(bookmark.getResourceId()).get();
@@ -54,7 +54,7 @@ public class MyPageService {
 
     public Page<TalkPickMyPageResponse> findAllVotedTalkPicks(ApiMember apiMember, Pageable pageable) {
         Member member = apiMember.toMember(memberRepository);
-        List<TalkPickVote> votes = talkPickVoteRepository.findAllByMemberIdAndTalkPickDesc(member.getId());
+        Page<TalkPickVote> votes = talkPickVoteRepository.findAllByMemberIdAndTalkPickDesc(member.getId(), pageable);
 
         List<TalkPickMyPageResponse> responses = votes.stream()
                 .map(vote -> TalkPickMyPageResponse.from(vote.getTalkPick(), vote))
@@ -65,7 +65,7 @@ public class MyPageService {
 
     public Page<TalkPickMyPageResponse> findAllCommentedTalkPicks(ApiMember apiMember, Pageable pageable) {
         Member member = apiMember.toMember(memberRepository);
-        List<Comment> comments = commentRepository.findAllLatestCommentsByMemberIdAndOrderByDesc(member.getId());
+        Page<Comment> comments = commentRepository.findAllLatestCommentsByMemberIdAndOrderByDesc(member.getId(), pageable);
 
         List<TalkPickMyPageResponse> responses = comments.stream()
                 .map(comment -> TalkPickMyPageResponse.from(comment.getTalkPick(), comment))
@@ -76,7 +76,7 @@ public class MyPageService {
 
     public Page<TalkPickMyPageResponse> findAllTalkPicksByMember(ApiMember apiMember, Pageable pageable) {
         Member member = apiMember.toMember(memberRepository);
-        List<TalkPick> talkPicks = talkPickRepository.findAllByMemberIdOrderByEditedAtDesc(member.getId());
+        Page<TalkPick> talkPicks = talkPickRepository.findAllByMemberIdOrderByEditedAtDesc(member.getId(), pageable);
 
         List<TalkPickMyPageResponse> responses = talkPicks.stream()
                 .map(TalkPickMyPageResponse::fromMyTalkPick)
@@ -87,7 +87,7 @@ public class MyPageService {
 
     public Page<GameMyPageResponse> findAllBookmarkedGames(ApiMember apiMember, Pageable pageable) {
         Member member = apiMember.toMember(memberRepository);
-        List<Bookmark> bookmarks = bookmarkRepository.findActivatedByMemberOrderByDesc(member, BookmarkType.GAME);
+        Page<Bookmark> bookmarks = bookmarkRepository.findActivatedByMemberOrderByDesc(member, BookmarkType.GAME, pageable);
 
         List<GameMyPageResponse> responses = bookmarks.stream()
                 .map(bookmark -> { Game game = gameRepository.findById(bookmark.getResourceId()).get();
@@ -100,7 +100,7 @@ public class MyPageService {
 
     public Page<GameMyPageResponse> findAllVotedGames(ApiMember apiMember, Pageable pageable) {
         Member member = apiMember.toMember(memberRepository);
-        List<Vote> votes = voteRepository.findAllByMemberIdAndGameDesc(member.getId());
+        Page<Vote> votes = voteRepository.findAllByMemberIdAndGameDesc(member.getId(), pageable);
 
         List<GameMyPageResponse> responses = votes.stream()
                 .map(vote -> GameMyPageResponse.from(vote.getGameOption().getGame(), vote))
@@ -111,7 +111,7 @@ public class MyPageService {
 
     public Page<GameMyPageResponse> findAllGamesByMember(ApiMember apiMember, Pageable pageable) {
         Member member = apiMember.toMember(memberRepository);
-        List<Game> games = gameRepository.findAllByMemberIdOrderByEditedAtDesc(member.getId());
+        Page<Game> games = gameRepository.findAllByMemberIdOrderByEditedAtDesc(member.getId(), pageable);
 
         List<GameMyPageResponse> responses = games.stream()
                 .map(GameMyPageResponse::from)

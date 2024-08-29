@@ -3,7 +3,7 @@ package balancetalk.game.domain.repository;
 import balancetalk.game.domain.Game;
 import java.util.List;
 
-import balancetalk.talkpick.domain.TalkPick;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -27,6 +27,6 @@ public interface GameRepository extends JpaRepository<Game, Long> {
             "ORDER BY g.views DESC, g.createdAt DESC")
     List<Game> findGamesByViews(@Param("topicName") String topicName, Pageable pageable);
 
-    List<Game> findAllByMemberIdOrderByEditedAtDesc(Long memberId);
+    Page<Game> findAllByMemberIdOrderByEditedAtDesc(Long memberId, Pageable pageable);
 
 }
