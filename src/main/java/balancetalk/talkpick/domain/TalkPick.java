@@ -132,7 +132,8 @@ public class TalkPick extends BaseTimeEntity {
             return new HashMap<>();
         }
         try {
-            return OBJECT_MAPPER.readValue(notificationHistory, new TypeReference<Map<String, Boolean>>() {});
+            return OBJECT_MAPPER.readValue(notificationHistory, new TypeReference<Map<String, Boolean>>() {
+            });
         } catch (IOException e) {
             throw new BalanceTalkException(FAIL_PARSE_NOTIFICATION_HISTORY);
         }
@@ -146,7 +147,8 @@ public class TalkPick extends BaseTimeEntity {
             throw new BalanceTalkException(FAIL_SERIALIZE_NOTIFICATION_HISTORY);
         }
     }
-  
+
     public void updateSummary(Summary newSummary) {
         this.summary = newSummary;
+    }
 }
