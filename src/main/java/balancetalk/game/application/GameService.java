@@ -22,7 +22,6 @@ import balancetalk.vote.domain.GameVote;
 import jakarta.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
@@ -83,7 +82,7 @@ public class GameService {
 
         if (guestOrApiMember.isGuest()) {
             return games.stream()
-                    .map(game -> GameResponse.fromEntity(game, null, false)).collect(Collectors.toUnmodifiableList());
+                    .map(game -> GameResponse.fromEntity(game, null, false)).toList();
         }
 
         Member member = guestOrApiMember.toMember(memberRepository);
@@ -91,7 +90,7 @@ public class GameService {
                 .map(game -> {
                     boolean bookmarked = member.hasBookmarked(game.getId(), GAME);
                     return GameResponse.fromEntity(game, member, bookmarked);
-                }).collect(Collectors.toUnmodifiableList());
+                }).toList();
     }
 
     public List<GameResponse> findBestGames(final String topicName, GuestOrApiMember guestOrApiMember) {
@@ -100,7 +99,7 @@ public class GameService {
 
         if (guestOrApiMember.isGuest()) {
             return games.stream()
-                    .map(game -> GameResponse.fromEntity(game, null, false)).collect(Collectors.toUnmodifiableList());
+                    .map(game -> GameResponse.fromEntity(game, null, false)).toList();
         }
 
         Member member = guestOrApiMember.toMember(memberRepository);
@@ -108,7 +107,7 @@ public class GameService {
                 .map(game -> {
                     boolean bookmarked = member.hasBookmarked(game.getId(), GAME);
                     return GameResponse.fromEntity(game, member, bookmarked);
-                }).collect(Collectors.toUnmodifiableList());
+                }).toList();
     }
 
     public void createGameMainTag(final CreateGameMainTagRequest request, final ApiMember apiMember) {

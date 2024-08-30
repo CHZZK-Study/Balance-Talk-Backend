@@ -12,7 +12,6 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -46,8 +45,8 @@ public class GameDto {
                     .title(title)
                     .description(description)
                     .mainTag(mainTag)
-                    .subTag(Optional.ofNullable(subTag).orElse(""))
-                    .gameOptions(gameOptions.stream().map(GameOptionDto::toEntity).collect(Collectors.toUnmodifiableList()))
+                    .subTag(Optional.ofNullable(subTag).orElse(null))
+                    .gameOptions(gameOptions.stream().map(GameOptionDto::toEntity).toList())
                     .member(member)
                     .bookmarks(0L)
                     .views(0L)
@@ -71,9 +70,6 @@ public class GameDto {
         @Schema(description = "게임 추가 설명", example = "추가 설명")
         private String description;
 
-        @Schema(description = "밸런스 게임 서브 태그", example = "커플지옥")
-        private String tag;
-
         private List<GameOptionDto> gameOptions;
 
         @Schema(description = "메인태그", example = "커플")
@@ -90,9 +86,9 @@ public class GameDto {
                     .id(game.getId())
                     .title(game.getTitle())
                     .description(game.getDescription())
-                    .gameOptions(game.getGameOptions().stream().map(GameOptionDto::fromEntity).collect(Collectors.toUnmodifiableList()))
+                    .gameOptions(game.getGameOptions().stream().map(GameOptionDto::fromEntity).toList())
                     .mainTag(game.getMainTag().getName())
-                    .subTag(Optional.ofNullable(game.getSubTag()).orElse(""))
+                    .subTag(Optional.ofNullable(game.getSubTag()).orElse(null))
                     .myBookmark(isBookmarked)
                     .build();
         }
@@ -141,17 +137,14 @@ public class GameDto {
                     .id(game.getId())
                     .title(game.getTitle())
                     .description(game.getDescription())
-                    .gameOptions(game.getGameOptions().stream()
-                            .filter(gameOption -> gameOption.getGame().equals(game))
-                            .map(GameOptionDto::fromEntity)
-                            .collect(Collectors.toUnmodifiableList()))
+                    .gameOptions(game.getGameOptions().stream().map(GameOptionDto::fromEntity).toList())
                     .views(game.getViews())
                     .votesCountOfOptionA(game.getVoteCount(A))
                     .votesCountOfOptionB(game.getVoteCount(B))
                     .myBookmark(myBookmark)
                     .votedOption(votedOption)
                     .mainTag(game.getMainTag().getName())
-                    .subTag(Optional.ofNullable(game.getSubTag()).orElse(""))
+                    .subTag(Optional.ofNullable(game.getSubTag()).orElse(null))
                     .build();
         }
     }
@@ -213,7 +206,7 @@ public class GameDto {
                     .title(game.getTitle())
                     .optionAImg(game.getGameOptions().get(0).getImgUrl())
                     .optionBImg(game.getGameOptions().get(1).getImgUrl())
-                    .subTag(Optional.ofNullable(game.getSubTag()).orElse(""))
+                    .subTag(Optional.ofNullable(game.getSubTag()).orElse(null))
                     .mainTag(game.getMainTag().getName())
                     .editedAt(game.getEditedAt())
                     .build();
@@ -226,7 +219,7 @@ public class GameDto {
                     .optionAImg(game.getGameOptions().get(0).getImgUrl())
                     .optionBImg(game.getGameOptions().get(1).getImgUrl())
                     .isBookmarked(bookmark.isActive())
-                    .subTag(Optional.ofNullable(game.getSubTag()).orElse(""))
+                    .subTag(Optional.ofNullable(game.getSubTag()).orElse(null))
                     .mainTag(game.getMainTag().getName())
                     .editedAt(game.getEditedAt())
                     .build();
@@ -239,7 +232,7 @@ public class GameDto {
                     .optionAImg(game.getGameOptions().get(0).getImgUrl())
                     .optionBImg(game.getGameOptions().get(1).getImgUrl())
                     .voteOption(vote.getVoteOption())
-                    .subTag(Optional.ofNullable(game.getSubTag()).orElse(""))
+                    .subTag(Optional.ofNullable(game.getSubTag()).orElse(null))
                     .mainTag(game.getMainTag().getName())
                     .editedAt(game.getEditedAt())
                     .build();

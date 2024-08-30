@@ -2,7 +2,6 @@ package balancetalk.game.presentation;
 
 import balancetalk.game.application.GameService;
 import balancetalk.global.utils.AuthPrincipal;
-import balancetalk.member.application.MemberService;
 import balancetalk.member.dto.ApiMember;
 import balancetalk.member.dto.GuestOrApiMember;
 import io.swagger.v3.oas.annotations.Operation;
@@ -23,7 +22,6 @@ import static balancetalk.game.dto.GameDto.*;
 public class GameController {
 
     private final GameService gameService;
-    private final MemberService memberService;
 
     @PostMapping
     @Operation(summary = "밸런스 게임 생성", description = "밸런스 게임을 생성합니다.")
@@ -52,15 +50,15 @@ public class GameController {
 
     @GetMapping("/latest")
     @Operation(summary = "최신순으로 밸런스 게임 조회", description = "최신순으로 정렬된 16개의 게임 목록을 리턴합니다.")
-    public List<GameResponse> findLatestGames(@RequestParam String name,
+    public List<GameResponse> findLatestGames(@RequestParam String tagName,
                                               @Parameter(hidden = true) @AuthPrincipal GuestOrApiMember guestOrApiMember) {
-        return gameService.findLatestGames(name, guestOrApiMember);
+        return gameService.findLatestGames(tagName, guestOrApiMember);
     }
 
     @GetMapping("/best")
     @Operation(summary = "인기순으로 밸런스 게임 조회", description = "인기순으로 정렬된 16개의 게임 목록을 리턴합니다.")
-    public List<GameResponse> findBestGames(@RequestParam String name,
+    public List<GameResponse> findBestGames(@RequestParam String tagName,
                                             @Parameter(hidden = true)  @AuthPrincipal GuestOrApiMember guestOrApiMember) {
-        return gameService.findBestGames(name, guestOrApiMember);
+        return gameService.findBestGames(tagName, guestOrApiMember);
     }
 }
