@@ -10,5 +10,5 @@ import java.util.List;
 public interface VoteRepository extends JpaRepository<GameVote, Long> {
 
     @Query("SELECT v FROM GameVote v WHERE v.member.id = :memberId AND v.gameOption IS NOT NULL ORDER BY v.lastModifiedAt DESC")
-    List<GameVote> findAllByMemberIdAndGameDesc(Long memberId);
+    Page<GameVote> findAllByMemberIdAndGameDesc(Long memberId, Pageable pageable);
 }
