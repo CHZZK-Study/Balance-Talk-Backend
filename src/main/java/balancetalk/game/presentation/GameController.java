@@ -51,16 +51,16 @@ public class GameController {
     }
 
     @GetMapping("/latest")
-    @Operation(summary = "최신순으로 밸런스 게임 조회", description = "gameTopicId에 해당하면서 최신순으로 정렬된 16개의 게임 목록을 리턴합니다.")
-    public List<GameResponse> findLatestGames(@RequestParam String topicName,
+    @Operation(summary = "최신순으로 밸런스 게임 조회", description = "최신순으로 정렬된 16개의 게임 목록을 리턴합니다.")
+    public List<GameResponse> findLatestGames(@RequestParam String name,
                                               @Parameter(hidden = true) @AuthPrincipal GuestOrApiMember guestOrApiMember) {
-        return gameService.findLatestGames(topicName, guestOrApiMember);
+        return gameService.findLatestGames(name, guestOrApiMember);
     }
 
     @GetMapping("/best")
-    @Operation(summary = "인기순으로 밸런스 게임 조회", description = "gameTopicId에 해당하면서 인기순으로 정렬된 16개의 게임 목록을 리턴합니다.")
-    public List<GameResponse> findBestGames(@RequestParam String topicName,
+    @Operation(summary = "인기순으로 밸런스 게임 조회", description = "인기순으로 정렬된 16개의 게임 목록을 리턴합니다.")
+    public List<GameResponse> findBestGames(@RequestParam String name,
                                             @Parameter(hidden = true)  @AuthPrincipal GuestOrApiMember guestOrApiMember) {
-        return gameService.findBestGames(topicName, guestOrApiMember);
+        return gameService.findBestGames(name, guestOrApiMember);
     }
 }

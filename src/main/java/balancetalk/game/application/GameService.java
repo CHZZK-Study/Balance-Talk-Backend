@@ -5,11 +5,11 @@ import static balancetalk.bookmark.domain.BookmarkType.GAME;
 import balancetalk.game.domain.Game;
 import balancetalk.game.domain.GameOption;
 import balancetalk.game.domain.GameReader;
-import balancetalk.game.domain.GameTopic;
+import balancetalk.game.domain.MainTag;
 import balancetalk.game.domain.repository.GameRepository;
-import balancetalk.game.domain.repository.GameTopicRepository;
+import balancetalk.game.domain.repository.GameTagRepository;
+import balancetalk.game.dto.GameDto.CreateGameMainTagRequest;
 import balancetalk.game.dto.GameDto.CreateGameRequest;
-import balancetalk.game.dto.GameDto.CreateGameTopicRequest;
 import balancetalk.game.dto.GameDto.GameDetailResponse;
 import balancetalk.game.dto.GameDto.GameResponse;
 import balancetalk.global.exception.BalanceTalkException;
@@ -40,15 +40,15 @@ public class GameService {
     private final GameReader gameReader;
     private final GameRepository gameRepository;
     private final MemberRepository memberRepository;
-    private final GameTopicRepository gameTopicRepository;
+    private final GameTagRepository gameTagRepository;
 
     public void createBalanceGame(final CreateGameRequest request, final ApiMember apiMember) {
         Member member = apiMember.toMember(memberRepository);
 
-        GameTopic gameTopic = gameTopicRepository.findByName(request.getGameTopic())
+        MainTag mainTag = gameTagRepository.findByName(request.getMainTag())
                 .orElseThrow(() -> new BalanceTalkException(ErrorCode.NOT_FOUND_GAME_TOPIC));
 
-        Game game = request.toEntity(gameTopic, member);
+        Game game = request.toEntity(mainTag, member);
         List<GameOption> gameOptions = game.getGameOptions();
         for (GameOption gameOption : gameOptions) {
             gameOption.addGame(game);
@@ -111,9 +111,9 @@ public class GameService {
                 }).collect(Collectors.toUnmodifiableList());
     }
 
-    public void createGameTopic(final CreateGameTopicRequest request, final ApiMember apiMember) {
+    public void createGameMainTag(final CreateGameMainTagRequest request, final ApiMember apiMember) {
         Member member = apiMember.toMember(memberRepository);
-        GameTopic gameTopic = request.toEntity();
-        gameTopicRepository.save(gameTopic);
+        MainTag mainTag = request.toEntity();
+        gameTagRepository.save(mainTag);
     }
 }
