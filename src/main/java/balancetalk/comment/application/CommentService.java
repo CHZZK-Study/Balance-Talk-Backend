@@ -31,6 +31,11 @@ import static balancetalk.global.exception.ErrorCode.*;
 import static balancetalk.global.notification.domain.NotificationMessage.COMMENT_REPLY_100;
 import static balancetalk.global.notification.domain.NotificationMessage.COMMENT_REPLY_50;
 import static balancetalk.global.notification.domain.NotificationMessage.FIRST_COMMENT_REPLY;
+import static balancetalk.global.notification.domain.NotificationMessage.GAME_VOTE;
+import static balancetalk.global.notification.domain.NotificationMessage.GAME_VOTE_100;
+import static balancetalk.global.notification.domain.NotificationMessage.GAME_VOTE_1000;
+import static balancetalk.global.notification.domain.NotificationStandard.FIRST_STANDARD_OF_NOTIFICATION;
+import static balancetalk.global.notification.domain.NotificationStandard.FOURTH_STANDARD_OF_NOTIFICATION;
 import static balancetalk.global.notification.domain.NotificationStandard.SECOND_STANDARD_OF_NOTIFICATION;
 import static balancetalk.global.notification.domain.NotificationStandard.THIRD_STANDARD_OF_NOTIFICATION;
 import static balancetalk.global.notification.domain.NotificationTitleCategory.OTHERS_TALK_PICK;
@@ -65,6 +70,7 @@ public class CommentService {
 
         Comment comment = createCommentRequest.toEntity(member, talkPick);
         commentRepository.save(comment);
+        sendCommentNotification(talkPick);
     }
 
     @Transactional
@@ -252,5 +258,36 @@ public class CommentService {
         }
         notificationHistory.put(firstReplyKey, true);
         parentComment.setNotificationHistory(notificationHistory);
+    }
+
+    private void sendCommentNotification(TalkPick talkPick) {
+        long commentCount = talkPick.getComments().size();
+        Member member = talkPick.getMember();
+        String commentCountKey = "COMMENT_" + commentCount;
+        Map<String, Boolean> notificationHistory = talkPick.getNotificationHistory();
+        String category = WRITTEN_TALK_PICK.getCategory();
+
+        boolean isMilestoneCommented = (commentCount == FIRST_STANDARD_OF_NOTIFICATION.getCount() ||
+                commentCount == SECOND_STANDARD_OF_NOTIFICATION.getCount() ||
+                commentCount == THIRD_STANDARD_OF_NOTIFICATION.getCount() ||
+                (commentCount > THIRD_STANDARD_OF_NOTIFICATION.getCount() &&
+                        commentCount % THIRD_STANDARD_OF_NOTIFICATION.getCount() == 0) ||
+                (commentCount > FOURTH_STANDARD_OF_NOTIFICATION.getCount() &&
+                        commentCount % FOURTH_STANDARD_OF_NOTIFICATION.getCount() == 0));
+
+        // 댓글 개수가 10, 50, 100*n개, 1000*n개 일 때 알림
+        if (isMilestoneCommented && !notificationHistory.getOrDefault(commentCountKey, false)) {
+            notificationService.sendTalkPickNotification(member, talkPick, category, GAME_VOTE.format(commentCount));
+            // 댓글 개수가 100개일 때 배찌 획득 알림
+            if (commentCount == THIRD_STANDARD_OF_NOTIFICATION.getCount()) {
+                notificationService.sendTalkPickNotification(member, talkPick, category, GAME_VOTE_100.getMessage());
+            }
+            // 댓글 개수가 1000개일 때 배찌 획득 알림
+            else if (commentCount == FOURTH_STANDARD_OF_NOTIFICATION.getCount()) {
+                notificationService.sendTalkPickNotification(member, talkPick, category, GAME_VOTE_1000.getMessage());
+            }
+            notificationHistory.put(commentCountKey, true);
+            talkPick.setNotificationHistory(notificationHistory);
+        }
     }
 }
