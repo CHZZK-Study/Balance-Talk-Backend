@@ -1,9 +1,11 @@
 package balancetalk.global.notification.application;
 
+import balancetalk.game.domain.Game;
 import balancetalk.global.exception.BalanceTalkException;
 import balancetalk.global.notification.domain.Notification;
 import balancetalk.global.notification.domain.NotificationRepository;
-import balancetalk.global.notification.dto.NotificationDto.NotificationRequest;
+import balancetalk.global.notification.dto.NotificationDto.GameNotificationRequest;
+import balancetalk.global.notification.dto.NotificationDto.TalkPickNotificationRequest;
 import balancetalk.global.notification.dto.NotificationDto.NotificationResponse;
 import balancetalk.member.domain.Member;
 import balancetalk.member.domain.MemberRepository;
@@ -52,7 +54,18 @@ public class NotificationService {
     public void sendTalkPickNotification(Member member, TalkPick talkPick,
                                          String category, String message) {
         //TODO 여기 dto 클래스로 분리하고, 형식에 맞게 여러개 만든 다음 service 레이어에서 사용
-        Notification notification = NotificationRequest.toEntity(member, talkPick, category, message);
+        Notification notification = TalkPickNotificationRequest.toEntity(member, talkPick, category, message);
+
+        notificationRepository.save(notification);
+
+        sendRealTimeNotification(notification);
+    }
+
+    @Transactional
+    public void sendGameNotification(Member member, Game game,
+                                         String category, String message) {
+        //TODO 여기 dto 클래스로 분리하고, 형식에 맞게 여러개 만든 다음 service 레이어에서 사용
+        Notification notification = GameNotificationRequest.toEntity(member, game, category, message);
 
         notificationRepository.save(notification);
 
