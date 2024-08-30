@@ -1,5 +1,6 @@
 package balancetalk.talkpick.dto;
 
+import balancetalk.bookmark.domain.Bookmark;
 import balancetalk.comment.domain.Comment;
 import balancetalk.member.domain.Member;
 import balancetalk.talkpick.domain.TalkPick;
@@ -89,7 +90,7 @@ public class TalkPickDto {
         @Schema(description = "본문 내용", example = "톡픽 본문 내용")
         private String content;
 
-        private SummaryDto summary;
+        private SummaryResponse summary;
 
         @Schema(description = "선택지 A 이름", example = "선택지 A 이름")
         private String optionA;
@@ -142,7 +143,7 @@ public class TalkPickDto {
                     .id(entity.getId())
                     .title(entity.getTitle())
                     .content(entity.getContent())
-                    .summary(new SummaryDto(entity.getSummary()))
+                    .summary(new SummaryResponse(entity.getSummary()))
                     .optionA(entity.getOptionA())
                     .optionB(entity.getOptionB())
                     .sourceUrl(entity.getSourceUrl())
@@ -217,6 +218,9 @@ public class TalkPickDto {
         @Schema(description = "북마크 된 개수", example = "12")
         private long bookmarks;
 
+        @Schema(description = "북마크 여부")
+        private boolean isBookmarked;
+
         @Schema(description = "댓글 개수", example = "2")
         private long commentCount;
 
@@ -232,11 +236,14 @@ public class TalkPickDto {
 
          */ // TODO : 톡픽 선택지 이미지 저장 구현 시 완성 가능
 
-        public static TalkPickMyPageResponse from(TalkPick talkPick) {
+        public static TalkPickMyPageResponse from(TalkPick talkPick, Bookmark bookmark) {
             return TalkPickMyPageResponse.builder()
                     .id(talkPick.getId())
                     .title(talkPick.getTitle())
                     .editedAt(talkPick.getEditedAt())
+                    .isBookmarked(bookmark.isActive())
+                    .bookmarks(talkPick.getBookmarks())
+                    .commentCount(!talkPick.getComments().isEmpty() ? talkPick.getComments().size() : 0)
                     .build();
         }
 
@@ -245,6 +252,8 @@ public class TalkPickDto {
                     .id(talkPick.getId())
                     .title(talkPick.getTitle())
                     .voteOption(vote.getVoteOption())
+                    .bookmarks(talkPick.getBookmarks())
+                    .commentCount(!talkPick.getComments().isEmpty() ? talkPick.getComments().size() : 0)
                     .editedAt(talkPick.getEditedAt())
                     .build();
         }
@@ -254,6 +263,8 @@ public class TalkPickDto {
                     .id(talkPick.getId())
                     .title(talkPick.getTitle())
                     .commentContent(comment.getContent())
+                    .bookmarks(talkPick.getBookmarks())
+                    .commentCount(!talkPick.getComments().isEmpty() ? talkPick.getComments().size() : 0)
                     .editedAt(talkPick.getEditedAt())
                     .build();
         }

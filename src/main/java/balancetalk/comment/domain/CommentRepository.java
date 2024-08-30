@@ -22,5 +22,5 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
     @Query("SELECT c FROM Comment c WHERE c.member.id = :memberId AND c.talkPick IS NOT NULL " +
             "AND c.editedAt IN (SELECT MAX(c2.editedAt) FROM Comment c2 WHERE c2.member.id = :memberId GROUP BY c2.talkPick.id) " +
             "ORDER BY c.editedAt DESC")
-    List<Comment> findAllLatestCommentsByMemberIdAndOrderByDesc(@Param("memberId") Long memberId);
+    Page<Comment> findAllLatestCommentsByMemberIdAndOrderByDesc(@Param("memberId") Long memberId, Pageable pageable);
 }
