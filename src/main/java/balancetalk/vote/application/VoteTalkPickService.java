@@ -82,7 +82,7 @@ public class VoteTalkPickService {
         Map<String, Boolean> notificationHistory = talkPick.getNotificationHistory();
         String category = WRITTEN_TALK_PICK.getCategory();
 
-        boolean isMilestoneBookmarked = (votedCount == FIRST_STANDARD_OF_NOTIFICATION.getCount() ||
+        boolean isMilestoneVoted = (votedCount == FIRST_STANDARD_OF_NOTIFICATION.getCount() ||
                 votedCount == SECOND_STANDARD_OF_NOTIFICATION.getCount() ||
                 votedCount == THIRD_STANDARD_OF_NOTIFICATION.getCount() ||
                 (votedCount > THIRD_STANDARD_OF_NOTIFICATION.getCount() &&
@@ -91,7 +91,7 @@ public class VoteTalkPickService {
                         votedCount % FOURTH_STANDARD_OF_NOTIFICATION.getCount() == 0));
 
         // 투표 개수가 10, 50, 100*n개, 1000*n개 일 때 알림
-        if (isMilestoneBookmarked && !notificationHistory.getOrDefault(voteCountKey, false)) {
+        if (isMilestoneVoted && !notificationHistory.getOrDefault(voteCountKey, false)) {
             notificationService.sendTalkPickNotification(member, talkPick, category, TALK_PICK_VOTE.format(votedCount));
             // 투표 개수가 100개일 때 배찌 획득 알림
             if (votedCount == THIRD_STANDARD_OF_NOTIFICATION.getCount()) {
