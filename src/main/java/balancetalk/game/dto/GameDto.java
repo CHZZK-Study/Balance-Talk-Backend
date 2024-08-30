@@ -11,6 +11,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -75,8 +76,11 @@ public class GameDto {
 
         private List<GameOptionDto> gameOptions;
 
-        @Schema(description = "카테고리", example = "월드컵")
-        private String gameTopic;
+        @Schema(description = "메인태그", example = "커플")
+        private String mainTag;
+
+        @Schema(description = "서브태그", example = "커플지옥")
+        private String subTag;
 
         @Schema(description = "북마크 여부", example = "false")
         private Boolean myBookmark;
@@ -88,7 +92,8 @@ public class GameDto {
                     .description(game.getDescription())
                     .tag(game.getTag())
                     .gameOptions(game.getGameOptions().stream().map(GameOptionDto::fromEntity).collect(Collectors.toUnmodifiableList()))
-                    .gameTopic(game.getGameTopic().getName())
+                    .mainTag(game.getGameTopic().getName())
+                    .subTag(Optional.ofNullable(game.getTag()).orElse(""))
                     .myBookmark(isBookmarked)
                     .build();
         }
@@ -109,9 +114,6 @@ public class GameDto {
         @Schema(description = "게임 추가 설명", example = "추가 설명")
         private String description;
 
-        @Schema(description = "밸런스 게임 서브 태그", example = "커플지옥")
-        private String tag;
-
         private List<GameOptionDto> gameOptions;
 
         @Schema(description = "조회수", example = "3")
@@ -129,23 +131,28 @@ public class GameDto {
         @Schema(description = "투표한 선택지", example = "A")
         private VoteOption votedOption;
 
-        @Schema(description = "카테고리", example = "월드컵")
-        private String gameTopic;
+        @Schema(description = "메인태그", example = "커플")
+        private String mainTag;
+
+        @Schema(description = "서브태그", example = "커플지옥")
+        private String subTag;
 
         public static GameDetailResponse from(Game game, boolean myBookmark, VoteOption votedOption) {
             return GameDetailResponse.builder()
                     .id(game.getId())
                     .title(game.getTitle())
                     .description(game.getDescription())
-                    .tag(Optional.ofNullable(game.getTag()).orElse(""))
-                    .gameOptions(game.getGameOptions().stream().map(GameOptionDto::fromEntity)
+                    .gameOptions(game.getGameOptions().stream()
+                            .filter(gameOption -> gameOption.getGame().equals(game))
+                            .map(GameOptionDto::fromEntity)
                             .collect(Collectors.toUnmodifiableList()))
                     .views(game.getViews())
                     .votesCountOfOptionA(game.getVoteCount(A))
                     .votesCountOfOptionB(game.getVoteCount(B))
                     .myBookmark(myBookmark)
                     .votedOption(votedOption)
-                    .gameTopic(game.getGameTopic().getName())
+                    .mainTag(game.getGameTopic().getName())
+                    .subTag(Optional.ofNullable(game.getTag()).orElse(""))
                     .build();
         }
     }
@@ -208,10 +215,9 @@ public class GameDto {
                     .title(game.getTitle())
 //                    .optionAImg(game.getOptionAImg())
 //                    .optionBImg(game.getOptionBImg())
-                    .voteOption(vote.getVoteOption())
+                    .voteOption(vote.getGameOption().getOptionType())
                     .editedAt(game.getEditedAt())
                     .build();
         }
     }
-
 }
