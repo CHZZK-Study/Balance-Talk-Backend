@@ -28,9 +28,9 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.*;
 
 import static balancetalk.global.exception.ErrorCode.*;
-import static balancetalk.global.notification.domain.NotificationMessage.COMMENT_REPLY;
+import static balancetalk.global.notification.domain.NotificationMessage.COMMENT_REPLY_100;
+import static balancetalk.global.notification.domain.NotificationMessage.COMMENT_REPLY_50;
 import static balancetalk.global.notification.domain.NotificationMessage.FIRST_COMMENT_REPLY;
-import static balancetalk.global.notification.domain.NotificationStandard.FIRST_STANDARD_OF_NOTIFICATION;
 import static balancetalk.global.notification.domain.NotificationStandard.SECOND_STANDARD_OF_NOTIFICATION;
 import static balancetalk.global.notification.domain.NotificationStandard.THIRD_STANDARD_OF_NOTIFICATION;
 import static balancetalk.global.notification.domain.NotificationTitleCategory.OTHERS_TALK_PICK;
@@ -233,7 +233,7 @@ public class CommentService {
         boolean isFirstReplyFromOther = parentComment.getReplies().stream()
                 .anyMatch(reply -> !reply.getMember().equals(parentCommentAuthor));
 
-        if (!parentCommentAuthor.equals(talkPick.getMember())) {
+        if (parentCommentAuthor.equals(talkPick.getMember())) {
             category = WRITTEN_TALK_PICK.getCategory();
         }
 
@@ -242,16 +242,15 @@ public class CommentService {
             notificationService.sendTalkPickNotification(parentCommentAuthor,talkPick,
                     category, FIRST_COMMENT_REPLY.getMessage());
             parentComment.setIsNotifiedForFirstReplyTrue();
-            notificationHistory.put(firstReplyKey, true);
-            parentComment.setNotificationHistory(notificationHistory);
-            // 10, 50, 100개 답글 알림
-        } else if ((replyCount == FIRST_STANDARD_OF_NOTIFICATION.getCount() ||
-                replyCount == SECOND_STANDARD_OF_NOTIFICATION.getCount() ||
-                replyCount == THIRD_STANDARD_OF_NOTIFICATION.getCount()) &&
-                !notificationHistory.getOrDefault(replyCountKey, false)) {
-            notificationService.sendTalkPickNotification(parentCommentAuthor, talkPick, category, COMMENT_REPLY.format(replyCount));
-            notificationHistory.put(replyCountKey, true);
-            parentComment.setNotificationHistory(notificationHistory);
+            // 50, 100개 답글 알림
+        } else if (replyCount == SECOND_STANDARD_OF_NOTIFICATION.getCount() && !notificationHistory.getOrDefault(replyCountKey, false)) {
+            notificationService.sendTalkPickNotification(parentCommentAuthor, talkPick, category,
+                    COMMENT_REPLY_50.getMessage());
+        } else if (replyCount == THIRD_STANDARD_OF_NOTIFICATION.getCount() && !notificationHistory.getOrDefault(replyCountKey, false)) {
+            notificationService.sendTalkPickNotification(parentCommentAuthor, talkPick, category,
+                    COMMENT_REPLY_100.getMessage());
         }
+        notificationHistory.put(firstReplyKey, true);
+        parentComment.setNotificationHistory(notificationHistory);
     }
 }
