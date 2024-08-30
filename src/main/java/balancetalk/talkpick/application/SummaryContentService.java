@@ -8,6 +8,8 @@ import balancetalk.talkpick.domain.Summary;
 import balancetalk.talkpick.domain.TalkPick;
 import lombok.RequiredArgsConstructor;
 import org.springframework.ai.chat.client.ChatClient;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,6 +22,7 @@ public class SummaryContentService {
     private final MemberRepository memberRepository;
     private final ChatClient chatClient;
 
+    @Retryable(backoff = @Backoff(delay = 1000))
     @Transactional
     public void summaryContent(long talkPickId, ApiMember apiMember) {
         Member member = apiMember.toMember(memberRepository);
