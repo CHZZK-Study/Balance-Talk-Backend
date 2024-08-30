@@ -8,7 +8,7 @@ import static balancetalk.global.notification.domain.NotificationStandard.FIRST_
 import static balancetalk.global.notification.domain.NotificationStandard.FOURTH_STANDARD_OF_NOTIFICATION;
 import static balancetalk.global.notification.domain.NotificationStandard.SECOND_STANDARD_OF_NOTIFICATION;
 import static balancetalk.global.notification.domain.NotificationStandard.THIRD_STANDARD_OF_NOTIFICATION;
-import static balancetalk.global.notification.domain.NotificationTitleCategory.WRITTEN_TALK_PICK;
+import static balancetalk.global.notification.domain.NotificationTitleCategory.WRITTEN_GAME;
 
 import balancetalk.bookmark.domain.Bookmark;
 import balancetalk.bookmark.domain.BookmarkGenerator;
@@ -21,7 +21,6 @@ import balancetalk.global.notification.application.NotificationService;
 import balancetalk.member.domain.Member;
 import balancetalk.member.domain.MemberRepository;
 import balancetalk.member.dto.ApiMember;
-import balancetalk.talkpick.domain.TalkPick;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -76,7 +75,7 @@ public class BookmarkGameService {
         long bookmarkedCount = game.getBookmarks();
         String bookmarkCountKey = "BOOKMARK_" + bookmarkedCount;
         Map<String, Boolean> notificationHistory = game.getNotificationHistory();
-        String category = WRITTEN_TALK_PICK.getCategory();
+        String category = WRITTEN_GAME.getCategory();
 
         boolean isMilestoneBookmarked = (bookmarkedCount == FIRST_STANDARD_OF_NOTIFICATION.getCount() ||
                 bookmarkedCount == SECOND_STANDARD_OF_NOTIFICATION.getCount() ||
