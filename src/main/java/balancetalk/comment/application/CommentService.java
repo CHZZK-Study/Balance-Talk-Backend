@@ -31,9 +31,9 @@ import static balancetalk.global.exception.ErrorCode.*;
 import static balancetalk.global.notification.domain.NotificationMessage.COMMENT_REPLY_100;
 import static balancetalk.global.notification.domain.NotificationMessage.COMMENT_REPLY_50;
 import static balancetalk.global.notification.domain.NotificationMessage.FIRST_COMMENT_REPLY;
-import static balancetalk.global.notification.domain.NotificationMessage.GAME_VOTE;
-import static balancetalk.global.notification.domain.NotificationMessage.GAME_VOTE_100;
-import static balancetalk.global.notification.domain.NotificationMessage.GAME_VOTE_1000;
+import static balancetalk.global.notification.domain.NotificationMessage.TALK_PICK_COMMENT;
+import static balancetalk.global.notification.domain.NotificationMessage.TALK_PICK_COMMENT_100;
+import static balancetalk.global.notification.domain.NotificationMessage.TALK_PICK_COMMENT_1000;
 import static balancetalk.global.notification.domain.NotificationStandard.FIRST_STANDARD_OF_NOTIFICATION;
 import static balancetalk.global.notification.domain.NotificationStandard.FOURTH_STANDARD_OF_NOTIFICATION;
 import static balancetalk.global.notification.domain.NotificationStandard.SECOND_STANDARD_OF_NOTIFICATION;
@@ -277,14 +277,14 @@ public class CommentService {
 
         // 댓글 개수가 10, 50, 100*n개, 1000*n개 일 때 알림
         if (isMilestoneCommented && !notificationHistory.getOrDefault(commentCountKey, false)) {
-            notificationService.sendTalkPickNotification(member, talkPick, category, GAME_VOTE.format(commentCount));
+            notificationService.sendTalkPickNotification(member, talkPick, category, TALK_PICK_COMMENT.format(commentCount));
             // 댓글 개수가 100개일 때 배찌 획득 알림
             if (commentCount == THIRD_STANDARD_OF_NOTIFICATION.getCount()) {
-                notificationService.sendTalkPickNotification(member, talkPick, category, GAME_VOTE_100.getMessage());
+                notificationService.sendTalkPickNotification(member, talkPick, category, TALK_PICK_COMMENT_100.getMessage());
             }
             // 댓글 개수가 1000개일 때 배찌 획득 알림
             else if (commentCount == FOURTH_STANDARD_OF_NOTIFICATION.getCount()) {
-                notificationService.sendTalkPickNotification(member, talkPick, category, GAME_VOTE_1000.getMessage());
+                notificationService.sendTalkPickNotification(member, talkPick, category, TALK_PICK_COMMENT_1000.getMessage());
             }
             notificationHistory.put(commentCountKey, true);
             talkPick.setNotificationHistory(notificationHistory);
