@@ -4,6 +4,7 @@ import balancetalk.game.domain.Game;
 import balancetalk.global.notification.domain.Notification;
 import balancetalk.member.domain.Member;
 import balancetalk.talkpick.domain.TalkPick;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
@@ -30,7 +31,7 @@ public class NotificationDto {
                     .category(category)
                     .resourceTitle(talkPick.getTitle())
                     .message(message)
-                    .isRead(false)
+                    .readStatus(false)
                     .build();
         }
     }
@@ -53,7 +54,7 @@ public class NotificationDto {
                     .category(category)
                     .resourceTitle(game.getTitle())
                     .message(message)
-                    .isRead(false)
+                    .readStatus(false)
                     .build();
         }
     }
@@ -65,9 +66,13 @@ public class NotificationDto {
     @Schema(description = "톡픽 알림 응답 요청")
     public static class NotificationResponse {
 
+        @Schema(description = "알림 id", example = "1")
+        private long id;
+
         @Schema(description = "알림 카테고리", example = "톡픽")
         private String category;
 
+        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy.MM.dd")
         @Schema(description = "알림 발생 날짜")
         private LocalDateTime createdAt;
 
@@ -79,6 +84,7 @@ public class NotificationDto {
 
         public static NotificationResponse fromEntity(Notification notification) {
             return NotificationResponse.builder()
+                    .id(notification.getId())
                     .category(notification.getCategory())
                     .createdAt(notification.getCreatedAt())
                     .talkPickTitle(notification.getResourceTitle())
