@@ -1,13 +1,28 @@
 package balancetalk.vote.application;
 
+import static balancetalk.global.notification.domain.NotificationMessage.TALK_PICK_RATIO_2_1;
+import static balancetalk.global.notification.domain.NotificationMessage.TALK_PICK_RATIO_3_1;
 import static balancetalk.global.notification.domain.NotificationMessage.TALK_PICK_VOTE;
 import static balancetalk.global.notification.domain.NotificationMessage.TALK_PICK_VOTE_100;
 import static balancetalk.global.notification.domain.NotificationMessage.TALK_PICK_VOTE_1000;
+import static balancetalk.global.notification.domain.NotificationMessage.VOTE_RATIO_COUNT_KEY;
 import static balancetalk.global.notification.domain.NotificationStandard.FIRST_STANDARD_OF_NOTIFICATION;
+import static balancetalk.global.notification.domain.NotificationStandard.FIRST_STANDARD_OF_VOTE_RATIO;
+import static balancetalk.global.notification.domain.NotificationStandard.FIRST_STANDARD_OF_VOTE_RATIO_2_1_NOTIFICATION;
+import static balancetalk.global.notification.domain.NotificationStandard.FIRST_STANDARD_OF_VOTE_RATIO_3_1_NOTIFICATION;
 import static balancetalk.global.notification.domain.NotificationStandard.FOURTH_STANDARD_OF_NOTIFICATION;
 import static balancetalk.global.notification.domain.NotificationStandard.SECOND_STANDARD_OF_NOTIFICATION;
+import static balancetalk.global.notification.domain.NotificationStandard.SECOND_STANDARD_OF_VOTE_RATIO;
+import static balancetalk.global.notification.domain.NotificationStandard.SECOND_STANDARD_OF_VOTE_RATIO_2_1_NOTIFICATION;
+import static balancetalk.global.notification.domain.NotificationStandard.SECOND_STANDARD_OF_VOTE_RATIO_3_1_NOTIFICATION;
 import static balancetalk.global.notification.domain.NotificationStandard.THIRD_STANDARD_OF_NOTIFICATION;
+import static balancetalk.global.notification.domain.NotificationStandard.THIRD_STANDARD_OF_VOTE_RATIO_2_1_NOTIFICATION;
+import static balancetalk.global.notification.domain.NotificationStandard.THIRD_STANDARD_OF_VOTE_RATIO_3_1_NOTIFICATION;
+import static balancetalk.global.notification.domain.NotificationTitleCategory.MY_PICK;
+import static balancetalk.global.notification.domain.NotificationTitleCategory.OTHERS_TALK_PICK;
 import static balancetalk.global.notification.domain.NotificationTitleCategory.WRITTEN_TALK_PICK;
+import static balancetalk.vote.domain.VoteOption.A;
+import static balancetalk.vote.domain.VoteOption.B;
 
 import balancetalk.global.exception.BalanceTalkException;
 import balancetalk.global.exception.ErrorCode;
@@ -20,8 +35,11 @@ import balancetalk.talkpick.domain.TalkPick;
 import balancetalk.talkpick.domain.TalkPickReader;
 import balancetalk.vote.domain.TalkPickVote;
 import balancetalk.vote.domain.TalkPickVoteRepository;
+import balancetalk.vote.domain.VoteOption;
 import balancetalk.vote.dto.VoteTalkPickDto.VoteRequest;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -51,6 +69,7 @@ public class VoteTalkPickService {
 
         voteRepository.save(request.toEntity(member, talkPick));
         sendVoteTalkPickNotification(talkPick);
+        sendVoteTalkPickRatioNotification(talkPick);
     }
 
     @Transactional
@@ -62,6 +81,7 @@ public class VoteTalkPickService {
                 .orElseThrow(() -> new BalanceTalkException(ErrorCode.NOT_FOUND_VOTE));
 
         vote.updateVoteOption(request.getVoteOption());
+        sendVoteTalkPickRatioNotification(talkPick);
     }
 
     @Transactional
@@ -73,6 +93,7 @@ public class VoteTalkPickService {
                 .orElseThrow(() -> new BalanceTalkException(ErrorCode.NOT_FOUND_VOTE));
 
         voteRepository.delete(vote);
+        sendVoteTalkPickRatioNotification(talkPick);
     }
 
     private void sendVoteTalkPickNotification(TalkPick talkPick) {
@@ -104,5 +125,101 @@ public class VoteTalkPickService {
             notificationHistory.put(voteCountKey, true);
             talkPick.setNotificationHistory(notificationHistory);
         }
+    }
+
+    private void sendVoteTalkPickRatioNotification(TalkPick talkPick) {
+        long votesCountOfA = talkPick.votesCountOf(A);
+        long votesCountOfB = talkPick.votesCountOf(B);
+        long totalVotesCount = votesCountOfA + votesCountOfB;
+
+        if (votesCountOfB > 0) {  // B에 대한 투표수가 0일 경우 대비
+            double ratioAtoB = (double) votesCountOfA / votesCountOfB;
+            notifyMembersBasedOnRatio(talkPick, A, ratioAtoB, totalVotesCount);
+        }
+
+        if (votesCountOfA > 0) {  // A에 대한 투표수가 0일 경우 대비
+            double ratioBtoA = (double) votesCountOfB / votesCountOfA;
+            notifyMembersBasedOnRatio(talkPick, B, ratioBtoA, totalVotesCount);
+        }
+    }
+
+    private void notifyMembersBasedOnRatio(TalkPick talkPick, VoteOption voteOption, double ratio, long totalVotesCount) {
+        Map<String, Boolean> notificationHistory = talkPick.getNotificationHistory();
+        long countKey = 0;
+        String voteRatioCountKey = "";
+        String category = MY_PICK.getCategory();
+
+        if (totalVotesCount >= FIRST_STANDARD_OF_VOTE_RATIO_2_1_NOTIFICATION.getCount()
+                && totalVotesCount < SECOND_STANDARD_OF_VOTE_RATIO_2_1_NOTIFICATION.getCount()) {
+            countKey = FIRST_STANDARD_OF_VOTE_RATIO_2_1_NOTIFICATION.getCount();
+            voteRatioCountKey = VOTE_RATIO_COUNT_KEY.format("2:1", countKey);
+        }
+        else if (totalVotesCount >= SECOND_STANDARD_OF_VOTE_RATIO_2_1_NOTIFICATION.getCount()
+                && totalVotesCount <= THIRD_STANDARD_OF_VOTE_RATIO_2_1_NOTIFICATION.getCount()) {
+            countKey = SECOND_STANDARD_OF_VOTE_RATIO_2_1_NOTIFICATION.getCount();
+            voteRatioCountKey = VOTE_RATIO_COUNT_KEY.format("2:1", countKey);
+        } else if (totalVotesCount >= THIRD_STANDARD_OF_VOTE_RATIO_2_1_NOTIFICATION.getCount()) {
+            countKey = THIRD_STANDARD_OF_VOTE_RATIO_2_1_NOTIFICATION.getCount();
+            voteRatioCountKey = VOTE_RATIO_COUNT_KEY.format("2:1", countKey);
+        }
+
+
+        if (ratio >= SECOND_STANDARD_OF_VOTE_RATIO.getCount()) {
+            if (totalVotesCount >= FIRST_STANDARD_OF_VOTE_RATIO_3_1_NOTIFICATION.getCount()
+                    && totalVotesCount < SECOND_STANDARD_OF_VOTE_RATIO_3_1_NOTIFICATION.getCount()) {
+                countKey = FIRST_STANDARD_OF_VOTE_RATIO_3_1_NOTIFICATION.getCount();
+            } else if (totalVotesCount >= SECOND_STANDARD_OF_VOTE_RATIO_3_1_NOTIFICATION.getCount()
+                    && totalVotesCount < THIRD_STANDARD_OF_VOTE_RATIO_3_1_NOTIFICATION.getCount()) {
+                countKey = SECOND_STANDARD_OF_VOTE_RATIO_3_1_NOTIFICATION.getCount();
+            } else if (totalVotesCount >= THIRD_STANDARD_OF_VOTE_RATIO_3_1_NOTIFICATION.getCount()) {
+                countKey = THIRD_STANDARD_OF_VOTE_RATIO_3_1_NOTIFICATION.getCount();
+            }
+            voteRatioCountKey = VOTE_RATIO_COUNT_KEY.format("3:1", countKey);
+        }
+
+        // 2:1 비율 알림
+        if (ratio >= FIRST_STANDARD_OF_VOTE_RATIO.getCount() &&
+                (totalVotesCount >= FIRST_STANDARD_OF_VOTE_RATIO_2_1_NOTIFICATION.getCount()) &&
+                !notificationHistory.getOrDefault(voteRatioCountKey + voteOption.name(), false)) {
+
+            List<Member> members = getMembersWhoVotedForOption(talkPick, voteOption);
+
+            for (Member member : members) {
+                // 사용자가 선택한 선택지에 따라 옵션 결정
+                String optionMessage = voteOption == A ? talkPick.getOptionA() : talkPick.getOptionB();
+
+                sendNotificationToMembers(member, talkPick, category, TALK_PICK_RATIO_2_1.format(category, optionMessage));
+            }
+            notificationHistory.put(voteRatioCountKey + voteOption.name(), true);
+        }
+
+        // 3:1 비율 알림
+        if (ratio >= SECOND_STANDARD_OF_VOTE_RATIO.getCount()
+                && (totalVotesCount >= FIRST_STANDARD_OF_VOTE_RATIO_3_1_NOTIFICATION.getCount())
+                && !notificationHistory.getOrDefault(voteRatioCountKey + voteOption.name(), false)) {
+
+            List<Member> members = getMembersWhoVotedForOption(talkPick, voteOption);
+
+            for (Member member : members) {
+                // 사용자가 선택한 선택지에 따라 옵션 결정
+                String optionMessage = voteOption == A ? talkPick.getOptionA() : talkPick.getOptionB();
+
+                sendNotificationToMembers(member, talkPick, category, TALK_PICK_RATIO_3_1.format(category, optionMessage));
+            }
+            notificationHistory.put(voteRatioCountKey + voteOption.name(), true);
+        }
+
+        talkPick.setNotificationHistory(notificationHistory);
+    }
+
+    private List<Member> getMembersWhoVotedForOption(TalkPick talkPick, VoteOption option) {
+        return talkPick.getVotes().stream()
+                .filter(vote -> vote.getVoteOption().equals(option))
+                .map(TalkPickVote::getMember)
+                .collect(Collectors.toList());
+    }
+
+    private void sendNotificationToMembers(Member member, TalkPick talkPick, String category, String message) {
+        notificationService.sendTalkPickNotification(member, talkPick, category, message);
     }
 }
