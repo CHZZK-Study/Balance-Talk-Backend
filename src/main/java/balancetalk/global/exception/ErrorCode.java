@@ -82,6 +82,7 @@ public enum ErrorCode {
     NOT_FOUND_GAME_TOPIC(NOT_FOUND, "존재하지 않는 밸런스 게임 주제입니다."),
     NOT_FOUND_TALK_PICK_THAT_MEMBER(NOT_FOUND, "해당 회원이 작성하지 않은 톡픽입니다."),
     NOT_FOUND_TEMP_TALK_PICK(NOT_FOUND, "임시 저장한 톡픽이 존재하지 않습니다."),
+    NOT_FOUND_NOTIFICATION(NOT_FOUND, "존재하지 않는 알림입니다."),
 
     // 409
     ALREADY_VOTE(CONFLICT, "이미 투표한 게시글입니다."),
