@@ -29,7 +29,8 @@ public enum NotificationMessage {
     GAME_VOTE_1000("MY 밸런스게임에 투표한 사람이 1000명! '파도에 올라탄 (캐릭터)' 배찌를 얻었어요!"),
     GAME_BOOKMARK("MY 밸런스게임이 저장 %d개를 달성했어요!"),
     GAME_BOOKMARK_100("MY 밸런스게임을 100명이나 저장! '트렌드 리더 (캐릭터)' 배찌를 얻었어요!"),
-    GAME_BOOKMARK_1000("MY 밸런스게임을 1000명이나 저장! '이정도면 문화대통령 (캐릭터)' 배찌를 얻었어요!");
+    GAME_BOOKMARK_1000("MY 밸런스게임을 1000명이나 저장! '이정도면 문화대통령 (캐릭터)' 배찌를 얻었어요!"),
+    VOTE_RATIO_COUNT_KEY("RATIO_%s_SIZE_&d_");
 
     private final String message;
 
