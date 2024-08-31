@@ -94,11 +94,6 @@ public class NotificationService {
         }
     }
 
-    @Transactional(readOnly = true)
-    public List<Notification> getUnreadNotifications(Member member) {
-        return notificationRepository.findAllByMemberAndReadStatusIsFalseOrderByCreatedAtDesc(member);
-    }
-
     @Transactional
     public void markNotificationAsRead(Long notificationId) {
         Notification notification = notificationRepository.findById(notificationId)
