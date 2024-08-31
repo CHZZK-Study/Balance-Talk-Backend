@@ -79,7 +79,6 @@ public class NotificationService {
         sendRealTimeNotification(notification);
     }
 
-    @Transactional
     private void sendRealTimeNotification(Notification notification) {
         SseEmitter emitter = memberEmitters.get(notification.getMember().getId());
 
@@ -104,7 +103,6 @@ public class NotificationService {
         notificationRepository.save(notification);
     }
 
-    @Transactional
     private void sendUnreadNotifications(Long memberId, SseEmitter emitter) {
         List<Notification> unreadNotifications = notificationRepository
                 .findAllByMemberAndReadStatusIsFalseOrderByCreatedAtDesc(memberRepository.findById(memberId)
