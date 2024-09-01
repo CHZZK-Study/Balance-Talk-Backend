@@ -6,10 +6,12 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
+import org.springframework.retry.annotation.EnableRetry;
 
 @OpenAPIDefinition(servers = {@Server(url = "/", description = "Default Server URL")})
 @EnableJpaAuditing
 @EnableCaching
+@EnableRetry
 @SpringBootApplication
 public class BalanceTalkApplication {
 
