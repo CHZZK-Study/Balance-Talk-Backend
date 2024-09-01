@@ -22,7 +22,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class GameTopic extends BaseTimeEntity {
+public class MainTag extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
@@ -32,6 +32,6 @@ public class GameTopic extends BaseTimeEntity {
     @Size(max = 10)
     private String name;
 
-    @OneToMany(mappedBy = "gameTopic")
+    @OneToMany(mappedBy = "mainTag")
     private List<Game> games = new ArrayList<>();
 }

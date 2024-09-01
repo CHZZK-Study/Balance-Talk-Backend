@@ -9,8 +9,8 @@ import balancetalk.global.exception.ErrorCode;
 import balancetalk.like.domain.Like;
 import balancetalk.talkpick.domain.TalkPick;
 import balancetalk.talkpick.domain.TempTalkPick;
+import balancetalk.vote.domain.GameVote;
 import balancetalk.vote.domain.TalkPickVote;
-import balancetalk.vote.domain.Vote;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -55,7 +55,7 @@ public class Member extends BaseTimeEntity {
     private List<TalkPickVote> talkPickVotes = new ArrayList<>();
 
     @OneToMany(mappedBy = "member")
-    private List<Vote> votes = new ArrayList<>();
+    private List<GameVote> gameVotes = new ArrayList<>();
 
     @OneToMany(mappedBy = "member")
     private List<Bookmark> bookmarks = new ArrayList<>();
@@ -100,21 +100,21 @@ public class Member extends BaseTimeEntity {
                 .anyMatch(vote -> vote.matchesTalkPick(talkPick));
     }
 
-    public Optional<Vote> getVoteOnGame(Game game) {
-        return votes.stream()
+    public Optional<GameVote> getVoteOnGame(Game game) {
+        return gameVotes.stream()
                 .filter(vote -> vote.getGameOption().getGame().equals(game))
                 .findAny();
     }
 
-    public Optional<Vote> getVoteOnGameOption(Member member, Game game) {
-        return member.getVotes().stream()
+    public Optional<GameVote> getVoteOnGameOption(Member member, Game game) {
+        return member.getGameVotes().stream()
                 .filter(vote -> game.getGameOptions().stream()
                         .anyMatch(gameOption -> vote.matchesGameOption(gameOption)))
                 .findAny();
     }
 
     public boolean hasVotedGame(Game game) {
-        return votes.stream()
+        return gameVotes.stream()
                 .anyMatch(vote -> game.getGameOptions().stream()
                         .anyMatch(gameOption -> vote.matchesGameOption(gameOption)));
     }
