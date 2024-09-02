@@ -42,8 +42,8 @@ public class Game extends BaseTimeEntity {
     private Member member;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "game_topic_id")
-    private GameTopic gameTopic;
+    @JoinColumn(name = "main_tag_id")
+    private MainTag mainTag;
 
     @OneToMany(mappedBy = "game", cascade = CascadeType.ALL)
     private List<GameOption> gameOptions = new ArrayList<>();
@@ -57,7 +57,7 @@ public class Game extends BaseTimeEntity {
     private String description;
 
     @Size(max = 10)
-    private String tag;
+    private String subTag;
 
     private LocalDateTime editedAt;
 

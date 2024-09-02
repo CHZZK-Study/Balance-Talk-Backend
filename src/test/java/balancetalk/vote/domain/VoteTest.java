@@ -27,7 +27,7 @@ class VoteTest {
     @DisplayName("투표 선택지를 성공적으로 수정한다.")
     void updateVoteOption_Success() {
         // given
-        Vote vote = Vote.builder().voteOption(A).build();
+        TalkPickVote vote = TalkPickVote.builder().voteOption(A).build();
 
         // when
         vote.updateVoteOption(B);
@@ -40,7 +40,7 @@ class VoteTest {
     @DisplayName("투표 선택지가 전달된 선택지와 일치하면 성공한다.")
     void isVoteOptionEquals_True() {
         // given
-        Vote vote = Vote.builder().voteOption(A).build();
+        TalkPickVote vote = TalkPickVote.builder().voteOption(A).build();
 
         // when
         boolean result = vote.isVoteOptionEquals(A);

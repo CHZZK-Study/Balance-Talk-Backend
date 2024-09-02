@@ -1,6 +1,6 @@
 package balancetalk.game.domain;
 
-import balancetalk.vote.domain.Vote;
+import balancetalk.vote.domain.GameVote;
 import balancetalk.vote.domain.VoteOption;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -52,7 +52,7 @@ public class GameOption {
     private Game game;
 
     @OneToMany(mappedBy = "gameOption")
-    private List<Vote> votes = new ArrayList<>();
+    private List<GameVote> gameVotes = new ArrayList<>();
 
     public void addGame(Game game) {
         this.game = game;
@@ -63,6 +63,6 @@ public class GameOption {
     }
 
     public long votesCount() {
-        return votes.size();
+        return gameVotes.size();
     }
 }

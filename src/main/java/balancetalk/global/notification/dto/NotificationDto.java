@@ -59,6 +59,29 @@ public class NotificationDto {
         }
     }
 
+    @Data
+    @Builder
+    @AllArgsConstructor
+    @Schema(description = "게임 알림 생성 요청")
+    public static class GameNotificationRequest {
+
+        @Schema(description = "알림 제목", example = "MY 밸런스게임")
+        private String category;
+
+        @Schema(description = "알림 상세 메시지", example = "작성한 댓글이 하트 10개를 달성했어요.")
+        private String message;
+
+        public static Notification toEntity(Member member, Game game, String category, String message) {
+            return Notification.builder()
+                    .member(member)
+                    .category(category)
+                    .resourceTitle(game.getTitle())
+                    .message(message)
+                    .isRead(false)
+                    .build();
+        }
+    }
+
 
     @Data
     @Builder

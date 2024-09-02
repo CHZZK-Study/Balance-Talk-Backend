@@ -20,14 +20,14 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 @RequestMapping("/games")
 @Tag(name = "game", description = "밸런스 게임 API")
-public class GameTopicController {
+public class GameTagController {
 
     private final GameService gameService;
 
-    @PostMapping("/topic")
-    @Operation(summary = "새로운 밸런스 게임 주제 생성", description = "새로운 밸런스 게임 주제를 생성합니다.")
-    public void createGameTopic(@Valid @RequestBody CreateGameTopicRequest request,
+    @PostMapping("/mainTag")
+    @Operation(summary = "새로운 밸런스 메인 태그 생성", description = "새로운 밸런스 게임 메인 태그를 생성합니다.")
+    public void createGameMainTag(@Valid @RequestBody CreateGameMainTagRequest request,
                                 @Parameter(hidden = true) @AuthPrincipal final ApiMember apiMember) {
-        gameService.createGameTopic(request, apiMember);
+        gameService.createGameMainTag(request, apiMember);
     }
 }
