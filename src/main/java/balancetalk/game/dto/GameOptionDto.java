@@ -13,6 +13,8 @@ import lombok.Data;
 @Schema(description = "밸런스 게임 선택지")
 public class GameOptionDto {
 
+    private Long id;
+
     @Schema(description = "선택지 이름", example = "선택지 이름")
     private String name;
 
@@ -36,6 +38,7 @@ public class GameOptionDto {
 
     public static GameOptionDto fromEntity(GameOption gameOption) {
         return GameOptionDto.builder()
+                .id(gameOption.getId())
                 .name(gameOption.getName())
                 .imgUrl(gameOption.getImgUrl())
                 .description(gameOption.getDescription())

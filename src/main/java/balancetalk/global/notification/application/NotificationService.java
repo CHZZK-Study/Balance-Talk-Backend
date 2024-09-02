@@ -39,6 +39,7 @@ public class NotificationService {
     private final ExecutorService executorService = Executors.newSingleThreadExecutor();
     private final ObjectMapper objectMapper;
 
+    @Transactional
     public SseEmitter createEmitter(ApiMember apiMember) {
         Long memberId = apiMember.toMember(memberRepository).getId();
 
@@ -70,11 +71,10 @@ public class NotificationService {
     @Transactional
     public void sendGameNotification(Member member, Game game,
                                          String category, String message) {
-        //TODO 여기 dto 클래스로 분리하고, 형식에 맞게 여러개 만든 다음 service 레이어에서 사용
         Notification notification = GameNotificationRequest.toEntity(member, game, category, message);
 
         notificationRepository.save(notification);
-
+      
         sendRealTimeNotification(notification);
     }
 
@@ -92,11 +92,6 @@ public class NotificationService {
                 }
             });
         }
-    }
-
-    @Transactional(readOnly = true)
-    public List<Notification> getUnreadNotifications(Member member) {
-        return notificationRepository.findAllByMemberAndReadStatusIsFalseOrderByCreatedAtDesc(member);
     }
 
     @Transactional
