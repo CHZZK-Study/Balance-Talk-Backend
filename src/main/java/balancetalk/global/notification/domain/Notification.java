@@ -30,6 +30,9 @@ public class Notification extends BaseTimeEntity {
     @NotBlank
     private String message;
 
-    private boolean isRead;
+    private boolean readStatus;
 
+    public void read() {
+        this.readStatus = true;
+    }
 }
