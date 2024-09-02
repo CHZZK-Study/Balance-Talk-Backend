@@ -71,7 +71,6 @@ public class NotificationDto {
         @Schema(description = "알림 카테고리", example = "톡픽")
         private String category;
 
-        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy.MM.dd")
         @Schema(description = "알림 발생 날짜")
         @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy.MM.dd")
         private LocalDateTime createdAt;
