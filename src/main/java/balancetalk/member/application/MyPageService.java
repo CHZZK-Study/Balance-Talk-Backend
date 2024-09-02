@@ -53,7 +53,7 @@ public class MyPageService {
                 })
                 .collect(Collectors.toList());
 
-        return new PageImpl<>(responses, pageable, responses.size());
+        return new PageImpl<>(responses, pageable, bookmarks.getTotalElements());
     }
 
     public Page<TalkPickMyPageResponse> findAllVotedTalkPicks(ApiMember apiMember, Pageable pageable) {
@@ -64,7 +64,7 @@ public class MyPageService {
                 .map(vote -> TalkPickMyPageResponse.from(vote.getTalkPick(), vote))
                 .collect(Collectors.toList());
 
-        return new PageImpl<>(responses, pageable, responses.size());
+        return new PageImpl<>(responses, pageable, votes.getTotalElements());
     }
 
     public Page<TalkPickMyPageResponse> findAllCommentedTalkPicks(ApiMember apiMember, Pageable pageable) {
@@ -75,7 +75,7 @@ public class MyPageService {
                 .map(comment -> TalkPickMyPageResponse.from(comment.getTalkPick(), comment))
                 .collect(Collectors.toList());
 
-        return new PageImpl<>(responses, pageable, responses.size());
+        return new PageImpl<>(responses, pageable, comments.getTotalElements());
     }
 
     public Page<TalkPickMyPageResponse> findAllTalkPicksByMember(ApiMember apiMember, Pageable pageable) {
@@ -86,7 +86,7 @@ public class MyPageService {
                 .map(TalkPickMyPageResponse::fromMyTalkPick)
                 .collect(Collectors.toList());
 
-        return new PageImpl<>(responses, pageable, responses.size());
+        return new PageImpl<>(responses, pageable, talkPicks.getTotalElements());
     }
 
     public Page<GameMyPageResponse> findAllBookmarkedGames(ApiMember apiMember, Pageable pageable) {
@@ -101,7 +101,7 @@ public class MyPageService {
                 })
                 .collect(Collectors.toList());
 
-        return new PageImpl<>(responses, pageable, responses.size());
+        return new PageImpl<>(responses, pageable, bookmarks.getTotalElements());
     }
 
     public Page<GameMyPageResponse> findAllVotedGames(ApiMember apiMember, Pageable pageable) {
@@ -112,7 +112,7 @@ public class MyPageService {
                 .map(vote -> GameMyPageResponse.from(vote.getGameOption().getGame(), vote))
                 .collect(Collectors.toList());
 
-        return new PageImpl<>(responses, pageable, responses.size());
+        return new PageImpl<>(responses, pageable, votes.getTotalElements());
     }
 
     public Page<GameMyPageResponse> findAllGamesByMember(ApiMember apiMember, Pageable pageable) {
@@ -123,6 +123,6 @@ public class MyPageService {
                 .map(GameMyPageResponse::from)
                 .collect(Collectors.toList());
 
-        return new PageImpl<>(responses, pageable, responses.size());
+        return new PageImpl<>(responses, pageable, games.getTotalElements());
     }
 }
