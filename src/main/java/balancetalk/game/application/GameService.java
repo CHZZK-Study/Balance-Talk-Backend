@@ -112,6 +112,9 @@ public class GameService {
 
     public void createGameMainTag(final CreateGameMainTagRequest request, final ApiMember apiMember) {
         Member member = apiMember.toMember(memberRepository);
+        if (gameTagRepository.existsByName(request.getName())) {
+            throw new BalanceTalkException(ErrorCode.ALREADY_REGISTERED_TAG);
+        }
         MainTag mainTag = request.toEntity();
         gameTagRepository.save(mainTag);
     }
