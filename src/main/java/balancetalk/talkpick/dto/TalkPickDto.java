@@ -6,6 +6,7 @@ import balancetalk.member.domain.Member;
 import balancetalk.talkpick.domain.TalkPick;
 import balancetalk.vote.domain.TalkPickVote;
 import balancetalk.vote.domain.VoteOption;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.querydsl.core.annotations.QueryProjection;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -225,6 +226,7 @@ public class TalkPickDto {
         private long commentCount;
 
         @Schema(description = "최종 수정일(마이페이지 등록 날짜)")
+        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy.MM.dd")
         private LocalDateTime editedAt;
 
         /*
@@ -244,6 +246,7 @@ public class TalkPickDto {
                     .isBookmarked(bookmark.isActive())
                     .bookmarks(talkPick.getBookmarks())
                     .commentCount(!talkPick.getComments().isEmpty() ? talkPick.getComments().size() : 0)
+                    .editedAt(talkPick.getEditedAt())
                     .build();
         }
 
