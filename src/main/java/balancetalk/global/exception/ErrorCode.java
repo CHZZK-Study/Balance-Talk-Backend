@@ -91,6 +91,7 @@ public enum ErrorCode {
     ALREADY_CANCEL_LIKE_POST(CONFLICT, "이미 추천 취소를 누른 게시글입니다"),
     ALREADY_REGISTERED_NICKNAME(CONFLICT, "이미 등록된 닉네임입니다."),
     ALREADY_REGISTERED_EMAIL(CONFLICT, "이미 등록된 이메일입니다."),
+    ALREADY_REGISTERED_TAG(CONFLICT, "이미 등록된 태그 입니다."),
     SAME_NICKNAME(CONFLICT, "변경하려는 닉네임이 현재와 동일합니다. 다른 닉네임을 입력해주세요."),
     SAME_PASSWORD(CONFLICT, "변경하려는 비밀번호가 현재와 동일합니다. 다른 비밀번호를 입력해주세요."),
     ALREADY_REPORTED_POST(CONFLICT, "이미 신고한 게시글 입니다."),

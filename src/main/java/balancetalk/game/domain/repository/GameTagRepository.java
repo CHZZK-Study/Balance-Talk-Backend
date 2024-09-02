@@ -7,4 +7,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface GameTagRepository extends JpaRepository<MainTag, Long> {
 
     Optional<MainTag> findByName(String mainTag);
+
+    Boolean existsByName(String mainTag);
 }
