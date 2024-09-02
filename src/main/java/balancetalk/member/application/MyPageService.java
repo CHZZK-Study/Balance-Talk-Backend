@@ -8,6 +8,8 @@ import balancetalk.comment.domain.CommentRepository;
 import balancetalk.game.domain.Game;
 import balancetalk.game.domain.repository.GameRepository;
 import balancetalk.game.dto.GameDto.GameMyPageResponse;
+import balancetalk.global.exception.BalanceTalkException;
+import balancetalk.global.exception.ErrorCode;
 import balancetalk.member.domain.Member;
 import balancetalk.member.domain.MemberRepository;
 import balancetalk.member.dto.ApiMember;
@@ -44,7 +46,9 @@ public class MyPageService {
         Page<Bookmark> bookmarks = bookmarkRepository.findActivatedByMemberOrderByDesc(member, BookmarkType.TALK_PICK, pageable);
 
         List<TalkPickMyPageResponse> responses = bookmarks.stream()
-                .map(bookmark -> { TalkPick talkPick = talkPickRepository.findById(bookmark.getResourceId()).get();
+                .map(bookmark -> {
+                    TalkPick talkPick = talkPickRepository.findById(bookmark.getResourceId())
+                            .orElseThrow(() -> new BalanceTalkException(ErrorCode.NOT_FOUND_TALK_PICK));
                     return TalkPickMyPageResponse.from(talkPick, bookmark);
                 })
                 .collect(Collectors.toList());
@@ -90,7 +94,9 @@ public class MyPageService {
         Page<Bookmark> bookmarks = bookmarkRepository.findActivatedByMemberOrderByDesc(member, BookmarkType.GAME, pageable);
 
         List<GameMyPageResponse> responses = bookmarks.stream()
-                .map(bookmark -> { Game game = gameRepository.findById(bookmark.getResourceId()).get();
+                .map(bookmark -> {
+                    Game game = gameRepository.findById(bookmark.getResourceId())
+                            .orElseThrow(() -> new BalanceTalkException(ErrorCode.NOT_FOUND_BALANCE_GAME));
                     return GameMyPageResponse.from(game, bookmark);
                 })
                 .collect(Collectors.toList());
