@@ -8,6 +8,8 @@ import balancetalk.comment.domain.CommentRepository;
 import balancetalk.game.domain.Game;
 import balancetalk.game.domain.repository.GameRepository;
 import balancetalk.game.dto.GameDto.GameMyPageResponse;
+import balancetalk.global.exception.BalanceTalkException;
+import balancetalk.global.exception.ErrorCode;
 import balancetalk.member.domain.Member;
 import balancetalk.member.domain.MemberRepository;
 import balancetalk.member.dto.ApiMember;
@@ -44,12 +46,14 @@ public class MyPageService {
         Page<Bookmark> bookmarks = bookmarkRepository.findActivatedByMemberOrderByDesc(member, BookmarkType.TALK_PICK, pageable);
 
         List<TalkPickMyPageResponse> responses = bookmarks.stream()
-                .map(bookmark -> { TalkPick talkPick = talkPickRepository.findById(bookmark.getResourceId()).get();
+                .map(bookmark -> {
+                    TalkPick talkPick = talkPickRepository.findById(bookmark.getResourceId())
+                            .orElseThrow(() -> new BalanceTalkException(ErrorCode.NOT_FOUND_TALK_PICK));
                     return TalkPickMyPageResponse.from(talkPick, bookmark);
                 })
                 .collect(Collectors.toList());
 
-        return new PageImpl<>(responses, pageable, responses.size());
+        return new PageImpl<>(responses, pageable, bookmarks.getTotalElements());
     }
 
     public Page<TalkPickMyPageResponse> findAllVotedTalkPicks(ApiMember apiMember, Pageable pageable) {
@@ -60,7 +64,7 @@ public class MyPageService {
                 .map(vote -> TalkPickMyPageResponse.from(vote.getTalkPick(), vote))
                 .collect(Collectors.toList());
 
-        return new PageImpl<>(responses, pageable, responses.size());
+        return new PageImpl<>(responses, pageable, votes.getTotalElements());
     }
 
     public Page<TalkPickMyPageResponse> findAllCommentedTalkPicks(ApiMember apiMember, Pageable pageable) {
@@ -71,7 +75,7 @@ public class MyPageService {
                 .map(comment -> TalkPickMyPageResponse.from(comment.getTalkPick(), comment))
                 .collect(Collectors.toList());
 
-        return new PageImpl<>(responses, pageable, responses.size());
+        return new PageImpl<>(responses, pageable, comments.getTotalElements());
     }
 
     public Page<TalkPickMyPageResponse> findAllTalkPicksByMember(ApiMember apiMember, Pageable pageable) {
@@ -82,7 +86,7 @@ public class MyPageService {
                 .map(TalkPickMyPageResponse::fromMyTalkPick)
                 .collect(Collectors.toList());
 
-        return new PageImpl<>(responses, pageable, responses.size());
+        return new PageImpl<>(responses, pageable, talkPicks.getTotalElements());
     }
 
     public Page<GameMyPageResponse> findAllBookmarkedGames(ApiMember apiMember, Pageable pageable) {
@@ -90,12 +94,14 @@ public class MyPageService {
         Page<Bookmark> bookmarks = bookmarkRepository.findActivatedByMemberOrderByDesc(member, BookmarkType.GAME, pageable);
 
         List<GameMyPageResponse> responses = bookmarks.stream()
-                .map(bookmark -> { Game game = gameRepository.findById(bookmark.getResourceId()).get();
+                .map(bookmark -> {
+                    Game game = gameRepository.findById(bookmark.getResourceId())
+                            .orElseThrow(() -> new BalanceTalkException(ErrorCode.NOT_FOUND_BALANCE_GAME));
                     return GameMyPageResponse.from(game, bookmark);
                 })
                 .collect(Collectors.toList());
 
-        return new PageImpl<>(responses, pageable, responses.size());
+        return new PageImpl<>(responses, pageable, bookmarks.getTotalElements());
     }
 
     public Page<GameMyPageResponse> findAllVotedGames(ApiMember apiMember, Pageable pageable) {
@@ -107,7 +113,7 @@ public class MyPageService {
                 .map(vote -> GameMyPageResponse.from(vote.getGameOption().getGame(), vote))
                 .collect(Collectors.toList());
 
-        return new PageImpl<>(responses, pageable, responses.size());
+        return new PageImpl<>(responses, pageable, votes.getTotalElements());
     }
 
     public Page<GameMyPageResponse> findAllGamesByMember(ApiMember apiMember, Pageable pageable) {
@@ -118,6 +124,6 @@ public class MyPageService {
                 .map(GameMyPageResponse::from)
                 .collect(Collectors.toList());
 
-        return new PageImpl<>(responses, pageable, responses.size());
+        return new PageImpl<>(responses, pageable, games.getTotalElements());
     }
 }

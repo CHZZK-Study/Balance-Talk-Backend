@@ -8,6 +8,7 @@ import balancetalk.game.domain.MainTag;
 import balancetalk.member.domain.Member;
 import balancetalk.vote.domain.GameVote;
 import balancetalk.vote.domain.VoteOption;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.List;
@@ -189,6 +190,7 @@ public class GameDto {
         private String optionBImg;
 
         @Schema(description = "최종 수정일(마이페이지 등록 날짜)")
+        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy.MM.dd")
         private LocalDateTime editedAt;
 
         @Schema(description = "북마크 여부")
