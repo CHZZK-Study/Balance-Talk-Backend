@@ -21,7 +21,7 @@ import balancetalk.member.domain.Member;
 import balancetalk.member.domain.MemberRepository;
 import balancetalk.member.dto.ApiMember;
 import balancetalk.member.dto.GuestOrApiMember;
-import balancetalk.vote.domain.Vote;
+import balancetalk.vote.domain.GameVote;
 import balancetalk.vote.domain.VoteRepository;
 import balancetalk.vote.dto.VoteGameDto.VoteRequest;
 import jakarta.transaction.Transactional;
@@ -62,12 +62,12 @@ public class VoteGameService {
 
         Member member = apiMember.toMember(memberRepository);
 
-        Optional<Vote> voteOnGame = member.getVoteOnGame(game);
+        Optional<GameVote> voteOnGame = member.getVoteOnGame(game);
         if (voteOnGame.isEmpty()) {
             throw new BalanceTalkException(ErrorCode.NOT_FOUND_VOTE);
         }
 
-        Vote vote = voteOnGame.get();
+        GameVote vote = voteOnGame.get();
         GameOption gameOption = getGameOption(game, request);
 
         vote.updateVoteOption(request.getVoteOption());
@@ -86,7 +86,7 @@ public class VoteGameService {
 
         Member member = apiMember.toMember(memberRepository);
 
-        Optional<Vote> voteOnGame = member.getVoteOnGame(game);
+        Optional<GameVote> voteOnGame = member.getVoteOnGame(game);
         if (voteOnGame.isEmpty()) {
             throw new BalanceTalkException(ErrorCode.NOT_FOUND_VOTE);
         }

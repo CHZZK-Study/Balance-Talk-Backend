@@ -16,7 +16,7 @@ import balancetalk.talkpick.domain.repository.TalkPickRepository;
 import balancetalk.talkpick.dto.TalkPickDto.TalkPickMyPageResponse;
 import balancetalk.vote.domain.TalkPickVote;
 import balancetalk.vote.domain.TalkPickVoteRepository;
-import balancetalk.vote.domain.Vote;
+import balancetalk.vote.domain.GameVote;
 import balancetalk.vote.domain.VoteRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -100,7 +100,8 @@ public class MyPageService {
 
     public Page<GameMyPageResponse> findAllVotedGames(ApiMember apiMember, Pageable pageable) {
         Member member = apiMember.toMember(memberRepository);
-        Page<Vote> votes = voteRepository.findAllByMemberIdAndGameDesc(member.getId(), pageable);
+
+        Page<GameVote> votes = voteRepository.findAllByMemberIdAndGameDesc(member.getId(), pageable);
 
         List<GameMyPageResponse> responses = votes.stream()
                 .map(vote -> GameMyPageResponse.from(vote.getGameOption().getGame(), vote))
