@@ -24,7 +24,7 @@ public class GameTagController {
 
     private final GameService gameService;
 
-    @PostMapping("/mainTag")
+    @PostMapping("/main-tags")
     @Operation(summary = "새로운 밸런스 메인 태그 생성", description = "새로운 밸런스 게임 메인 태그를 생성합니다.")
     public void createGameMainTag(@Valid @RequestBody CreateGameMainTagRequest request,
                                 @Parameter(hidden = true) @AuthPrincipal final ApiMember apiMember) {
