@@ -246,6 +246,7 @@ public class TalkPickDto {
                     .isBookmarked(bookmark.isActive())
                     .bookmarks(talkPick.getBookmarks())
                     .commentCount(!talkPick.getComments().isEmpty() ? talkPick.getComments().size() : 0)
+                    .editedAt(talkPick.getEditedAt())
                     .build();
         }
 
