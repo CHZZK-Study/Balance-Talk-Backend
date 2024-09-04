@@ -78,10 +78,10 @@ public class TalkPick extends BaseTimeEntity {
     @Enumerated(value = EnumType.STRING)
     private ViewStatus viewStatus = ViewStatus.NORMAL;
 
-    @OneToMany(mappedBy = "talkPick")
+    @OneToMany(mappedBy = "talkPick", cascade = CascadeType.ALL)
     private List<TalkPickVote> votes = new ArrayList<>();
 
-    @OneToMany(mappedBy = "talkPick")
+    @OneToMany(mappedBy = "talkPick", cascade = CascadeType.ALL)
     private List<Comment> comments = new ArrayList<>();
 
     @Column(columnDefinition = "TEXT")
