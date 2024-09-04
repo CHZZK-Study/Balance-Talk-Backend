@@ -75,8 +75,8 @@ public class NotificationDto {
         @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy.MM.dd")
         private LocalDateTime createdAt;
 
-        @Schema(description = "톡픽 제목", example = "이별 사유 이게 말이 돼?")
-        private String talkPickTitle;
+        @Schema(description = "게시글 제목", example = "이별 사유 이게 말이 돼?")
+        private String postTitle;
 
         @Schema(description = "알림 상세 메시지", example = "작성한 댓글이 하트 10개를 달성했어요.")
         private String message;
@@ -86,7 +86,7 @@ public class NotificationDto {
                     .id(notification.getId())
                     .category(notification.getCategory())
                     .createdAt(notification.getCreatedAt())
-                    .talkPickTitle(notification.getResourceTitle())
+                    .postTitle(notification.getResourceTitle())
                     .message(notification.getMessage())
                     .build();
         }
