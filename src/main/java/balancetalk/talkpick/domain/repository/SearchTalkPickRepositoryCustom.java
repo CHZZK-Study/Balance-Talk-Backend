@@ -6,5 +6,5 @@ import java.util.List;
 
 public interface SearchTalkPickRepositoryCustom {
 
-    List<SearchTalkPickResponse> searchTalkPicks(String query);
+    List<SearchTalkPickResponse> searchLimitedTalkPicks(String query);
 }

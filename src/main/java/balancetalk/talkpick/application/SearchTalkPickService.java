@@ -13,7 +13,7 @@ public class SearchTalkPickService {
 
     private final SearchTalkPickRepository searchTalkPickRepository;
 
-    public List<SearchTalkPickResponse> searchTalkPicks(final String query) {
-        return searchTalkPickRepository.searchTalkPicks(query);
+    public List<SearchTalkPickResponse> searchLimitedTalkPicks(final String query) {
+        return searchTalkPickRepository.searchLimitedTalkPicks(query);
     }
 }

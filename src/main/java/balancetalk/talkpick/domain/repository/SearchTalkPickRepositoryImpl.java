@@ -20,7 +20,7 @@ public class SearchTalkPickRepositoryImpl implements SearchTalkPickRepositoryCus
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public List<SearchTalkPickResponse> searchTalkPicks(String keyword) {
+    public List<SearchTalkPickResponse> searchLimitedTalkPicks(String keyword) {
         List<TalkPick> result = getTalkPicksByExactMatch(keyword);
 
         if (isLessThanLimitSize(result) && containsSpacing(keyword)) {

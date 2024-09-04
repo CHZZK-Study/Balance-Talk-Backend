@@ -23,6 +23,6 @@ public class SearchTalkPickController {
     @Operation(summary = "톡픽 검색", description = "키워드를 통해 톡픽을 검색합니다.")
     @GetMapping
     public List<SearchTalkPickResponse> searchTalkPicks(@RequestParam final String query) {
-        return searchTalkPickService.searchTalkPicks(query);
+        return searchTalkPickService.searchLimitedTalkPicks(query);
     }
 }
