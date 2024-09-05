@@ -84,6 +84,10 @@ public class Game extends BaseTimeEntity {
         return option.votesCount();
     }
 
+    public String getWriter() {
+        return this.member.getNickname();
+    }
+
     public void edit() { // 밸런스 게임 수정 시 호출
         // this.title = title;
         // this.optionA = optionA;

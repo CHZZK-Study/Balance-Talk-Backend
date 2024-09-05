@@ -11,8 +11,8 @@ import balancetalk.vote.domain.VoteOption;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.v3.oas.annotations.media.Schema;
+import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -133,6 +133,12 @@ public class GameDto {
         @Schema(description = "서브태그", example = "커플지옥")
         private String subTag;
 
+        @Schema(description = "작성자 닉네임", example = "작성자")
+        private String writer;
+
+        @Schema(description = "작성일", example = "2024-09-05")
+        private LocalDate createdAt;
+
         public static GameDetailResponse from(Game game, boolean myBookmark, VoteOption votedOption) {
             return GameDetailResponse.builder()
                     .id(game.getId())
@@ -146,6 +152,8 @@ public class GameDto {
                     .votedOption(votedOption)
                     .mainTag(game.getMainTag().getName())
                     .subTag(game.getSubTag())
+                    .writer(game.getWriter())
+                    .createdAt(game.getCreatedAt().toLocalDate())
                     .build();
         }
     }
