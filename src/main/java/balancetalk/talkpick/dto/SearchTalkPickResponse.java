@@ -8,6 +8,9 @@ import lombok.Data;
 @Data
 public class SearchTalkPickResponse {
 
+    @Schema(description = "톡픽 ID", example = "2")
+    private Long id;
+
     @Schema(description = "제목", example = "톡픽 제목")
     private String title;
 
@@ -26,6 +29,7 @@ public class SearchTalkPickResponse {
     private String firstImgUrl;
 
     public SearchTalkPickResponse(TalkPick talkPick) {
+        this.id = talkPick.getId();
         this.title = talkPick.getTitle();
         this.summary = new SummaryResponse(talkPick.getSummary());
         this.content = talkPick.getContent();

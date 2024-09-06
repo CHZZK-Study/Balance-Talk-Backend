@@ -4,8 +4,12 @@ import balancetalk.talkpick.domain.TalkPick;
 import balancetalk.talkpick.dto.SearchTalkPickResponse;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.Expressions;
+import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.support.PageableExecutionUtils;
 
 import java.util.List;
 import java.util.StringTokenizer;
@@ -15,43 +19,47 @@ import static balancetalk.talkpick.domain.QTalkPick.talkPick;
 @RequiredArgsConstructor
 public class SearchTalkPickRepositoryImpl implements SearchTalkPickRepositoryCustom {
 
-    private static final int SEARCH_LIMIT_SIZE = 4;
-
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public List<SearchTalkPickResponse> searchLimitedTalkPicks(String keyword) {
-        List<TalkPick> result = getTalkPicksByExactMatch(keyword);
+    public Page<SearchTalkPickResponse> searchTalkPicks(String keyword, Pageable pageable) {
+        long offset = pageable.getOffset();
+        int totalSize = pageable.getPageSize();
 
-        if (isLessThanLimitSize(result) && containsSpacing(keyword)) {
-            List<TalkPick> talkPicks = getTalkPicksByBlankIgnoredExactMatch(keyword);
+        List<TalkPick> result = getTalkPicksByExactMatch(keyword, offset, totalSize);
+
+        if (result.size() < totalSize && containsSpacing(keyword)) {
+            List<TalkPick> talkPicks = getTalkPicksByBlankIgnoredExactMatch(keyword, offset, totalSize - result.size());
             addUniqueTalkPicksToResult(result, talkPicks);
         }
 
-        if (isLessThanLimitSize(result)) {
-            List<TalkPick> talkPicks = getTalkPicksByNaturalMode(keyword);
+        if (result.size() < totalSize) {
+            List<TalkPick> talkPicks = getTalkPicksByNaturalMode(keyword, offset, totalSize - result.size());
             addUniqueTalkPicksToResult(result, talkPicks);
         }
 
-        return result.stream()
+        List<SearchTalkPickResponse> content = result.stream()
                 .map(SearchTalkPickResponse::new)
                 .distinct()
                 .toList();
-    }
 
-    private boolean isLessThanLimitSize(List<TalkPick> result) {
-        return result.size() < SEARCH_LIMIT_SIZE;
+        JPAQuery<Long> countQuery = queryFactory
+                .select(talkPick.count())
+                .from(talkPick);
+
+        return PageableExecutionUtils.getPage(content, pageable, countQuery::fetchOne);
     }
 
     private boolean containsSpacing(String keyword) {
         return keyword.contains(" ");
     }
 
-    private List<TalkPick> getTalkPicksByExactMatch(String keyword) {
+    private List<TalkPick> getTalkPicksByExactMatch(String keyword, long offset, int size) {
         return queryFactory
                 .selectFrom(talkPick)
                 .where(matchInBooleanMode(addQuotes(keyword)))
-                .limit(SEARCH_LIMIT_SIZE)
+                .offset(offset)
+                .limit(size)
                 .fetch();
     }
 
@@ -66,11 +74,12 @@ public class SearchTalkPickRepositoryImpl implements SearchTalkPickRepositoryCus
         return "'\"%s\"'".formatted(keyword);
     }
 
-    private List<TalkPick> getTalkPicksByBlankIgnoredExactMatch(String keyword) {
+    private List<TalkPick> getTalkPicksByBlankIgnoredExactMatch(String keyword, long offset, int size) {
         return queryFactory
                 .selectFrom(talkPick)
                 .where(matchInBooleanMode(addQuotes(ignoreSpacing(keyword))))
-                .limit(SEARCH_LIMIT_SIZE)
+                .offset(offset)
+                .limit(size)
                 .fetch();
     }
 
@@ -91,11 +100,12 @@ public class SearchTalkPickRepositoryImpl implements SearchTalkPickRepositoryCus
         }
     }
 
-    private List<TalkPick> getTalkPicksByNaturalMode(String keyword) {
+    private List<TalkPick> getTalkPicksByNaturalMode(String keyword, long offset, int size) {
         return queryFactory
                 .selectFrom(talkPick)
                 .where(matchInNaturalMode(keyword))
-                .limit(SEARCH_LIMIT_SIZE)
+                .offset(offset)
+                .limit(size)
                 .fetch();
     }
 

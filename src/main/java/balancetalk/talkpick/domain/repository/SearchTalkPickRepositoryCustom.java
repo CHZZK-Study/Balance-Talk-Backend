@@ -1,10 +1,10 @@
 package balancetalk.talkpick.domain.repository;
 
 import balancetalk.talkpick.dto.SearchTalkPickResponse;
-
-import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 public interface SearchTalkPickRepositoryCustom {
 
-    List<SearchTalkPickResponse> searchLimitedTalkPicks(String query);
+    Page<SearchTalkPickResponse> searchTalkPicks(String query, Pageable pageable);
 }
