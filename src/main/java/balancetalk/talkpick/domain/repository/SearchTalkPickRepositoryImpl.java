@@ -14,6 +14,7 @@ import org.springframework.data.support.PageableExecutionUtils;
 import java.util.List;
 import java.util.StringTokenizer;
 
+import static balancetalk.global.utils.QuerydslUtils.getOrderSpecifiers;
 import static balancetalk.talkpick.domain.QTalkPick.talkPick;
 
 @RequiredArgsConstructor
@@ -23,44 +24,46 @@ public class SearchTalkPickRepositoryImpl implements SearchTalkPickRepositoryCus
 
     @Override
     public Page<SearchTalkPickResponse> searchTalkPicks(String keyword, Pageable pageable) {
-        long offset = pageable.getOffset();
         int totalSize = pageable.getPageSize();
 
-        List<TalkPick> result = getTalkPicksByExactMatch(keyword, offset, totalSize);
+        // 1. 키워드와 완전 일치하는 단어가 포함된 톡픽 조회
+        List<TalkPick> result = findByExactMatch(keyword, pageable, totalSize);
 
-        if (result.size() < totalSize && containsSpacing(keyword)) {
-            List<TalkPick> talkPicks = getTalkPicksByBlankIgnoredExactMatch(keyword, offset, totalSize - result.size());
+        // 2. 공백 제거한 키워드와 완전 일치하는 단어가 포함된 톡픽 조회
+        if (hasMoreTalkPicks(totalSize, result) && containsSpacing(keyword)) {
+            List<TalkPick> talkPicks = findByExactMatch(ignoreSpacing(keyword), pageable, totalSize - result.size());
             addUniqueTalkPicksToResult(result, talkPicks);
         }
 
-        if (result.size() < totalSize) {
-            List<TalkPick> talkPicks = getTalkPicksByNaturalMode(keyword, offset, totalSize - result.size());
+        // 3. 자연어 모드에 매칭되는 톡픽 조회
+        if (hasMoreTalkPicks(totalSize, result)) {
+            List<TalkPick> talkPicks = findByNaturalMode(keyword, pageable, totalSize - result.size());
             addUniqueTalkPicksToResult(result, talkPicks);
         }
 
-        List<SearchTalkPickResponse> content = result.stream()
-                .map(SearchTalkPickResponse::new)
-                .distinct()
-                .toList();
-
-        JPAQuery<Long> countQuery = queryFactory
-                .select(talkPick.count())
-                .from(talkPick);
+        // 페이징 응답으로 변환
+        List<SearchTalkPickResponse> content = toResponses(result);
+        JPAQuery<Long> countQuery = countQueryForTalkPicks();
 
         return PageableExecutionUtils.getPage(content, pageable, countQuery::fetchOne);
     }
 
-    private boolean containsSpacing(String keyword) {
-        return keyword.contains(" ");
-    }
-
-    private List<TalkPick> getTalkPicksByExactMatch(String keyword, long offset, int size) {
+    private List<TalkPick> findByExactMatch(String keyword, Pageable pageable, int limit) {
         return queryFactory
                 .selectFrom(talkPick)
                 .where(matchInBooleanMode(addQuotes(keyword)))
-                .offset(offset)
-                .limit(size)
+                .orderBy(getOrderSpecifiers(talkPick, pageable.getSort()))
+                .offset(pageable.getOffset())
+                .limit(limit)
                 .fetch();
+    }
+
+    private boolean hasMoreTalkPicks(int totalSize, List<TalkPick> result) {
+        return result.size() < totalSize;
+    }
+
+    private boolean containsSpacing(String keyword) {
+        return keyword.contains(" ");
     }
 
     private BooleanExpression matchInBooleanMode(String keyword) {
@@ -72,15 +75,6 @@ public class SearchTalkPickRepositoryImpl implements SearchTalkPickRepositoryCus
 
     private String addQuotes(String keyword) {
         return "'\"%s\"'".formatted(keyword);
-    }
-
-    private List<TalkPick> getTalkPicksByBlankIgnoredExactMatch(String keyword, long offset, int size) {
-        return queryFactory
-                .selectFrom(talkPick)
-                .where(matchInBooleanMode(addQuotes(ignoreSpacing(keyword))))
-                .offset(offset)
-                .limit(size)
-                .fetch();
     }
 
     private String ignoreSpacing(String keyword) {
@@ -100,12 +94,13 @@ public class SearchTalkPickRepositoryImpl implements SearchTalkPickRepositoryCus
         }
     }
 
-    private List<TalkPick> getTalkPicksByNaturalMode(String keyword, long offset, int size) {
+    private List<TalkPick> findByNaturalMode(String keyword, Pageable pageable, int limit) {
         return queryFactory
                 .selectFrom(talkPick)
                 .where(matchInNaturalMode(keyword))
-                .offset(offset)
-                .limit(size)
+                .orderBy(getOrderSpecifiers(talkPick, pageable.getSort()))
+                .offset(pageable.getOffset())
+                .limit(limit)
                 .fetch();
     }
 
@@ -114,5 +109,18 @@ public class SearchTalkPickRepositoryImpl implements SearchTalkPickRepositoryCus
                 "function('match_talk_pick_in_natural_mode', {0}, {1}, {2}, {3}, {4}, {5}, {6}, {7})",
                 talkPick.title, talkPick.summary.firstLine, talkPick.summary.secondLine, talkPick.summary.thirdLine,
                 talkPick.content, talkPick.optionA, talkPick.optionB, keyword);
+    }
+
+    private List<SearchTalkPickResponse> toResponses(List<TalkPick> result) {
+        return result.stream()
+                .map(SearchTalkPickResponse::new)
+                .distinct()
+                .toList();
+    }
+
+    private JPAQuery<Long> countQueryForTalkPicks() {
+        return queryFactory
+                .select(talkPick.count())
+                .from(talkPick);
     }
 }
