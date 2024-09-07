@@ -11,6 +11,7 @@ import balancetalk.game.domain.repository.GameTagRepository;
 import balancetalk.game.dto.GameDto.CreateGameMainTagRequest;
 import balancetalk.game.dto.GameDto.CreateGameRequest;
 import balancetalk.game.dto.GameDto.GameDetailResponse;
+import balancetalk.game.dto.GameDto.GamePopularResponse;
 import balancetalk.game.dto.GameDto.GameResponse;
 import balancetalk.global.exception.BalanceTalkException;
 import balancetalk.global.exception.ErrorCode;
@@ -36,6 +37,7 @@ public class GameService {
 
     private static final int START_PAGE = 0;
     private static final int END_PAGE = 16;
+    private static final String popularTag = "인기";
     private final GameReader gameReader;
     private final GameRepository gameRepository;
     private final MemberRepository memberRepository;
@@ -93,20 +95,20 @@ public class GameService {
                 }).toList();
     }
 
-    public List<GameResponse> findBestGames(final String topicName, GuestOrApiMember guestOrApiMember) {
+    public List<GamePopularResponse> findBestGames(final String topicName, GuestOrApiMember guestOrApiMember) {
         Pageable pageable = PageRequest.of(START_PAGE, END_PAGE);
         List<Game> games = gameRepository.findGamesByViews(topicName, pageable);
 
         if (guestOrApiMember.isGuest()) {
             return games.stream()
-                    .map(game -> GameResponse.fromEntity(game, null, false)).toList();
+                    .map(game -> GamePopularResponse.fromEntity(game, null, false, popularTag)).toList();
         }
 
         Member member = guestOrApiMember.toMember(memberRepository);
         return games.stream()
                 .map(game -> {
                     boolean bookmarked = member.hasBookmarked(game.getId(), GAME);
-                    return GameResponse.fromEntity(game, member, bookmarked);
+                    return GamePopularResponse.fromEntity(game, member, bookmarked, popularTag);
                 }).toList();
     }
 

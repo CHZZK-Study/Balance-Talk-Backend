@@ -57,7 +57,7 @@ public class GameController {
 
     @GetMapping("/best")
     @Operation(summary = "인기순으로 밸런스 게임 조회", description = "인기순으로 정렬된 16개의 게임 목록을 리턴합니다.")
-    public List<GameResponse> findBestGames(@RequestParam String tagName,
+    public List<GamePopularResponse> findBestGames(@RequestParam String tagName,
                                             @Parameter(hidden = true)  @AuthPrincipal GuestOrApiMember guestOrApiMember) {
         return gameService.findBestGames(tagName, guestOrApiMember);
     }
