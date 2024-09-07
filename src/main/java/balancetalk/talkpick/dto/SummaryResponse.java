@@ -1,7 +1,6 @@
 package balancetalk.talkpick.dto;
 
 import balancetalk.talkpick.domain.Summary;
-import com.querydsl.core.annotations.QueryProjection;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
@@ -18,8 +17,10 @@ public class SummaryResponse {
     @Schema(description = "요약 3번째 줄", example = "요약 3번째 줄 내용")
     private String summaryThirdLine;
 
-    @QueryProjection
     public SummaryResponse(Summary summary) {
+        if (summary == null) {
+            return;
+        }
         this.summaryFirstLine = summary.getFirstLine();
         this.summarySecondLine = summary.getSecondLine();
         this.summaryThirdLine = summary.getThirdLine();
