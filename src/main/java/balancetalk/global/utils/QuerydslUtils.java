@@ -6,6 +6,8 @@ import com.querydsl.core.types.Order;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.Path;
 import com.querydsl.core.types.dsl.Expressions;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Sort;
 
 import java.util.ArrayList;
@@ -13,6 +15,7 @@ import java.util.List;
 
 import static balancetalk.talkpick.domain.QTalkPick.talkPick;
 
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class QuerydslUtils {
 
     public static OrderSpecifier<?>[] getOrderSpecifiers(Path<?> path, Sort sort) {
