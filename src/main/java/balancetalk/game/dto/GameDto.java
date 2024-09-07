@@ -98,6 +98,46 @@ public class GameDto {
     @Data
     @Builder
     @AllArgsConstructor
+    @Schema(description = "밸런스 게임 인기순으로 조회했을 때 응답값")
+    public static class GamePopularResponse {
+
+        @Schema(description = "밸런스 게임 id", example = "1")
+        private Long id;
+
+        @Schema(description = "밸런스 게임 제목", example = "제목")
+        private String title;
+
+        @Schema(description = "게임 추가 설명", example = "추가 설명")
+        private String description;
+
+        private List<GameOptionDto> gameOptions;
+
+        @Schema(description = "태그값", example = "서브태그가 없는 경우, 메인태그를 보내주고 서브태그가 있는 경우, 그대로 표시")
+        private String tagValue;
+
+        @Schema(description = "인기태그", example = "인기")
+        private String popularTag;
+
+        @Schema(description = "북마크 여부", example = "false")
+        private Boolean myBookmark;
+
+        public static GamePopularResponse fromEntity(Game game, Member member, boolean isBookmarked, String popularTag) {
+            String tagValue = game.getSubTag() != null ? game.getSubTag() : game.getMainTag().getName();
+            return GamePopularResponse.builder()
+                    .id(game.getId())
+                    .title(game.getTitle())
+                    .description(game.getDescription())
+                    .gameOptions(game.getGameOptions().stream().map(GameOptionDto::fromEntity).toList())
+                    .tagValue(tagValue)
+                    .popularTag(popularTag)
+                    .myBookmark(isBookmarked)
+                    .build();
+        }
+    }
+
+    @Data
+    @Builder
+    @AllArgsConstructor
     @Schema(description = "밸런스 게임 상세 조회 응답")
     public static class GameDetailResponse {
 
