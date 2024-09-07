@@ -1,6 +1,7 @@
 package balancetalk.talkpick.dto;
 
 import balancetalk.talkpick.domain.TalkPick;
+import com.querydsl.core.annotations.QueryProjection;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
@@ -33,7 +34,8 @@ public class SearchTalkPickResponse {
     @Schema(description = "작성일", example = "2024-08-04")
     private LocalDateTime createdAt;
 
-    public SearchTalkPickResponse(TalkPick talkPick) {
+    @QueryProjection
+    public SearchTalkPickResponse(TalkPick talkPick, String firstImgUrl) {
         this.id = talkPick.getId();
         this.title = talkPick.getTitle();
         this.summary = new SummaryResponse(talkPick.getSummary());
@@ -41,5 +43,6 @@ public class SearchTalkPickResponse {
         this.optionA = talkPick.getOptionA();
         this.optionB = talkPick.getOptionB();
         this.createdAt = talkPick.getCreatedAt();
+        this.firstImgUrl = firstImgUrl;
     }
 }
