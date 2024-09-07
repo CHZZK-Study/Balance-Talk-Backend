@@ -4,6 +4,8 @@ import balancetalk.talkpick.domain.TalkPick;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
+import java.time.LocalDateTime;
+
 @Schema(description = "톡픽 검색 응답")
 @Data
 public class SearchTalkPickResponse {
@@ -28,6 +30,9 @@ public class SearchTalkPickResponse {
     @Schema(description = "첫 번째 이미지 URL", example = "https://picko-image.s3.ap-northeast-2.amazonaws.com/temp-talk-pick/9b4856fe-b624-4e54-ad80-a94e083301d2_czz.png")
     private String firstImgUrl;
 
+    @Schema(description = "작성일", example = "2024-08-04")
+    private LocalDateTime createdAt;
+
     public SearchTalkPickResponse(TalkPick talkPick) {
         this.id = talkPick.getId();
         this.title = talkPick.getTitle();
@@ -35,5 +40,6 @@ public class SearchTalkPickResponse {
         this.content = talkPick.getContent();
         this.optionA = talkPick.getOptionA();
         this.optionB = talkPick.getOptionB();
+        this.createdAt = talkPick.getCreatedAt();
     }
 }
