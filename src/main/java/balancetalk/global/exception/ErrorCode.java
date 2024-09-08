@@ -36,6 +36,7 @@ public enum ErrorCode {
     CANNOT_BOOKMARK_MY_RESOURCE(BAD_REQUEST, "본인이 생성한 자원에는 북마크가 불가능합니다."),
     ALREADY_BOOKMARKED(BAD_REQUEST, "이미 북마크한 게시글입니다."),
     ALREADY_DELETED_BOOKMARK(BAD_REQUEST, "이미 북마크가 취소된 상태입니다."),
+    SORT_REQUIRED(BAD_REQUEST, "정렬 조건은 필수입니다."),
 
     // 401
     MISMATCHED_EMAIL_OR_PASSWORD(UNAUTHORIZED, "이메일 또는 비밀번호가 잘못되었습니다."),
@@ -104,6 +105,7 @@ public enum ErrorCode {
     SEND_NOTIFICATION_FAIL(INTERNAL_SERVER_ERROR, "알림 전송에 실패했습니다."),
     FAIL_PARSE_NOTIFICATION_HISTORY(INTERNAL_SERVER_ERROR, "알림 내역 파싱에 실패했습니다."),
     FAIL_SERIALIZE_NOTIFICATION_HISTORY(INTERNAL_SERVER_ERROR, "알림 내역 직렬화에 실패했습니다."),
+    FAIL_SORT(INTERNAL_SERVER_ERROR, "정렬에 실패했습니다."),
     SUMMARY_SIZE_IS_OVER(INTERNAL_SERVER_ERROR, "요약 내용의 길이가 적정 기준을 초과했습니다.");
 
     private final HttpStatus httpStatus;
