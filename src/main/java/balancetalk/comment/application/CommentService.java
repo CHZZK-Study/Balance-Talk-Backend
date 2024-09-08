@@ -6,7 +6,6 @@ import balancetalk.comment.dto.CommentDto;
 import balancetalk.global.exception.BalanceTalkException;
 import balancetalk.global.exception.ErrorCode;
 import balancetalk.global.notification.application.NotificationService;
-import balancetalk.global.notification.domain.NotificationTitleCategory;
 import balancetalk.like.domain.LikeRepository;
 import balancetalk.like.domain.LikeType;
 import balancetalk.member.domain.Member;
@@ -57,7 +56,8 @@ public class CommentService {
     @Value("${comments.max-depth}")
     private int maxDepth;
 
-    public void createComment(@Valid CommentDto.CreateCommentRequest createCommentRequest, Long talkPickId, ApiMember apiMember) {
+    public void createComment(@Valid CommentDto.CreateCommentRequest createCommentRequest, Long talkPickId,
+                              ApiMember apiMember) {
         //TODO : Vote 기능 구현 완료 후 추가 예외 처리 필요
         Member member = apiMember.toMember(memberRepository);
         TalkPick talkPick = validateTalkPickId(talkPickId);
@@ -74,7 +74,8 @@ public class CommentService {
     }
 
     @Transactional
-    public void createCommentReply(CommentDto.CreateCommentRequest createCommentRequest, Long talkPickId, Long commentId,
+    public void createCommentReply(CommentDto.CreateCommentRequest createCommentRequest, Long talkPickId,
+                                   Long commentId,
                                    ApiMember apiMember) {
         Member member = apiMember.toMember(memberRepository);
         TalkPick talkPick = validateTalkPickId(talkPickId);
@@ -111,10 +112,12 @@ public class CommentService {
     }
 
     @Transactional(readOnly = true)
-    public Page<CommentDto.CommentResponse> findAllBestComments(Long talkPickId, Pageable pageable, GuestOrApiMember guestOrApiMember) {
+    public Page<CommentDto.CommentResponse> findAllBestComments(Long talkPickId, Pageable pageable,
+                                                                GuestOrApiMember guestOrApiMember) {
         validateTalkPickId(talkPickId);
 
-        List<Comment> allComments = commentRepository.findByTalkPickIdOrderByLikesCountDescCreatedAtDesc(talkPickId, LikeType.COMMENT);
+        List<Comment> allComments = commentRepository.findByTalkPickIdOrderByLikesCountDescCreatedAtDesc(talkPickId,
+                LikeType.COMMENT);
         List<CommentDto.CommentResponse> bestComments = new ArrayList<>();
         List<CommentDto.CommentResponse> otherComments = new ArrayList<>();
 
@@ -165,7 +168,8 @@ public class CommentService {
     }
 
     public void updateComment(Long commentId, Long talkPickId, String content, ApiMember apiMember) {
-        Comment comment = validateCommentByMemberAndTalkPick(commentId, talkPickId, apiMember, FORBIDDEN_COMMENT_MODIFY);
+        Comment comment = validateCommentByMemberAndTalkPick(commentId, talkPickId, apiMember,
+                FORBIDDEN_COMMENT_MODIFY);
         comment.updateContent(content);
     }
 
@@ -174,7 +178,8 @@ public class CommentService {
         commentRepository.deleteById(commentId);
     }
 
-    private Comment validateCommentByMemberAndTalkPick(Long commentId, Long talkPickId, ApiMember apiMember, ErrorCode errorCode) {
+    private Comment validateCommentByMemberAndTalkPick(Long commentId, Long talkPickId, ApiMember apiMember,
+                                                       ErrorCode errorCode) {
         Member member = apiMember.toMember(memberRepository);
         Comment comment = validateCommentId(commentId);
         validateTalkPickId(talkPickId);
@@ -207,7 +212,13 @@ public class CommentService {
 
         Long memberId = guestOrApiMember.toMember(memberRepository).getId();
 
-        return likeRepository.existsByResourceIdAndMemberId(commentId, memberId);
+        if (likeRepository.existsByResourceIdAndMemberId(commentId, memberId)) {
+            return likeRepository.findByResourceIdAndMemberId(commentId, memberId)
+                    .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_LIKE))
+                    .getActive();
+        }
+
+        return false;
     }
 
     private void validateDepth(Comment parentComment) {
