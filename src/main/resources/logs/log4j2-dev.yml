@@ -8,7 +8,7 @@ Configuration:
       fileName: ${sys:LOG_DIR}/logfile.log
       filePattern: "${sys:LOG_DIR}/logfile-%d{yyyy-MM-dd}.%i.txt"
       PatternLayout:
-        pattern: "%style{%d{yyyy-MM-dd HH:mm:ss.SSS}}{cyan} %highlight{[%-5p]}{FATAL=bg_red,
+        pattern: "%style{%d{yyyy-MM-dd HH:mm:ss.SSS}{GMT+9}}{cyan} %highlight{[%-5p]}{FATAL=bg_red,
             ERROR=red, INFO=green, DEBUG=blue, TRACE=bg_yellow} [%C] %style{[%t]}{yellow}- %m%n"
       # immediateFlush: false   # async 방식으로 버퍼를 통해 로그 남기기
 

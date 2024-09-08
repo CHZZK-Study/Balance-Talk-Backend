@@ -18,6 +18,9 @@ public class SummaryResponse {
     private String summaryThirdLine;
 
     public SummaryResponse(Summary summary) {
+        if (summary == null) {
+            return;
+        }
         this.summaryFirstLine = summary.getFirstLine();
         this.summarySecondLine = summary.getSecondLine();
         this.summaryThirdLine = summary.getThirdLine();
