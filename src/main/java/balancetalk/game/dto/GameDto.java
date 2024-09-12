@@ -4,6 +4,7 @@ import static balancetalk.vote.domain.VoteOption.*;
 
 import balancetalk.bookmark.domain.Bookmark;
 import balancetalk.game.domain.Game;
+import balancetalk.game.domain.GameSet;
 import balancetalk.game.domain.MainTag;
 import balancetalk.member.domain.Member;
 import balancetalk.vote.domain.GameVote;
@@ -12,7 +13,6 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.List;
-import java.util.Optional;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -33,25 +33,36 @@ public class GameDto {
         @Schema(description = "게임 추가 설명", example = "추가 설명")
         private String description;
 
+        private List<GameOptionDto> gameOptions;
+
+        public Game toEntity() {
+            return Game.builder()
+                    .title(title)
+                    .description(description)
+                    .gameOptions(gameOptions.stream().map(GameOptionDto::toEntity).toList())
+                    .bookmarks(0L)
+                    .editedAt(LocalDateTime.now())
+                    .build();
+        }
+    }
+
+    @Data
+    public static class CreateGameSetRequest {
+
         @Schema(description = "밸런스 게임 메인 태그", example = "커플")
         private String mainTag;
 
         @Schema(description = "밸런스 게임 서브 태그", example = "커플지옥")
         private String subTag;
 
-        private List<GameOptionDto> gameOptions;
+        private List<CreateGameRequest> games;
 
-        public Game toEntity(MainTag mainTag, Member member) {
-            return Game.builder()
-                    .title(title)
-                    .description(description)
+        public GameSet toEntity(MainTag mainTag, Member member) {
+            return GameSet.builder()
                     .mainTag(mainTag)
                     .subTag(subTag)
-                    .gameOptions(gameOptions.stream().map(GameOptionDto::toEntity).toList())
                     .member(member)
-                    .bookmarks(0L)
-                    .views(0L)
-                    .editedAt(LocalDateTime.now())
+                    .games(games.stream().map(CreateGameRequest::toEntity).toList())
                     .build();
         }
     }
@@ -73,12 +84,6 @@ public class GameDto {
 
         private List<GameOptionDto> gameOptions;
 
-        @Schema(description = "메인태그", example = "커플")
-        private String mainTag;
-
-        @Schema(description = "서브태그", example = "커플지옥")
-        private String subTag;
-
         @Schema(description = "북마크 여부", example = "false")
         private Boolean myBookmark;
 
@@ -88,8 +93,6 @@ public class GameDto {
                     .title(game.getTitle())
                     .description(game.getDescription())
                     .gameOptions(game.getGameOptions().stream().map(GameOptionDto::fromEntity).toList())
-                    .mainTag(game.getMainTag().getName())
-                    .subTag(game.getSubTag())
                     .myBookmark(isBookmarked)
                     .build();
         }
@@ -112,9 +115,6 @@ public class GameDto {
 
         private List<GameOptionDto> gameOptions;
 
-        @Schema(description = "조회수", example = "3")
-        private long views;
-
         @Schema(description = "선택지 A 투표수", example = "98")
         private long votesCountOfOptionA;
 
@@ -127,11 +127,6 @@ public class GameDto {
         @Schema(description = "투표한 선택지", example = "A")
         private VoteOption votedOption;
 
-        @Schema(description = "메인태그", example = "커플")
-        private String mainTag;
-
-        @Schema(description = "서브태그", example = "커플지옥")
-        private String subTag;
 
         public static GameDetailResponse from(Game game, boolean myBookmark, VoteOption votedOption) {
             return GameDetailResponse.builder()
@@ -139,13 +134,10 @@ public class GameDto {
                     .title(game.getTitle())
                     .description(game.getDescription())
                     .gameOptions(game.getGameOptions().stream().map(GameOptionDto::fromEntity).toList())
-                    .views(game.getViews())
                     .votesCountOfOptionA(game.getVoteCount(A))
                     .votesCountOfOptionB(game.getVoteCount(B))
                     .myBookmark(myBookmark)
                     .votedOption(votedOption)
-                    .mainTag(game.getMainTag().getName())
-                    .subTag(game.getSubTag())
                     .build();
         }
     }
@@ -196,11 +188,11 @@ public class GameDto {
         @Schema(description = "북마크 여부")
         private boolean isBookmarked;
 
-        @Schema(description = "밸런스 게임 서브 태그", example = "화제의 중심")
-        private String subTag;
-
-        @Schema(description = "밸런스 게임 메인 태그", example = "인기")
-        private String mainTag;
+//        @Schema(description = "밸런스 게임 서브 태그", example = "화제의 중심")
+//        private String subTag;
+//
+//        @Schema(description = "밸런스 게임 메인 태그", example = "인기")
+//        private String mainTag;
 
         public static GameMyPageResponse from(Game game) {
             return GameMyPageResponse.builder()
@@ -208,8 +200,8 @@ public class GameDto {
                     .title(game.getTitle())
                     .optionAImg(game.getGameOptions().get(0).getImgUrl())
                     .optionBImg(game.getGameOptions().get(1).getImgUrl())
-                    .subTag(game.getSubTag())
-                    .mainTag(game.getMainTag().getName())
+//                    .subTag(game.getSubTag())
+//                    .mainTag(game.getMainTag().getName())
                     .editedAt(game.getEditedAt())
                     .build();
         }
@@ -221,8 +213,8 @@ public class GameDto {
                     .optionAImg(game.getGameOptions().get(0).getImgUrl())
                     .optionBImg(game.getGameOptions().get(1).getImgUrl())
                     .isBookmarked(bookmark.isActive())
-                    .subTag(game.getSubTag())
-                    .mainTag(game.getMainTag().getName())
+//                    .subTag(game.getSubTag())
+//                    .mainTag(game.getMainTag().getName())
                     .editedAt(game.getEditedAt())
                     .build();
         }
@@ -234,8 +226,8 @@ public class GameDto {
                     .optionAImg(game.getGameOptions().get(0).getImgUrl())
                     .optionBImg(game.getGameOptions().get(1).getImgUrl())
                     .voteOption(vote.getVoteOption())
-                    .subTag(game.getSubTag())
-                    .mainTag(game.getMainTag().getName())
+//                    .subTag(game.getSubTag())
+//                    .mainTag(game.getMainTag().getName())
                     .editedAt(game.getEditedAt())
                     .build();
         }
