@@ -3,6 +3,7 @@ package balancetalk.member.domain;
 import balancetalk.bookmark.domain.Bookmark;
 import balancetalk.bookmark.domain.BookmarkType;
 import balancetalk.game.domain.Game;
+import balancetalk.game.domain.GameSet;
 import balancetalk.global.common.BaseTimeEntity;
 import balancetalk.global.exception.BalanceTalkException;
 import balancetalk.global.exception.ErrorCode;
@@ -67,7 +68,7 @@ public class Member extends BaseTimeEntity {
     private TempTalkPick tempTalkPick;
 
     @OneToMany(mappedBy = "member")
-    private List<Game> games = new ArrayList<>();
+    private List<GameSet> gameSets = new ArrayList<>();
 
     @OneToMany(mappedBy = "member")
     private List<Like> likes = new ArrayList<>();
@@ -123,8 +124,9 @@ public class Member extends BaseTimeEntity {
         return talkPicks.contains(talkPick);
     }
 
-    public boolean isMyGame(Game game) {
-        return games.contains(game);
+    public boolean isMyGameSet(GameSet gameSet) {
+        return gameSets.stream()
+                .anyMatch(gs -> gs.equals(gameSet));
     }
 
     public Optional<Bookmark> getBookmarkOf(long resourceId, BookmarkType type) {
@@ -149,7 +151,7 @@ public class Member extends BaseTimeEntity {
     }
 
     public int getPostsCount() {
-        return talkPicks.size() + games.size();
+        return talkPicks.size() + gameSets.size();
     }
 
     public int getBookmarkedPostsCount() {

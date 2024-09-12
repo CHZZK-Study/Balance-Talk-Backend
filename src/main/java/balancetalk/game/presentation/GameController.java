@@ -25,9 +25,9 @@ public class GameController {
 
     @PostMapping
     @Operation(summary = "밸런스 게임 생성", description = "밸런스 게임을 생성합니다.")
-    public void createGame(@RequestBody final CreateGameRequest request,
+    public void createGameSet(@RequestBody final CreateGameSetRequest request,
                            @Parameter(hidden = true) @AuthPrincipal final ApiMember apiMember) {
-        gameService.createBalanceGame(request, apiMember);
+        gameService.createBalanceGameSet(request, apiMember);
     }
 
     @GetMapping("/{gameId}")

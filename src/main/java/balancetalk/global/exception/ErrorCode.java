@@ -37,6 +37,7 @@ public enum ErrorCode {
     ALREADY_BOOKMARKED(BAD_REQUEST, "이미 북마크한 게시글입니다."),
     ALREADY_DELETED_BOOKMARK(BAD_REQUEST, "이미 북마크가 취소된 상태입니다."),
     SORT_REQUIRED(BAD_REQUEST, "정렬 조건은 필수입니다."),
+    BALANCE_GAME_SIZE_TEN(BAD_REQUEST, "밸런스 게임의 갯수는 10개여야 합니다."),
 
     // 401
     MISMATCHED_EMAIL_OR_PASSWORD(UNAUTHORIZED, "이메일 또는 비밀번호가 잘못되었습니다."),
@@ -79,6 +80,7 @@ public enum ErrorCode {
     NOT_FOUND_NOTICE(NOT_FOUND, "존재하지 않는 공지사항입니다."),
     NOT_LIKED_COMMENT(NOT_FOUND, "해당 댓글을 좋아요한 기록이 존재하지 않습니다."),
     NOT_FOUND_LIKE(NOT_FOUND, "해당 좋아요가 존재하지 않습니다."),
+    NOT_FOUND_BALANCE_GAME_SET(NOT_FOUND, "존재하지 않는 밸런스 게임 세트 입니다."),
     NOT_FOUND_BALANCE_GAME(NOT_FOUND, "존재하지 않는 밸런스 게임입니다."),
     NOT_FOUND_GAME_TOPIC(NOT_FOUND, "존재하지 않는 밸런스 게임 주제입니다."),
     NOT_FOUND_TALK_PICK_THAT_MEMBER(NOT_FOUND, "해당 회원이 작성하지 않은 톡픽입니다."),
