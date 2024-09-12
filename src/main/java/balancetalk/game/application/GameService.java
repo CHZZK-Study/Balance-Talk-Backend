@@ -48,24 +48,24 @@ public class GameService {
 
     public void createBalanceGameSet(final CreateGameSetRequest request, final ApiMember apiMember) {
         Member member = apiMember.toMember(memberRepository);
-
-        List<CreateGameRequest> games = request.getGames();
-        if (games.size() < GAME_SIZE) {
-            throw new BalanceTalkException(ErrorCode.BALANCE_GAME_SIZE_TEN);
-        }
-
         MainTag mainTag = gameTagRepository.findByName(request.getMainTag())
                 .orElseThrow(() -> new BalanceTalkException(ErrorCode.NOT_FOUND_GAME_TOPIC));
 
+        List<CreateGameRequest> gameRequests = request.getGames();
+
+        if (gameRequests.size() < GAME_SIZE) {
+            throw new BalanceTalkException(ErrorCode.BALANCE_GAME_SIZE_TEN);
+        }
+
         GameSet gameSet = request.toEntity(mainTag, member);
 
-        for(CreateGameRequest gameRequest : games) {
-            Game game = gameRequest.toEntity();
-            for(GameOption gameOption : game.getGameOptions()) {
+        List<Game> games = gameSet.getGames();
+        for (Game game : games) {
+            game.addGameSet(gameSet);
+            List<GameOption> gameOptions = game.getGameOptions();
+            for (GameOption gameOption : gameOptions) {
                 gameOption.addGame(game);
             }
-            game.addGameSet(gameSet);
-            gameRepository.save(game);
         }
         gameSetRepository.save(gameSet);
     }
@@ -92,7 +92,7 @@ public class GameService {
 
     public List<GameResponse> findLatestGames(final String topicName, GuestOrApiMember guestOrApiMember) {
         Pageable pageable = PageRequest.of(PAGE_INITIAL_INDEX, PAGE_LIMIT);
-        List<Game> games = gameSetRepository.findGamesByCreated(topicName, pageable);
+        List<Game> games = gameSetRepository.findGamesByCreationDate(topicName, pageable);
 
         if (guestOrApiMember.isGuest()) {
             return games.stream()

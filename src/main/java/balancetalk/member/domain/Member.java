@@ -124,9 +124,9 @@ public class Member extends BaseTimeEntity {
         return talkPicks.contains(talkPick);
     }
 
-    public boolean isMyGameSet(GameSet gameSet) {
+    public boolean isMyGame(Game game) {
         return gameSets.stream()
-                .anyMatch(gs -> gs.equals(gameSet));
+                .anyMatch(gameSet -> gameSet.getGames().contains(game));
     }
 
     public Optional<Bookmark> getBookmarkOf(long resourceId, BookmarkType type) {

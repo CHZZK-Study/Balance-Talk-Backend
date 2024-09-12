@@ -35,7 +35,7 @@ public class GameSet extends BaseTimeEntity {
     @Column(name = "id")
     private Long id;
 
-    @OneToMany(mappedBy = "gameSet", cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy = "gameSet", cascade = CascadeType.ALL)
     private List<Game> games = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY)

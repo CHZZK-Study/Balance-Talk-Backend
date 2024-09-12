@@ -15,8 +15,6 @@ import balancetalk.bookmark.domain.BookmarkGenerator;
 import balancetalk.bookmark.domain.BookmarkRepository;
 import balancetalk.game.domain.Game;
 import balancetalk.game.domain.GameReader;
-import balancetalk.game.domain.GameSet;
-import balancetalk.game.domain.repository.GameSetRepository;
 import balancetalk.global.exception.BalanceTalkException;
 import balancetalk.global.exception.ErrorCode;
 import balancetalk.global.notification.application.NotificationService;
@@ -44,9 +42,7 @@ public class BookmarkGameService {
         Game game = gameReader.readById(gameId);
         Member member = apiMember.toMember(memberRepository);
 
-        GameSet gameSet = game.getGameSet(gameId);
-
-        if (member.isMyGameSet(gameSet)) {
+        if (member.isMyGame(game)) {
             throw new BalanceTalkException(ErrorCode.CANNOT_BOOKMARK_MY_RESOURCE);
         }
 

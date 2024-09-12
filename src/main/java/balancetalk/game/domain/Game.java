@@ -58,15 +58,6 @@ public class Game extends BaseTimeEntity {
     @Column(columnDefinition = "TEXT")
     private String notificationHistory;
 
-    public GameSet getGameSet(Long gameId) {
-        return gameSet.getGames()
-                .stream()
-                .filter(game -> game.getId().equals(gameId))
-                .map(Game::getGameSet)
-                .findFirst()
-                .orElseThrow(() -> new BalanceTalkException(ErrorCode.NOT_FOUND_BALANCE_GAME_SET));
-    }
-
     public long getVoteCount(VoteOption optionType) {
         GameOption option = gameOptions.stream()
                 .filter(gameOption -> gameOption.isTypeEqual(optionType))
