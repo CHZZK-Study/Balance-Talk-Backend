@@ -4,17 +4,15 @@ import static balancetalk.bookmark.domain.BookmarkType.GAME;
 
 import balancetalk.game.domain.Game;
 import balancetalk.game.domain.GameOption;
-import balancetalk.game.domain.GameReader;
 import balancetalk.game.domain.GameSet;
 import balancetalk.game.domain.MainTag;
-import balancetalk.game.domain.repository.GameRepository;
 import balancetalk.game.domain.repository.GameSetRepository;
 import balancetalk.game.domain.repository.GameTagRepository;
 import balancetalk.game.dto.GameDto.CreateGameMainTagRequest;
 import balancetalk.game.dto.GameDto.CreateGameRequest;
-import balancetalk.game.dto.GameDto.CreateGameSetRequest;
-import balancetalk.game.dto.GameDto.GameDetailResponse;
 import balancetalk.game.dto.GameDto.GameResponse;
+import balancetalk.game.dto.GameSetDto.CreateGameSetRequest;
+import balancetalk.game.dto.GameSetDto.GameSetDetailResponse;
 import balancetalk.global.exception.BalanceTalkException;
 import balancetalk.global.exception.ErrorCode;
 import balancetalk.member.domain.Member;
@@ -22,9 +20,12 @@ import balancetalk.member.domain.MemberRepository;
 import balancetalk.member.dto.ApiMember;
 import balancetalk.member.dto.GuestOrApiMember;
 import balancetalk.vote.domain.GameVote;
+import balancetalk.vote.domain.VoteOption;
 import jakarta.transaction.Transactional;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
@@ -40,8 +41,6 @@ public class GameService {
     private static final int PAGE_INITIAL_INDEX = 0;
     private static final int PAGE_LIMIT = 16;
     private static final int GAME_SIZE = 10;
-    private final GameReader gameReader;
-    private final GameRepository gameRepository;
     private final GameSetRepository gameSetRepository;
     private final MemberRepository memberRepository;
     private final GameTagRepository gameTagRepository;
@@ -70,24 +69,30 @@ public class GameService {
         gameSetRepository.save(gameSet);
     }
 
-    public GameDetailResponse findBalanceGame(final Long gameId, final GuestOrApiMember guestOrApiMember) {
-        Game game = gameReader.readById(gameId);
-//        game.increaseViews();
+    public GameSetDetailResponse findBalanceGameSet(final Long gameSetId, final GuestOrApiMember guestOrApiMember) {
+        GameSet gameSet = gameSetRepository.findById(gameSetId)
+                .orElseThrow(() -> new BalanceTalkException(ErrorCode.NOT_FOUND_BALANCE_GAME_SET));
+        gameSet.increaseViews();
 
-        if (guestOrApiMember.isGuest()) {
-            return GameDetailResponse.from(game, false, null); // 게스트인 경우 북마크, 선택 옵션 없음
+        if (guestOrApiMember.isGuest()) { // 비회원인 경우
+            return GameSetDetailResponse.fromEntity(gameSet, new ConcurrentHashMap<>(), new ConcurrentHashMap<>()); // 게스트인 경우 북마크, 선택 옵션 없음
         }
 
         Member member = guestOrApiMember.toMember(memberRepository);
-        boolean hasBookmarked = member.hasBookmarked(gameId, GAME);
+        List<Game> games = gameSet.getGames();
 
-        Optional<GameVote> myVote = member.getVoteOnGameOption(member, game);
+        Map<Long, Boolean> bookmarkMap = new ConcurrentHashMap<>();
+        Map<Long, VoteOption> voteOptionMap = new ConcurrentHashMap<>();
 
-        if (myVote.isEmpty()) {
-            return GameDetailResponse.from(game, hasBookmarked, null); // 투표한 게시글이 아닌경우 투표한 선택지는 null
+        for (Game game : games) {
+            boolean hasBookmarked = member.hasBookmarked(game.getId(), GAME);
+            bookmarkMap.put(game.getId(), hasBookmarked);
+            Optional<GameVote> myVote = member.getVoteOnGameOption(member, game);
+            if (myVote.isPresent()) {
+                voteOptionMap.put(game.getId(), myVote.get().getVoteOption());
+            }
         }
-
-        return GameDetailResponse.from(game, hasBookmarked, myVote.get().getVoteOption());
+        return GameSetDetailResponse.fromEntity(gameSet, bookmarkMap, voteOptionMap);
     }
 
     public List<GameResponse> findLatestGames(final String topicName, GuestOrApiMember guestOrApiMember) {
