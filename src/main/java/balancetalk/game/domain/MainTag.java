@@ -33,5 +33,5 @@ public class MainTag extends BaseTimeEntity {
     private String name;
 
     @OneToMany(mappedBy = "mainTag")
-    private List<Game> games = new ArrayList<>();
+    private List<GameSet> gameSets = new ArrayList<>();
 }

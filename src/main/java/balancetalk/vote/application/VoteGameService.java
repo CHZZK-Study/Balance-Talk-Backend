@@ -94,7 +94,7 @@ public class VoteGameService {
     }
 
     private void sendVoteGameNotification(Game game) {
-        Member member = game.getMember();
+        Member member = null; // TODO: GameSet으로 변경됨에 따라 수정 필요
         long votedCount = game.getVoteCount(A) + game.getVoteCount(B);
         String voteCountKey = "VOTE_" + votedCount;
         Map<String, Boolean> notificationHistory = game.getNotificationHistory();

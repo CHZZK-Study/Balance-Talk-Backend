@@ -6,7 +6,6 @@ import static balancetalk.global.exception.ErrorCode.FAIL_SERIALIZE_NOTIFICATION
 import balancetalk.global.common.BaseTimeEntity;
 import balancetalk.global.exception.BalanceTalkException;
 import balancetalk.global.exception.ErrorCode;
-import balancetalk.member.domain.Member;
 import balancetalk.vote.domain.VoteOption;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -38,12 +37,7 @@ public class Game extends BaseTimeEntity {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id")
-    private Member member;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "main_tag_id")
-    private MainTag mainTag;
+    private GameSet gameSet;
 
     @OneToMany(mappedBy = "game", cascade = CascadeType.ALL)
     private List<GameOption> gameOptions = new ArrayList<>();
@@ -56,25 +50,13 @@ public class Game extends BaseTimeEntity {
     @Size(max = 100)
     private String description;
 
-    @Size(max = 10)
-    private String subTag;
-
     private LocalDateTime editedAt;
-
-    @PositiveOrZero
-    @ColumnDefault("0")
-    private long views;
-
     @PositiveOrZero
     @ColumnDefault("0")
     private Long bookmarks;
 
     @Column(columnDefinition = "TEXT")
     private String notificationHistory;
-
-    public void increaseViews() {
-        this.views++;
-    }
 
     public long getVoteCount(VoteOption optionType) {
         GameOption option = gameOptions.stream()
@@ -97,6 +79,10 @@ public class Game extends BaseTimeEntity {
 
     public void decreaseBookmarks() {
         this.bookmarks--;
+    }
+
+    public void addGameSet(GameSet gameSet) {
+        this.gameSet = gameSet;
     }
 
     // 알림 이력 조회

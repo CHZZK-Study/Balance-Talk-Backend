@@ -38,6 +38,7 @@ public class BookmarkGameService {
     private final NotificationService notificationService;
 
     public void createBookmark(final Long gameId, final ApiMember apiMember) {
+
         Game game = gameReader.readById(gameId);
         Member member = apiMember.toMember(memberRepository);
 
@@ -71,7 +72,7 @@ public class BookmarkGameService {
     }
 
     private void sendBookmarkGameNotification(Game game) {
-        Member member = game.getMember();
+        Member member = null; // TODO: GameSet으로 변경됨에 따라 수정 필요
         long bookmarkedCount = game.getBookmarks();
         String bookmarkCountKey = "BOOKMARK_" + bookmarkedCount;
         Map<String, Boolean> notificationHistory = game.getNotificationHistory();

@@ -7,6 +7,7 @@ import balancetalk.comment.domain.Comment;
 import balancetalk.comment.domain.CommentRepository;
 import balancetalk.game.domain.Game;
 import balancetalk.game.domain.repository.GameRepository;
+import balancetalk.game.domain.repository.GameSetRepository;
 import balancetalk.game.dto.GameDto.GameMyPageResponse;
 import balancetalk.global.exception.BalanceTalkException;
 import balancetalk.global.exception.ErrorCode;
@@ -40,6 +41,7 @@ public class MyPageService {
     private final VoteRepository voteRepository;
     private final CommentRepository commentRepository;
     private final GameRepository gameRepository;
+    private final GameSetRepository gameSetRepository;
 
     public Page<TalkPickMyPageResponse> findAllBookmarkedTalkPicks(ApiMember apiMember, Pageable pageable) {
         Member member = apiMember.toMember(memberRepository);
@@ -118,7 +120,8 @@ public class MyPageService {
 
     public Page<GameMyPageResponse> findAllGamesByMember(ApiMember apiMember, Pageable pageable) {
         Member member = apiMember.toMember(memberRepository);
-        Page<Game> games = gameRepository.findAllByMemberIdOrderByEditedAtDesc(member.getId(), pageable);
+        Page<Game> games = null; // FIXME: 수정 필요
+                // gameSetRepository.findAllByMemberIdOrderByEditedAtDesc(member.getId(), pageable);
 
         List<GameMyPageResponse> responses = games.stream()
                 .map(GameMyPageResponse::from)

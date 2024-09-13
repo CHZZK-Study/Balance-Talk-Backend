@@ -11,22 +11,5 @@ import org.springframework.data.repository.query.Param;
 
 public interface GameRepository extends JpaRepository<Game, Long> {
 
-    @Query("SELECT g FROM Game g " +
-            "WHERE g.mainTag.id IN (" +
-            "    SELECT mt.id FROM MainTag mt " +
-            "    WHERE mt.name = :name" +
-            ") " +
-            "ORDER BY g.createdAt DESC")
-    List<Game> findGamesByCreated(@Param("name") String mainTag, Pageable pageable);
-
-    @Query("SELECT g FROM Game g " +
-            "WHERE g.mainTag.id IN (" +
-            "    SELECT mt.id FROM MainTag mt " +
-            "    WHERE mt.name = :name" +
-            ") " +
-            "ORDER BY g.views DESC, g.createdAt DESC")
-    List<Game> findGamesByViews(@Param("name") String mainTag, Pageable pageable);
-
-    Page<Game> findAllByMemberIdOrderByEditedAtDesc(Long memberId, Pageable pageable);
-
+//    Page<Game> findAllByMemberIdOrderByEditedAtDesc(Long memberId, Pageable pageable);
 }
