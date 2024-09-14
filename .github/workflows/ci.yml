@@ -38,12 +38,15 @@ jobs:
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
       run: ./gradlew build sonar --info
-    - name: SonarQube Pull Request Comment
-      uses: campos-pay/sonarqube-pr-comment@v0.1.4
+    - name: SonarQube quality gate check
+      uses: phwt/sonarqube-quality-gate-action@v1
+      id: quality-gate-check
       with:
-        sonar_token: ${{ secrets.SONAR_TOKEN }}
-        sonar_host_url: ${{ secrets.SONAR_HOST_URL }}
-        sonar_projectkey: ${{ secrets.SONAR_PROJECT_KEY }}
+        sonar-project-key: ${{ secrets.SONAR_PROJECT_KEY }}
+        sonar-host-url: ${{ secrets.SONAR_HOST_URL }}
+        sonar-token: ${{ secrets.SONAR_TOKEN }}
         github-token: ${{ secrets.GIT_ACCESS_TOKEN }}
-        repo_name: ${{ github.repository }}
-        pr_number: ${{ github.event.pull_request.number }}
+    - name: Output sonar result
+      run: |
+        echo "${{ steps.quality-gate-check.outputs.project-status }}"
+        echo "${{ steps.quality-gate-check.outputs.quality-gate-result }}"
