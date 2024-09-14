@@ -4,7 +4,6 @@ import static balancetalk.vote.domain.VoteOption.*;
 
 import balancetalk.bookmark.domain.Bookmark;
 import balancetalk.game.domain.Game;
-import balancetalk.game.domain.GameSet;
 import balancetalk.game.domain.MainTag;
 import balancetalk.member.domain.Member;
 import balancetalk.vote.domain.GameVote;
@@ -42,27 +41,6 @@ public class GameDto {
                     .gameOptions(gameOptions.stream().map(GameOptionDto::toEntity).toList())
                     .bookmarks(0L)
                     .editedAt(LocalDateTime.now())
-                    .build();
-        }
-    }
-
-    @Data
-    public static class CreateGameSetRequest {
-
-        @Schema(description = "밸런스 게임 메인 태그", example = "커플")
-        private String mainTag;
-
-        @Schema(description = "밸런스 게임 서브 태그", example = "커플지옥")
-        private String subTag;
-
-        private List<CreateGameRequest> games;
-
-        public GameSet toEntity(MainTag mainTag, Member member) {
-            return GameSet.builder()
-                    .mainTag(mainTag)
-                    .subTag(subTag)
-                    .member(member)
-                    .games(games.stream().map(CreateGameRequest::toEntity).toList())
                     .build();
         }
     }
@@ -127,8 +105,7 @@ public class GameDto {
         @Schema(description = "투표한 선택지", example = "A")
         private VoteOption votedOption;
 
-
-        public static GameDetailResponse from(Game game, boolean myBookmark, VoteOption votedOption) {
+        public static GameDetailResponse fromEntity(Game game, boolean myBookmark, VoteOption votedOption) {
             return GameDetailResponse.builder()
                     .id(game.getId())
                     .title(game.getTitle())
