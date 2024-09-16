@@ -19,10 +19,7 @@ public interface GameSetRepository extends JpaRepository<GameSet, Long> {
     List<Game> findGamesByCreationDate(@Param("name") String mainTag, Pageable pageable);
 
     @Query("SELECT g FROM GameSet g " +
-            "WHERE g.mainTag.id IN (" +
-            "    SELECT mt.id FROM MainTag mt " +
-            "    WHERE mt.name = :name" +
-            ") " +
-            "ORDER BY g.views DESC, g.createdAt DESC")
-    List<Game> findGamesByViews(@Param("name") String mainTag, Pageable pageable);
+            "WHERE g.mainTag.name = :name " +
+            "ORDER BY g.views DESC")
+    List<GameSet> findGamesByViews(@Param("name") String mainTag, Pageable pageable);
 }
