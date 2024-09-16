@@ -20,6 +20,6 @@ public interface GameSetRepository extends JpaRepository<GameSet, Long> {
 
     @Query("SELECT g FROM GameSet g " +
             "WHERE g.mainTag.name = :name " +
-            "ORDER BY g.views DESC")
+            "ORDER BY g.views DESC, g.createdAt DESC")
     List<GameSet> findGamesByViews(@Param("name") String mainTag, Pageable pageable);
 }
