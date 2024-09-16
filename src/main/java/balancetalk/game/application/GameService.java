@@ -13,6 +13,7 @@ import balancetalk.game.dto.GameDto.CreateGameRequest;
 import balancetalk.game.dto.GameDto.GameResponse;
 import balancetalk.game.dto.GameSetDto.CreateGameSetRequest;
 import balancetalk.game.dto.GameSetDto.GameSetDetailResponse;
+import balancetalk.game.dto.GameSetDto.GameSetResponse;
 import balancetalk.global.exception.BalanceTalkException;
 import balancetalk.global.exception.ErrorCode;
 import balancetalk.member.domain.Member;
@@ -112,21 +113,12 @@ public class GameService {
                 }).toList();
     }
 
-    public List<GameResponse> findBestGames(final String topicName, GuestOrApiMember guestOrApiMember) {
+    public List<GameSetResponse> findBestGames(final String topicName) {
         Pageable pageable = PageRequest.of(PAGE_INITIAL_INDEX, PAGE_LIMIT);
-        List<Game> games = gameSetRepository.findGamesByViews(topicName, pageable);
+        List<GameSet> gameSets = gameSetRepository.findGamesByViews(topicName, pageable);
 
-        if (guestOrApiMember.isGuest()) {
-            return games.stream()
-                    .map(game -> GameResponse.fromEntity(game, null, false)).toList();
-        }
-
-        Member member = guestOrApiMember.toMember(memberRepository);
-        return games.stream()
-                .map(game -> {
-                    boolean bookmarked = member.hasBookmarked(game.getId(), GAME);
-                    return GameResponse.fromEntity(game, member, bookmarked);
-                }).toList();
+        return gameSets.stream()
+                .map(gameSet -> GameSetResponse.fromEntity(gameSet)).toList();
     }
 
     public void createGameMainTag(final CreateGameMainTagRequest request, final ApiMember apiMember) {

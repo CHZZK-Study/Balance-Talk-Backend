@@ -3,6 +3,7 @@ package balancetalk.game.presentation;
 import balancetalk.game.application.GameService;
 import balancetalk.game.dto.GameSetDto.CreateGameSetRequest;
 import balancetalk.game.dto.GameSetDto.GameSetDetailResponse;
+import balancetalk.game.dto.GameSetDto.GameSetResponse;
 import balancetalk.global.utils.AuthPrincipal;
 import balancetalk.member.dto.ApiMember;
 import balancetalk.member.dto.GuestOrApiMember;
@@ -47,7 +48,6 @@ public class GameController {
     @DeleteMapping("/{gameId}")
     @Operation(summary = "밸런스 게임 삭제", description = "밸런스 게임을 삭제합니다.")
     public void deleteGame(@PathVariable final Long gameId) {
-
     }
 
     @GetMapping("/latest")
@@ -58,9 +58,8 @@ public class GameController {
     }
 
     @GetMapping("/best")
-    @Operation(summary = "인기순으로 밸런스 게임 조회", description = "인기순으로 정렬된 16개의 게임 목록을 리턴합니다.")
-    public List<GameResponse> findBestGames(@RequestParam String tagName,
-                                            @Parameter(hidden = true)  @AuthPrincipal GuestOrApiMember guestOrApiMember) {
-        return gameService.findBestGames(tagName, guestOrApiMember);
+    @Operation(summary = "조회순으로 밸런스 게임 조회", description = "조회순으로 정렬된 16개의 게임 목록을 리턴합니다.")
+    public List<GameSetResponse> findBestGames(@RequestParam String tagName) {
+        return gameService.findBestGames(tagName);
     }
 }
