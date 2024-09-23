@@ -10,9 +10,9 @@ import balancetalk.game.domain.repository.GameSetRepository;
 import balancetalk.game.domain.repository.GameTagRepository;
 import balancetalk.game.dto.GameDto.CreateGameMainTagRequest;
 import balancetalk.game.dto.GameDto.CreateGameRequest;
-import balancetalk.game.dto.GameDto.GameResponse;
 import balancetalk.game.dto.GameSetDto.CreateGameSetRequest;
 import balancetalk.game.dto.GameSetDto.GameSetDetailResponse;
+import balancetalk.game.dto.GameSetDto.GameSetResponse;
 import balancetalk.global.exception.BalanceTalkException;
 import balancetalk.global.exception.ErrorCode;
 import balancetalk.member.domain.Member;
@@ -95,38 +95,18 @@ public class GameService {
         return GameSetDetailResponse.fromEntity(gameSet, bookmarkMap, voteOptionMap);
     }
 
-    public List<GameResponse> findLatestGames(final String topicName, GuestOrApiMember guestOrApiMember) {
+    public List<GameSetResponse> findLatestGames(final String topicName) {
         Pageable pageable = PageRequest.of(PAGE_INITIAL_INDEX, PAGE_LIMIT);
-        List<Game> games = gameSetRepository.findGamesByCreationDate(topicName, pageable);
-
-        if (guestOrApiMember.isGuest()) {
-            return games.stream()
-                    .map(game -> GameResponse.fromEntity(game, null, false)).toList();
-        }
-
-        Member member = guestOrApiMember.toMember(memberRepository);
-        return games.stream()
-                .map(game -> {
-                    boolean bookmarked = member.hasBookmarked(game.getId(), GAME);
-                    return GameResponse.fromEntity(game, member, bookmarked);
-                }).toList();
+        List<GameSet> gameSets = gameSetRepository.findGamesByCreationDate(topicName, pageable);
+        return gameSets.stream()
+                .map(gameSet -> GameSetResponse.fromEntity(gameSet)).toList();
     }
 
-    public List<GameResponse> findBestGames(final String topicName, GuestOrApiMember guestOrApiMember) {
+    public List<GameSetResponse> findBestGames(final String topicName) {
         Pageable pageable = PageRequest.of(PAGE_INITIAL_INDEX, PAGE_LIMIT);
-        List<Game> games = gameSetRepository.findGamesByViews(topicName, pageable);
-
-        if (guestOrApiMember.isGuest()) {
-            return games.stream()
-                    .map(game -> GameResponse.fromEntity(game, null, false)).toList();
-        }
-
-        Member member = guestOrApiMember.toMember(memberRepository);
-        return games.stream()
-                .map(game -> {
-                    boolean bookmarked = member.hasBookmarked(game.getId(), GAME);
-                    return GameResponse.fromEntity(game, member, bookmarked);
-                }).toList();
+        List<GameSet> gameSets = gameSetRepository.findGamesByViews(topicName, pageable);
+        return gameSets.stream()
+                .map(gameSet -> GameSetResponse.fromEntity(gameSet)).toList();
     }
 
     public void createGameMainTag(final CreateGameMainTagRequest request, final ApiMember apiMember) {
