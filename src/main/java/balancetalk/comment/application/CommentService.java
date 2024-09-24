@@ -136,7 +136,7 @@ public class CommentService {
                                                                 GuestOrApiMember guestOrApiMember) {
         validateTalkPickId(talkPickId);
 
-        List<Comment> allComments = commentRepository.findByTalkPickIdAndParentIsNullOrderByLikesCountDescCreatedAtDesc(talkPickId,
+        List<Comment> allComments = commentRepository.findByTalkPickIdAndParentIsNullOrderByLikesCountDescCreatedAtAsc(talkPickId,
                 LikeType.COMMENT);
         List<CommentDto.CommentResponse> bestComments = new ArrayList<>();
         List<CommentDto.CommentResponse> otherComments = new ArrayList<>();
@@ -174,8 +174,8 @@ public class CommentService {
             }
         }
 
-        bestComments.sort(Comparator.comparing(CommentDto.CommentResponse::getCreatedAt).reversed());
-        otherComments.sort(Comparator.comparing(CommentDto.CommentResponse::getCreatedAt).reversed());
+        bestComments.sort(Comparator.comparing(CommentDto.CommentResponse::getCreatedAt));
+        otherComments.sort(Comparator.comparing(CommentDto.CommentResponse::getCreatedAt));
 
         List<CommentDto.CommentResponse> result = new ArrayList<>();
         result.addAll(bestComments);

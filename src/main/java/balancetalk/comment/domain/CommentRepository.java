@@ -18,10 +18,10 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
                                                                @Param("currentMemberId") Long currentMemberId,
                                                                Pageable pageable);
     @Query("SELECT c FROM Comment c LEFT JOIN Like l ON c.id = l.resourceId AND l.likeType = :likeType " +
-            "WHERE c.talkPick.id = :talkPickId " +
+            "WHERE c.talkPick.id = :talkPickId AND c.parent IS NULL " +
             "GROUP BY c " +
-            "ORDER BY COUNT(l) DESC, c.createdAt DESC")
-    List<Comment> findByTalkPickIdAndParentIsNullOrderByLikesCountDescCreatedAtDesc(@Param("talkPickId") Long talkPickId,
+            "ORDER BY COUNT(l) DESC, c.createdAt ASC")
+    List<Comment> findByTalkPickIdAndParentIsNullOrderByLikesCountDescCreatedAtAsc(@Param("talkPickId") Long talkPickId,
                                                                      @Param("likeType") LikeType likeType);
 
     @Query("SELECT c FROM Comment c WHERE c.member.id = :memberId AND c.talkPick IS NOT NULL " +
