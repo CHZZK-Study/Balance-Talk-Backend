@@ -3,11 +3,10 @@ package balancetalk.game.application;
 import balancetalk.game.domain.Game;
 import balancetalk.game.domain.repository.GameRepository;
 import balancetalk.game.dto.SearchGameResponse;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.concurrent.CopyOnWriteArrayList;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -23,7 +22,7 @@ public class SearchGameService {
     private final GameRepository gameRepository;
 
     public Page<SearchGameResponse> search(String query, Pageable pageable, String sort) {
-        List<Game> resultList = Collections.synchronizedList(new ArrayList<>());
+        List<Game> resultList = Collections.synchronizedList(new CopyOnWriteArrayList<>());
 
         // 1. 완전 일치 검색
         searchExactMatch(query, resultList, sort);
@@ -45,20 +44,16 @@ public class SearchGameService {
 
     private void searchExactMatch(String query, List<Game> resultList, String sort) {
         List<Game> results = gameRepository.searchExactMatch(query);
-        sort(results, sort);
 
-        synchronized (resultList) {
-            resultList.addAll(results);
-        }
+        sort(results, sort);
+        resultList.addAll(results);
     }
 
     private void searchNaturalLanguage(String query, List<Game> resultList, String sort) {
         List<Game> results = gameRepository.searchNaturalLanguage(query);
-        sort(results, sort);
 
-        synchronized (resultList) {
-            resultList.addAll(results);
-        }
+        sort(results, sort);
+        resultList.addAll(results);
     }
 
     private void sort(List<Game> resultList, String sort) {
@@ -74,12 +69,10 @@ public class SearchGameService {
     }
 
     private List<SearchGameResponse> convertToResponse(List<Game> games) {
-        synchronized (games) {
-            return games.stream()
-                    .map(SearchGameResponse::from)
-                    .distinct() // 중복 제거
-                    .collect(Collectors.toList());
-        }
+        return games.stream()
+                .map(SearchGameResponse::from)
+                .distinct() // 중복 제거
+                .toList();
     }
 
     private void sortByViews(List<Game> resultList) {
