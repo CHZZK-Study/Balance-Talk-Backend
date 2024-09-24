@@ -55,4 +55,19 @@ public class TempGame extends BaseTimeEntity {
     public void addTempGameSet(TempGameSet tempGameSet) {
         this.tempGameSet = tempGameSet;
     }
+
+    public void updateTempGame(TempGame newTempGame) {
+        this.title = newTempGame.getTitle();
+        this.description = newTempGame.getDescription();
+        List<TempGameOption> newTempOptions = newTempGame.getTempGameOptions();
+        newTempOptions.forEach(newOption -> {
+            this.tempGameOptions.stream()
+                    .filter(option -> option.getId().equals(newOption.getId()))
+                    .findFirst()
+                    .ifPresentOrElse(
+                            option -> option.update(newOption),
+                            () -> this.tempGameOptions.add(newOption)
+                    );
+        });
+    }
 }

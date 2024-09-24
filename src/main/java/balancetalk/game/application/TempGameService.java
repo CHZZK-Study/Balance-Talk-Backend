@@ -36,9 +36,14 @@ public class TempGameService {
         Member member = apiMember.toMember(memberRepository);
         MainTag mainTag = gameTagRepository.findByName(request.getMainTag())
                 .orElseThrow(() -> new BalanceTalkException(ErrorCode.NOT_FOUND_GAME_TOPIC));
-//        if (member.hasTempGame()) {
-//
-//        }
+
+        List<String> storedNames = extractStoredNames(request);
+
+        if (member.hasTempGameSet()) {
+            Long previousTempGameId = member.updateTempGameSet(request.toEntity(mainTag, member));
+            updateFileResourceIdByStoredNames(previousTempGameId, storedNames);
+            return;
+        }
 
         TempGameSet tempGameSet = request.toEntity(mainTag, member);
         List<TempGame> tempGames = tempGameSet.getTempGames();
@@ -52,7 +57,7 @@ public class TempGameService {
         }
 
         TempGameSet savedGameSet = tempGameSetRepository.save(tempGameSet);
-        List<String> storedNames = extractStoredNames(request);
+
         updateFileResourceIdByStoredNames(savedGameSet.getId(), storedNames);
     }
 
