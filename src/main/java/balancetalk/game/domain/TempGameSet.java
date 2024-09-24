@@ -1,6 +1,7 @@
 package balancetalk.game.domain;
 
 import balancetalk.global.common.BaseTimeEntity;
+import balancetalk.member.domain.Member;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -8,9 +9,10 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
-import jakarta.validation.constraints.NotBlank;
+import jakarta.persistence.OneToOne;
 import jakarta.validation.constraints.PositiveOrZero;
 import jakarta.validation.constraints.Size;
 import java.util.ArrayList;
@@ -27,32 +29,28 @@ import org.hibernate.annotations.ColumnDefault;
 @Builder
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class TempGame extends BaseTimeEntity {
+public class TempGameSet extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
 
+    @OneToMany(mappedBy = "tempGameSet", cascade = CascadeType.ALL)
+    private List<TempGame> tempGames = new ArrayList<>();
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "member_id")
+    private Member member;
+
     @ManyToOne(fetch = FetchType.LAZY)
-    private TempGameSet tempGameSet;
-
-    @OneToMany(mappedBy = "tempGame", cascade = CascadeType.ALL)
-    private List<TempGameOption> tempGameOptions = new ArrayList<>();
-
-    @NotBlank
-    @Size(max = 50)
-    private String title;
-
-    @NotBlank
-    @Size(max = 100)
-    private String description;
+    @JoinColumn(name = "main_tag_id")
+    private MainTag mainTag;
 
     @PositiveOrZero
     @ColumnDefault("0")
-    private Long bookmarks;
+    private long views;
 
-    public void addTempGameSet(TempGameSet tempGameSet) {
-        this.tempGameSet = tempGameSet;
-    }
+    @Size(max = 10)
+    private String subTag;
 }

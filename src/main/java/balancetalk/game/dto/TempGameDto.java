@@ -1,7 +1,9 @@
 package balancetalk.game.dto;
 
+import balancetalk.game.domain.MainTag;
 import balancetalk.game.domain.TempGame;
 import balancetalk.game.domain.TempGameOption;
+import balancetalk.game.domain.TempGameSet;
 import balancetalk.member.domain.Member;
 import balancetalk.vote.domain.VoteOption;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -53,6 +55,27 @@ public class TempGameDto {
 
         private List<TempGameOptionDto> tempGameOptions;
 
+        public TempGame toEntity() {
+            return TempGame.builder()
+                    .title(title)
+                    .description(description)
+                    .tempGameOptions(tempGameOptions.stream().map(TempGameOptionDto::toEntity).toList())
+                    .bookmarks(0L)
+                    .build();
+        }
+    }
+
+    @Data
+    public static class CreateTempGameSetRequest {
+
+        @Schema(description = "밸런스 게임 메인 태그", example = "커플")
+        private String mainTag;
+
+        @Schema(description = "밸런스 게임 서브 태그", example = "커플지옥")
+        private String subTag;
+
+        private List<CreateTempGameRequest> tempGames;
+
         @Schema(description = "첨부한 이미지 고유 이름 목록",
                 example = "[" +
                         "\"9b4856fe-b624-4e54-ad80-a94e083301d2_czz.png\",\n" +
@@ -60,13 +83,12 @@ public class TempGameDto {
                         "]")
         private List<String> storedNames;
 
-        public TempGame toEntity(Member member) {
-            return TempGame.builder()
+        public TempGameSet toEntity(MainTag mainTag, Member member) {
+            return TempGameSet.builder()
+                    .mainTag(mainTag)
+                    .subTag(subTag)
                     .member(member)
-                    .title(title)
-                    .description(description)
-                    .tempGameOptions(tempGameOptions.stream().map(TempGameOptionDto::toEntity).toList())
-                    .bookmarks(0L)
+                    .tempGames(tempGames.stream().map(CreateTempGameRequest::toEntity).toList())
                     .build();
         }
     }

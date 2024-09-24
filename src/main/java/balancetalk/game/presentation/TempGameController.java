@@ -1,7 +1,7 @@
 package balancetalk.game.presentation;
 
 import balancetalk.game.application.TempGameService;
-import balancetalk.game.dto.TempGameDto.CreateTempGameRequest;
+import balancetalk.game.dto.TempGameDto.CreateTempGameSetRequest;
 import balancetalk.global.utils.AuthPrincipal;
 import balancetalk.member.dto.ApiMember;
 import io.swagger.v3.oas.annotations.Operation;
@@ -23,7 +23,7 @@ public class TempGameController {
 
     @Operation(summary = "밸런스 게임 임시 저장", description = "밸런스 게임을 임시 저장합니다.")
     @PostMapping
-    public void saveTempGame(@RequestBody CreateTempGameRequest request,
+    public void saveTempGame(@RequestBody CreateTempGameSetRequest request,
                              @Parameter(hidden = true) @AuthPrincipal ApiMember apiMember) {
         tempGameService.createTempGame(request, apiMember);
     }
