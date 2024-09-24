@@ -25,6 +25,8 @@ public class TempGameDto {
         @Schema(description = "선택지 이미지", example = "https://pikko-image.s3.ap-northeast-2.amazonaws.com/balance-game/067cc56e-21b7-468f-a2c1-4839036ee7cd_unnamed.png")
         private String imgUrl;
 
+        private String storedName;
+
         @Schema(description = "선택지 추가설명", example = "선택지 추가 설명")
         private String description;
 
@@ -75,13 +77,6 @@ public class TempGameDto {
         private String subTag;
 
         private List<CreateTempGameRequest> tempGames;
-
-        @Schema(description = "첨부한 이미지 고유 이름 목록",
-                example = "[" +
-                        "\"9b4856fe-b624-4e54-ad80-a94e083301d2_czz.png\",\n" +
-                        "\"fdcbd97b-f9be-45d1-b855-43f3fd17d5a6_6d588490-d5d4-4e47-b5d0-957e6ed4830b_prom.jpeg\"" +
-                        "]")
-        private List<String> storedNames;
 
         public TempGameSet toEntity(MainTag mainTag, Member member) {
             return TempGameSet.builder()
