@@ -2,6 +2,7 @@ package balancetalk.game.dto;
 
 import balancetalk.game.domain.TempGame;
 import balancetalk.game.domain.TempGameOption;
+import balancetalk.member.domain.Member;
 import balancetalk.vote.domain.VoteOption;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.List;
@@ -52,8 +53,9 @@ public class TempGameDto {
 
         private List<TempGameOptionDto> tempGameOptions;
 
-        public TempGame toEntity() {
+        public TempGame toEntity(Member member) {
             return TempGame.builder()
+                    .member(member)
                     .title(title)
                     .description(description)
                     .tempGameOptions(tempGameOptions.stream().map(TempGameOptionDto::toEntity).toList())
