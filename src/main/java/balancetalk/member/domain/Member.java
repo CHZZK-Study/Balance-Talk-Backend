@@ -4,6 +4,7 @@ import balancetalk.bookmark.domain.Bookmark;
 import balancetalk.bookmark.domain.BookmarkType;
 import balancetalk.game.domain.Game;
 import balancetalk.game.domain.GameSet;
+import balancetalk.game.domain.TempGame;
 import balancetalk.global.common.BaseTimeEntity;
 import balancetalk.global.exception.BalanceTalkException;
 import balancetalk.global.exception.ErrorCode;
@@ -69,6 +70,9 @@ public class Member extends BaseTimeEntity {
 
     @OneToMany(mappedBy = "member")
     private List<GameSet> gameSets = new ArrayList<>();
+
+    @OneToOne(mappedBy = "member")
+    private TempGame tempGame;
 
     @OneToMany(mappedBy = "member")
     private List<Like> likes = new ArrayList<>();
@@ -144,6 +148,10 @@ public class Member extends BaseTimeEntity {
 
     public boolean hasTempTalkPick() {
         return tempTalkPick != null;
+    }
+
+    public boolean hasTempGame() {
+        return tempGame != null;
     }
 
     public Long updateTempTalkPick(TempTalkPick newTempTalkPick) {

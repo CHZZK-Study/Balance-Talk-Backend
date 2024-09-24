@@ -45,4 +45,12 @@ public class TempGameOption {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "temp_game_id")
-    private TempGame tempGame;}
+    private TempGame tempGame;
+
+    public void update (TempGameOption newTempGameOption){
+        this.name = newTempGameOption.getName();
+        this.imgUrl = newTempGameOption.getImgUrl();
+        this.description = newTempGameOption.getDescription();
+        this.optionType = newTempGameOption.getOptionType();
+    }
+}
