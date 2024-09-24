@@ -22,7 +22,7 @@ public class SearchGameService {
     private final GameRepository gameRepository;
 
     public Page<SearchGameResponse> search(String query, Pageable pageable, String sort) {
-        List<Game> resultList = Collections.synchronizedList(new CopyOnWriteArrayList<>());
+        List<Game> resultList = new CopyOnWriteArrayList<>();
 
         // 1. 완전 일치 검색
         searchExactMatch(query, resultList, sort);
