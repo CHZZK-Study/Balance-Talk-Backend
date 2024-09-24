@@ -5,6 +5,8 @@ import balancetalk.member.domain.Member;
 import balancetalk.talkpick.domain.TalkPick;
 import balancetalk.talkpick.domain.ViewStatus;
 import balancetalk.vote.domain.VoteOption;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -72,6 +74,7 @@ public class CommentDto {
     @Data
     @AllArgsConstructor
     @Builder
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     @Schema(description = "댓글 조회 응답")
     public static class CommentResponse {
 
@@ -86,6 +89,9 @@ public class CommentDto {
 
         @Schema(description = "댓글 작성자", example = "운영자1")
         private String nickname;
+
+        @Schema(description = "댓글 작성자 프로필 이미지", example = "https://balancetalk.com/profile/1")
+        private String profileImage;
 
         @Schema(description = "댓글 내용", example = "너는나를존중해야한다나는발롱도르5개와수많은개인트로피를들어올렸으며"
                 + "2016유로에서포르투갈을이끌고우승을차지했고동시에A매치역대최다득점자이다")
@@ -112,13 +118,18 @@ public class CommentDto {
         @Schema(description = "댓글 블라인드 처리 여부", example = "false")
         private boolean isBlind;
 
+        @Schema(description = "댓글 수정 여부", example = "false")
+        private boolean isEdited;
+
         @Schema(description = "댓글이 신고당한 횟수", example = "0")
         private int reportedCount;
 
         @Schema(description = "댓글 생성 날짜")
+        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy.MM.dd hh:mm")
         private LocalDateTime createdAt;
 
         @Schema(description = "댓글 수정 날짜")
+        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy.MM.dd hh:mm")
         private LocalDateTime lastModifiedAt;
 
         public static CommentResponse fromEntity(Comment comment, int likesCount, boolean myLike) {
@@ -126,7 +137,9 @@ public class CommentDto {
                     .id(comment.getId())
                     .content(comment.getContent())
                     .nickname(comment.getMember().getNickname())
+                    .profileImage(comment.getMember().getProfileImgUrl())
                     .talkPickId(comment.getTalkPick().getId())
+                    .talkPickTitle(comment.getTalkPick().getTitle())
                     .option(comment.getVoteOption())
                     .likesCount(likesCount)
                     .myLike(myLike)
@@ -135,6 +148,7 @@ public class CommentDto {
                     .reportedCount(comment.getReportedCount())
                     .isBest(comment.getIsBest())
                     .isBlind(comment.isBlind())
+                    .isEdited(comment.isEdited())
                     .createdAt(comment.getCreatedAt())
                     .lastModifiedAt(comment.getLastModifiedAt())
                     .build();
