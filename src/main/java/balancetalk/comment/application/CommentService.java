@@ -112,10 +112,11 @@ public class CommentService {
     }
 
     @Transactional(readOnly = true)
-    public Page<CommentDto.CommentResponse> findAllReplies(Long parentId, Pageable pageable,
+    public Page<CommentDto.CommentResponse> findAllReplies(Long parentId, Long talkPickId, Pageable pageable,
                                                         GuestOrApiMember guestOrApiMember) {
         // 부모 댓글이 존재하는지 확인
         validateCommentId(parentId);
+        validateTalkPickId(talkPickId);
 
         long memberId = guestOrApiMember.getMemberId();
 
