@@ -45,12 +45,7 @@ public class SearchGameService {
 
     private void searchExactMatch(String query, List<Game> resultList, String sort) {
         List<Game> results = gameRepository.searchExactMatch(query);
-
-        if (sort.equals("views")) {
-            sortByViews(results);
-        } else {
-            sortByCreatedAt(results);
-        }
+        sort(results, sort);
 
         synchronized (resultList) {
             resultList.addAll(results);
@@ -59,15 +54,18 @@ public class SearchGameService {
 
     private void searchNaturalLanguage(String query, List<Game> resultList, String sort) {
         List<Game> results = gameRepository.searchNaturalLanguage(query);
-
-        if (sort.equals("views")) {
-            sortByViews(results);
-        } else {
-            sortByCreatedAt(results);
-        }
+        sort(results, sort);
 
         synchronized (resultList) {
             resultList.addAll(results);
+        }
+    }
+
+    private void sort(List<Game> resultList, String sort) {
+        if (sort.equals("views")) {
+            sortByViews(resultList);
+        } else {
+            sortByCreatedAt(resultList);
         }
     }
 
