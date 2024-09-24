@@ -1,0 +1,97 @@
+package balancetalk.game.application;
+
+import balancetalk.game.domain.Game;
+import balancetalk.game.domain.repository.GameRepository;
+import balancetalk.game.dto.SearchGameResponse;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+
+@Slf4j
+@Service
+@RequiredArgsConstructor
+public class SearchGameService {
+
+    private final GameRepository gameRepository;
+
+    public Page<SearchGameResponse> search(String query, Pageable pageable, String sort) {
+        List<Game> resultList = Collections.synchronizedList(new ArrayList<>());
+
+        // 1. 완전 일치 검색
+        searchExactMatch(query, resultList, sort);
+
+        // 2. 공백 제거한 단어로 완전 일치 검색
+        String queryWithoutSpaces = removeSpaces(query);
+        searchExactMatch(queryWithoutSpaces, resultList, sort);
+
+        // 3. 자연어 검색
+        searchNaturalLanguage(query, resultList, sort);
+
+        List<SearchGameResponse> responses = convertToResponse(resultList);
+
+        // 페이지네이션 적용(페이지 번호, 페이지 크기, 총 게임수는 컨트롤러에서 제공
+        int start = (int) pageable.getOffset();
+        int end = Math.min((start + pageable.getPageSize()), responses.size());
+        return new PageImpl<>(responses.subList(start, end), pageable, responses.size());
+    }
+
+    private void searchExactMatch(String query, List<Game> resultList, String sort) {
+        List<Game> results = gameRepository.searchExactMatch(query);
+
+        if (sort.equals("views")) {
+            sortByViews(results);
+        } else {
+            sortByCreatedAt(results);
+        }
+
+        synchronized (resultList) {
+            resultList.addAll(results);
+        }
+    }
+
+    private void searchNaturalLanguage(String query, List<Game> resultList, String sort) {
+        List<Game> results = gameRepository.searchNaturalLanguage(query);
+
+        if (sort.equals("views")) {
+            sortByViews(results);
+        } else {
+            sortByCreatedAt(results);
+        }
+
+        synchronized (resultList) {
+            resultList.addAll(results);
+        }
+    }
+
+    private String removeSpaces(String query) {
+        return query.replaceAll("\\s+", ""); // 모든 공백 제거
+    }
+
+    private List<SearchGameResponse> convertToResponse(List<Game> games) {
+        synchronized (games) {
+            return games.stream()
+                    .map(SearchGameResponse::from)
+                    .distinct() // 중복 제거
+                    .collect(Collectors.toList());
+        }
+    }
+
+    private void sortByViews(List<Game> resultList) {
+        resultList.sort(Comparator
+                .comparingLong((Game game) -> game.getGameSet().getViews())
+                .thenComparing((Game game) -> game.getGameSet().getCreatedAt()).reversed());
+    }
+
+    private void sortByCreatedAt(List<Game> resultList) {
+        resultList.sort(Comparator
+                .comparing((Game game) -> game.getGameSet().getCreatedAt()).reversed());
+    }
+}
