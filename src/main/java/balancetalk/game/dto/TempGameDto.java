@@ -1,11 +1,8 @@
 package balancetalk.game.dto;
 
-import balancetalk.game.domain.MainTag;
 import balancetalk.game.domain.TempGame;
-import balancetalk.game.domain.TempGameOption;
-import balancetalk.game.domain.TempGameSet;
-import balancetalk.member.domain.Member;
-import balancetalk.vote.domain.VoteOption;
+import balancetalk.game.dto.TempGameOptionDto.CreateTempGameOption;
+import balancetalk.game.dto.TempGameOptionDto.FindTempGameOption;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.List;
 import lombok.AllArgsConstructor;
@@ -13,35 +10,6 @@ import lombok.Builder;
 import lombok.Data;
 
 public class TempGameDto {
-
-    @Data
-    @Builder
-    @AllArgsConstructor
-    @Schema(description = "임시 밸런스 게임 옵션 저장 요청")
-    public static class TempGameOptionDto {
-        @Schema(description = "선택지 이름", example = "선택지 이름")
-        private String name;
-
-        @Schema(description = "선택지 이미지", example = "https://pikko-image.s3.ap-northeast-2.amazonaws.com/balance-game/067cc56e-21b7-468f-a2c1-4839036ee7cd_unnamed.png")
-        private String imgUrl;
-
-        private String storedName;
-
-        @Schema(description = "선택지 추가설명", example = "선택지 추가 설명")
-        private String description;
-
-        @Schema(description = "선택지", example = "A")
-        private VoteOption optionType;
-
-        public TempGameOption toEntity() {
-            return TempGameOption.builder()
-                    .name(name)
-                    .imgUrl(imgUrl)
-                    .description(description)
-                    .optionType(optionType)
-                    .build();
-        }
-    }
 
     @Data
     @Builder
@@ -55,36 +23,64 @@ public class TempGameDto {
         @Schema(description = "게임 추가 설명", example = "추가 설명")
         private String description;
 
-        private List<TempGameOptionDto> tempGameOptions;
+        private List<CreateTempGameOption> tempGameOptions;
 
         public TempGame toEntity() {
             return TempGame.builder()
                     .title(title)
                     .description(description)
-                    .tempGameOptions(tempGameOptions.stream().map(TempGameOptionDto::toEntity).toList())
+                    .tempGameOptions(tempGameOptions.stream().map(CreateTempGameOption::toEntity).toList())
                     .bookmarks(0L)
                     .build();
         }
     }
 
     @Data
-    public static class CreateTempGameSetRequest {
+    @Builder
+    @Schema(description = "임시 밸런스 게임 조회 응답")
+    public static class TempGameResponse {
+        @Schema(description = "밸런스 게임 id", example = "1")
+        private Long id;
 
-        @Schema(description = "밸런스 게임 메인 태그", example = "커플")
-        private String mainTag;
+        @Schema(description = "밸런스 게임 제목", example = "제목")
+        private String title;
 
-        @Schema(description = "밸런스 게임 서브 태그", example = "커플지옥")
-        private String subTag;
+        @Schema(description = "게임 추가 설명", example = "추가 설명")
+        private String description;
 
-        private List<CreateTempGameRequest> tempGames;
+        private List<FindTempGameOption> tempGameOptions;
 
-        public TempGameSet toEntity(MainTag mainTag, Member member) {
-            return TempGameSet.builder()
-                    .mainTag(mainTag)
-                    .subTag(subTag)
-                    .member(member)
-                    .tempGames(tempGames.stream().map(CreateTempGameRequest::toEntity).toList())
+        public static TempGameResponse fromEntity(TempGame tempGame) {
+            return TempGameResponse.builder()
+                    .id(tempGame.getId())
+                    .title(tempGame.getTitle())
+                    .description(tempGame.getDescription())
+                    .tempGameOptions(tempGame.getTempGameOptions().stream().map(FindTempGameOption::fromEntity).toList())
                     .build();
         }
     }
+
+    @Data
+    @Builder
+    @AllArgsConstructor
+    @Schema(description = "임시 밸런스 게임 상세 조회 응답")
+    public static class TempGameDetailResponse {
+
+        @Schema(description = "밸런스 게임 제목", example = "제목")
+        private String title;
+
+        @Schema(description = "게임 추가 설명", example = "추가 설명")
+        private String description;
+
+        private List<FindTempGameOption> tempGameOptions;
+
+        public static TempGameDetailResponse fromEntity(TempGame tempGame) {
+            return TempGameDetailResponse.builder()
+                    .title(tempGame.getTitle())
+                    .description(tempGame.getDescription())
+                    .tempGameOptions(tempGame.getTempGameOptions().stream().map(FindTempGameOption::fromEntity).toList())
+                    .build();
+        }
+    }
+
 }

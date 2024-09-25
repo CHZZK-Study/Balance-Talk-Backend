@@ -10,8 +10,9 @@ import balancetalk.game.domain.TempGameSet;
 import balancetalk.game.domain.repository.GameTagRepository;
 import balancetalk.game.domain.repository.TempGameSetRepository;
 import balancetalk.game.dto.TempGameDto.CreateTempGameRequest;
-import balancetalk.game.dto.TempGameDto.CreateTempGameSetRequest;
-import balancetalk.game.dto.TempGameDto.TempGameOptionDto;
+import balancetalk.game.dto.TempGameOptionDto.CreateTempGameOption;
+import balancetalk.game.dto.TempGameSetDto.CreateTempGameSetRequest;
+import balancetalk.game.dto.TempGameSetDto.TempGameSetResponse;
 import balancetalk.global.exception.BalanceTalkException;
 import balancetalk.global.exception.ErrorCode;
 import balancetalk.member.domain.Member;
@@ -69,11 +70,19 @@ public class TempGameService {
         List<String> storedNames = new ArrayList<>();
         List<CreateTempGameRequest> tempGames = request.getTempGames();
         for (CreateTempGameRequest tempGame : tempGames) {
-            List<TempGameOptionDto> tempGameOptions = tempGame.getTempGameOptions();
-            for (TempGameOptionDto tempGameOption : tempGameOptions) {
+            List<CreateTempGameOption> tempGameOptions = tempGame.getTempGameOptions();
+            for (CreateTempGameOption tempGameOption : tempGameOptions) {
                 storedNames.add(tempGameOption.getStoredName());
             }
         }
         return storedNames;
+    }
+
+    public TempGameSetResponse findTempGameSet(ApiMember apiMember) {
+        Member member = apiMember.toMember(memberRepository);
+        TempGameSet tempGameSet = tempGameSetRepository.findByMember(member)
+                .orElseThrow(() -> new BalanceTalkException(ErrorCode.NOT_FOUND_BALANCE_GAME_SET));
+
+        return TempGameSetResponse.fromEntity(tempGameSet);
     }
 }
