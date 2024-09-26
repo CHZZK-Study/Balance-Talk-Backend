@@ -81,6 +81,10 @@ public class Comment extends BaseTimeEntity {
 
     private LocalDateTime editedAt;
 
+    public boolean isEdited() {
+        return this.editedAt != null;
+    }
+
     public void updateContent(String content) {
         this.content = content;
         this.editedAt = LocalDateTime.now();

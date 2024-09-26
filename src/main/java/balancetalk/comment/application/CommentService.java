@@ -102,7 +102,7 @@ public class CommentService {
                                                             GuestOrApiMember guestOrApiMember) {
         validateTalkPickId(talkPickId);
 
-        Page<Comment> comments = commentRepository.findAllByTalkPickId(talkPickId, pageable);
+        Page<Comment> comments = commentRepository.findAllByTalkPickIdAndParentIsNull(talkPickId, pageable);
 
         return comments.map(comment -> {
             int likesCount = likeRepository.countByResourceIdAndLikeType(comment.getId(), LikeType.COMMENT);
@@ -112,11 +112,31 @@ public class CommentService {
     }
 
     @Transactional(readOnly = true)
+    public Page<CommentDto.CommentResponse> findAllReplies(Long parentId, Long talkPickId, Pageable pageable,
+                                                        GuestOrApiMember guestOrApiMember) {
+        // 부모 댓글이 존재하는지 확인
+        validateCommentId(parentId);
+        validateTalkPickId(talkPickId);
+
+        long memberId = guestOrApiMember.getMemberId();
+
+        // 해당 부모 댓글의 답글 조회
+        Page<Comment> replies = commentRepository.findAllRepliesByParentIdOrderByMemberAndCreatedAt(parentId, memberId, pageable);
+
+        return replies.map(reply -> {
+            int likesCount = likeRepository.countByResourceIdAndLikeType(reply.getId(), LikeType.COMMENT);
+            boolean myLike = isCommentMyLiked(reply.getId(), guestOrApiMember);
+            return CommentDto.CommentResponse.fromEntity(reply, likesCount, myLike);
+        });
+    }
+
+
+    @Transactional(readOnly = true)
     public Page<CommentDto.CommentResponse> findAllBestComments(Long talkPickId, Pageable pageable,
                                                                 GuestOrApiMember guestOrApiMember) {
         validateTalkPickId(talkPickId);
 
-        List<Comment> allComments = commentRepository.findByTalkPickIdOrderByLikesCountDescCreatedAtDesc(talkPickId,
+        List<Comment> allComments = commentRepository.findByTalkPickIdAndParentIsNullOrderByLikesCountDescCreatedAtAsc(talkPickId,
                 LikeType.COMMENT);
         List<CommentDto.CommentResponse> bestComments = new ArrayList<>();
         List<CommentDto.CommentResponse> otherComments = new ArrayList<>();
@@ -154,8 +174,8 @@ public class CommentService {
             }
         }
 
-        bestComments.sort(Comparator.comparing(CommentDto.CommentResponse::getCreatedAt).reversed());
-        otherComments.sort(Comparator.comparing(CommentDto.CommentResponse::getCreatedAt).reversed());
+        bestComments.sort(Comparator.comparing(CommentDto.CommentResponse::getCreatedAt));
+        otherComments.sort(Comparator.comparing(CommentDto.CommentResponse::getCreatedAt));
 
         List<CommentDto.CommentResponse> result = new ArrayList<>();
         result.addAll(bestComments);
