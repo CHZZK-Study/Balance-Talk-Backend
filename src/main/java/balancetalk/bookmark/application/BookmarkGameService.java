@@ -38,7 +38,7 @@ public class BookmarkGameService {
     private final MemberRepository memberRepository;
     private final NotificationService notificationService;
 
-    public void createBookmark(final Long gameSetId, final Long gameId, final ApiMember apiMember) {
+    public void createBookmark(final Long gameSetId, Long gameId, final ApiMember apiMember) {
         GameSet gameSet = gameReader.findGameSetById(gameSetId);
         Member member = apiMember.toMember(memberRepository);
 
@@ -51,17 +51,26 @@ public class BookmarkGameService {
             throw new BalanceTalkException(ErrorCode.ALREADY_BOOKMARKED);
         }
 
+        Long actualGameId = (gameId == -1) ? getFirstGameIdOrThrow(gameSet) : gameId;
+
         // 해당 멤버가 가진 GameSet 북마크 중, resourceId가 gameSetId와 일치하는 북마크가 있다면
         member.getBookmarkOf(gameSetId, GAME_SET)
                 .ifPresentOrElse(
                         bookmark -> {
                             bookmark.activate();
-                            bookmark.updateGameId(gameId); //gameId도 업데이트
+                            bookmark.updateGameId(actualGameId); //gameId도 업데이트
                         },
                         () -> { // resourceId가 gameSetId와 일치하는 북마크가 없다면 새로 생성
                             bookmarkRepository.save(bookmarkGenerator.generate(gameSetId, gameId, GAME_SET, member));
                             gameSet.increaseBookmarks();
                         });
+    }
+
+    private Long getFirstGameIdOrThrow(GameSet gameSet) {
+        return gameSet.getGames().stream()
+                .findFirst()
+                .map(Game::getId)
+                .orElseThrow(() -> new BalanceTalkException(ErrorCode.NOT_FOUND_BALANCE_GAME));
     }
 
     public void deleteBookmark(final Long gameSetId, final ApiMember apiMember) {
