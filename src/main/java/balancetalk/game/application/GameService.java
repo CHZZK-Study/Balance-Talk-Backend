@@ -88,7 +88,7 @@ public class GameService {
         Map<Long, VoteOption> voteOptionMap = new ConcurrentHashMap<>();
 
         boolean isEndGameSet = bookmarkRepository.findByMemberAndResourceIdAndBookmarkType(member, gameSetId, GAME_SET)
-                .map(Bookmark::isEndGameSet)
+                .map(Bookmark::getIsEndGameSet)
                 .orElse(false);
 
         for (Game game : games) {

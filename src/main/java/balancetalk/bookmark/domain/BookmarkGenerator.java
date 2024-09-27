@@ -22,6 +22,7 @@ public class BookmarkGenerator {
                 .gameId(gameId)
                 .bookmarkType(bookmarkType)
                 .active(true)
+                .isEndGameSet(false)
                 .build();
     }
 }

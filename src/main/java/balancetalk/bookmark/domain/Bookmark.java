@@ -30,6 +30,9 @@ public class Bookmark extends BaseTimeEntity {
     private Boolean active;
 
     @NotNull
+    private Boolean isEndGameSet;
+
+    @NotNull
     @Enumerated(EnumType.STRING)
     private BookmarkType bookmarkType;
 
@@ -69,7 +72,7 @@ public class Bookmark extends BaseTimeEntity {
         this.gameId = gameId;
     }
 
-    public boolean isEndGameSet() {
-        return gameId == -1L;
+    public void setEndGameSet() {
+        this.isEndGameSet = true;
     }
 }
