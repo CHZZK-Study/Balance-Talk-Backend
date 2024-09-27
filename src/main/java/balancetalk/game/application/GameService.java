@@ -1,6 +1,6 @@
 package balancetalk.game.application;
 
-import static balancetalk.bookmark.domain.BookmarkType.GAME;
+import static balancetalk.bookmark.domain.BookmarkType.GAME_SET;
 
 import balancetalk.game.domain.Game;
 import balancetalk.game.domain.GameOption;
@@ -85,7 +85,7 @@ public class GameService {
         Map<Long, VoteOption> voteOptionMap = new ConcurrentHashMap<>();
 
         for (Game game : games) {
-            boolean hasBookmarked = member.hasBookmarked(game.getId(), GAME);
+            boolean hasBookmarked = member.hasBookmarked(game.getId(), GAME_SET); //FIXME: 여기도 체크
             bookmarkMap.put(game.getId(), hasBookmarked);
             Optional<GameVote> myVote = member.getVoteOnGameOption(member, game);
             if (myVote.isPresent()) {

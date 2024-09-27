@@ -85,6 +85,11 @@ public class Member extends BaseTimeEntity {
         this.profileImgUrl = profileImgUrl;
     }
 
+    public boolean hasBookmarked(Long resourceId, Long gameId, BookmarkType bookmarkType) {
+        return this.bookmarks.stream()
+                .anyMatch(bookmark -> bookmark.matches(resourceId, gameId, bookmarkType) && bookmark.isActive());
+    }
+
     public boolean hasBookmarked(Long resourceId, BookmarkType bookmarkType) {
         return this.bookmarks.stream()
                 .anyMatch(bookmark -> bookmark.matches(resourceId, bookmarkType) && bookmark.isActive());
