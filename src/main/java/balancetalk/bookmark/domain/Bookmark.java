@@ -68,4 +68,8 @@ public class Bookmark extends BaseTimeEntity {
     public void updateGameId(Long gameId) {
         this.gameId = gameId;
     }
+
+    public boolean isEndGameSet() {
+        return gameId == -1L;
+    }
 }
