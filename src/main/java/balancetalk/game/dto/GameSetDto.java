@@ -7,6 +7,7 @@ import balancetalk.game.dto.GameDto.CreateGameRequest;
 import balancetalk.game.dto.GameDto.GameDetailResponse;
 import balancetalk.member.domain.Member;
 import balancetalk.vote.domain.VoteOption;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -86,6 +87,7 @@ public class GameSetDto {
         private List<GameDetailResponse> gameDetailResponses;
 
         @Schema(description = "밸런스게임 세트 전체 투표 완료 여부", example = "false")
+        @JsonProperty("isEndGameSet")
         private boolean isEndGameSet;
 
         public static GameSetDetailResponse fromEntity(GameSet gameSet, Map<Long, Boolean> bookmarkMap,
