@@ -35,6 +35,7 @@ public class GameSetDto {
                     .subTag(subTag)
                     .member(member)
                     .games(games.stream().map(CreateGameRequest::toEntity).toList())
+                    .bookmarks(0L)
                     .build();
         }
     }
