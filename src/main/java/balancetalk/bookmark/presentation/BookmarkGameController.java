@@ -13,23 +13,23 @@ import org.springframework.web.bind.annotation.*;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/bookmarks/games/{gameId}")
+@RequestMapping("/bookmarks/gameSets/{gameSetId}")
 @Tag(name = "bookmark", description = "북마크 API")
 public class BookmarkGameController {
 
     private final BookmarkGameService bookmarkGameService;
 
-    @Operation(summary = "밸런스 게임 북마크", description = "밸런스 게임 북마크를 활성화합니다.")
-    @PostMapping
-    public void bookmarkGame(@PathVariable final Long gameId,
+    @Operation(summary = "밸런스게임 세트 북마크 추가", description = "밸런스게임 세트에 북마크를 추가합니다. (만약 전체 게임 완료 후 북마크를 추가할 경우, gameId를 -1로 보내주세요.)")
+    @PostMapping("/games/{gameId}")
+    public void bookmarkGame(@PathVariable final Long gameSetId, @PathVariable final Long gameId,
                              @Parameter(hidden = true) @AuthPrincipal ApiMember apiMember) {
-        bookmarkGameService.createBookmark(gameId, apiMember);
+        bookmarkGameService.createBookmark(gameSetId, gameId, apiMember);
     }
 
-    @Operation(summary = "밸런스 게임 북마크 취소", description = "밸런스 게임 북마크를 취소합니다.")
+    @Operation(summary = "밸런스게임 세트 북마크 취소", description = "밸런스게임 세트에 북마크를 취소합니다.")
     @DeleteMapping
-    public void deleteBookmarkGame(@PathVariable final Long gameId,
+    public void deleteBookmarkGame(@PathVariable final Long gameSetId,
                                    @Parameter(hidden = true) @AuthPrincipal ApiMember apiMember) {
-        bookmarkGameService.deleteBookmark(gameId, apiMember);
+        bookmarkGameService.deleteBookmark(gameSetId, apiMember);
     }
 }
