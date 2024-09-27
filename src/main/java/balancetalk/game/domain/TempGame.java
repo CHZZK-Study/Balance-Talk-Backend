@@ -14,7 +14,9 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.PositiveOrZero;
 import jakarta.validation.constraints.Size;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -59,15 +61,18 @@ public class TempGame extends BaseTimeEntity {
     public void updateTempGame(TempGame newTempGame) {
         this.title = newTempGame.getTitle();
         this.description = newTempGame.getDescription();
-        List<TempGameOption> newTempOptions = newTempGame.getTempGameOptions();
-        newTempOptions.forEach(newOption -> {
-            this.tempGameOptions.stream()
-                    .filter(option -> option.getId().equals(newOption.getId()))
-                    .findFirst()
-                    .ifPresentOrElse(
-                            option -> option.update(newOption),
-                            () -> this.tempGameOptions.add(newOption)
-                    );
+        Map<Long, TempGameOption> newTempGameOptions = new HashMap<>();
+
+        for (TempGameOption tempGameOption : tempGameOptions) {
+            newTempGameOptions.put(tempGameOption.getId(), tempGameOption);
+        }
+
+        tempGameOptions.forEach(option -> {
+            TempGameOption newOption = newTempGameOptions.get(option.getId());
+            if (newOption != null) {
+                option.update(newOption);
+                newTempGameOptions.remove(option.getId());
+            }
         });
     }
 }

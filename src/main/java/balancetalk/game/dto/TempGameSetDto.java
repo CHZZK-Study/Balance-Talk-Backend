@@ -16,7 +16,7 @@ public class TempGameSetDto {
     public static class CreateTempGameSetRequest {
 
         @Schema(description = "밸런스 게임 메인 태그", example = "커플")
-        private String mainTag;
+        private MainTag mainTag;
 
         @Schema(description = "밸런스 게임 서브 태그", example = "커플지옥")
         private String subTag;
