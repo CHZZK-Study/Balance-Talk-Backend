@@ -38,7 +38,7 @@ public class BookmarkGameService {
     private final MemberRepository memberRepository;
     private final NotificationService notificationService;
 
-    public void createBookmark(final Long gameSetId, final ApiMember apiMember) {
+    public void createBookmark(final Long gameSetId, final Long gameId, final ApiMember apiMember) {
 
         GameSet gameSet = gameReader.findGameSetById(gameSetId);
         Member member = apiMember.toMember(memberRepository);
@@ -47,21 +47,29 @@ public class BookmarkGameService {
             throw new BalanceTalkException(ErrorCode.CANNOT_BOOKMARK_MY_RESOURCE);
         }
 
-        if (member.hasBookmarked(gameSetId, GAME_SET)) {
+        // 밸런스게임 세트, 게임 아이디가 모두 일치한다면 예외 처리
+        if (member.hasBookmarked(gameSetId, gameId, GAME_SET)) {
             throw new BalanceTalkException(ErrorCode.ALREADY_BOOKMARKED);
         }
 
+        // 해당 멤버가 가진 GameSet 북마크 중, resourceId가 gameSetId와 일치하는 북마크가 있다면
         member.getBookmarkOf(gameSetId, GAME_SET)
-                .ifPresentOrElse(Bookmark::activate,
-                        () -> bookmarkRepository.save(bookmarkGenerator.generate(gameSetId, GAME_SET, member)));
-        gameSet.increaseBookmarks();
+                .ifPresentOrElse(
+                        bookmark -> {
+                            bookmark.activate();
+                            bookmark.updateGameId(gameId); //gameId도 업데이트
+                        },
+                        () -> { // resourceId가 gameSetId와 일치하는 북마크가 없다면 새로 생성
+                            bookmarkRepository.save(bookmarkGenerator.generate(gameSetId, gameId, GAME_SET, member));
+                            gameSet.increaseBookmarks();
+                        });
     }
 
-    public void deleteBookmark(final Long gameId, final ApiMember apiMember) {
-        GameSet gameSet = gameReader.findGameSetById(gameId);
+    public void deleteBookmark(final Long gameSetId, final ApiMember apiMember) {
+        GameSet gameSet = gameReader.findGameSetById(gameSetId);
         Member member = apiMember.toMember(memberRepository);
 
-        Bookmark bookmark = member.getBookmarkOf(gameId, GAME_SET)
+        Bookmark bookmark = member.getBookmarkOf(gameSetId, GAME_SET)
                 .orElseThrow(() -> new BalanceTalkException(ErrorCode.NOT_FOUND_BOOKMARK));
 
         if (!bookmark.isActive()) {
