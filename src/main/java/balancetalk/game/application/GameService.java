@@ -2,6 +2,8 @@ package balancetalk.game.application;
 
 import static balancetalk.bookmark.domain.BookmarkType.GAME_SET;
 
+import balancetalk.bookmark.domain.Bookmark;
+import balancetalk.bookmark.domain.BookmarkRepository;
 import balancetalk.game.domain.Game;
 import balancetalk.game.domain.GameOption;
 import balancetalk.game.domain.GameSet;
@@ -44,6 +46,7 @@ public class GameService {
     private final GameSetRepository gameSetRepository;
     private final MemberRepository memberRepository;
     private final GameTagRepository gameTagRepository;
+    private final BookmarkRepository bookmarkRepository;
 
     public void createBalanceGameSet(final CreateGameSetRequest request, final ApiMember apiMember) {
         Member member = apiMember.toMember(memberRepository);
@@ -75,7 +78,7 @@ public class GameService {
         gameSet.increaseViews();
 
         if (guestOrApiMember.isGuest()) { // 비회원인 경우
-            return GameSetDetailResponse.fromEntity(gameSet, new ConcurrentHashMap<>(), new ConcurrentHashMap<>()); // 게스트인 경우 북마크, 선택 옵션 없음
+            return GameSetDetailResponse.fromEntity(gameSet, new ConcurrentHashMap<>(), new ConcurrentHashMap<>(), false); // 게스트인 경우 북마크, 선택 옵션 없음
         }
 
         Member member = guestOrApiMember.toMember(memberRepository);
@@ -83,6 +86,10 @@ public class GameService {
 
         Map<Long, Boolean> bookmarkMap = new ConcurrentHashMap<>();
         Map<Long, VoteOption> voteOptionMap = new ConcurrentHashMap<>();
+
+        boolean isEndGameSet = bookmarkRepository.findByMemberAndResourceIdAndBookmarkType(member, gameSetId, GAME_SET)
+                .map(Bookmark::isEndGameSet)
+                .orElse(false);
 
         for (Game game : games) {
             boolean hasBookmarked = member.hasBookmarked(game.getId(), GAME_SET); //FIXME: 여기도 체크
@@ -92,7 +99,7 @@ public class GameService {
                 voteOptionMap.put(game.getId(), myVote.get().getVoteOption());
             }
         }
-        return GameSetDetailResponse.fromEntity(gameSet, bookmarkMap, voteOptionMap);
+        return GameSetDetailResponse.fromEntity(gameSet, bookmarkMap, voteOptionMap, isEndGameSet);
     }
 
     public List<GameSetResponse> findLatestGames(final String topicName) {
