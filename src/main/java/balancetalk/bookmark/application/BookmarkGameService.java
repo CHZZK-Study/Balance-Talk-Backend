@@ -51,14 +51,37 @@ public class BookmarkGameService {
             throw new BalanceTalkException(ErrorCode.ALREADY_BOOKMARKED);
         }
 
-        Long actualGameId = (gameId == -1) ? getFirstGameIdOrThrow(gameSet) : gameId;
+        // 해당 멤버가 가진 GameSet 북마크 중, resourceId가 gameSetId와 일치하는 북마크가 있다면
+        member.getBookmarkOf(gameSetId, GAME_SET)
+                .ifPresentOrElse(
+                        bookmark -> {
+                            bookmark.activate();
+                            bookmark.updateGameId(gameId); //gameId도 업데이트
+                        },
+                        () -> { // resourceId가 gameSetId와 일치하는 북마크가 없다면 새로 생성
+                            bookmarkRepository.save(bookmarkGenerator.generate(gameSetId, gameId, GAME_SET, member));
+                            gameSet.increaseBookmarks();
+                        });
+    }
+
+    public void createEndGameSetBookmark(final Long gameSetId, final ApiMember apiMember) {
+        GameSet gameSet = gameReader.findGameSetById(gameSetId);
+        Member member = apiMember.toMember(memberRepository);
+
+        if (member.isMyGameSet(gameSet)) {
+            throw new BalanceTalkException(ErrorCode.CANNOT_BOOKMARK_MY_RESOURCE);
+        }
+
+        // gameId를 해당 밸런스게임 세트의 첫 번째 밸런스게임 id로 설정
+        long gameId = getFirstGameIdOrThrow(gameSet);
 
         // 해당 멤버가 가진 GameSet 북마크 중, resourceId가 gameSetId와 일치하는 북마크가 있다면
         member.getBookmarkOf(gameSetId, GAME_SET)
                 .ifPresentOrElse(
                         bookmark -> {
                             bookmark.activate();
-                            bookmark.updateGameId(actualGameId); //gameId도 업데이트
+                            bookmark.setEndGameSet(); // 밸런스게임 세트 종료 표시
+                            bookmark.updateGameId(gameId); //gameId도 업데이트
                         },
                         () -> { // resourceId가 gameSetId와 일치하는 북마크가 없다면 새로 생성
                             bookmarkRepository.save(bookmarkGenerator.generate(gameSetId, gameId, GAME_SET, member));
