@@ -170,8 +170,8 @@ public class GameDto {
         @Schema(description = "밸런스 게임 서브 태그", example = "화제의 중심")
         private String subTag;
 
-        @Schema(description = "밸런스 게임 메인 태그", example = "인기")
-        private MainTag mainTag;
+        @Schema(description = "밸런스 게임 메인 태그 이름", example = "인기")
+        private String mainTagName;
 
         public static GameMyPageResponse from(Game game) {
             return GameMyPageResponse.builder()
@@ -180,7 +180,7 @@ public class GameDto {
                     .optionAImg(game.getGameOptions().get(0).getImgUrl())
                     .optionBImg(game.getGameOptions().get(1).getImgUrl())
                     .subTag(game.getGameSet().getSubTag())
-                    .mainTag(game.getGameSet().getMainTag())
+                    .mainTagName(game.getGameSet().getMainTag().getName())
                     .editedAt(game.getEditedAt())
                     .build();
         }
@@ -194,7 +194,7 @@ public class GameDto {
                     .optionBImg(game.getGameOptions().get(1).getImgUrl())
                     .isBookmarked(bookmark.isActive())
                     .subTag(game.getGameSet().getSubTag())
-                    .mainTag(game.getGameSet().getMainTag())
+                    .mainTagName(game.getGameSet().getMainTag().getName())
                     .editedAt(game.getEditedAt())
                     .build();
         }
@@ -207,7 +207,7 @@ public class GameDto {
                     .optionBImg(game.getGameOptions().get(1).getImgUrl())
                     .voteOption(vote.getVoteOption())
                     .subTag(game.getGameSet().getSubTag())
-                    .mainTag(game.getGameSet().getMainTag())
+                    .mainTagName(game.getGameSet().getMainTag().getName())
                     .editedAt(game.getEditedAt())
                     .build();
         }
