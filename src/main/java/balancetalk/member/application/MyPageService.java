@@ -97,7 +97,7 @@ public class MyPageService {
 
         List<GameMyPageResponse> responses = bookmarks.stream()
                 .map(bookmark -> {
-                    Game game = gameRepository.findById(bookmark.getGameId())
+                    Game game = gameRepository.findById(bookmark.getGameId()) // 사용자가 북마크한 위치의 밸런스게임을 찾음
                             .orElseThrow(() -> new BalanceTalkException(ErrorCode.NOT_FOUND_BALANCE_GAME));
                     return GameMyPageResponse.from(game, bookmark);
                 })

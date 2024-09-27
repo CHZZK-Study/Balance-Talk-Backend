@@ -39,7 +39,6 @@ public class BookmarkGameService {
     private final NotificationService notificationService;
 
     public void createBookmark(final Long gameSetId, final Long gameId, final ApiMember apiMember) {
-
         GameSet gameSet = gameReader.findGameSetById(gameSetId);
         Member member = apiMember.toMember(memberRepository);
 
