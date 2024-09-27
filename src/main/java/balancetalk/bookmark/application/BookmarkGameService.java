@@ -76,12 +76,12 @@ public class BookmarkGameService {
         }
         bookmark.deactivate();
         gameSet.decreaseBookmarks();
-        sendBookmarkGameNotification(gameSet); // FIXME: 위임 후 대기, 알림 기준이 밸런스게임인지, 밸런스게임 세트인지에 따라 적용
+        // sendBookmarkGameNotification(gameSet); // FIXME: 위임 후 대기, 알림 기준이 밸런스게임인지, 밸런스게임 세트인지에 따라 적용
     }
 
     private void sendBookmarkGameNotification(Game game) {
         Member member = null; // FIXME: 위임 후 대기, 알림 기준이 밸런스게임인지, 밸런스게임 세트인지에 따라 적용
-        long bookmarkedCount = game.getBookmarks();
+        long bookmarkedCount = game.getGameSet().getBookmarks();
         String bookmarkCountKey = "BOOKMARK_" + bookmarkedCount;
         Map<String, Boolean> notificationHistory = game.getNotificationHistory();
         String category = WRITTEN_GAME.getCategory();
