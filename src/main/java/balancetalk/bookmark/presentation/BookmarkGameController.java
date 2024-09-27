@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/bookmarks/gameSets/{gameSetId}")
+@RequestMapping("/bookmarks/game-sets/{gameSetId}")
 @Tag(name = "bookmark", description = "북마크 API")
 public class BookmarkGameController {
 
