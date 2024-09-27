@@ -37,31 +37,6 @@ public class TempGameDto {
 
     @Data
     @Builder
-    @Schema(description = "임시 밸런스 게임 조회 응답")
-    public static class TempGameResponse {
-        @Schema(description = "밸런스 게임 id", example = "1")
-        private Long id;
-
-        @Schema(description = "밸런스 게임 제목", example = "제목")
-        private String title;
-
-        @Schema(description = "게임 추가 설명", example = "추가 설명")
-        private String description;
-
-        private List<FindTempGameOption> tempGameOptions;
-
-        public static TempGameResponse fromEntity(TempGame tempGame) {
-            return TempGameResponse.builder()
-                    .id(tempGame.getId())
-                    .title(tempGame.getTitle())
-                    .description(tempGame.getDescription())
-                    .tempGameOptions(tempGame.getTempGameOptions().stream().map(FindTempGameOption::fromEntity).toList())
-                    .build();
-        }
-    }
-
-    @Data
-    @Builder
     @AllArgsConstructor
     @Schema(description = "임시 밸런스 게임 상세 조회 응답")
     public static class TempGameDetailResponse {
