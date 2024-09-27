@@ -91,10 +91,10 @@ public class GameSetDto {
         public static GameSetDetailResponse fromEntity(GameSet gameSet, Map<Long, Boolean> bookmarkMap,
                                                        Map<Long, VoteOption> voteOptionMap, boolean isEndGameSet) {
 
-            if (!isEndGameSet) {
+            if (isEndGameSet) {
                 // voteOption을 null로 반환
                 return GameSetDetailResponse.builder()
-                        .isEndGameSet(false)
+                        .isEndGameSet(true)
                         .gameDetailResponses(gameSet.getGames().stream()
                                 .map(game -> GameDetailResponse.fromEntity(game,
                                         bookmarkMap.getOrDefault(game.getId(), false),
@@ -104,7 +104,7 @@ public class GameSetDto {
             }
 
             return GameSetDetailResponse.builder()
-                    .isEndGameSet(true)
+                    .isEndGameSet(false)
                     .gameDetailResponses(gameSet.getGames().stream()
                             .map(game -> GameDetailResponse.fromEntity(game,
                                     bookmarkMap.getOrDefault(game.getId(), false),
