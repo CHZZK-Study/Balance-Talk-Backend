@@ -47,8 +47,10 @@ public class GameService {
 
     public void createBalanceGameSet(final CreateGameSetRequest request, final ApiMember apiMember) {
         Member member = apiMember.toMember(memberRepository);
-        MainTag mainTag = gameTagRepository.findByName(request.getMainTag())
-                .orElseThrow(() -> new BalanceTalkException(ErrorCode.NOT_FOUND_GAME_TOPIC));
+        MainTag mainTag = request.getMainTag();
+        if (mainTag == null) {
+            throw new BalanceTalkException(ErrorCode.NOT_FOUND_GAME_TOPIC);
+        }
 
         List<CreateGameRequest> gameRequests = request.getGames();
 

@@ -9,7 +9,6 @@ import balancetalk.game.domain.TempGameOption;
 import balancetalk.game.domain.TempGameSet;
 import balancetalk.game.domain.repository.GameTagRepository;
 import balancetalk.game.domain.repository.TempGameSetRepository;
-import balancetalk.game.dto.TempGameDto.CreateTempGameRequest;
 import balancetalk.game.dto.TempGameOptionDto.CreateTempGameOption;
 import balancetalk.game.dto.TempGameSetDto.CreateTempGameSetRequest;
 import balancetalk.game.dto.TempGameSetDto.TempGameSetResponse;
@@ -18,7 +17,6 @@ import balancetalk.global.exception.ErrorCode;
 import balancetalk.member.domain.Member;
 import balancetalk.member.domain.MemberRepository;
 import balancetalk.member.dto.ApiMember;
-import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -35,8 +33,10 @@ public class TempGameService {
     @Transactional
     public void createTempGame(CreateTempGameSetRequest request, ApiMember apiMember) {
         Member member = apiMember.toMember(memberRepository);
-        MainTag mainTag = gameTagRepository.findByName(request.getMainTag())
-                .orElseThrow(() -> new BalanceTalkException(ErrorCode.NOT_FOUND_GAME_TOPIC));
+        MainTag mainTag = request.getMainTag();
+        if (mainTag == null) {
+            throw new BalanceTalkException(ErrorCode.NOT_FOUND_GAME_TOPIC);
+        }
 
         List<String> storedNames = extractStoredNames(request);
 
@@ -67,15 +67,10 @@ public class TempGameService {
     }
 
     private List<String> extractStoredNames(CreateTempGameSetRequest request) {
-        List<String> storedNames = new ArrayList<>();
-        List<CreateTempGameRequest> tempGames = request.getTempGames();
-        for (CreateTempGameRequest tempGame : tempGames) {
-            List<CreateTempGameOption> tempGameOptions = tempGame.getTempGameOptions();
-            for (CreateTempGameOption tempGameOption : tempGameOptions) {
-                storedNames.add(tempGameOption.getStoredName());
-            }
-        }
-        return storedNames;
+        return request.getTempGames().stream()
+                .flatMap(tempGame -> tempGame.getTempGameOptions().stream())
+                .map(CreateTempGameOption::getStoredName)
+                .toList();
     }
 
     public TempGameSetResponse findTempGameSet(ApiMember apiMember) {
