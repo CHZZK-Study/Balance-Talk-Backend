@@ -32,10 +32,12 @@ public class TalkPickService {
     private final FileRepository fileRepository;
 
     @Transactional
-    public void createTalkPick(CreateOrUpdateTalkPickRequest request, ApiMember apiMember) {
+    public Long createTalkPick(CreateOrUpdateTalkPickRequest request, ApiMember apiMember) {
         Member member = apiMember.toMember(memberRepository);
         TalkPick savedTalkPick = talkPickRepository.save(request.toEntity(member));
         fileRepository.updateResourceIdAndTypeByStoredNames(savedTalkPick.getId(), FileType.TALK_PICK, request.getStoredNames());
+
+        return savedTalkPick.getId();
     }
 
     @Transactional
