@@ -14,6 +14,7 @@ import balancetalk.bookmark.domain.Bookmark;
 import balancetalk.bookmark.domain.BookmarkGenerator;
 import balancetalk.bookmark.domain.BookmarkRepository;
 import balancetalk.game.domain.Game;
+import balancetalk.game.domain.GameSet;
 import balancetalk.game.domain.GameReader;
 import balancetalk.global.exception.BalanceTalkException;
 import balancetalk.global.exception.ErrorCode;
@@ -37,42 +38,42 @@ public class BookmarkGameService {
     private final MemberRepository memberRepository;
     private final NotificationService notificationService;
 
-    public void createBookmark(final Long gameId, final ApiMember apiMember) {
+    public void createBookmark(final Long gameSetId, final ApiMember apiMember) {
 
-        Game game = gameReader.readById(gameId);
+        GameSet gameSet = gameReader.findGameSetById(gameSetId);
         Member member = apiMember.toMember(memberRepository);
 
-        if (member.isMyGame(game)) {
+        if (member.isMyGameSet(gameSet)) {
             throw new BalanceTalkException(ErrorCode.CANNOT_BOOKMARK_MY_RESOURCE);
         }
 
-        if (member.hasBookmarked(gameId, GAME)) {
+        if (member.hasBookmarked(gameSetId, GAME_SET)) {
             throw new BalanceTalkException(ErrorCode.ALREADY_BOOKMARKED);
         }
 
-        member.getBookmarkOf(gameId, GAME)
+        member.getBookmarkOf(gameSetId, GAME_SET)
                 .ifPresentOrElse(Bookmark::activate,
-                        () -> bookmarkRepository.save(bookmarkGenerator.generate(gameId, GAME, member)));
-        game.increaseBookmarks();
+                        () -> bookmarkRepository.save(bookmarkGenerator.generate(gameSetId, GAME_SET, member)));
+        gameSet.increaseBookmarks();
     }
 
     public void deleteBookmark(final Long gameId, final ApiMember apiMember) {
-        Game game = gameReader.readById(gameId);
+        GameSet gameSet = gameReader.findGameSetById(gameId);
         Member member = apiMember.toMember(memberRepository);
 
-        Bookmark bookmark = member.getBookmarkOf(gameId, GAME)
+        Bookmark bookmark = member.getBookmarkOf(gameId, GAME_SET)
                 .orElseThrow(() -> new BalanceTalkException(ErrorCode.NOT_FOUND_BOOKMARK));
 
         if (!bookmark.isActive()) {
             throw new BalanceTalkException(ErrorCode.ALREADY_DELETED_BOOKMARK);
         }
         bookmark.deactivate();
-        game.decreaseBookmarks();
-        sendBookmarkGameNotification(game);
+        gameSet.decreaseBookmarks();
+        sendBookmarkGameNotification(gameSet); // FIXME: 위임 후 대기, 알림 기준이 밸런스게임인지, 밸런스게임 세트인지에 따라 적용
     }
 
     private void sendBookmarkGameNotification(Game game) {
-        Member member = null; // TODO: GameSet으로 변경됨에 따라 수정 필요
+        Member member = null; // FIXME: 위임 후 대기, 알림 기준이 밸런스게임인지, 밸런스게임 세트인지에 따라 적용
         long bookmarkedCount = game.getBookmarks();
         String bookmarkCountKey = "BOOKMARK_" + bookmarkedCount;
         Map<String, Boolean> notificationHistory = game.getNotificationHistory();
