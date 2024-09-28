@@ -30,7 +30,7 @@ public class Bookmark extends BaseTimeEntity {
     private Boolean active;
 
     @NotNull
-    private Boolean isEndGameSet;
+    private boolean isEndGameSet;
 
     @NotNull
     @Enumerated(EnumType.STRING)
