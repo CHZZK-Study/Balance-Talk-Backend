@@ -54,6 +54,15 @@ public class TempGameSet extends BaseTimeEntity {
     @Size(max = 10)
     private String subTag;
 
+    public void addTempGames(List<TempGame> tempGames) {
+        this.tempGames = tempGames;
+        tempGames.forEach(tempGame -> {
+            tempGame.addTempGameSet(this);
+            tempGame.getTempGameOptions().forEach(tempGameOption -> tempGameOption.addTempGame(tempGame));
+        });
+    }
+
+
     public Long updateTempGameSet(TempGameSet newTempGameSet) {
         this.mainTag = newTempGameSet.getMainTag();
         this.subTag = newTempGameSet.getSubTag();

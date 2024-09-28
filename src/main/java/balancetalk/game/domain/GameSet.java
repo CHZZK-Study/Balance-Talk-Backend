@@ -56,4 +56,12 @@ public class GameSet extends BaseTimeEntity {
     public void increaseViews() {
         this.views++;
     }
+
+    public void addGames(List<Game> games) {
+        this.games = games;
+        games.forEach(game -> {
+            game.addGameSet(this);
+            game.getGameOptions().forEach(option -> option.addGame(game));
+        });
+    }
 }

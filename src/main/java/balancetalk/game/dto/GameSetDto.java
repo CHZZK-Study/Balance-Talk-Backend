@@ -22,7 +22,7 @@ public class GameSetDto {
     public static class CreateGameSetRequest {
 
         @Schema(description = "밸런스 게임 메인 태그", example = "커플")
-        private MainTag mainTag;
+        private String mainTag;
 
         @Schema(description = "밸런스 게임 서브 태그", example = "커플지옥")
         private String subTag;

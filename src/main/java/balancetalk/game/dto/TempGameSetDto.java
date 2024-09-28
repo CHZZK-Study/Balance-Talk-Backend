@@ -4,6 +4,7 @@ import balancetalk.game.domain.MainTag;
 import balancetalk.game.domain.TempGameSet;
 import balancetalk.game.dto.TempGameDto.CreateTempGameRequest;
 import balancetalk.game.dto.TempGameDto.TempGameDetailResponse;
+import balancetalk.game.dto.TempGameOptionDto.CreateTempGameOption;
 import balancetalk.member.domain.Member;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.List;
@@ -16,7 +17,7 @@ public class TempGameSetDto {
     public static class CreateTempGameSetRequest {
 
         @Schema(description = "밸런스 게임 메인 태그", example = "커플")
-        private MainTag mainTag;
+        private String mainTag;
 
         @Schema(description = "밸런스 게임 서브 태그", example = "커플지옥")
         private String subTag;
@@ -30,6 +31,13 @@ public class TempGameSetDto {
                     .member(member)
                     .tempGames(tempGames.stream().map(CreateTempGameRequest::toEntity).toList())
                     .build();
+        }
+
+        public List <String> extractStoredNames() {
+            return this.getTempGames().stream()
+                    .flatMap(tempGame -> tempGame.getTempGameOptions().stream())
+                    .map(CreateTempGameOption::getStoredName)
+                    .toList();
         }
     }
 
