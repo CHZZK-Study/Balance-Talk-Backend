@@ -10,13 +10,18 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 
 public interface CommentRepository extends JpaRepository<Comment, Long> {
-    Page<Comment> findAllByTalkPickId(Long talkPickId, Pageable pageable);
+    Page<Comment> findAllByTalkPickIdAndParentIsNull(Long talkPickId, Pageable pageable);
 
+    @Query("SELECT c FROM Comment c WHERE c.parent.id = :parentId " +
+            "ORDER BY CASE WHEN c.member.id = :currentMemberId THEN 0 ELSE 1 END, c.createdAt ASC")
+    Page<Comment> findAllRepliesByParentIdOrderByMemberAndCreatedAt(@Param("parentId") Long parentId,
+                                                               @Param("currentMemberId") Long currentMemberId,
+                                                               Pageable pageable);
     @Query("SELECT c FROM Comment c LEFT JOIN Like l ON c.id = l.resourceId AND l.likeType = :likeType " +
-            "WHERE c.talkPick.id = :talkPickId " +
+            "WHERE c.talkPick.id = :talkPickId AND c.parent IS NULL " +
             "GROUP BY c " +
-            "ORDER BY COUNT(l) DESC, c.createdAt DESC")
-    List<Comment> findByTalkPickIdOrderByLikesCountDescCreatedAtDesc(@Param("talkPickId") Long talkPickId,
+            "ORDER BY COUNT(l) DESC, c.createdAt ASC")
+    List<Comment> findByTalkPickIdAndParentIsNullOrderByLikesCountDescCreatedAtAsc(@Param("talkPickId") Long talkPickId,
                                                                      @Param("likeType") LikeType likeType);
 
     @Query("SELECT c FROM Comment c WHERE c.member.id = :memberId AND c.talkPick IS NOT NULL " +
