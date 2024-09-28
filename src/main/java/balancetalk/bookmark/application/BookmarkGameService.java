@@ -22,6 +22,7 @@ import balancetalk.global.notification.application.NotificationService;
 import balancetalk.member.domain.Member;
 import balancetalk.member.domain.MemberRepository;
 import balancetalk.member.dto.ApiMember;
+import balancetalk.vote.domain.VoteRepository;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -37,6 +38,7 @@ public class BookmarkGameService {
     private final BookmarkGenerator bookmarkGenerator;
     private final MemberRepository memberRepository;
     private final NotificationService notificationService;
+    private final VoteRepository voteRepository;
 
     public void createBookmark(final Long gameSetId, Long gameId, final ApiMember apiMember) {
         GameSet gameSet = gameReader.findGameSetById(gameSetId);
@@ -56,6 +58,7 @@ public class BookmarkGameService {
                 .ifPresentOrElse(
                         bookmark -> {
                             bookmark.activate();
+                            bookmark.setIsEndGameSet(false); // 밸런스게임 세트 종료 표시 해제
                             bookmark.updateGameId(gameId); //gameId도 업데이트
                         },
                         () -> { // resourceId가 gameSetId와 일치하는 북마크가 없다면 새로 생성
@@ -80,7 +83,8 @@ public class BookmarkGameService {
                 .ifPresentOrElse(
                         bookmark -> {
                             bookmark.activate();
-                            bookmark.setEndGameSet(); // 밸런스게임 세트 종료 표시
+                            bookmark.setIsEndGameSet(true); // 밸런스게임 세트 종료 표시
+                            voteRepository.deleteAllByMemberIdAndGameOption_Game_GameSet(member.getId(), gameSet);
                             bookmark.updateGameId(gameId); //gameId도 업데이트
                         },
                         () -> { // resourceId가 gameSetId와 일치하는 북마크가 없다면 새로 생성
