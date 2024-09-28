@@ -92,7 +92,13 @@ public class GameService {
                 .orElse(false);
 
         for (Game game : games) {
-            boolean hasBookmarked = member.hasBookmarked(game.getId(), GAME_SET); //FIXME: 여기도 체크
+
+            Long bookmarkedGameId = bookmarkRepository.findByMemberAndResourceIdAndBookmarkType(member, game.getGameSet().getId(), GAME_SET)
+                    .map(Bookmark::getGameId)
+                    .orElse(null);
+
+            boolean hasBookmarked = (bookmarkedGameId != null && bookmarkedGameId.equals(game.getId()));
+
             bookmarkMap.put(game.getId(), hasBookmarked);
             Optional<GameVote> myVote = member.getVoteOnGameOption(member, game);
             if (myVote.isPresent()) {
