@@ -31,8 +31,8 @@ public class TempTalkPickService {
         Member member = apiMember.toMember(memberRepository);
 
         if (member.hasTempTalkPick()) {
-            Long prevTempTalkPickId = member.updateTempTalkPick(request.toEntity(member));
-            updateFileResourceIdByStoredNames(prevTempTalkPickId, request.getStoredNames());
+            Long tempTalkPickId = member.updateTempTalkPick(request.toEntity(member));
+            updateFileResourceIdByStoredNames(tempTalkPickId, request.getStoredNames());
             return;
         }
 

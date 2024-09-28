@@ -28,9 +28,9 @@ public class TalkPickController {
 
     @Operation(summary = "톡픽 생성", description = "톡픽을 생성합니다.")
     @PostMapping
-    public void createTalkPick(@RequestBody final CreateOrUpdateTalkPickRequest request,
+    public Long createTalkPick(@RequestBody final CreateOrUpdateTalkPickRequest request,
                                @Parameter(hidden = true) @AuthPrincipal final ApiMember apiMember) {
-        talkPickService.createTalkPick(request, apiMember);
+        return talkPickService.createTalkPick(request, apiMember);
     }
 
     @Operation(summary = "톡픽 상세 조회", description = "톡픽 상세 페이지를 조회합니다.")
