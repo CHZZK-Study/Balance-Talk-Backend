@@ -69,4 +69,8 @@ public class GameSet extends BaseTimeEntity {
         this.bookmarks--;
     }
 
+    public boolean hasGame(Long gameId) {
+        return games.stream().anyMatch(game -> game.getId().equals(gameId));
+    }
+
 }

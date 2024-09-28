@@ -53,6 +53,11 @@ public class BookmarkGameService {
             throw new BalanceTalkException(ErrorCode.ALREADY_BOOKMARKED);
         }
 
+        // 해당 gameSet에 gameId가 존재하는지 확인
+        if (!gameSet.hasGame(gameId)) {
+            throw new BalanceTalkException(ErrorCode.NOT_FOUND_BALANCE_GAME_THAT_GAME_SET);
+        }
+
         // 해당 멤버가 가진 GameSet 북마크 중, resourceId가 gameSetId와 일치하는 북마크가 있다면
         member.getBookmarkOf(gameSetId, GAME_SET)
                 .ifPresentOrElse(
