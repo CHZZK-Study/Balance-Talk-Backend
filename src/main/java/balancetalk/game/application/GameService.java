@@ -3,7 +3,6 @@ package balancetalk.game.application;
 import static balancetalk.bookmark.domain.BookmarkType.GAME;
 
 import balancetalk.game.domain.Game;
-import balancetalk.game.domain.GameOption;
 import balancetalk.game.domain.GameSet;
 import balancetalk.game.domain.MainTag;
 import balancetalk.game.domain.repository.GameSetRepository;
@@ -57,15 +56,9 @@ public class GameService {
         }
 
         GameSet gameSet = request.toEntity(mainTag, member);
-
         List<Game> games = gameSet.getGames();
-        for (Game game : games) {
-            game.addGameSet(gameSet);
-            List<GameOption> gameOptions = game.getGameOptions();
-            for (GameOption gameOption : gameOptions) {
-                gameOption.addGame(game);
-            }
-        }
+
+        gameSet.addGames(games);
         gameSetRepository.save(gameSet);
     }
 

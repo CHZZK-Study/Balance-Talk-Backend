@@ -12,6 +12,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.validation.constraints.PositiveOrZero;
 import jakarta.validation.constraints.Size;
 import java.util.ArrayList;
@@ -28,17 +29,17 @@ import org.hibernate.annotations.ColumnDefault;
 @Builder
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class GameSet extends BaseTimeEntity {
+public class TempGameSet extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
 
-    @OneToMany(mappedBy = "gameSet", cascade = CascadeType.ALL)
-    private List<Game> games = new ArrayList<>();
+    @OneToMany(mappedBy = "tempGameSet", cascade = CascadeType.ALL)
+    private List<TempGame> tempGames = new ArrayList<>();
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
 
@@ -53,15 +54,33 @@ public class GameSet extends BaseTimeEntity {
     @Size(max = 10)
     private String subTag;
 
-    public void increaseViews() {
-        this.views++;
+    public void addTempGames(List<TempGame> tempGames) {
+        this.tempGames = tempGames;
+        tempGames.forEach(tempGame -> {
+            tempGame.addTempGameSet(this);
+            tempGame.getTempGameOptions().forEach(tempGameOption -> tempGameOption.addTempGame(tempGame));
+        });
     }
 
-    public void addGames(List<Game> games) {
-        this.games = games;
-        games.forEach(game -> {
-            game.addGameSet(this);
-            game.getGameOptions().forEach(option -> option.addGame(game));
+
+    public Long updateTempGameSet(TempGameSet newTempGameSet) {
+        this.mainTag = newTempGameSet.getMainTag();
+        this.subTag = newTempGameSet.getSubTag();
+
+        List<TempGame> newTempGames = newTempGameSet.getTempGames();
+
+        newTempGames.forEach(newGame -> {
+            this.tempGames.stream()
+                    .filter(existingGame -> existingGame.getId().equals(newGame.getId()))
+                    .findFirst()
+                    .ifPresentOrElse(
+                            existingGame -> existingGame.updateTempGame(newGame),
+                            () -> {
+                                this.tempGames.add(newGame);
+                                newGame.addTempGameSet(this);
+                            }
+                    );
         });
+        return id;
     }
 }

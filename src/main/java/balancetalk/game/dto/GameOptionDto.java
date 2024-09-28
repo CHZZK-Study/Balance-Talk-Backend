@@ -1,6 +1,7 @@
 package balancetalk.game.dto;
 
 import balancetalk.game.domain.GameOption;
+import balancetalk.game.domain.TempGameOption;
 import balancetalk.vote.domain.VoteOption;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
@@ -44,5 +45,12 @@ public class GameOptionDto {
                 .description(gameOption.getDescription())
                 .optionType(gameOption.getOptionType())
                 .build();
+    }
+
+    public void updateTempGameOption(TempGameOption newTempGameOption) {
+        this.name = newTempGameOption.getName();
+        this.imgUrl = newTempGameOption.getImgUrl();
+        this.description = newTempGameOption.getDescription();
+        this.optionType = newTempGameOption.getOptionType(); // TODO: A, B로 고정이 되어있는데 필요한지?
     }
 }
