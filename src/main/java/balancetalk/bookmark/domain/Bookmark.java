@@ -24,12 +24,21 @@ public class Bookmark extends BaseTimeEntity {
     @NotNull
     private Long resourceId;
 
+    private Long gameId;
+
     @NotNull
     private Boolean active;
 
     @NotNull
+    private Boolean isEndGameSet;
+
+    @NotNull
     @Enumerated(EnumType.STRING)
     private BookmarkType bookmarkType;
+
+    public boolean matches(long resourceId, long gameId, BookmarkType bookmarkType) {
+        return isEqualsResourceId(resourceId) && isEqualsGameId(gameId) && isEqualsType(bookmarkType);
+    }
 
     public boolean matches(long resourceId, BookmarkType bookmarkType) {
         return isEqualsResourceId(resourceId) && isEqualsType(bookmarkType);
@@ -37,6 +46,10 @@ public class Bookmark extends BaseTimeEntity {
 
     private boolean isEqualsResourceId(long resourceId) {
         return this.resourceId.equals(resourceId);
+    }
+
+    private boolean isEqualsGameId(long gameId) {
+        return this.gameId.equals(gameId);
     }
 
     private boolean isEqualsType(BookmarkType bookmarkType) {
@@ -53,5 +66,13 @@ public class Bookmark extends BaseTimeEntity {
 
     public void deactivate() {
         this.active = false;
+    }
+
+    public void updateGameId(Long gameId) {
+        this.gameId = gameId;
+    }
+
+    public void setEndGameSet() {
+        this.isEndGameSet = true;
     }
 }

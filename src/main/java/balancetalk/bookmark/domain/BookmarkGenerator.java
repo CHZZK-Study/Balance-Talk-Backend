@@ -14,4 +14,15 @@ public class BookmarkGenerator {
                 .active(true)
                 .build();
     }
+
+    public Bookmark generate(final long resourceId, final long gameId, final BookmarkType bookmarkType, final Member member) {
+        return Bookmark.builder()
+                .member(member)
+                .resourceId(resourceId)
+                .gameId(gameId)
+                .bookmarkType(bookmarkType)
+                .active(true)
+                .isEndGameSet(false)
+                .build();
+    }
 }

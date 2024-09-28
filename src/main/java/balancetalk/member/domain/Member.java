@@ -90,6 +90,11 @@ public class Member extends BaseTimeEntity {
         this.profileImgUrl = profileImgUrl;
     }
 
+    public boolean hasBookmarked(Long resourceId, Long gameId, BookmarkType bookmarkType) {
+        return this.bookmarks.stream()
+                .anyMatch(bookmark -> bookmark.matches(resourceId, gameId, bookmarkType) && bookmark.isActive());
+    }
+
     public boolean hasBookmarked(Long resourceId, BookmarkType bookmarkType) {
         return this.bookmarks.stream()
                 .anyMatch(bookmark -> bookmark.matches(resourceId, bookmarkType) && bookmark.isActive());
@@ -129,9 +134,8 @@ public class Member extends BaseTimeEntity {
         return talkPicks.contains(talkPick);
     }
 
-    public boolean isMyGame(Game game) {
-        return gameSets.stream()
-                .anyMatch(gameSet -> gameSet.getGames().contains(game));
+    public boolean isMyGameSet(GameSet gameSet) {
+        return gameSets.contains(gameSet);
     }
 
     public Optional<Bookmark> getBookmarkOf(long resourceId, BookmarkType type) {

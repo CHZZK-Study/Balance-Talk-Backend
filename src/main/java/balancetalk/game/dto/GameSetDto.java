@@ -7,6 +7,7 @@ import balancetalk.game.dto.GameDto.CreateGameRequest;
 import balancetalk.game.dto.GameDto.GameDetailResponse;
 import balancetalk.member.domain.Member;
 import balancetalk.vote.domain.VoteOption;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -35,6 +36,7 @@ public class GameSetDto {
                     .subTag(subTag)
                     .member(member)
                     .games(games.stream().map(CreateGameRequest::toEntity).toList())
+                    .bookmarks(0L)
                     .build();
         }
     }
@@ -84,8 +86,27 @@ public class GameSetDto {
 
         private List<GameDetailResponse> gameDetailResponses;
 
-        public static GameSetDetailResponse fromEntity(GameSet gameSet, Map<Long, Boolean> bookmarkMap, Map<Long, VoteOption> voteOptionMap) {
+        @Schema(description = "밸런스게임 세트 전체 투표 완료 여부", example = "false")
+        @JsonProperty("isEndGameSet")
+        private boolean isEndGameSet;
+
+        public static GameSetDetailResponse fromEntity(GameSet gameSet, Map<Long, Boolean> bookmarkMap,
+                                                       Map<Long, VoteOption> voteOptionMap, boolean isEndGameSet) {
+
+            if (isEndGameSet) {
+                // voteOption을 null로 반환
+                return GameSetDetailResponse.builder()
+                        .isEndGameSet(true)
+                        .gameDetailResponses(gameSet.getGames().stream()
+                                .map(game -> GameDetailResponse.fromEntity(game,
+                                        bookmarkMap.getOrDefault(game.getId(), false),
+                                        null)) // TODO : 끝까지 투표했을 경우, 투표옵션이 NULL로 되는지 체크.
+                                .toList())
+                        .build();
+            }
+
             return GameSetDetailResponse.builder()
+                    .isEndGameSet(false)
                     .gameDetailResponses(gameSet.getGames().stream()
                             .map(game -> GameDetailResponse.fromEntity(game,
                                     bookmarkMap.getOrDefault(game.getId(), false),

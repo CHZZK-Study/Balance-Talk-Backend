@@ -51,9 +51,6 @@ public class Game extends BaseTimeEntity {
     private String description;
 
     private LocalDateTime editedAt;
-    @PositiveOrZero
-    @ColumnDefault("0")
-    private Long bookmarks;
 
     @Column(columnDefinition = "TEXT")
     private String notificationHistory;
@@ -71,14 +68,6 @@ public class Game extends BaseTimeEntity {
         // this.optionA = optionA;
         // this.optionB = optionB;
         this.editedAt = LocalDateTime.now();
-    }
-
-    public void increaseBookmarks() {
-        this.bookmarks++;
-    }
-
-    public void decreaseBookmarks() {
-        this.bookmarks--;
     }
 
     public void addGameSet(GameSet gameSet) {

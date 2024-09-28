@@ -53,8 +53,20 @@ public class GameSet extends BaseTimeEntity {
     @Size(max = 10)
     private String subTag;
 
+    @PositiveOrZero
+    @ColumnDefault("0")
+    private Long bookmarks;
+
     public void increaseViews() {
         this.views++;
+    }
+
+    public void increaseBookmarks() {
+        this.bookmarks++;
+    }
+
+    public void decreaseBookmarks() {
+        this.bookmarks--;
     }
 
     public void addGames(List<Game> games) {

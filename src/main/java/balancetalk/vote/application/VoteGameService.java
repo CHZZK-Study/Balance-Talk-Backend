@@ -41,7 +41,7 @@ public class VoteGameService {
     private final NotificationService notificationService;
 
     public void createVote(Long gameId, VoteRequest request, GuestOrApiMember guestOrApiMember) {
-        Game game = gameReader.readById(gameId);
+        Game game = gameReader.findGameById(gameId);
         GameOption gameOption = getGameOption(game, request);
 
         if (guestOrApiMember.isGuest()) {
@@ -58,7 +58,7 @@ public class VoteGameService {
     }
 
     public void updateVote(Long gameId, VoteRequest request, ApiMember apiMember) {
-        Game game = gameReader.readById(gameId);
+        Game game = gameReader.findGameById(gameId);
 
         Member member = apiMember.toMember(memberRepository);
 
@@ -82,7 +82,7 @@ public class VoteGameService {
     }
 
     public void deleteVote(Long gameId, ApiMember apiMember) {
-        Game game = gameReader.readById(gameId);
+        Game game = gameReader.findGameById(gameId);
 
         Member member = apiMember.toMember(memberRepository);
 
