@@ -93,20 +93,8 @@ public class GameSetDto {
         public static GameSetDetailResponse fromEntity(GameSet gameSet, Map<Long, Boolean> bookmarkMap,
                                                        Map<Long, VoteOption> voteOptionMap, boolean isEndGameSet) {
 
-            if (isEndGameSet) {
-                // voteOption을 null로 반환
-                return GameSetDetailResponse.builder()
-                        .isEndGameSet(true)
-                        .gameDetailResponses(gameSet.getGames().stream()
-                                .map(game -> GameDetailResponse.fromEntity(game,
-                                        bookmarkMap.getOrDefault(game.getId(), false),
-                                        null)) // TODO : 끝까지 투표했을 경우, 투표옵션이 NULL로 되는지 체크.
-                                .toList())
-                        .build();
-            }
-
             return GameSetDetailResponse.builder()
-                    .isEndGameSet(false)
+                    .isEndGameSet(isEndGameSet)
                     .gameDetailResponses(gameSet.getGames().stream()
                             .map(game -> GameDetailResponse.fromEntity(game,
                                     bookmarkMap.getOrDefault(game.getId(), false),
