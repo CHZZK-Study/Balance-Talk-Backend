@@ -2,13 +2,14 @@ package balancetalk.game.application;
 
 import static balancetalk.bookmark.domain.BookmarkType.GAME;
 
+import balancetalk.file.domain.repository.FileRepository;
 import balancetalk.game.domain.Game;
 import balancetalk.game.domain.GameSet;
 import balancetalk.game.domain.MainTag;
 import balancetalk.game.domain.repository.GameSetRepository;
 import balancetalk.game.domain.repository.GameTagRepository;
 import balancetalk.game.dto.GameDto.CreateGameMainTagRequest;
-import balancetalk.game.dto.GameDto.CreateGameRequest;
+import balancetalk.game.dto.GameDto.CreateOrUpdateGame;
 import balancetalk.game.dto.GameSetDto.CreateGameSetRequest;
 import balancetalk.game.dto.GameSetDto.GameSetDetailResponse;
 import balancetalk.game.dto.GameSetDto.GameSetResponse;
@@ -43,13 +44,14 @@ public class GameService {
     private final GameSetRepository gameSetRepository;
     private final MemberRepository memberRepository;
     private final GameTagRepository gameTagRepository;
+    private final FileRepository fileRepository;
 
     public void createBalanceGameSet(final CreateGameSetRequest request, final ApiMember apiMember) {
         Member member = apiMember.toMember(memberRepository);
         MainTag mainTag = gameTagRepository.findByName(request.getMainTag())
                 .orElseThrow(() -> new BalanceTalkException(ErrorCode.NOT_FOUND_GAME_TOPIC));
 
-        List<CreateGameRequest> gameRequests = request.getGames();
+        List<CreateOrUpdateGame> gameRequests = request.getGames();
 
         if (gameRequests.size() < GAME_SIZE) {
             throw new BalanceTalkException(ErrorCode.BALANCE_GAME_SIZE_TEN);
@@ -86,6 +88,14 @@ public class GameService {
             }
         }
         return GameSetDetailResponse.fromEntity(gameSet, bookmarkMap, voteOptionMap);
+    }
+
+    public void updateBalanceGame(Long gameSetId, Long gameId, CreateOrUpdateGame request, ApiMember apiMember) {
+        Member member = apiMember.toMember(memberRepository);
+        GameSet gameSet = member.getGameSetById(gameSetId);
+        Game game = gameSet.getGameById(gameId);
+        game.updateGame(request.toEntity());
+//        fileRepository.updateResourceIdAndTypeByStoredNames(gameId, FileType.GAME, request.get);
     }
 
     public void deleteBalanceGameSet(final Long gameSetId, final ApiMember apiMember) {

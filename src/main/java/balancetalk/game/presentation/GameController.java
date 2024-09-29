@@ -40,9 +40,12 @@ public class GameController {
         return gameService.findBalanceGameSet(gameSetId, guestOrApiMember);
     }
 
-    @PutMapping("/{gameId}")
+    @PutMapping("/{gameSetId}/{gameId}")
     @Operation(summary = "밸런스 게임 수정", description = "밸런스 게임을 수정합니다.")
-    public void updateGame(@PathVariable final Long gameId, @RequestBody final CreateGameRequest request) {
+    public void updateGame(@PathVariable final Long gameSetId, @PathVariable final Long gameId,
+                           @RequestBody final CreateOrUpdateGame request,
+                           @Parameter(hidden = true) @AuthPrincipal final ApiMember apiMember) {
+        gameService.updateBalanceGame(gameSetId, gameId, request, apiMember);
     }
 
     @DeleteMapping("/{gameSetId}")

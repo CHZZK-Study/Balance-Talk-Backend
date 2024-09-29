@@ -3,7 +3,7 @@ package balancetalk.game.dto;
 import balancetalk.game.domain.Game;
 import balancetalk.game.domain.GameSet;
 import balancetalk.game.domain.MainTag;
-import balancetalk.game.dto.GameDto.CreateGameRequest;
+import balancetalk.game.dto.GameDto.CreateOrUpdateGame;
 import balancetalk.game.dto.GameDto.GameDetailResponse;
 import balancetalk.member.domain.Member;
 import balancetalk.vote.domain.VoteOption;
@@ -27,14 +27,14 @@ public class GameSetDto {
         @Schema(description = "밸런스 게임 서브 태그", example = "커플지옥")
         private String subTag;
 
-        private List<CreateGameRequest> games;
+        private List<CreateOrUpdateGame> games;
 
         public GameSet toEntity(MainTag mainTag, Member member) {
             return GameSet.builder()
                     .mainTag(mainTag)
                     .subTag(subTag)
                     .member(member)
-                    .games(games.stream().map(CreateGameRequest::toEntity).toList())
+                    .games(games.stream().map(CreateOrUpdateGame::toEntity).toList())
                     .build();
         }
     }

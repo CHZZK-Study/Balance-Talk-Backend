@@ -23,8 +23,8 @@ public class GameDto {
     @Data
     @Builder
     @AllArgsConstructor
-    @Schema(description = "밸런스 게임 생성 요청")
-    public static class CreateGameRequest {
+    @Schema(description = "밸런스 게임 생성 혹은 수정 요청")
+    public static class CreateOrUpdateGame {
 
         @Schema(description = "제목", example = "제목")
         private String title;
@@ -65,7 +65,7 @@ public class GameDto {
         @Schema(description = "북마크 여부", example = "false")
         private Boolean myBookmark;
 
-        public static GameResponse fromEntity(Game game, Member member, boolean isBookmarked) {
+        public static GameResponse fromEntity(Game game, boolean isBookmarked) {
             return GameResponse.builder()
                     .id(game.getId())
                     .title(game.getTitle())

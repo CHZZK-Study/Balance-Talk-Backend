@@ -147,6 +147,13 @@ public class Member extends BaseTimeEntity {
                 .orElseThrow(() -> new BalanceTalkException(ErrorCode.NOT_FOUND_TALK_PICK_THAT_MEMBER));
     }
 
+    public GameSet getGameSetById(long gameSetId) {
+        return gameSets.stream()
+                .filter(gameSet -> gameSet.matchesId(gameSetId))
+                .findFirst()
+                .orElseThrow(() -> new BalanceTalkException(ErrorCode.NOT_FOUND_BALANCE_GAME_SET));
+    }
+
     public boolean hasTempTalkPick() {
         return tempTalkPick != null;
     }
