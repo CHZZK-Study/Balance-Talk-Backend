@@ -88,6 +88,11 @@ public class GameService {
         return GameSetDetailResponse.fromEntity(gameSet, bookmarkMap, voteOptionMap);
     }
 
+    public void deleteBalanceGameSet(final Long gameSetId, final ApiMember apiMember) {
+        apiMember.toMember(memberRepository);
+        gameSetRepository.deleteById(gameSetId);
+    }
+
     public List<GameSetResponse> findLatestGames(final String topicName) {
         Pageable pageable = PageRequest.of(PAGE_INITIAL_INDEX, PAGE_LIMIT);
         List<GameSet> gameSets = gameSetRepository.findGamesByCreationDate(topicName, pageable);
@@ -103,7 +108,7 @@ public class GameService {
     }
 
     public void createGameMainTag(final CreateGameMainTagRequest request, final ApiMember apiMember) {
-        Member member = apiMember.toMember(memberRepository);
+        apiMember.toMember(memberRepository);
         if (gameTagRepository.existsByName(request.getName())) {
             throw new BalanceTalkException(ErrorCode.ALREADY_REGISTERED_TAG);
         }

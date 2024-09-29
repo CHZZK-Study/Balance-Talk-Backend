@@ -45,9 +45,11 @@ public class GameController {
     public void updateGame(@PathVariable final Long gameId, @RequestBody final CreateGameRequest request) {
     }
 
-    @DeleteMapping("/{gameId}")
-    @Operation(summary = "밸런스 게임 삭제", description = "밸런스 게임을 삭제합니다.")
-    public void deleteGame(@PathVariable final Long gameId) {
+    @DeleteMapping("/{gameSetId}")
+    @Operation(summary = "밸런스 게임 세트 삭제", description = "밸런스 게임 세트를 삭제합니다.")
+    public void deleteGameSet(@PathVariable final Long gameSetId,
+                              @Parameter(hidden = true) @AuthPrincipal final ApiMember apiMember) {
+        gameService.deleteBalanceGameSet(gameSetId, apiMember);
     }
 
     @GetMapping("/latest")
