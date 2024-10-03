@@ -14,6 +14,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.PositiveOrZero;
 import jakarta.validation.constraints.Size;
 import java.util.ArrayList;
 import java.util.List;
@@ -22,6 +23,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.ColumnDefault;
 
 @Entity
 @Getter
@@ -47,6 +49,10 @@ public class GameOption {
     @Enumerated(value = EnumType.STRING)
     private VoteOption optionType;
 
+    @PositiveOrZero
+    @ColumnDefault("0")
+    private long votesCount;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "game_id")
     private Game game;
@@ -62,7 +68,11 @@ public class GameOption {
         return optionType.equals(voteOption);
     }
 
-    public long votesCount() {
-        return gameVotes.size();
+    public void increaseVotesCount() {
+        this.votesCount++;
+    }
+
+    public void decreaseVotesCount() {
+        this.votesCount--;
     }
 }

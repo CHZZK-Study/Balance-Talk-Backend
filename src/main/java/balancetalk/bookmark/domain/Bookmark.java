@@ -72,7 +72,7 @@ public class Bookmark extends BaseTimeEntity {
         this.gameId = gameId;
     }
 
-    public void setEndGameSet() {
-        this.isEndGameSet = true;
+    public void setIsEndGameSet(boolean isEndGameSet) {
+        this.isEndGameSet = isEndGameSet;
     }
 }

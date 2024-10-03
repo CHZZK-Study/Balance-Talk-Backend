@@ -11,7 +11,6 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.PositiveOrZero;
 import jakarta.validation.constraints.Size;
 import java.io.IOException;
 import java.util.HashMap;
@@ -20,7 +19,6 @@ import lombok.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import org.hibernate.annotations.ColumnDefault;
 
 @Entity
 @Getter
@@ -60,7 +58,7 @@ public class Game extends BaseTimeEntity {
                 .filter(gameOption -> gameOption.isTypeEqual(optionType))
                 .findFirst()
                 .orElseThrow(() -> new BalanceTalkException(ErrorCode.NOT_FOUND_OPTION_VOTE));
-        return option.votesCount();
+        return option.getVotesCount();
     }
 
     public void edit() { // 밸런스 게임 수정 시 호출
