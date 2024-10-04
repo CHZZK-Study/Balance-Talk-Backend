@@ -5,7 +5,6 @@ import static balancetalk.vote.domain.VoteOption.*;
 import balancetalk.bookmark.domain.Bookmark;
 import balancetalk.game.domain.Game;
 import balancetalk.game.domain.MainTag;
-import balancetalk.member.domain.Member;
 import balancetalk.vote.domain.GameVote;
 import balancetalk.vote.domain.VoteOption;
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -42,6 +41,12 @@ public class GameDto {
                     .bookmarks(0L)
                     .editedAt(LocalDateTime.now())
                     .build();
+        }
+
+        public List<String> extractStoresNames() {
+            return this.gameOptions.stream()
+                    .map(GameOptionDto::getStoredName)
+                    .toList();
         }
     }
 
