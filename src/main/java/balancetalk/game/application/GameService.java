@@ -2,6 +2,7 @@ package balancetalk.game.application;
 
 import static balancetalk.bookmark.domain.BookmarkType.GAME;
 
+import balancetalk.file.domain.FileType;
 import balancetalk.file.domain.repository.FileRepository;
 import balancetalk.game.domain.Game;
 import balancetalk.game.domain.GameSet;
@@ -59,9 +60,9 @@ public class GameService {
 
         GameSet gameSet = request.toEntity(mainTag, member);
         List<Game> games = gameSet.getGames();
-
         gameSet.addGames(games);
         gameSetRepository.save(gameSet);
+        fileRepository.updateResourceIdAndTypeByStoredNames(gameSet.getId(), FileType.GAME, request.extractAllStoredNames());
     }
 
     public GameSetDetailResponse findBalanceGameSet(final Long gameSetId, final GuestOrApiMember guestOrApiMember) {
@@ -95,7 +96,7 @@ public class GameService {
         GameSet gameSet = member.getGameSetById(gameSetId);
         Game game = gameSet.getGameById(gameId);
         game.updateGame(request.toEntity());
-//        fileRepository.updateResourceIdAndTypeByStoredNames(gameId, FileType.GAME, request.get);
+        fileRepository.updateResourceIdAndTypeByStoredNames(gameId, FileType.GAME, request.extractStoresNames());
     }
 
     public void deleteBalanceGameSet(final Long gameSetId, final ApiMember apiMember) {

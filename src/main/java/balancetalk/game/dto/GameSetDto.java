@@ -8,6 +8,7 @@ import balancetalk.game.dto.GameDto.GameDetailResponse;
 import balancetalk.member.domain.Member;
 import balancetalk.vote.domain.VoteOption;
 import io.swagger.v3.oas.annotations.media.Schema;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -36,6 +37,12 @@ public class GameSetDto {
                     .member(member)
                     .games(games.stream().map(CreateOrUpdateGame::toEntity).toList())
                     .build();
+        }
+
+        public List<String> extractAllStoredNames() {
+            return games.stream()
+                    .flatMap(game -> game.extractStoresNames().stream())
+                    .toList();
         }
     }
 
@@ -82,10 +89,26 @@ public class GameSetDto {
     @Schema(description = "밸런스 게임 세트 상세 조회 응답")
     public static class GameSetDetailResponse {
 
+        @Schema(description = "작성자", example = "멤버")
+        private String member;
+
+        @Schema(description = "작성 날짜", example = "")
+        private LocalDateTime createdAt;
+
+        @Schema(description = "메인 태그", example = "사랑")
+        private String mainTag;
+
+        @Schema(description = "서브 태그", example = "서브 태그")
+        private String subTag;
+
         private List<GameDetailResponse> gameDetailResponses;
 
         public static GameSetDetailResponse fromEntity(GameSet gameSet, Map<Long, Boolean> bookmarkMap, Map<Long, VoteOption> voteOptionMap) {
             return GameSetDetailResponse.builder()
+                    .member(gameSet.getMember().getNickname())
+                    .createdAt(gameSet.getCreatedAt())
+                    .mainTag(gameSet.getMainTag().getName())
+                    .subTag(gameSet.getSubTag())
                     .gameDetailResponses(gameSet.getGames().stream()
                             .map(game -> GameDetailResponse.fromEntity(game,
                                     bookmarkMap.getOrDefault(game.getId(), false),
