@@ -82,6 +82,7 @@ public enum ErrorCode {
     NOT_FOUND_LIKE(NOT_FOUND, "해당 좋아요가 존재하지 않습니다."),
     NOT_FOUND_BALANCE_GAME_SET(NOT_FOUND, "존재하지 않는 밸런스 게임 세트 입니다."),
     NOT_FOUND_BALANCE_GAME(NOT_FOUND, "존재하지 않는 밸런스 게임입니다."),
+    NOT_FOUND_BALANCE_GAME_THAT_GAME_SET(NOT_FOUND, "해당 밸런스 게임 세트에 존재하지 않는 밸런스 게임입니다."),
     NOT_FOUND_GAME_TOPIC(NOT_FOUND, "존재하지 않는 밸런스 게임 주제입니다."),
     NOT_FOUND_TALK_PICK_THAT_MEMBER(NOT_FOUND, "해당 회원이 작성하지 않은 톡픽입니다."),
     NOT_FOUND_TEMP_TALK_PICK(NOT_FOUND, "임시 저장한 톡픽이 존재하지 않습니다."),

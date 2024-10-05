@@ -1,9 +1,11 @@
 package balancetalk.game.application;
 
-import static balancetalk.bookmark.domain.BookmarkType.GAME;
+import static balancetalk.bookmark.domain.BookmarkType.GAME_SET;
 
 import balancetalk.file.domain.FileType;
 import balancetalk.file.domain.repository.FileRepository;
+import balancetalk.bookmark.domain.Bookmark;
+import balancetalk.bookmark.domain.BookmarkRepository;
 import balancetalk.game.domain.Game;
 import balancetalk.game.domain.GameSet;
 import balancetalk.game.domain.MainTag;
@@ -46,6 +48,7 @@ public class GameService {
     private final MemberRepository memberRepository;
     private final GameTagRepository gameTagRepository;
     private final FileRepository fileRepository;
+    private final BookmarkRepository bookmarkRepository;
 
     public void createBalanceGameSet(final CreateGameSetRequest request, final ApiMember apiMember) {
         Member member = apiMember.toMember(memberRepository);
@@ -71,7 +74,7 @@ public class GameService {
         gameSet.increaseViews();
 
         if (guestOrApiMember.isGuest()) { // 비회원인 경우
-            return GameSetDetailResponse.fromEntity(gameSet, new ConcurrentHashMap<>(), new ConcurrentHashMap<>()); // 게스트인 경우 북마크, 선택 옵션 없음
+            return GameSetDetailResponse.fromEntity(gameSet, new ConcurrentHashMap<>(), new ConcurrentHashMap<>(), false); // 게스트인 경우 북마크, 선택 옵션 없음
         }
 
         Member member = guestOrApiMember.toMember(memberRepository);
@@ -80,15 +83,24 @@ public class GameService {
         Map<Long, Boolean> bookmarkMap = new ConcurrentHashMap<>();
         Map<Long, VoteOption> voteOptionMap = new ConcurrentHashMap<>();
 
+        boolean isEndGameSet = bookmarkRepository.findByMemberAndResourceIdAndBookmarkType(member, gameSetId, GAME_SET)
+                .map(Bookmark::getIsEndGameSet)
+                .orElse(false);
+
         for (Game game : games) {
-            boolean hasBookmarked = member.hasBookmarked(game.getId(), GAME);
+            Long bookmarkedGameId = bookmarkRepository.findByMemberAndResourceIdAndBookmarkType(member, game.getGameSet().getId(), GAME_SET)
+                    .map(Bookmark::getGameId)
+                    .orElse(null);
+
+            boolean hasBookmarked = (bookmarkedGameId != null && bookmarkedGameId.equals(game.getId()));
+
             bookmarkMap.put(game.getId(), hasBookmarked);
             Optional<GameVote> myVote = member.getVoteOnGameOption(member, game);
             if (myVote.isPresent()) {
                 voteOptionMap.put(game.getId(), myVote.get().getVoteOption());
             }
         }
-        return GameSetDetailResponse.fromEntity(gameSet, bookmarkMap, voteOptionMap);
+        return GameSetDetailResponse.fromEntity(gameSet, bookmarkMap, voteOptionMap, isEndGameSet);
     }
 
     public void updateBalanceGame(Long gameSetId, Long gameId, CreateOrUpdateGame request, ApiMember apiMember) {

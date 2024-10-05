@@ -7,6 +7,7 @@ import balancetalk.game.dto.GameDto.CreateOrUpdateGame;
 import balancetalk.game.dto.GameDto.GameDetailResponse;
 import balancetalk.member.domain.Member;
 import balancetalk.vote.domain.VoteOption;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -36,6 +37,7 @@ public class GameSetDto {
                     .subTag(subTag)
                     .member(member)
                     .games(games.stream().map(CreateOrUpdateGame::toEntity).toList())
+                    .bookmarks(0L)
                     .build();
         }
 
@@ -103,12 +105,19 @@ public class GameSetDto {
 
         private List<GameDetailResponse> gameDetailResponses;
 
-        public static GameSetDetailResponse fromEntity(GameSet gameSet, Map<Long, Boolean> bookmarkMap, Map<Long, VoteOption> voteOptionMap) {
+        @Schema(description = "밸런스게임 세트 전체 투표 완료 여부", example = "false")
+        @JsonProperty("isEndGameSet")
+        private boolean isEndGameSet;
+
+        public static GameSetDetailResponse fromEntity(GameSet gameSet, Map<Long, Boolean> bookmarkMap,
+                                                       Map<Long, VoteOption> voteOptionMap, boolean isEndGameSet) {
+
             return GameSetDetailResponse.builder()
                     .member(gameSet.getMember().getNickname())
                     .createdAt(gameSet.getCreatedAt())
                     .mainTag(gameSet.getMainTag().getName())
                     .subTag(gameSet.getSubTag())
+                    .isEndGameSet(isEndGameSet)
                     .gameDetailResponses(gameSet.getGames().stream()
                             .map(game -> GameDetailResponse.fromEntity(game,
                                     bookmarkMap.getOrDefault(game.getId(), false),

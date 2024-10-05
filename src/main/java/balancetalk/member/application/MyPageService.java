@@ -93,11 +93,11 @@ public class MyPageService {
 
     public Page<GameMyPageResponse> findAllBookmarkedGames(ApiMember apiMember, Pageable pageable) {
         Member member = apiMember.toMember(memberRepository);
-        Page<Bookmark> bookmarks = bookmarkRepository.findActivatedByMemberOrderByDesc(member, BookmarkType.GAME, pageable);
+        Page<Bookmark> bookmarks = bookmarkRepository.findActivatedByMemberOrderByDesc(member, BookmarkType.GAME_SET, pageable);
 
         List<GameMyPageResponse> responses = bookmarks.stream()
                 .map(bookmark -> {
-                    Game game = gameRepository.findById(bookmark.getResourceId())
+                    Game game = gameRepository.findById(bookmark.getGameId()) // 사용자가 북마크한 위치의 밸런스게임을 찾음
                             .orElseThrow(() -> new BalanceTalkException(ErrorCode.NOT_FOUND_BALANCE_GAME));
                     return GameMyPageResponse.from(game, bookmark);
                 })

@@ -55,6 +55,10 @@ public class GameSet extends BaseTimeEntity {
     @Size(max = 10)
     private String subTag;
 
+    @PositiveOrZero
+    @ColumnDefault("0")
+    private Long bookmarks;
+
     public void increaseViews() {
         this.views++;
     }
@@ -68,6 +72,17 @@ public class GameSet extends BaseTimeEntity {
                 .filter(game -> game.matchesId(id))
                 .findFirst()
                 .orElseThrow(() -> new BalanceTalkException(ErrorCode.NOT_FOUND_BALANCE_GAME));
+
+    public void increaseBookmarks() {
+        this.bookmarks++;
+    }
+
+    public void decreaseBookmarks() {
+        this.bookmarks--;
+    }
+
+    public boolean hasGame(Long gameId) {
+        return games.stream().anyMatch(game -> game.getId().equals(gameId));
     }
 
     public void addGames(List<Game> games) {

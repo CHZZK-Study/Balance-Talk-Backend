@@ -38,7 +38,6 @@ public class GameDto {
                     .title(title)
                     .description(description)
                     .gameOptions(gameOptions.stream().map(GameOptionDto::toEntity).toList())
-                    .bookmarks(0L)
                     .editedAt(LocalDateTime.now())
                     .build();
         }
@@ -148,8 +147,11 @@ public class GameDto {
     @JsonInclude(JsonInclude.Include.NON_NULL)
     public static class GameMyPageResponse {
 
+        @Schema(description = "밸런스 게임 세트 ID", example = "1")
+        private long gameSetId;
+
         @Schema(description = "밸런스 게임 ID", example = "1")
-        private long id;
+        private long gameId;
 
         @Schema(description = "밸런스 게임 제목", example = "제목")
         private String title;
@@ -170,46 +172,47 @@ public class GameDto {
         @Schema(description = "북마크 여부")
         private boolean isBookmarked;
 
-//        @Schema(description = "밸런스 게임 서브 태그", example = "화제의 중심")
-//        private String subTag;
-//
-//        @Schema(description = "밸런스 게임 메인 태그", example = "인기")
-//        private String mainTag;
+        @Schema(description = "밸런스 게임 서브 태그", example = "화제의 중심")
+        private String subTag;
+
+        @Schema(description = "밸런스 게임 메인 태그 이름", example = "인기")
+        private String mainTagName;
 
         public static GameMyPageResponse from(Game game) {
             return GameMyPageResponse.builder()
-                    .id(game.getId())
+                    .gameId(game.getId())
                     .title(game.getTitle())
                     .optionAImg(game.getGameOptions().get(0).getImgUrl())
                     .optionBImg(game.getGameOptions().get(1).getImgUrl())
-//                    .subTag(game.getSubTag())
-//                    .mainTag(game.getMainTag().getName())
+                    .subTag(game.getGameSet().getSubTag())
+                    .mainTagName(game.getGameSet().getMainTag().getName())
                     .editedAt(game.getEditedAt())
                     .build();
         }
 
         public static GameMyPageResponse from(Game game, Bookmark bookmark) {
             return GameMyPageResponse.builder()
-                    .id(game.getId())
+                    .gameSetId(game.getGameSet().getId())
+                    .gameId(game.getId())
                     .title(game.getTitle())
                     .optionAImg(game.getGameOptions().get(0).getImgUrl())
                     .optionBImg(game.getGameOptions().get(1).getImgUrl())
                     .isBookmarked(bookmark.isActive())
-//                    .subTag(game.getSubTag())
-//                    .mainTag(game.getMainTag().getName())
+                    .subTag(game.getGameSet().getSubTag())
+                    .mainTagName(game.getGameSet().getMainTag().getName())
                     .editedAt(game.getEditedAt())
                     .build();
         }
 
         public static GameMyPageResponse from(Game game, GameVote vote) {
             return GameMyPageResponse.builder()
-                    .id(game.getId())
+                    .gameId(game.getId())
                     .title(game.getTitle())
                     .optionAImg(game.getGameOptions().get(0).getImgUrl())
                     .optionBImg(game.getGameOptions().get(1).getImgUrl())
                     .voteOption(vote.getVoteOption())
-//                    .subTag(game.getSubTag())
-//                    .mainTag(game.getMainTag().getName())
+                    .subTag(game.getGameSet().getSubTag())
+                    .mainTagName(game.getGameSet().getMainTag().getName())
                     .editedAt(game.getEditedAt())
                     .build();
         }
