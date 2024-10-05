@@ -1,10 +1,7 @@
 package balancetalk.talkpick.presentation;
 
-import balancetalk.global.utils.AuthPrincipal;
-import balancetalk.member.dto.ApiMember;
 import balancetalk.talkpick.application.SummaryContentService;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -22,8 +19,7 @@ public class SummaryContentController {
 
     @Operation(summary = "톡픽 본문 요약", description = "톡픽 본문 내용을 요약합니다.")
     @PostMapping
-    public void summaryContent(@PathVariable final Long talkPickId,
-                               @Parameter(hidden = true) @AuthPrincipal ApiMember apiMember) {
-        summaryContentService.summaryContent(talkPickId, apiMember);
+    public void summaryContent(@PathVariable final Long talkPickId) {
+        summaryContentService.summaryContent(talkPickId);
     }
 }
