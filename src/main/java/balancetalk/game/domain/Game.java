@@ -61,22 +61,7 @@ public class Game extends BaseTimeEntity {
                 .orElseThrow(() -> new BalanceTalkException(ErrorCode.NOT_FOUND_OPTION_VOTE));
         return option.getVotesCount();
     }
-
-    public void increaseBookmarks() {
-        this.bookmarks++;
-    }
-
-    public void decreaseBookmarks() {
-        this.bookmarks--;
-    }
-  
-    public void edit() { // 밸런스 게임 수정 시 호출
-        // this.title = title;
-        // this.optionA = optionA;
-        // this.optionB = optionB;
-        this.editedAt = LocalDateTime.now();
-    }
-
+    
     public void addGameSet(GameSet gameSet) {
         this.gameSet = gameSet;
     }

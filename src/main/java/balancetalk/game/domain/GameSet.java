@@ -72,6 +72,7 @@ public class GameSet extends BaseTimeEntity {
                 .filter(game -> game.matchesId(id))
                 .findFirst()
                 .orElseThrow(() -> new BalanceTalkException(ErrorCode.NOT_FOUND_BALANCE_GAME));
+    }
 
     public void increaseBookmarks() {
         this.bookmarks++;
