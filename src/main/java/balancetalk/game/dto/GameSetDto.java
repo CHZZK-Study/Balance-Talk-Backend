@@ -94,7 +94,7 @@ public class GameSetDto {
         @Schema(description = "작성자", example = "멤버")
         private String member;
 
-        @Schema(description = "작성 날짜", example = "")
+        @Schema(description = "작성 날짜", example = "2024-10-07T21:55:19.591909")
         private LocalDateTime createdAt;
 
         @Schema(description = "메인 태그", example = "사랑")

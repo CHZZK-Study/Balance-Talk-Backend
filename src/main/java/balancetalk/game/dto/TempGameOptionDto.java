@@ -19,6 +19,7 @@ public class TempGameOptionDto {
         @Schema(description = "선택지 이미지", example = "https://pikko-image.s3.ap-northeast-2.amazonaws.com/balance-game/067cc56e-21b7-468f-a2c1-4839036ee7cd_unnamed.png")
         private String imgUrl;
 
+        @Schema(description = "선택지 이미지 저장 이름", example = "36bece74-4d02-44f0-8fd6-025a4f10dbc6_images.png")
         private String storedName;
 
         @Schema(description = "선택지 추가설명", example = "선택지 추가 설명")
