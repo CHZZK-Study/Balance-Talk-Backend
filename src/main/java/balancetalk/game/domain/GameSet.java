@@ -1,6 +1,8 @@
 package balancetalk.game.domain;
 
 import balancetalk.global.common.BaseTimeEntity;
+import balancetalk.global.exception.BalanceTalkException;
+import balancetalk.global.exception.ErrorCode;
 import balancetalk.member.domain.Member;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -59,6 +61,17 @@ public class GameSet extends BaseTimeEntity {
 
     public void increaseViews() {
         this.views++;
+    }
+
+    public boolean matchesId(long id) {
+        return this.id == id;
+    }
+
+    public Game getGameById(long id) {
+        return games.stream()
+                .filter(game -> game.matchesId(id))
+                .findFirst()
+                .orElseThrow(() -> new BalanceTalkException(ErrorCode.NOT_FOUND_BALANCE_GAME));
     }
 
     public void increaseBookmarks() {

@@ -2,6 +2,8 @@ package balancetalk.game.application;
 
 import static balancetalk.bookmark.domain.BookmarkType.GAME_SET;
 
+import balancetalk.file.domain.FileType;
+import balancetalk.file.domain.repository.FileRepository;
 import balancetalk.bookmark.domain.Bookmark;
 import balancetalk.bookmark.domain.BookmarkRepository;
 import balancetalk.game.domain.Game;
@@ -10,7 +12,7 @@ import balancetalk.game.domain.MainTag;
 import balancetalk.game.domain.repository.GameSetRepository;
 import balancetalk.game.domain.repository.GameTagRepository;
 import balancetalk.game.dto.GameDto.CreateGameMainTagRequest;
-import balancetalk.game.dto.GameDto.CreateGameRequest;
+import balancetalk.game.dto.GameDto.CreateOrUpdateGame;
 import balancetalk.game.dto.GameSetDto.CreateGameSetRequest;
 import balancetalk.game.dto.GameSetDto.GameSetDetailResponse;
 import balancetalk.game.dto.GameSetDto.GameSetResponse;
@@ -45,6 +47,7 @@ public class GameService {
     private final GameSetRepository gameSetRepository;
     private final MemberRepository memberRepository;
     private final GameTagRepository gameTagRepository;
+    private final FileRepository fileRepository;
     private final BookmarkRepository bookmarkRepository;
 
     public void createBalanceGameSet(final CreateGameSetRequest request, final ApiMember apiMember) {
@@ -52,7 +55,7 @@ public class GameService {
         MainTag mainTag = gameTagRepository.findByName(request.getMainTag())
                 .orElseThrow(() -> new BalanceTalkException(ErrorCode.NOT_FOUND_GAME_TOPIC));
 
-        List<CreateGameRequest> gameRequests = request.getGames();
+        List<CreateOrUpdateGame> gameRequests = request.getGames();
 
         if (gameRequests.size() < GAME_SIZE) {
             throw new BalanceTalkException(ErrorCode.BALANCE_GAME_SIZE_TEN);
@@ -60,9 +63,9 @@ public class GameService {
 
         GameSet gameSet = request.toEntity(mainTag, member);
         List<Game> games = gameSet.getGames();
-
         gameSet.addGames(games);
         gameSetRepository.save(gameSet);
+        fileRepository.updateResourceIdAndTypeByStoredNames(gameSet.getId(), FileType.GAME, request.extractAllStoredNames());
     }
 
     public GameSetDetailResponse findBalanceGameSet(final Long gameSetId, final GuestOrApiMember guestOrApiMember) {
@@ -100,6 +103,19 @@ public class GameService {
         return GameSetDetailResponse.fromEntity(gameSet, bookmarkMap, voteOptionMap, isEndGameSet);
     }
 
+    public void updateBalanceGame(Long gameSetId, Long gameId, CreateOrUpdateGame request, ApiMember apiMember) {
+        Member member = apiMember.toMember(memberRepository);
+        GameSet gameSet = member.getGameSetById(gameSetId);
+        Game game = gameSet.getGameById(gameId);
+        game.updateGame(request.toEntity());
+        fileRepository.updateResourceIdAndTypeByStoredNames(gameId, FileType.GAME, request.extractStoresNames());
+    }
+
+    public void deleteBalanceGameSet(final Long gameSetId, final ApiMember apiMember) {
+        apiMember.toMember(memberRepository);
+        gameSetRepository.deleteById(gameSetId);
+    }
+
     public List<GameSetResponse> findLatestGames(final String topicName) {
         Pageable pageable = PageRequest.of(PAGE_INITIAL_INDEX, PAGE_LIMIT);
         List<GameSet> gameSets = gameSetRepository.findGamesByCreationDate(topicName, pageable);
@@ -115,7 +131,7 @@ public class GameService {
     }
 
     public void createGameMainTag(final CreateGameMainTagRequest request, final ApiMember apiMember) {
-        Member member = apiMember.toMember(memberRepository);
+        apiMember.toMember(memberRepository);
         if (gameTagRepository.existsByName(request.getName())) {
             throw new BalanceTalkException(ErrorCode.ALREADY_REGISTERED_TAG);
         }

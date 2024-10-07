@@ -15,6 +15,7 @@ import jakarta.validation.constraints.Size;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.IntStream;
 import lombok.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -61,15 +62,20 @@ public class Game extends BaseTimeEntity {
         return option.getVotesCount();
     }
 
-    public void edit() { // 밸런스 게임 수정 시 호출
-        // this.title = title;
-        // this.optionA = optionA;
-        // this.optionB = optionB;
-        this.editedAt = LocalDateTime.now();
-    }
-
     public void addGameSet(GameSet gameSet) {
         this.gameSet = gameSet;
+    }
+
+    public boolean matchesId(long id) {
+        return this.id == id;
+    }
+
+    public void updateGame(Game newGame) {
+        this.title = newGame.getTitle();
+        this.description = newGame.getDescription();
+        this.editedAt = LocalDateTime.now();
+        IntStream.range(0, this.gameOptions.size())
+                .forEach(i -> this.gameOptions.get(i).updateOption(newGame.getGameOptions().get(i)));
     }
 
     // 알림 이력 조회

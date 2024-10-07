@@ -64,6 +64,12 @@ public class GameOption {
         this.game = game;
     }
 
+    public void updateOption(GameOption newGameOption) {
+        this.name = newGameOption.getName();
+        this.imgUrl = newGameOption.getImgUrl();
+        this.description = newGameOption.getDescription();
+    }
+
     public boolean isTypeEqual(VoteOption voteOption) {
         return optionType.equals(voteOption);
     }
