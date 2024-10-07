@@ -97,6 +97,9 @@ dependencies {
 
 	// Retry
 	implementation 'org.springframework.retry:spring-retry'
+
+	// 오류 해결을 위한 임시 추가
+	implementation 'io.micrometer:micrometer-tracing-bridge-otel'
 }
 
 tasks.named('test') {
