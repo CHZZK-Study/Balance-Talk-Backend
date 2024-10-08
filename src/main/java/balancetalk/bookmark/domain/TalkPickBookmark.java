@@ -22,25 +22,17 @@ public class TalkPickBookmark extends BaseTimeEntity {
     private Member member;
 
     @NotNull
-    private Long resourceId;
+    private Long talkPickId;
 
     @NotNull
     private Boolean active;
 
-    @NotNull
-    @Enumerated(EnumType.STRING)
-    private BookmarkType bookmarkType;
-
-    public boolean matches(long resourceId, BookmarkType bookmarkType) {
-        return isEqualsResourceId(resourceId) && isEqualsType(bookmarkType);
+    public boolean matches(long resourceId) {
+        return isEqualsResourceId(resourceId);
     }
 
-    private boolean isEqualsResourceId(long resourceId) {
-        return this.resourceId.equals(resourceId);
-    }
-
-    private boolean isEqualsType(BookmarkType bookmarkType) {
-        return this.bookmarkType == bookmarkType;
+    private boolean isEqualsResourceId(long talkPickId) {
+        return this.talkPickId.equals(talkPickId);
     }
 
     public boolean isActive() {
