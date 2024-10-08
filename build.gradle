@@ -2,7 +2,7 @@ plugins {
 	id 'java'
 	id 'org.springframework.boot' version '3.2.2'
 	id 'io.spring.dependency-management' version '1.1.4'
-	id "org.sonarqube" version "5.0.0.4638"
+	id "org.sonarqube" version "5.1.0.4882"
 }
 
 group = 'com.example'
@@ -34,8 +34,8 @@ repositories {
 
 sonar {
 	properties {
-		property "sonar.projectKey", "PICK-O"
-		property "sonar.projectName", "PICK-O"
+		property "sonar.projectKey", "PICKO-BE"
+		property "sonar.projectName", "PICKO-BE"
 	}
 }
 
