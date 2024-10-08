@@ -38,6 +38,7 @@ public class GameBookmark extends BaseTimeEntity {
     @NotNull
     private Long gameSetId;
 
+    @NotNull
     private Long gameId;
 
     @NotNull
