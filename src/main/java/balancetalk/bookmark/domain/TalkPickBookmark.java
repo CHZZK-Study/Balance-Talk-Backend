@@ -11,7 +11,7 @@ import lombok.*;
 @Getter
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Bookmark extends BaseTimeEntity {
+public class TalkPickBookmark extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
@@ -24,21 +24,12 @@ public class Bookmark extends BaseTimeEntity {
     @NotNull
     private Long resourceId;
 
-    private Long gameId;
-
     @NotNull
     private Boolean active;
 
     @NotNull
-    private Boolean isEndGameSet;
-
-    @NotNull
     @Enumerated(EnumType.STRING)
     private BookmarkType bookmarkType;
-
-    public boolean matches(long resourceId, long gameId, BookmarkType bookmarkType) {
-        return isEqualsResourceId(resourceId) && isEqualsGameId(gameId) && isEqualsType(bookmarkType);
-    }
 
     public boolean matches(long resourceId, BookmarkType bookmarkType) {
         return isEqualsResourceId(resourceId) && isEqualsType(bookmarkType);
@@ -46,10 +37,6 @@ public class Bookmark extends BaseTimeEntity {
 
     private boolean isEqualsResourceId(long resourceId) {
         return this.resourceId.equals(resourceId);
-    }
-
-    private boolean isEqualsGameId(long gameId) {
-        return this.gameId.equals(gameId);
     }
 
     private boolean isEqualsType(BookmarkType bookmarkType) {
@@ -68,11 +55,4 @@ public class Bookmark extends BaseTimeEntity {
         this.active = false;
     }
 
-    public void updateGameId(Long gameId) {
-        this.gameId = gameId;
-    }
-
-    public void setIsEndGameSet(boolean isEndGameSet) {
-        this.isEndGameSet = isEndGameSet;
-    }
 }
