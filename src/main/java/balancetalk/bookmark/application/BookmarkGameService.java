@@ -10,9 +10,9 @@ import static balancetalk.global.notification.domain.NotificationStandard.SECOND
 import static balancetalk.global.notification.domain.NotificationStandard.THIRD_STANDARD_OF_NOTIFICATION;
 import static balancetalk.global.notification.domain.NotificationTitleCategory.WRITTEN_GAME;
 
-import balancetalk.bookmark.domain.Bookmark;
+import balancetalk.bookmark.domain.GameBookmark;
 import balancetalk.bookmark.domain.BookmarkGenerator;
-import balancetalk.bookmark.domain.BookmarkRepository;
+import balancetalk.bookmark.domain.BookmarkGameRepository;
 import balancetalk.game.domain.Game;
 import balancetalk.game.domain.GameSet;
 import balancetalk.game.domain.GameReader;
@@ -34,7 +34,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class BookmarkGameService {
 
     private final GameReader gameReader;
-    private final BookmarkRepository bookmarkRepository;
+    private final BookmarkGameRepository bookmarkGameRepository;
     private final BookmarkGenerator bookmarkGenerator;
     private final MemberRepository memberRepository;
     private final NotificationService notificationService;
@@ -59,7 +59,7 @@ public class BookmarkGameService {
         }
 
         // 해당 멤버가 가진 GameSet 북마크 중, resourceId가 gameSetId와 일치하는 북마크가 있다면
-        member.getBookmarkOf(gameSetId, GAME_SET)
+        member.getBookmarkGamesOf(gameSetId, GAME_SET)
                 .ifPresentOrElse(
                         bookmark -> {
                             bookmark.activate();
@@ -67,7 +67,7 @@ public class BookmarkGameService {
                             bookmark.updateGameId(gameId); //gameId도 업데이트
                         },
                         () -> { // resourceId가 gameSetId와 일치하는 북마크가 없다면 새로 생성
-                            bookmarkRepository.save(bookmarkGenerator.generate(gameSetId, gameId, GAME_SET, member));
+                            bookmarkGameRepository.save(bookmarkGenerator.generate(gameSetId, gameId, GAME_SET, member));
                             gameSet.increaseBookmarks();
                         });
     }
@@ -84,7 +84,7 @@ public class BookmarkGameService {
         long gameId = getFirstGameIdOrThrow(gameSet);
 
         // 해당 멤버가 가진 GameSet 북마크 중, resourceId가 gameSetId와 일치하는 북마크가 있다면
-        member.getBookmarkOf(gameSetId, GAME_SET)
+        member.getBookmarkGamesOf(gameSetId, GAME_SET)
                 .ifPresentOrElse(
                         bookmark -> {
                             bookmark.activate();
@@ -93,7 +93,7 @@ public class BookmarkGameService {
                             bookmark.updateGameId(gameId); //gameId도 업데이트
                         },
                         () -> { // resourceId가 gameSetId와 일치하는 북마크가 없다면 새로 생성
-                            bookmarkRepository.save(bookmarkGenerator.generate(gameSetId, gameId, GAME_SET, member));
+                            bookmarkGameRepository.save(bookmarkGenerator.generate(gameSetId, gameId, GAME_SET, member));
                             gameSet.increaseBookmarks();
                         });
     }
@@ -109,7 +109,7 @@ public class BookmarkGameService {
         GameSet gameSet = gameReader.findGameSetById(gameSetId);
         Member member = apiMember.toMember(memberRepository);
 
-        Bookmark bookmark = member.getBookmarkOf(gameSetId, GAME_SET)
+        GameBookmark bookmark = member.getBookmarkGamesOf(gameSetId, GAME_SET)
                 .orElseThrow(() -> new BalanceTalkException(ErrorCode.NOT_FOUND_BOOKMARK));
 
         if (!bookmark.isActive()) {

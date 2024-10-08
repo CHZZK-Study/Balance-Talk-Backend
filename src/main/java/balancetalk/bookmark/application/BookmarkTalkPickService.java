@@ -1,8 +1,8 @@
 package balancetalk.bookmark.application;
 
-import balancetalk.bookmark.domain.Bookmark;
+import balancetalk.bookmark.domain.TalkPickBookmark;
 import balancetalk.bookmark.domain.BookmarkGenerator;
-import balancetalk.bookmark.domain.BookmarkRepository;
+import balancetalk.bookmark.domain.BookmarkTalkPickRepository;
 import balancetalk.global.exception.BalanceTalkException;
 import balancetalk.global.notification.application.NotificationService;
 import balancetalk.member.domain.Member;
@@ -17,9 +17,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import static balancetalk.bookmark.domain.BookmarkType.TALK_PICK;
 import static balancetalk.global.exception.ErrorCode.*;
-import static balancetalk.global.notification.domain.NotificationMessage.COMMENT_LIKE;
-import static balancetalk.global.notification.domain.NotificationMessage.COMMENT_LIKE_100;
-import static balancetalk.global.notification.domain.NotificationMessage.COMMENT_LIKE_1000;
 import static balancetalk.global.notification.domain.NotificationMessage.TALK_PICK_BOOKMARK;
 import static balancetalk.global.notification.domain.NotificationMessage.TALK_PICK_BOOKMARK_100;
 import static balancetalk.global.notification.domain.NotificationMessage.TALK_PICK_BOOKMARK_1000;
@@ -27,7 +24,6 @@ import static balancetalk.global.notification.domain.NotificationStandard.FIRST_
 import static balancetalk.global.notification.domain.NotificationStandard.FOURTH_STANDARD_OF_NOTIFICATION;
 import static balancetalk.global.notification.domain.NotificationStandard.SECOND_STANDARD_OF_NOTIFICATION;
 import static balancetalk.global.notification.domain.NotificationStandard.THIRD_STANDARD_OF_NOTIFICATION;
-import static balancetalk.global.notification.domain.NotificationTitleCategory.OTHERS_TALK_PICK;
 import static balancetalk.global.notification.domain.NotificationTitleCategory.WRITTEN_TALK_PICK;
 
 @Service
@@ -37,7 +33,7 @@ public class BookmarkTalkPickService {
     private final TalkPickReader talkPickReader;
     private final MemberRepository memberRepository;
     private final BookmarkGenerator bookmarkGenerator;
-    private final BookmarkRepository bookmarkRepository;
+    private final BookmarkTalkPickRepository bookmarkTalkPickRepository;
     private final NotificationService notificationService;
 
     @Transactional
@@ -52,9 +48,9 @@ public class BookmarkTalkPickService {
             throw new BalanceTalkException(ALREADY_BOOKMARKED);
         }
 
-        member.getBookmarkOf(talkPickId, TALK_PICK)
-                .ifPresentOrElse(Bookmark::activate,
-                        () -> bookmarkRepository.save(bookmarkGenerator.generate(talkPickId, TALK_PICK, member)));
+        member.getBookmarkTalkPickOf(talkPickId, TALK_PICK)
+                .ifPresentOrElse(TalkPickBookmark::activate,
+                        () -> bookmarkTalkPickRepository.save(bookmarkGenerator.generate(talkPickId, TALK_PICK, member)));
         talkPick.increaseBookmarks();
         sendBookmarkTalkPickNotification(talkPick);
     }
@@ -64,7 +60,7 @@ public class BookmarkTalkPickService {
         TalkPick talkPick = talkPickReader.readById(talkPickId);
         Member member = apiMember.toMember(memberRepository);
 
-        Bookmark bookmark = member.getBookmarkOf(talkPickId, TALK_PICK)
+        TalkPickBookmark bookmark = member.getBookmarkTalkPickOf(talkPickId, TALK_PICK)
                 .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_BOOKMARK));
 
         if (isNotActivated(bookmark)) {
@@ -75,7 +71,7 @@ public class BookmarkTalkPickService {
         talkPick.decreaseBookmarks();
     }
 
-    private boolean isNotActivated(Bookmark bookmark) {
+    private boolean isNotActivated(TalkPickBookmark bookmark) {
         return !bookmark.isActive();
     }
 

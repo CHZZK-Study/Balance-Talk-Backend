@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test;
 import static balancetalk.bookmark.domain.BookmarkType.TALK_PICK;
 import static org.assertj.core.api.Assertions.assertThat;
 
-class BookmarkGeneratorTest {
+class BookmarkTalkPickGeneratorTest {
 
     BookmarkGenerator bookmarkGenerator;
     Member member;
@@ -25,7 +25,7 @@ class BookmarkGeneratorTest {
     @DisplayName("북마크 객체를 성공적으로 생성합니다.")
     void generate_Success_ThenReturnBookmark() {
         // when
-        Bookmark bookmark = bookmarkGenerator.generate(1L, TALK_PICK, member);
+        TalkPickBookmark bookmark = bookmarkGenerator.generate(1L, TALK_PICK, member);
 
         // then
         assertThat(bookmark.getResourceId()).isEqualTo(1L);
@@ -36,7 +36,7 @@ class BookmarkGeneratorTest {
     @Test
     void generate_Success_ThenActiveIsTrue() {
         // when
-        Bookmark bookmark = bookmarkGenerator.generate(1L, TALK_PICK, member);
+        TalkPickBookmark bookmark = bookmarkGenerator.generate(1L, TALK_PICK, member);
 
         // then
         assertThat(bookmark.getActive()).isTrue();

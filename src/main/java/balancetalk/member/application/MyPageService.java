@@ -1,7 +1,9 @@
 package balancetalk.member.application;
 
-import balancetalk.bookmark.domain.Bookmark;
-import balancetalk.bookmark.domain.BookmarkRepository;
+import balancetalk.bookmark.domain.GameBookmark;
+import balancetalk.bookmark.domain.TalkPickBookmark;
+import balancetalk.bookmark.domain.BookmarkGameRepository;
+import balancetalk.bookmark.domain.BookmarkTalkPickRepository;
 import balancetalk.bookmark.domain.BookmarkType;
 import balancetalk.comment.domain.Comment;
 import balancetalk.comment.domain.CommentRepository;
@@ -36,7 +38,8 @@ public class MyPageService {
 
     private final MemberRepository memberRepository;
     private final TalkPickRepository talkPickRepository;
-    private final BookmarkRepository bookmarkRepository;
+    private final BookmarkGameRepository bookmarkGameRepository;
+    private final BookmarkTalkPickRepository bookmarkTalkPickRepository;
     private final TalkPickVoteRepository talkPickVoteRepository;
     private final VoteRepository voteRepository;
     private final CommentRepository commentRepository;
@@ -45,7 +48,7 @@ public class MyPageService {
 
     public Page<TalkPickMyPageResponse> findAllBookmarkedTalkPicks(ApiMember apiMember, Pageable pageable) {
         Member member = apiMember.toMember(memberRepository);
-        Page<Bookmark> bookmarks = bookmarkRepository.findActivatedByMemberOrderByDesc(member, BookmarkType.TALK_PICK, pageable);
+        Page<TalkPickBookmark> bookmarks = bookmarkTalkPickRepository.findActivatedByMemberOrderByDesc(member, BookmarkType.TALK_PICK, pageable);
 
         List<TalkPickMyPageResponse> responses = bookmarks.stream()
                 .map(bookmark -> {
@@ -93,7 +96,7 @@ public class MyPageService {
 
     public Page<GameMyPageResponse> findAllBookmarkedGames(ApiMember apiMember, Pageable pageable) {
         Member member = apiMember.toMember(memberRepository);
-        Page<Bookmark> bookmarks = bookmarkRepository.findActivatedByMemberOrderByDesc(member, BookmarkType.GAME_SET, pageable);
+        Page<GameBookmark> bookmarks = bookmarkGameRepository.findActivatedByMemberOrderByDesc(member, BookmarkType.GAME_SET, pageable);
 
         List<GameMyPageResponse> responses = bookmarks.stream()
                 .map(bookmark -> {

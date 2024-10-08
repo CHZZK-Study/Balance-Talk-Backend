@@ -2,10 +2,10 @@ package balancetalk.game.application;
 
 import static balancetalk.bookmark.domain.BookmarkType.GAME_SET;
 
+import balancetalk.bookmark.domain.GameBookmark;
 import balancetalk.file.domain.FileType;
 import balancetalk.file.domain.repository.FileRepository;
-import balancetalk.bookmark.domain.Bookmark;
-import balancetalk.bookmark.domain.BookmarkRepository;
+import balancetalk.bookmark.domain.BookmarkGameRepository;
 import balancetalk.game.domain.Game;
 import balancetalk.game.domain.GameSet;
 import balancetalk.game.domain.MainTag;
@@ -48,7 +48,7 @@ public class GameService {
     private final MemberRepository memberRepository;
     private final GameTagRepository gameTagRepository;
     private final FileRepository fileRepository;
-    private final BookmarkRepository bookmarkRepository;
+    private final BookmarkGameRepository bookmarkGameRepository;
 
     public void createBalanceGameSet(final CreateGameSetRequest request, final ApiMember apiMember) {
         Member member = apiMember.toMember(memberRepository);
@@ -83,13 +83,13 @@ public class GameService {
         Map<Long, Boolean> bookmarkMap = new ConcurrentHashMap<>();
         Map<Long, VoteOption> voteOptionMap = new ConcurrentHashMap<>();
 
-        boolean isEndGameSet = bookmarkRepository.findByMemberAndResourceIdAndBookmarkType(member, gameSetId, GAME_SET)
-                .map(Bookmark::getIsEndGameSet)
+        boolean isEndGameSet = bookmarkGameRepository.findByMemberAndResourceIdAndBookmarkType(member, gameSetId, GAME_SET)
+                .map(GameBookmark::getIsEndGameSet)
                 .orElse(false);
 
         for (Game game : games) {
-            Long bookmarkedGameId = bookmarkRepository.findByMemberAndResourceIdAndBookmarkType(member, game.getGameSet().getId(), GAME_SET)
-                    .map(Bookmark::getGameId)
+            Long bookmarkedGameId = bookmarkGameRepository.findByMemberAndResourceIdAndBookmarkType(member, game.getGameSet().getId(), GAME_SET)
+                    .map(GameBookmark::getGameId)
                     .orElse(null);
 
             boolean hasBookmarked = (bookmarkedGameId != null && bookmarkedGameId.equals(game.getId()));
