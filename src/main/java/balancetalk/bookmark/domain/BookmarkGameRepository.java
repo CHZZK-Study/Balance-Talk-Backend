@@ -10,10 +10,9 @@ import org.springframework.data.repository.query.Param;
 
 public interface BookmarkGameRepository extends JpaRepository<GameBookmark, Long> {
 
-    @Query("SELECT b FROM GameBookmark b WHERE b.member = :member AND b.bookmarkType = :bookmarkType AND b.active = true ORDER BY b.lastModifiedAt DESC")
-    Page<GameBookmark> findActivatedByMemberOrderByDesc(@Param("member") Member member, @Param("bookmarkType") BookmarkType bookmarkType,
-                                                        Pageable pageable);
+    @Query("SELECT b FROM GameBookmark b WHERE b.member = :member AND b.active = true ORDER BY b.lastModifiedAt DESC")
+    Page<GameBookmark> findActivatedByMemberOrderByDesc(@Param("member") Member member, Pageable pageable);
 
-    Optional<GameBookmark> findByMemberAndResourceIdAndBookmarkType(Member member, Long resourceId, BookmarkType bookmarkType);
+    Optional<GameBookmark> findByMemberAndGameSetId(Member member, Long gameSetId);
 
 }

@@ -1,7 +1,5 @@
 package balancetalk.game.application;
 
-import static balancetalk.bookmark.domain.BookmarkType.GAME_SET;
-
 import balancetalk.bookmark.domain.GameBookmark;
 import balancetalk.file.domain.FileType;
 import balancetalk.file.domain.repository.FileRepository;
@@ -83,12 +81,12 @@ public class GameService {
         Map<Long, Boolean> bookmarkMap = new ConcurrentHashMap<>();
         Map<Long, VoteOption> voteOptionMap = new ConcurrentHashMap<>();
 
-        boolean isEndGameSet = bookmarkGameRepository.findByMemberAndResourceIdAndBookmarkType(member, gameSetId, GAME_SET)
+        boolean isEndGameSet = bookmarkGameRepository.findByMemberAndGameSetId(member, gameSetId)
                 .map(GameBookmark::getIsEndGameSet)
                 .orElse(false);
 
         for (Game game : games) {
-            Long bookmarkedGameId = bookmarkGameRepository.findByMemberAndResourceIdAndBookmarkType(member, game.getGameSet().getId(), GAME_SET)
+            Long bookmarkedGameId = bookmarkGameRepository.findByMemberAndGameSetId(member, game.getGameSet().getId())
                     .map(GameBookmark::getGameId)
                     .orElse(null);
 

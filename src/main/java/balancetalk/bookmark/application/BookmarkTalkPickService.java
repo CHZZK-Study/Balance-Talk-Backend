@@ -15,7 +15,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import static balancetalk.bookmark.domain.BookmarkType.TALK_PICK;
 import static balancetalk.global.exception.ErrorCode.*;
 import static balancetalk.global.notification.domain.NotificationMessage.TALK_PICK_BOOKMARK;
 import static balancetalk.global.notification.domain.NotificationMessage.TALK_PICK_BOOKMARK_100;
@@ -44,13 +43,13 @@ public class BookmarkTalkPickService {
         if (member.isMyTalkPick(talkPick)) {
             throw new BalanceTalkException(CANNOT_BOOKMARK_MY_RESOURCE);
         }
-        if (member.hasBookmarked(talkPickId, TALK_PICK)) {
+        if (member.hasBookmarked(talkPickId)) {
             throw new BalanceTalkException(ALREADY_BOOKMARKED);
         }
 
-        member.getBookmarkTalkPickOf(talkPickId, TALK_PICK)
+        member.getBookmarkTalkPickOf(talkPickId)
                 .ifPresentOrElse(TalkPickBookmark::activate,
-                        () -> bookmarkTalkPickRepository.save(bookmarkGenerator.generate(talkPickId, TALK_PICK, member)));
+                        () -> bookmarkTalkPickRepository.save(bookmarkGenerator.generate(talkPickId, member)));
         talkPick.increaseBookmarks();
         sendBookmarkTalkPickNotification(talkPick);
     }
@@ -60,7 +59,7 @@ public class BookmarkTalkPickService {
         TalkPick talkPick = talkPickReader.readById(talkPickId);
         Member member = apiMember.toMember(memberRepository);
 
-        TalkPickBookmark bookmark = member.getBookmarkTalkPickOf(talkPickId, TALK_PICK)
+        TalkPickBookmark bookmark = member.getBookmarkTalkPickOf(talkPickId)
                 .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_BOOKMARK));
 
         if (isNotActivated(bookmark)) {

@@ -2,7 +2,6 @@ package balancetalk.member.domain;
 
 import balancetalk.bookmark.domain.TalkPickBookmark;
 import balancetalk.bookmark.domain.GameBookmark;
-import balancetalk.bookmark.domain.BookmarkType;
 import balancetalk.game.domain.Game;
 import balancetalk.game.domain.GameSet;
 import balancetalk.game.domain.TempGameSet;
@@ -93,14 +92,14 @@ public class Member extends BaseTimeEntity {
         this.profileImgUrl = profileImgUrl;
     }
 
-    public boolean hasBookmarked(Long resourceId, Long gameId, BookmarkType bookmarkType) {
+    public boolean hasBookmarked(Long resourceId, Long gameId) {
         return this.gameBookmarks.stream()
-                .anyMatch(bookmark -> bookmark.matches(resourceId, gameId, bookmarkType) && bookmark.isActive());
+                .anyMatch(bookmark -> bookmark.matches(resourceId, gameId) && bookmark.isActive());
     }
 
-    public boolean hasBookmarked(Long resourceId, BookmarkType bookmarkType) {
+    public boolean hasBookmarked(Long resourceId) {
         return this.talkPickBookmarks.stream()
-                .anyMatch(bookmark -> bookmark.matches(resourceId, bookmarkType) && bookmark.isActive());
+                .anyMatch(bookmark -> bookmark.matches(resourceId) && bookmark.isActive());
     }
 
     public Optional<TalkPickVote> getVoteOnTalkPick(TalkPick talkPick) {
@@ -141,15 +140,15 @@ public class Member extends BaseTimeEntity {
         return gameSets.contains(gameSet);
     }
 
-    public Optional<TalkPickBookmark> getBookmarkTalkPickOf(long resourceId, BookmarkType type) {
+    public Optional<TalkPickBookmark> getBookmarkTalkPickOf(long resourceId) {
         return talkPickBookmarks.stream()
-                .filter(bookmark -> bookmark.matches(resourceId, type))
+                .filter(bookmark -> bookmark.matches(resourceId))
                 .findFirst();
     }
 
-    public Optional<GameBookmark> getBookmarkGamesOf(long resourceId, BookmarkType type) {
+    public Optional<GameBookmark> getBookmarkGamesOf(long resourceId) {
         return gameBookmarks.stream()
-                .filter(bookmark -> bookmark.matches(resourceId, type))
+                .filter(bookmark -> bookmark.matches(resourceId))
                 .findFirst();
     }
 

@@ -21,7 +21,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.List;
 import java.util.Optional;
 
-import static balancetalk.bookmark.domain.BookmarkType.TALK_PICK;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -62,7 +61,7 @@ class BookmarkTalkPickTalkPickServiceTest {
 
         when(talkPickReader.readById(any())).thenReturn(talkPick);
         when(memberRepository.findById(any())).thenReturn(Optional.ofNullable(member));
-        when(bookmarkGenerator.generate(1L, TALK_PICK, member)).thenReturn(talkPickBookmark);
+        when(bookmarkGenerator.generate(1L, member)).thenReturn(talkPickBookmark);
 
         // when
         bookmarkTalkPickService.createBookmark(1L, apiMember);
@@ -75,8 +74,7 @@ class BookmarkTalkPickTalkPickServiceTest {
     void createBookmark_Success_ThenActivateBookmark() {
         // given
         TalkPickBookmark talkPickBookmark = TalkPickBookmark.builder()
-                .resourceId(1L)
-                .bookmarkType(TALK_PICK)
+                .talkPickId(1L)
                 .active(false)
                 .build();
 
@@ -101,8 +99,7 @@ class BookmarkTalkPickTalkPickServiceTest {
     void deleteBookmark_Success_ThenDeactivateBookmark() {
         // given
         TalkPickBookmark talkPickBookmark = TalkPickBookmark.builder()
-                .resourceId(1L)
-                .bookmarkType(TALK_PICK)
+                .talkPickId(1L)
                 .active(true)
                 .build();
 
