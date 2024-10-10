@@ -24,7 +24,7 @@ import java.util.Optional;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class BookmarkTalkPickTalkPickServiceTest {
+class TalkPickBookmarkServiceTest {
 
     @InjectMocks
     BookmarkTalkPickService bookmarkTalkPickService;
