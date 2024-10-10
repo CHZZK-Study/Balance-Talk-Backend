@@ -41,9 +41,6 @@ class TalkPickBookmarkServiceTest {
     @Mock
     TalkPickBookmarkRepository talkPickBookmarkRepository;
 
-    @Mock
-    GameBookmarkRepository gameBookmarkRepository;
-
     ApiMember apiMember;
 
     @BeforeEach
