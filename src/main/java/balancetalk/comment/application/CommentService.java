@@ -60,15 +60,9 @@ public class CommentService {
 
     public void createComment(@Valid CommentDto.CreateCommentRequest createCommentRequest, Long talkPickId,
                               ApiMember apiMember) {
-        //TODO : Vote 기능 구현 완료 후 추가 예외 처리 필요
+
         Member member = apiMember.toMember(memberRepository);
         TalkPick talkPick = validateTalkPickId(talkPickId);
-
-        // option이 VoteOption에 존재하는 값인지 확인 및 예외 처리
-        VoteOption option = createCommentRequest.getOption();
-        if (option == null || !EnumSet.allOf(VoteOption.class).contains(option)) {
-            throw new BalanceTalkException(NOT_FOUND_VOTE_OPTION);
-        }
 
         if (!member.hasVotedTalkPick(talkPick) && !talkPick.getMember().equals(member)) {
             throw new BalanceTalkException(NOT_FOUND_VOTE);
@@ -99,6 +93,15 @@ public class CommentService {
             throw new BalanceTalkException(NOT_FOUND_VOTE);
         }
 
+        // option이 VoteOption에 존재하는 값인지 확인 및 예외 처리
+        VoteOption option = member.getVoteOnTalkPick(talkPick)
+                .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_VOTE))
+                .getVoteOption();
+
+        if (option == null || !EnumSet.allOf(VoteOption.class).contains(option)) {
+            throw new BalanceTalkException(NOT_FOUND_VOTE_OPTION);
+        }
+
         Comment commentReply = createCommentRequest.toEntity(member, talkPick, parentComment);
         commentRepository.save(commentReply);
 
@@ -111,13 +114,18 @@ public class CommentService {
     public Page<CommentOrderByCreatedAtResponse> findAllComments(Long talkPickId, Pageable pageable,
                                                                  GuestOrApiMember guestOrApiMember) {
         validateTalkPickId(talkPickId);
+        TalkPick talkPick = talkPickRepository.findById(talkPickId)
+                .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_TALK_PICK));
 
         Page<Comment> comments = commentRepository.findAllByTalkPickIdAndParentIsNull(talkPickId, pageable);
 
         return comments.map(comment -> {
             int likesCount = likeRepository.countByResourceIdAndLikeType(comment.getId(), LikeType.COMMENT);
             boolean myLike = isCommentMyLiked(comment.getId(), guestOrApiMember);
-            return CommentOrderByCreatedAtResponse.fromEntity(comment, likesCount, myLike);
+            Member member = comment.getMember();
+            VoteOption option = member.getVoteOnTalkPick(talkPick)
+                    .isPresent() ? member.getVoteOnTalkPick(talkPick).get().getVoteOption() : null;
+            return CommentOrderByCreatedAtResponse.fromEntity(comment, option, likesCount, myLike);
         });
     }
 
@@ -129,6 +137,8 @@ public class CommentService {
         validateTalkPickId(talkPickId);
 
         long memberId = guestOrApiMember.getMemberId();
+        TalkPick talkPick = talkPickRepository.findById(talkPickId)
+                .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_TALK_PICK));
 
         // 해당 부모 댓글의 답글 조회
         List<Comment> replies = commentRepository.findAllRepliesByParentIdOrderByMemberAndCreatedAt(parentId, memberId);
@@ -136,7 +146,10 @@ public class CommentService {
         return replies.stream().map(reply -> {
             int likesCount = likeRepository.countByResourceIdAndLikeType(reply.getId(), LikeType.COMMENT);
             boolean myLike = isCommentMyLiked(reply.getId(), guestOrApiMember);
-            return CommentOrderByCreatedAtResponse.fromEntity(reply, likesCount, myLike);})
+                    Member member = reply.getMember();
+                    VoteOption option = member.getVoteOnTalkPick(talkPick)
+                            .isPresent() ? member.getVoteOnTalkPick(talkPick).get().getVoteOption() : null;
+            return CommentOrderByCreatedAtResponse.fromEntity(reply, option, likesCount, myLike);})
                 .toList();
     }
 
@@ -145,6 +158,8 @@ public class CommentService {
     public Page<CommentOrderByBestResponse> findAllBestComments(Long talkPickId, Pageable pageable,
                                                                 GuestOrApiMember guestOrApiMember) {
         validateTalkPickId(talkPickId);
+        TalkPick talkPick = talkPickRepository.findById(talkPickId)
+                .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_TALK_PICK));
 
         List<Comment> allComments = commentRepository.findByTalkPickIdAndParentIsNullOrderByLikesCountDescCreatedAtAsc(talkPickId,
                 LikeType.COMMENT);
@@ -162,8 +177,12 @@ public class CommentService {
             for (Comment comment : allComments) {
                 boolean myLike = isCommentMyLiked(comment.getId(), guestOrApiMember);
                 int likeCount = likeRepository.countByResourceIdAndLikeType(comment.getId(), LikeType.COMMENT);
+                Member member = comment.getMember();
+                VoteOption option = member.getVoteOnTalkPick(talkPick)
+                        .isPresent() ? member.getVoteOnTalkPick(talkPick).get().getVoteOption() : null;
+
                 comment.setIsBest(likeCount >= MIN_COUNT_FOR_BEST_COMMENT);
-                CommentOrderByBestResponse response = CommentOrderByBestResponse.fromEntity(comment, likeCount, myLike);
+                CommentOrderByBestResponse response = CommentOrderByBestResponse.fromEntity(comment, option, likeCount, myLike);
                 if (comment.getIsBest()) {
                     bestComments.add(response);
                 } else {
@@ -174,8 +193,12 @@ public class CommentService {
             for (Comment comment : allComments) {
                 boolean myLike = isCommentMyLiked(comment.getId(), guestOrApiMember);
                 int likeCount = likeRepository.countByResourceIdAndLikeType(comment.getId(), LikeType.COMMENT);
+                Member member = comment.getMember();
+                VoteOption option = member.getVoteOnTalkPick(talkPick)
+                        .isPresent() ? member.getVoteOnTalkPick(talkPick).get().getVoteOption() : null;
+
                 comment.setIsBest(likeCount == maxLikes);
-                CommentOrderByBestResponse response = CommentOrderByBestResponse.fromEntity(comment, likeCount, myLike);
+                CommentOrderByBestResponse response = CommentOrderByBestResponse.fromEntity(comment, option, likeCount, myLike);
                 if (comment.getIsBest()) {
                     bestComments.add(response);
                 } else {
