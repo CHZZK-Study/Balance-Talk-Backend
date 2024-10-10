@@ -140,13 +140,13 @@ public class Member extends BaseTimeEntity {
         return gameSets.contains(gameSet);
     }
 
-    public Optional<TalkPickBookmark> getBookmarkTalkPickOf(long resourceId) {
+    public Optional<TalkPickBookmark> getTalkPickBookmarkOf(long resourceId) {
         return talkPickBookmarks.stream()
                 .filter(bookmark -> bookmark.matches(resourceId))
                 .findFirst();
     }
 
-    public Optional<GameBookmark> getBookmarkGamesOf(long resourceId) {
+    public Optional<GameBookmark> getGameBookmarkOf(long resourceId) {
         return gameBookmarks.stream()
                 .filter(bookmark -> bookmark.matches(resourceId))
                 .findFirst();

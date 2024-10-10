@@ -2,7 +2,7 @@ package balancetalk.bookmark.application;
 
 import balancetalk.bookmark.domain.TalkPickBookmark;
 import balancetalk.bookmark.domain.BookmarkGenerator;
-import balancetalk.bookmark.domain.BookmarkTalkPickRepository;
+import balancetalk.bookmark.domain.TalkPickBookmarkRepository;
 import balancetalk.global.exception.BalanceTalkException;
 import balancetalk.global.notification.application.NotificationService;
 import balancetalk.member.domain.Member;
@@ -32,7 +32,7 @@ public class BookmarkTalkPickService {
     private final TalkPickReader talkPickReader;
     private final MemberRepository memberRepository;
     private final BookmarkGenerator bookmarkGenerator;
-    private final BookmarkTalkPickRepository bookmarkTalkPickRepository;
+    private final TalkPickBookmarkRepository talkPickBookmarkRepository;
     private final NotificationService notificationService;
 
     @Transactional
@@ -47,9 +47,9 @@ public class BookmarkTalkPickService {
             throw new BalanceTalkException(ALREADY_BOOKMARKED);
         }
 
-        member.getBookmarkTalkPickOf(talkPickId)
+        member.getTalkPickBookmarkOf(talkPickId)
                 .ifPresentOrElse(TalkPickBookmark::activate,
-                        () -> bookmarkTalkPickRepository.save(bookmarkGenerator.generate(talkPickId, member)));
+                        () -> talkPickBookmarkRepository.save(bookmarkGenerator.generate(talkPickId, member)));
         talkPick.increaseBookmarks();
         sendBookmarkTalkPickNotification(talkPick);
     }
@@ -59,7 +59,7 @@ public class BookmarkTalkPickService {
         TalkPick talkPick = talkPickReader.readById(talkPickId);
         Member member = apiMember.toMember(memberRepository);
 
-        TalkPickBookmark bookmark = member.getBookmarkTalkPickOf(talkPickId)
+        TalkPickBookmark bookmark = member.getTalkPickBookmarkOf(talkPickId)
                 .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_BOOKMARK));
 
         if (isNotActivated(bookmark)) {

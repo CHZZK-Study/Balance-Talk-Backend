@@ -3,7 +3,7 @@ package balancetalk.game.application;
 import balancetalk.bookmark.domain.GameBookmark;
 import balancetalk.file.domain.FileType;
 import balancetalk.file.domain.repository.FileRepository;
-import balancetalk.bookmark.domain.BookmarkGameRepository;
+import balancetalk.bookmark.domain.GameBookmarkRepository;
 import balancetalk.game.domain.Game;
 import balancetalk.game.domain.GameSet;
 import balancetalk.game.domain.MainTag;
@@ -46,7 +46,7 @@ public class GameService {
     private final MemberRepository memberRepository;
     private final GameTagRepository gameTagRepository;
     private final FileRepository fileRepository;
-    private final BookmarkGameRepository bookmarkGameRepository;
+    private final GameBookmarkRepository gameBookmarkRepository;
 
     public void createBalanceGameSet(final CreateGameSetRequest request, final ApiMember apiMember) {
         Member member = apiMember.toMember(memberRepository);
@@ -81,12 +81,12 @@ public class GameService {
         Map<Long, Boolean> bookmarkMap = new ConcurrentHashMap<>();
         Map<Long, VoteOption> voteOptionMap = new ConcurrentHashMap<>();
 
-        boolean isEndGameSet = bookmarkGameRepository.findByMemberAndGameSetId(member, gameSetId)
+        boolean isEndGameSet = gameBookmarkRepository.findByMemberAndGameSetId(member, gameSetId)
                 .map(GameBookmark::getIsEndGameSet)
                 .orElse(false);
 
         for (Game game : games) {
-            Long bookmarkedGameId = bookmarkGameRepository.findByMemberAndGameSetId(member, game.getGameSet().getId())
+            Long bookmarkedGameId = gameBookmarkRepository.findByMemberAndGameSetId(member, game.getGameSet().getId())
                     .map(GameBookmark::getGameId)
                     .orElse(null);
 

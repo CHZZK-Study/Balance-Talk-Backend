@@ -1,9 +1,9 @@
 package balancetalk.bookmark.application;
 
-import balancetalk.bookmark.domain.BookmarkGameRepository;
+import balancetalk.bookmark.domain.GameBookmarkRepository;
 import balancetalk.bookmark.domain.TalkPickBookmark;
 import balancetalk.bookmark.domain.BookmarkGenerator;
-import balancetalk.bookmark.domain.BookmarkTalkPickRepository;
+import balancetalk.bookmark.domain.TalkPickBookmarkRepository;
 import balancetalk.member.domain.Member;
 import balancetalk.member.domain.MemberRepository;
 import balancetalk.member.dto.ApiMember;
@@ -39,10 +39,10 @@ class BookmarkTalkPickTalkPickServiceTest {
     BookmarkGenerator bookmarkGenerator;
 
     @Mock
-    BookmarkTalkPickRepository bookmarkTalkPickRepository;
+    TalkPickBookmarkRepository talkPickBookmarkRepository;
 
     @Mock
-    BookmarkGameRepository bookmarkGameRepository;
+    GameBookmarkRepository gameBookmarkRepository;
 
     ApiMember apiMember;
 
@@ -67,7 +67,7 @@ class BookmarkTalkPickTalkPickServiceTest {
         bookmarkTalkPickService.createBookmark(1L, apiMember);
 
         // then
-        verify(bookmarkTalkPickRepository).save(talkPickBookmark);
+        verify(talkPickBookmarkRepository).save(talkPickBookmark);
     }
 
     @Test
