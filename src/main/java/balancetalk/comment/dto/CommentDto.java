@@ -28,9 +28,6 @@ public class CommentDto {
         @Schema(description = "선택지", example = "A")
         private VoteOption option;
 
-        @Schema(description = "부모 댓글 id (답글 작성이 아닐 경우, 작성 x)", example = "5")
-        private Long parentId;
-
         public Comment toEntity(Member member, TalkPick talkPick) {
             return Comment.builder()
                     .content(content)
