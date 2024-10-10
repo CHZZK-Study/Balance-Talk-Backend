@@ -77,8 +77,84 @@ public class CommentDto {
     @AllArgsConstructor
     @Builder
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    @Schema(description = "댓글 조회 응답")
-    public static class CommentResponse {
+    @Schema(description = "최신순 댓글 조회 응답")
+    public static class CommentOrderByCreatedAtResponse {
+
+        @Schema(description = "댓글 id", example = "1")
+        private Long id;
+
+        @Schema(description = "해당 댓글에 맞는 톡픽 id", example = "1")
+        private Long talkPickId;
+
+        @Schema(description = "해당 댓글에 맞는 톡픽 제목", example = "메시 vs 호날두")
+        private String talkPickTitle;
+
+        @Schema(description = "댓글 작성자", example = "운영자1")
+        private String nickname;
+
+        @Schema(description = "댓글 작성자 프로필 이미지", example = "https://balancetalk.com/profile/1")
+        private String profileImage;
+
+        @Schema(description = "댓글 내용", example = "너는나를존중해야한다나는발롱도르5개와수많은개인트로피를들어올렸으며"
+                + "2016유로에서포르투갈을이끌고우승을차지했고동시에A매치역대최다득점자이다")
+        private String content;
+
+        @Schema(description = "해당 댓글에 맞는 선택지 이름", example = "A")
+        private VoteOption option;
+
+        @Schema(description = "댓글 좋아요 개수", example = "24")
+        private int likesCount;
+
+        @Schema(description = "현재 사용자의 좋아요 여부", example = "true")
+        private Boolean myLike;
+
+        @Schema(description = "부모 댓글 id (답글이 아닐 경우, null 반환)", example = "5")
+        private Long parentId;
+
+        @Schema(description = "답글 수", example = "3")
+        private int replyCount;
+
+        @Schema(description = "댓글 수정 여부", example = "false")
+        private boolean isEdited;
+
+        @Schema(description = "댓글이 신고당한 횟수", example = "0")
+        private int reportedCount;
+
+        @Schema(description = "댓글 생성 날짜")
+        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy.MM.dd hh:mm")
+        private LocalDateTime createdAt;
+
+        @Schema(description = "댓글 수정 날짜")
+        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy.MM.dd hh:mm")
+        private LocalDateTime lastModifiedAt;
+
+        public static CommentOrderByCreatedAtResponse fromEntity(Comment comment, int likesCount, boolean myLike) {
+            return CommentOrderByCreatedAtResponse.builder()
+                    .id(comment.getId())
+                    .content(comment.getContent())
+                    .nickname(comment.getMember().getNickname())
+                    .profileImage(comment.getMember().getProfileImgUrl())
+                    .talkPickId(comment.getTalkPick().getId())
+                    .talkPickTitle(comment.getTalkPick().getTitle())
+                    .option(comment.getVoteOption())
+                    .likesCount(likesCount)
+                    .myLike(myLike)
+                    .parentId(comment.getParent() == null ? null : comment.getParent().getId())
+                    .replyCount(comment.getReplies() == null ? 0 : comment.getReplies().size())
+                    .reportedCount(comment.getReportedCount())
+                    .isEdited(comment.isEdited())
+                    .createdAt(comment.getCreatedAt())
+                    .lastModifiedAt(comment.getLastModifiedAt())
+                    .build();
+        }
+    }
+
+    @Data
+    @AllArgsConstructor
+    @Builder
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    @Schema(description = "베스트순 댓글 조회 응답")
+    public static class CommentOrderByBestResponse {
 
         @Schema(description = "댓글 id", example = "1")
         private Long id;
@@ -117,9 +193,6 @@ public class CommentDto {
         @Schema(description = "베스트 댓글 여부", example = "true")
         private boolean isBest;
 
-        @Schema(description = "댓글 블라인드 처리 여부", example = "false")
-        private boolean isBlind;
-
         @Schema(description = "댓글 수정 여부", example = "false")
         private boolean isEdited;
 
@@ -134,8 +207,8 @@ public class CommentDto {
         @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy.MM.dd hh:mm")
         private LocalDateTime lastModifiedAt;
 
-        public static CommentResponse fromEntity(Comment comment, int likesCount, boolean myLike) {
-            return CommentResponse.builder()
+        public static CommentOrderByBestResponse fromEntity(Comment comment, int likesCount, boolean myLike) {
+            return CommentOrderByBestResponse.builder()
                     .id(comment.getId())
                     .content(comment.getContent())
                     .nickname(comment.getMember().getNickname())
@@ -149,7 +222,6 @@ public class CommentDto {
                     .replyCount(comment.getReplies() == null ? 0 : comment.getReplies().size())
                     .reportedCount(comment.getReportedCount())
                     .isBest(comment.getIsBest())
-                    .isBlind(comment.isBlind())
                     .isEdited(comment.isEdited())
                     .createdAt(comment.getCreatedAt())
                     .lastModifiedAt(comment.getLastModifiedAt())
