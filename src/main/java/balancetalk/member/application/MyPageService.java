@@ -1,8 +1,9 @@
 package balancetalk.member.application;
 
-import balancetalk.bookmark.domain.Bookmark;
-import balancetalk.bookmark.domain.BookmarkRepository;
-import balancetalk.bookmark.domain.BookmarkType;
+import balancetalk.bookmark.domain.GameBookmark;
+import balancetalk.bookmark.domain.TalkPickBookmark;
+import balancetalk.bookmark.domain.GameBookmarkRepository;
+import balancetalk.bookmark.domain.TalkPickBookmarkRepository;
 import balancetalk.comment.domain.Comment;
 import balancetalk.comment.domain.CommentRepository;
 import balancetalk.game.domain.Game;
@@ -36,7 +37,8 @@ public class MyPageService {
 
     private final MemberRepository memberRepository;
     private final TalkPickRepository talkPickRepository;
-    private final BookmarkRepository bookmarkRepository;
+    private final GameBookmarkRepository gameBookmarkRepository;
+    private final TalkPickBookmarkRepository talkPickBookmarkRepository;
     private final TalkPickVoteRepository talkPickVoteRepository;
     private final VoteRepository voteRepository;
     private final CommentRepository commentRepository;
@@ -45,12 +47,11 @@ public class MyPageService {
 
     public Page<TalkPickMyPageResponse> findAllBookmarkedTalkPicks(ApiMember apiMember, Pageable pageable) {
         Member member = apiMember.toMember(memberRepository);
-        Page<Bookmark> bookmarks = bookmarkRepository.findActivatedByMemberOrderByDesc(member, BookmarkType.TALK_PICK, pageable);
+        Page<TalkPickBookmark> bookmarks = talkPickBookmarkRepository.findActivatedByMemberOrderByDesc(member, pageable);
 
         List<TalkPickMyPageResponse> responses = bookmarks.stream()
                 .map(bookmark -> {
-                    TalkPick talkPick = talkPickRepository.findById(bookmark.getResourceId())
-                            .orElseThrow(() -> new BalanceTalkException(ErrorCode.NOT_FOUND_TALK_PICK));
+                    TalkPick talkPick = bookmark.getTalkPick();
                     return TalkPickMyPageResponse.from(talkPick, bookmark);
                 })
                 .collect(Collectors.toList());
@@ -93,7 +94,7 @@ public class MyPageService {
 
     public Page<GameMyPageResponse> findAllBookmarkedGames(ApiMember apiMember, Pageable pageable) {
         Member member = apiMember.toMember(memberRepository);
-        Page<Bookmark> bookmarks = bookmarkRepository.findActivatedByMemberOrderByDesc(member, BookmarkType.GAME_SET, pageable);
+        Page<GameBookmark> bookmarks = gameBookmarkRepository.findActivatedByMemberOrderByDesc(member, pageable);
 
         List<GameMyPageResponse> responses = bookmarks.stream()
                 .map(bookmark -> {

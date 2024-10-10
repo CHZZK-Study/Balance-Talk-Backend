@@ -19,7 +19,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Optional;
 
-import static balancetalk.bookmark.domain.BookmarkType.TALK_PICK;
 import static balancetalk.global.exception.ErrorCode.NOT_FOUND_TALK_PICK;
 import static balancetalk.talkpick.dto.TalkPickDto.*;
 
@@ -54,7 +53,7 @@ public class TalkPickService {
         }
 
         Member member = guestOrApiMember.toMember(memberRepository);
-        boolean hasBookmarked = member.hasBookmarked(talkPickId, TALK_PICK);
+        boolean hasBookmarked = member.hasBookmarked(talkPick);
         Optional<TalkPickVote> myVote = member.getVoteOnTalkPick(talkPick);
 
         if (myVote.isEmpty()) {

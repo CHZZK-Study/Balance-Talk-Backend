@@ -11,7 +11,6 @@ import static balancetalk.global.notification.domain.NotificationTitleCategory.W
 import static balancetalk.vote.domain.VoteOption.A;
 import static balancetalk.vote.domain.VoteOption.B;
 
-import balancetalk.bookmark.domain.BookmarkRepository;
 import balancetalk.game.domain.Game;
 import balancetalk.game.domain.GameOption;
 import balancetalk.game.domain.GameReader;
@@ -40,7 +39,6 @@ public class VoteGameService {
     private final VoteRepository voteRepository;
     private final MemberRepository memberRepository;
     private final NotificationService notificationService;
-    private final BookmarkRepository bookmarkRepository;
 
     public void createVote(Long gameId, VoteRequest request, GuestOrApiMember guestOrApiMember) {
         Game game = gameReader.findGameById(gameId);

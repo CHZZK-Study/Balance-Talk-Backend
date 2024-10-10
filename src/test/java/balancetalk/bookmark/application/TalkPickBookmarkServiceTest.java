@@ -1,8 +1,9 @@
 package balancetalk.bookmark.application;
 
-import balancetalk.bookmark.domain.Bookmark;
+import balancetalk.bookmark.domain.GameBookmarkRepository;
+import balancetalk.bookmark.domain.TalkPickBookmark;
 import balancetalk.bookmark.domain.BookmarkGenerator;
-import balancetalk.bookmark.domain.BookmarkRepository;
+import balancetalk.bookmark.domain.TalkPickBookmarkRepository;
 import balancetalk.member.domain.Member;
 import balancetalk.member.domain.MemberRepository;
 import balancetalk.member.dto.ApiMember;
@@ -20,11 +21,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.List;
 import java.util.Optional;
 
-import static balancetalk.bookmark.domain.BookmarkType.TALK_PICK;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class BookmarkTalkPickServiceTest {
+class TalkPickBookmarkServiceTest {
 
     @InjectMocks
     BookmarkTalkPickService bookmarkTalkPickService;
@@ -39,7 +39,7 @@ class BookmarkTalkPickServiceTest {
     BookmarkGenerator bookmarkGenerator;
 
     @Mock
-    BookmarkRepository bookmarkRepository;
+    TalkPickBookmarkRepository talkPickBookmarkRepository;
 
     ApiMember apiMember;
 
@@ -53,35 +53,35 @@ class BookmarkTalkPickServiceTest {
     void createBookmark_Success_ThenSaveNewBookmarkEntity() {
         // given
         Member member = mock(Member.class);
-        Bookmark bookmark = mock(Bookmark.class);
+        TalkPickBookmark talkPickBookmark = mock(TalkPickBookmark.class);
         TalkPick talkPick = mock(TalkPick.class);
 
         when(talkPickReader.readById(any())).thenReturn(talkPick);
         when(memberRepository.findById(any())).thenReturn(Optional.ofNullable(member));
-        when(bookmarkGenerator.generate(1L, TALK_PICK, member)).thenReturn(bookmark);
+        when(bookmarkGenerator.generate(talkPick, member)).thenReturn(talkPickBookmark);
 
         // when
         bookmarkTalkPickService.createBookmark(1L, apiMember);
 
         // then
-        verify(bookmarkRepository).save(bookmark);
+        verify(talkPickBookmarkRepository).save(talkPickBookmark);
     }
 
     @Test
     void createBookmark_Success_ThenActivateBookmark() {
         // given
-        Bookmark bookmark = Bookmark.builder()
-                .resourceId(1L)
-                .bookmarkType(TALK_PICK)
+        TalkPick talkPick = mock(TalkPick.class);
+
+        TalkPickBookmark talkPickBookmark = TalkPickBookmark.builder()
+                .talkPick(talkPick)
                 .active(false)
                 .build();
 
         Member member = Member.builder()
                 .talkPicks(List.of())
-                .bookmarks(List.of(bookmark))
+                .talkPickBookmarks(List.of(talkPickBookmark))
                 .build();
 
-        TalkPick talkPick = mock(TalkPick.class);
 
         when(talkPickReader.readById(any())).thenReturn(talkPick);
         when(memberRepository.findById(any())).thenReturn(Optional.ofNullable(member));
@@ -90,24 +90,24 @@ class BookmarkTalkPickServiceTest {
         bookmarkTalkPickService.createBookmark(1L, apiMember);
 
         // then
-        Assertions.assertThat(bookmark.getActive()).isTrue();
+        Assertions.assertThat(talkPickBookmark.getActive()).isTrue();
     }
 
     @Test
     void deleteBookmark_Success_ThenDeactivateBookmark() {
         // given
-        Bookmark bookmark = Bookmark.builder()
-                .resourceId(1L)
-                .bookmarkType(TALK_PICK)
+        TalkPick talkPick = mock(TalkPick.class);
+
+        TalkPickBookmark talkPickBookmark = TalkPickBookmark.builder()
+                .talkPick(talkPick)
                 .active(true)
                 .build();
 
         Member member = Member.builder()
                 .talkPicks(List.of())
-                .bookmarks(List.of(bookmark))
+                .talkPickBookmarks(List.of(talkPickBookmark))
                 .build();
 
-        TalkPick talkPick = mock(TalkPick.class);
 
         when(talkPickReader.readById(any())).thenReturn(talkPick);
         when(memberRepository.findById(any())).thenReturn(Optional.ofNullable(member));
@@ -116,6 +116,6 @@ class BookmarkTalkPickServiceTest {
         bookmarkTalkPickService.deleteBookmark(1L, apiMember);
 
         // then
-        Assertions.assertThat(bookmark.getActive()).isFalse();
+        Assertions.assertThat(talkPickBookmark.getActive()).isFalse();
     }
 }

@@ -1,14 +1,15 @@
 package balancetalk.bookmark.domain;
 
 import balancetalk.member.domain.Member;
+import balancetalk.talkpick.domain.TalkPick;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import static balancetalk.bookmark.domain.BookmarkType.TALK_PICK;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
 
-class BookmarkGeneratorTest {
+class BookmarkTalkPickGeneratorTest {
 
     BookmarkGenerator bookmarkGenerator;
     Member member;
@@ -24,19 +25,24 @@ class BookmarkGeneratorTest {
     @Test
     @DisplayName("북마크 객체를 성공적으로 생성합니다.")
     void generate_Success_ThenReturnBookmark() {
+        // given
+        TalkPick talkPick = mock(TalkPick.class);
+
         // when
-        Bookmark bookmark = bookmarkGenerator.generate(1L, TALK_PICK, member);
+        TalkPickBookmark bookmark = bookmarkGenerator.generate(talkPick, member);
 
         // then
-        assertThat(bookmark.getResourceId()).isEqualTo(1L);
-        assertThat(bookmark.getBookmarkType()).isEqualTo(TALK_PICK);
+        assertThat(bookmark.getTalkPick()).isEqualTo(talkPick);
         assertThat(bookmark.getMember()).isEqualTo(member);
     }
 
     @Test
     void generate_Success_ThenActiveIsTrue() {
+        // given
+        TalkPick talkPick = mock(TalkPick.class);
+
         // when
-        Bookmark bookmark = bookmarkGenerator.generate(1L, TALK_PICK, member);
+        TalkPickBookmark bookmark = bookmarkGenerator.generate(talkPick, member);
 
         // then
         assertThat(bookmark.getActive()).isTrue();

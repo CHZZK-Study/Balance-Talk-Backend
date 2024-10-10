@@ -1,6 +1,6 @@
 package balancetalk.talkpick.dto;
 
-import balancetalk.bookmark.domain.Bookmark;
+import balancetalk.bookmark.domain.TalkPickBookmark;
 import balancetalk.comment.domain.Comment;
 import balancetalk.member.domain.Member;
 import balancetalk.talkpick.domain.TalkPick;
@@ -247,12 +247,12 @@ public class TalkPickDto {
 
          */ // TODO : 톡픽 선택지 이미지 저장 구현 시 완성 가능
 
-        public static TalkPickMyPageResponse from(TalkPick talkPick, Bookmark bookmark) {
+        public static TalkPickMyPageResponse from(TalkPick talkPick, TalkPickBookmark talkPickBookmark) {
             return TalkPickMyPageResponse.builder()
                     .id(talkPick.getId())
                     .title(talkPick.getTitle())
                     .editedAt(talkPick.getEditedAt())
-                    .isBookmarked(bookmark.isActive())
+                    .isBookmarked(talkPickBookmark.isActive())
                     .bookmarks(talkPick.getBookmarks())
                     .commentCount(!talkPick.getComments().isEmpty() ? talkPick.getComments().size() : 0)
                     .editedAt(talkPick.getEditedAt())

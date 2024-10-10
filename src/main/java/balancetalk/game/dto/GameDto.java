@@ -2,7 +2,7 @@ package balancetalk.game.dto;
 
 import static balancetalk.vote.domain.VoteOption.*;
 
-import balancetalk.bookmark.domain.Bookmark;
+import balancetalk.bookmark.domain.GameBookmark;
 import balancetalk.game.domain.Game;
 import balancetalk.game.domain.MainTag;
 import balancetalk.vote.domain.GameVote;
@@ -190,7 +190,7 @@ public class GameDto {
                     .build();
         }
 
-        public static GameMyPageResponse from(Game game, Bookmark bookmark) {
+        public static GameMyPageResponse from(Game game, GameBookmark bookmark) {
             return GameMyPageResponse.builder()
                     .gameSetId(game.getGameSet().getId())
                     .gameId(game.getId())

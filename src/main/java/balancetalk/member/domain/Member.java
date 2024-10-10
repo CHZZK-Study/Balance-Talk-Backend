@@ -1,10 +1,9 @@
 package balancetalk.member.domain;
 
-import balancetalk.bookmark.domain.Bookmark;
-import balancetalk.bookmark.domain.BookmarkType;
+import balancetalk.bookmark.domain.TalkPickBookmark;
+import balancetalk.bookmark.domain.GameBookmark;
 import balancetalk.game.domain.Game;
 import balancetalk.game.domain.GameSet;
-import balancetalk.game.domain.TempGame;
 import balancetalk.game.domain.TempGameSet;
 import balancetalk.global.common.BaseTimeEntity;
 import balancetalk.global.exception.BalanceTalkException;
@@ -61,7 +60,10 @@ public class Member extends BaseTimeEntity {
     private List<GameVote> gameVotes = new ArrayList<>();
 
     @OneToMany(mappedBy = "member")
-    private List<Bookmark> bookmarks = new ArrayList<>();
+    private List<TalkPickBookmark> talkPickBookmarks = new ArrayList<>();
+
+    @OneToMany(mappedBy = "member")
+    private List<GameBookmark> gameBookmarks = new ArrayList<>();
 
     @OneToMany(mappedBy = "member")
     private List<TalkPick> talkPicks = new ArrayList<>();
@@ -90,14 +92,14 @@ public class Member extends BaseTimeEntity {
         this.profileImgUrl = profileImgUrl;
     }
 
-    public boolean hasBookmarked(Long resourceId, Long gameId, BookmarkType bookmarkType) {
-        return this.bookmarks.stream()
-                .anyMatch(bookmark -> bookmark.matches(resourceId, gameId, bookmarkType) && bookmark.isActive());
+    public boolean hasBookmarked(GameSet gameSet, Long gameId) {
+        return this.gameBookmarks.stream()
+                .anyMatch(bookmark -> bookmark.matches(gameSet, gameId) && bookmark.isActive());
     }
 
-    public boolean hasBookmarked(Long resourceId, BookmarkType bookmarkType) {
-        return this.bookmarks.stream()
-                .anyMatch(bookmark -> bookmark.matches(resourceId, bookmarkType) && bookmark.isActive());
+    public boolean hasBookmarked(TalkPick talkPick) {
+        return this.talkPickBookmarks.stream()
+                .anyMatch(bookmark -> bookmark.matches(talkPick) && bookmark.isActive());
     }
 
     public Optional<TalkPickVote> getVoteOnTalkPick(TalkPick talkPick) {
@@ -138,9 +140,15 @@ public class Member extends BaseTimeEntity {
         return gameSets.contains(gameSet);
     }
 
-    public Optional<Bookmark> getBookmarkOf(long resourceId, BookmarkType type) {
-        return bookmarks.stream()
-                .filter(bookmark -> bookmark.matches(resourceId, type))
+    public Optional<TalkPickBookmark> getTalkPickBookmarkOf(TalkPick talkPick) {
+        return talkPickBookmarks.stream()
+                .filter(bookmark -> bookmark.matches(talkPick))
+                .findFirst();
+    }
+
+    public Optional<GameBookmark> getGameBookmarkOf(GameSet gameSet) {
+        return gameBookmarks.stream()
+                .filter(bookmark -> bookmark.matches(gameSet))
                 .findFirst();
     }
 
@@ -179,6 +187,6 @@ public class Member extends BaseTimeEntity {
     }
 
     public int getBookmarkedPostsCount() {
-        return bookmarks.size();
+        return talkPickBookmarks.size() + gameBookmarks.size();
     }
 }
