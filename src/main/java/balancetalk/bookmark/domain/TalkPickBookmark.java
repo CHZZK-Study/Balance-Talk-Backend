@@ -30,10 +30,6 @@ public class TalkPickBookmark extends BaseTimeEntity {
     private Boolean active;
 
     public boolean matches(TalkPick talkPick) {
-        return isEqualsTalkPickId(talkPick);
-    }
-
-    private boolean isEqualsTalkPickId(TalkPick talkPick) {
         return this.talkPick.equals(talkPick);
     }
 
