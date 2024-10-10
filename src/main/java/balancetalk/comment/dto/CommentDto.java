@@ -42,6 +42,7 @@ public class CommentDto {
                     .reportedCount(0)
                     .isNotifiedForFirstReply(false)
                     .editedAt(LocalDateTime.now())
+                    .isEdited(false)
                     .build();
         }
 
@@ -55,6 +56,7 @@ public class CommentDto {
                     .viewStatus(ViewStatus.NORMAL)
                     .reportedCount(0)
                     .parent(parent)
+                    .isEdited(false)
                     .build();
         }
     }
