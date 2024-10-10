@@ -1,5 +1,7 @@
 package balancetalk.game.application;
 
+import static balancetalk.global.exception.ErrorCode.NOT_FOUND_BOOKMARK;
+
 import balancetalk.bookmark.domain.GameBookmark;
 import balancetalk.file.domain.FileType;
 import balancetalk.file.domain.repository.FileRepository;
@@ -81,14 +83,13 @@ public class GameService {
         Map<Long, Boolean> bookmarkMap = new ConcurrentHashMap<>();
         Map<Long, VoteOption> voteOptionMap = new ConcurrentHashMap<>();
 
-        boolean isEndGameSet = gameBookmarkRepository.findByMemberAndGameSetId(member, gameSetId)
-                .map(GameBookmark::getIsEndGameSet)
-                .orElse(false);
+        GameBookmark gameBookmark = gameBookmarkRepository.findByMemberAndGameSetId(member, gameSetId)
+                .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_BOOKMARK));
+
+        boolean isEndGameSet = gameBookmark.getIsEndGameSet();
 
         for (Game game : games) {
-            Long bookmarkedGameId = gameBookmarkRepository.findByMemberAndGameSetId(member, game.getGameSet().getId())
-                    .map(GameBookmark::getGameId)
-                    .orElse(null);
+            Long bookmarkedGameId = gameBookmark.getGameId();
 
             boolean hasBookmarked = (bookmarkedGameId != null && bookmarkedGameId.equals(game.getId()));
 
