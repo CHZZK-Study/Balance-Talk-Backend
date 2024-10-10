@@ -53,8 +53,6 @@ public class FileService {
                 S3Resource uploaded = s3Operations.upload(bucket, s3Key, multipartFile.getInputStream());
                 imgUrls.add(uploaded.getURL().toString());
 
-                log.info("----------------------");
-
                 // DB에 메타 데이터 저장
                 fileRepository.save(file);
 
