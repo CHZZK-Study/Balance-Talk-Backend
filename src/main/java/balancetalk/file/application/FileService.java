@@ -5,7 +5,6 @@ import balancetalk.file.domain.FileProcessor;
 import balancetalk.file.domain.FileType;
 import balancetalk.file.domain.MultipartFiles;
 import balancetalk.file.domain.repository.FileRepository;
-import balancetalk.file.domain.s3.S3ImageRemover;
 import balancetalk.file.dto.UploadFileResponse;
 import balancetalk.global.exception.BalanceTalkException;
 import io.awspring.cloud.s3.S3Operations;
@@ -16,7 +15,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-import software.amazon.awssdk.services.s3.S3Client;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,10 +27,8 @@ import static balancetalk.global.exception.ErrorCode.NOT_UPLOADED_IMAGE_FOR_DB_E
 @RequiredArgsConstructor
 public class FileService {
 
-    private final S3Client s3Client;
     private final S3Operations s3Operations;
     private final FileProcessor fileProcessor;
-    private final S3ImageRemover s3ImageRemover;
     private final FileRepository fileRepository;
 
     @Value(value = "${picko.aws.s3.endpoint}")
@@ -85,6 +81,6 @@ public class FileService {
         File file = fileRepository.findByStoredName(storedName)
                 .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_FILE));
         fileRepository.delete(file);
-        s3ImageRemover.removeImageFromBucket(s3Client, bucket, file.getS3Key());
+        s3Operations.deleteObject(bucket, file.getS3Key());
     }
 }
