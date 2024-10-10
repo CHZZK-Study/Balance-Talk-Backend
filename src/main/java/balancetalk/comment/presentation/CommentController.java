@@ -11,6 +11,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -59,10 +60,9 @@ public class CommentController {
 
     @GetMapping("/{commentId}/replies")
     @Operation(summary = "답글 목록 조회", description = "talkPick-id에 해당하는 게시글에 있는 댓글인 comment-id에 존재하는 모든 답글을 조회한다.")
-    public Page<CommentResponse> findAllRepliesByCommentId(@PathVariable Long commentId, @PathVariable Long talkPickId,
-                                                           Pageable pageable,
+    public List<CommentResponse> findAllRepliesByCommentId(@PathVariable Long commentId, @PathVariable Long talkPickId,
                                                            @Parameter(hidden = true) @AuthPrincipal GuestOrApiMember guestOrApiMember) {
-        return commentService.findAllReplies(commentId, talkPickId, pageable, guestOrApiMember);
+        return commentService.findAllReplies(commentId, talkPickId, guestOrApiMember);
     }
 
     @PutMapping("/{commentId}")

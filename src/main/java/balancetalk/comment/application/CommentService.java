@@ -112,8 +112,8 @@ public class CommentService {
     }
 
     @Transactional(readOnly = true)
-    public Page<CommentDto.CommentResponse> findAllReplies(Long parentId, Long talkPickId, Pageable pageable,
-                                                        GuestOrApiMember guestOrApiMember) {
+    public List<CommentDto.CommentResponse> findAllReplies(Long parentId, Long talkPickId, GuestOrApiMember guestOrApiMember) {
+
         // 부모 댓글이 존재하는지 확인
         validateCommentId(parentId);
         validateTalkPickId(talkPickId);
@@ -121,13 +121,13 @@ public class CommentService {
         long memberId = guestOrApiMember.getMemberId();
 
         // 해당 부모 댓글의 답글 조회
-        Page<Comment> replies = commentRepository.findAllRepliesByParentIdOrderByMemberAndCreatedAt(parentId, memberId, pageable);
+        List<Comment> replies = commentRepository.findAllRepliesByParentIdOrderByMemberAndCreatedAt(parentId, memberId);
 
-        return replies.map(reply -> {
+        return replies.stream().map(reply -> {
             int likesCount = likeRepository.countByResourceIdAndLikeType(reply.getId(), LikeType.COMMENT);
             boolean myLike = isCommentMyLiked(reply.getId(), guestOrApiMember);
-            return CommentDto.CommentResponse.fromEntity(reply, likesCount, myLike);
-        });
+            return CommentDto.CommentResponse.fromEntity(reply, likesCount, myLike);})
+                .toList();
     }
 
 
