@@ -15,8 +15,8 @@ public class FileProcessor {
         String originalName = multipartFile.getOriginalFilename();
         String storedName = createRandomName(originalName);
         long size = multipartFile.getSize();
-        FileFormat FileFormat = convertMimeTypeToFileFormat(multipartFile.getContentType());
-        return createFile(originalName, storedName, FileFormat, path, fileType, size);
+        FileFormat fileFormat = convertMimeTypeToFileFormat(multipartFile.getContentType());
+        return createFile(originalName, storedName, fileFormat, path, fileType, size);
     }
 
     private String createRandomName(String originalName) {
