@@ -51,8 +51,7 @@ public class MyPageService {
 
         List<TalkPickMyPageResponse> responses = bookmarks.stream()
                 .map(bookmark -> {
-                    TalkPick talkPick = talkPickRepository.findById(bookmark.getTalkPickId())
-                            .orElseThrow(() -> new BalanceTalkException(ErrorCode.NOT_FOUND_TALK_PICK));
+                    TalkPick talkPick = bookmark.getTalkPick();
                     return TalkPickMyPageResponse.from(talkPick, bookmark);
                 })
                 .collect(Collectors.toList());

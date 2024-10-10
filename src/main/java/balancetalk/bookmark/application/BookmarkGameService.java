@@ -48,7 +48,7 @@ public class BookmarkGameService {
         }
 
         // 밸런스게임 세트, 게임 아이디가 모두 일치한다면 예외 처리
-        if (member.hasBookmarked(gameSetId, gameId)) {
+        if (member.hasBookmarked(gameSet, gameId)) {
             throw new BalanceTalkException(ErrorCode.ALREADY_BOOKMARKED);
         }
 
@@ -58,7 +58,7 @@ public class BookmarkGameService {
         }
 
         // 해당 멤버가 가진 GameSet 북마크 중, resourceId가 gameSetId와 일치하는 북마크가 있다면
-        member.getGameBookmarkOf(gameSetId)
+        member.getGameBookmarkOf(gameSet)
                 .ifPresentOrElse(
                         bookmark -> {
                             bookmark.activate();
@@ -66,7 +66,7 @@ public class BookmarkGameService {
                             bookmark.updateGameId(gameId); //gameId도 업데이트
                         },
                         () -> { // resourceId가 gameSetId와 일치하는 북마크가 없다면 새로 생성
-                            gameBookmarkRepository.save(bookmarkGenerator.generate(gameSetId, gameId, member));
+                            gameBookmarkRepository.save(bookmarkGenerator.generate(gameSet, gameId, member));
                             gameSet.increaseBookmarks();
                         });
     }
@@ -83,7 +83,7 @@ public class BookmarkGameService {
         long gameId = getFirstGameIdOrThrow(gameSet);
 
         // 해당 멤버가 가진 GameSet 북마크 중, resourceId가 gameSetId와 일치하는 북마크가 있다면
-        member.getGameBookmarkOf(gameSetId)
+        member.getGameBookmarkOf(gameSet)
                 .ifPresentOrElse(
                         bookmark -> {
                             bookmark.activate();
@@ -92,7 +92,7 @@ public class BookmarkGameService {
                             bookmark.updateGameId(gameId); //gameId도 업데이트
                         },
                         () -> { // resourceId가 gameSetId와 일치하는 북마크가 없다면 새로 생성
-                            gameBookmarkRepository.save(bookmarkGenerator.generate(gameSetId, gameId, member));
+                            gameBookmarkRepository.save(bookmarkGenerator.generate(gameSet, gameId, member));
                             gameSet.increaseBookmarks();
                         });
     }
@@ -108,7 +108,7 @@ public class BookmarkGameService {
         GameSet gameSet = gameReader.findGameSetById(gameSetId);
         Member member = apiMember.toMember(memberRepository);
 
-        GameBookmark bookmark = member.getGameBookmarkOf(gameSetId)
+        GameBookmark bookmark = member.getGameBookmarkOf(gameSet)
                 .orElseThrow(() -> new BalanceTalkException(ErrorCode.NOT_FOUND_BOOKMARK));
 
         if (!bookmark.isActive()) {

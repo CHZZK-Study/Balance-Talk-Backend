@@ -61,7 +61,7 @@ class BookmarkTalkPickTalkPickServiceTest {
 
         when(talkPickReader.readById(any())).thenReturn(talkPick);
         when(memberRepository.findById(any())).thenReturn(Optional.ofNullable(member));
-        when(bookmarkGenerator.generate(1L, member)).thenReturn(talkPickBookmark);
+        when(bookmarkGenerator.generate(talkPick, member)).thenReturn(talkPickBookmark);
 
         // when
         bookmarkTalkPickService.createBookmark(1L, apiMember);
@@ -73,8 +73,10 @@ class BookmarkTalkPickTalkPickServiceTest {
     @Test
     void createBookmark_Success_ThenActivateBookmark() {
         // given
+        TalkPick talkPick = mock(TalkPick.class);
+
         TalkPickBookmark talkPickBookmark = TalkPickBookmark.builder()
-                .talkPickId(1L)
+                .talkPick(talkPick)
                 .active(false)
                 .build();
 
@@ -83,7 +85,6 @@ class BookmarkTalkPickTalkPickServiceTest {
                 .talkPickBookmarks(List.of(talkPickBookmark))
                 .build();
 
-        TalkPick talkPick = mock(TalkPick.class);
 
         when(talkPickReader.readById(any())).thenReturn(talkPick);
         when(memberRepository.findById(any())).thenReturn(Optional.ofNullable(member));
@@ -98,8 +99,10 @@ class BookmarkTalkPickTalkPickServiceTest {
     @Test
     void deleteBookmark_Success_ThenDeactivateBookmark() {
         // given
+        TalkPick talkPick = mock(TalkPick.class);
+
         TalkPickBookmark talkPickBookmark = TalkPickBookmark.builder()
-                .talkPickId(1L)
+                .talkPick(talkPick)
                 .active(true)
                 .build();
 
@@ -108,7 +111,6 @@ class BookmarkTalkPickTalkPickServiceTest {
                 .talkPickBookmarks(List.of(talkPickBookmark))
                 .build();
 
-        TalkPick talkPick = mock(TalkPick.class);
 
         when(talkPickReader.readById(any())).thenReturn(talkPick);
         when(memberRepository.findById(any())).thenReturn(Optional.ofNullable(member));

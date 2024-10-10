@@ -49,7 +49,7 @@ public class BookmarkTalkPickService {
 
         member.getTalkPickBookmarkOf(talkPick)
                 .ifPresentOrElse(TalkPickBookmark::activate,
-                        () -> talkPickBookmarkRepository.save(bookmarkGenerator.generate(talkPickId, member)));
+                        () -> talkPickBookmarkRepository.save(bookmarkGenerator.generate(talkPick, member)));
         talkPick.increaseBookmarks();
         sendBookmarkTalkPickNotification(talkPick);
     }

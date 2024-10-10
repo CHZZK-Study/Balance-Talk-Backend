@@ -1,5 +1,6 @@
 package balancetalk.bookmark.domain;
 
+import balancetalk.game.domain.GameSet;
 import balancetalk.global.common.BaseTimeEntity;
 import balancetalk.member.domain.Member;
 import jakarta.persistence.Column;
@@ -35,8 +36,9 @@ public class GameBookmark extends BaseTimeEntity {
     @JoinColumn(name = "member_id")
     private Member member;
 
-    @NotNull
-    private Long gameSetId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "game_set_id")
+    private GameSet gameSet;
 
     @NotNull
     private Long gameId;
@@ -47,16 +49,16 @@ public class GameBookmark extends BaseTimeEntity {
     @NotNull
     private Boolean isEndGameSet;
 
-    public boolean matches(long gameSetId) {
-        return isEqualsGameSetId(gameSetId);
+    public boolean matches(GameSet gameSet) {
+        return isEqualsGameSetId(gameSet);
     }
 
-    public boolean matches(long resourceId, long gameId) {
-        return isEqualsGameSetId(resourceId) && isEqualsGameId(gameId);
+    public boolean matches(GameSet gameSet, long gameId) {
+        return isEqualsGameSetId(gameSet) && isEqualsGameId(gameId);
     }
 
-    private boolean isEqualsGameSetId(long gameSetId) {
-        return this.gameSetId.equals(gameSetId);
+    private boolean isEqualsGameSetId(GameSet gameSet) {
+        return this.gameSet.equals(gameSet);
     }
 
     private boolean isEqualsGameId(long gameId) {
