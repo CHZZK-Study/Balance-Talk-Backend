@@ -2,6 +2,7 @@ package balancetalk.bookmark.domain;
 
 import balancetalk.global.common.BaseTimeEntity;
 import balancetalk.member.domain.Member;
+import balancetalk.talkpick.domain.TalkPick;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
@@ -21,18 +22,19 @@ public class TalkPickBookmark extends BaseTimeEntity {
     @JoinColumn(name = "member_id")
     private Member member;
 
-    @NotNull
-    private Long talkPickId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "talk_pick_id")
+    private TalkPick talkPick;
 
     @NotNull
     private Boolean active;
 
-    public boolean matches(long resourceId) {
-        return isEqualsResourceId(resourceId);
+    public boolean matches(TalkPick talkPick) {
+        return isEqualsTalkPickId(talkPick);
     }
 
-    private boolean isEqualsResourceId(long talkPickId) {
-        return this.talkPickId.equals(talkPickId);
+    private boolean isEqualsTalkPickId(TalkPick talkPick) {
+        return this.talkPick.equals(talkPick);
     }
 
     public boolean isActive() {

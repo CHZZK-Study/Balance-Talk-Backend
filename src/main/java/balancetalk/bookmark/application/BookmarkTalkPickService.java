@@ -43,11 +43,11 @@ public class BookmarkTalkPickService {
         if (member.isMyTalkPick(talkPick)) {
             throw new BalanceTalkException(CANNOT_BOOKMARK_MY_RESOURCE);
         }
-        if (member.hasBookmarked(talkPickId)) {
+        if (member.hasBookmarked(talkPick)) {
             throw new BalanceTalkException(ALREADY_BOOKMARKED);
         }
 
-        member.getTalkPickBookmarkOf(talkPickId)
+        member.getTalkPickBookmarkOf(talkPick)
                 .ifPresentOrElse(TalkPickBookmark::activate,
                         () -> talkPickBookmarkRepository.save(bookmarkGenerator.generate(talkPickId, member)));
         talkPick.increaseBookmarks();
@@ -59,7 +59,7 @@ public class BookmarkTalkPickService {
         TalkPick talkPick = talkPickReader.readById(talkPickId);
         Member member = apiMember.toMember(memberRepository);
 
-        TalkPickBookmark bookmark = member.getTalkPickBookmarkOf(talkPickId)
+        TalkPickBookmark bookmark = member.getTalkPickBookmarkOf(talkPick)
                 .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_BOOKMARK));
 
         if (isNotActivated(bookmark)) {

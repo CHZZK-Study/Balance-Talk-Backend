@@ -53,7 +53,7 @@ public class TalkPickService {
         }
 
         Member member = guestOrApiMember.toMember(memberRepository);
-        boolean hasBookmarked = member.hasBookmarked(talkPickId);
+        boolean hasBookmarked = member.hasBookmarked(talkPick);
         Optional<TalkPickVote> myVote = member.getVoteOnTalkPick(talkPick);
 
         if (myVote.isEmpty()) {

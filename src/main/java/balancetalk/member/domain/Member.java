@@ -97,9 +97,9 @@ public class Member extends BaseTimeEntity {
                 .anyMatch(bookmark -> bookmark.matches(resourceId, gameId) && bookmark.isActive());
     }
 
-    public boolean hasBookmarked(Long resourceId) {
+    public boolean hasBookmarked(TalkPick talkPick) {
         return this.talkPickBookmarks.stream()
-                .anyMatch(bookmark -> bookmark.matches(resourceId) && bookmark.isActive());
+                .anyMatch(bookmark -> bookmark.matches(talkPick) && bookmark.isActive());
     }
 
     public Optional<TalkPickVote> getVoteOnTalkPick(TalkPick talkPick) {
@@ -140,9 +140,9 @@ public class Member extends BaseTimeEntity {
         return gameSets.contains(gameSet);
     }
 
-    public Optional<TalkPickBookmark> getTalkPickBookmarkOf(long resourceId) {
+    public Optional<TalkPickBookmark> getTalkPickBookmarkOf(TalkPick talkPick) {
         return talkPickBookmarks.stream()
-                .filter(bookmark -> bookmark.matches(resourceId))
+                .filter(bookmark -> bookmark.matches(talkPick))
                 .findFirst();
     }
 
