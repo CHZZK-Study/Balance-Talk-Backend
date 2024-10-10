@@ -42,8 +42,7 @@ sonar {
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 
-	// aws
-	implementation 'software.amazon.awssdk:aws-sdk-java:2.24.8'
+	implementation 'io.awspring.cloud:spring-cloud-aws-starter-s3:3.2.0'
 
 	// security
 	implementation 'org.springframework.boot:spring-boot-starter-security'
