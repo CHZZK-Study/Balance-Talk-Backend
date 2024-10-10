@@ -3,10 +3,8 @@ package balancetalk.comment.domain;
 import balancetalk.global.common.BaseTimeEntity;
 import balancetalk.global.exception.BalanceTalkException;
 import balancetalk.member.domain.Member;
-import balancetalk.report.domain.Report;
 import balancetalk.talkpick.domain.TalkPick;
 import balancetalk.talkpick.domain.ViewStatus;
-import balancetalk.vote.domain.VoteOption;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.*;
@@ -44,10 +42,6 @@ public class Comment extends BaseTimeEntity {
     @NotBlank
     @Size(max = 255)
     private String content;
-
-    @Enumerated(value = EnumType.STRING)
-    @NotNull
-    private VoteOption voteOption;
 
     @Enumerated(value = EnumType.STRING)
     private ViewStatus viewStatus;
