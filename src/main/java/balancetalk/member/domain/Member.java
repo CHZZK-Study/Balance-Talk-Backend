@@ -187,6 +187,6 @@ public class Member extends BaseTimeEntity {
     }
 
     public int getBookmarkedPostsCount() {
-        return gameBookmarks.size();
+        return talkPickBookmarks.size() + gameBookmarks.size();
     }
 }
