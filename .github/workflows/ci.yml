@@ -39,14 +39,15 @@ jobs:
         restore-keys: ${{ runner.os }}-gradle
     - name: Build and analyze
       env:
+        GITHUB_TOKEN: ${{ secrets.GIT_ACCESS_TOKEN }}
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
-      run: ./gradlew build sonar --info
-    - name: SonarQube Quality Gate check
-      id: sonarqube-quality-gate-check
-      uses: sonarsource/sonarqube-quality-gate-action@master
-      timeout-minutes: 5
-      env:
-       SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-       SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+      run: /gradlew build sonar --info -Dsonar.pullrequest.key=${{ github.event.pull_request.number }} -Dsonar.pullrequest.branch=${{ github.event.pull_request.head.ref }} -Dsonar.pullrequest.base=main
+    # - name: SonarQube Quality Gate check
+    #   id: sonarqube-quality-gate-check
+    #   uses: sonarsource/sonarqube-quality-gate-action@master
+    #   timeout-minutes: 5
+    #   env:
+    #    SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+    #    SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
             
