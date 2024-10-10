@@ -70,6 +70,10 @@ public class CommentService {
             throw new BalanceTalkException(NOT_FOUND_VOTE_OPTION);
         }
 
+        if (!member.hasVotedTalkPick(talkPick) && !talkPick.getMember().equals(member)) {
+            throw new BalanceTalkException(NOT_FOUND_VOTE);
+        }
+
         Comment comment = createCommentRequest.toEntity(member, talkPick);
         commentRepository.save(comment);
         sendCommentNotification(talkPick);
@@ -90,6 +94,10 @@ public class CommentService {
 
         // 부모 댓글의 depth가 maxDepth를 초과하는 경우 예외 처리 (답글에 답글 불가)
         validateDepth(parentComment);
+
+        if (!member.hasVotedTalkPick(talkPick) && !talkPick.getMember().equals(member)) {
+            throw new BalanceTalkException(NOT_FOUND_VOTE);
+        }
 
         Comment commentReply = createCommentRequest.toEntity(member, talkPick, parentComment);
         commentRepository.save(commentReply);
