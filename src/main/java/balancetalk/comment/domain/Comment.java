@@ -83,14 +83,10 @@ public class Comment extends BaseTimeEntity {
 
     private boolean isEdited;
 
-    public void setIsEdited() {
-        this.isEdited = true;
-    }
-
     public void updateContent(String content) {
         this.content = content;
         this.editedAt = LocalDateTime.now();
-        setIsEdited();
+        this.isEdited = true;
     }
 
     public void setIsBest(boolean isBest) {
