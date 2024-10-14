@@ -68,6 +68,7 @@ public class BookmarkGameService {
                         () -> { // resourceId가 gameSetId와 일치하는 북마크가 없다면 새로 생성
                             gameBookmarkRepository.save(bookmarkGenerator.generate(gameSet, gameId, member));
                             gameSet.increaseBookmarks();
+                            sendBookmarkGameNotification(gameSet);
                         });
     }
 
@@ -94,6 +95,7 @@ public class BookmarkGameService {
                         () -> { // resourceId가 gameSetId와 일치하는 북마크가 없다면 새로 생성
                             gameBookmarkRepository.save(bookmarkGenerator.generate(gameSet, gameId, member));
                             gameSet.increaseBookmarks();
+                            sendBookmarkGameNotification(gameSet);
                         });
     }
 
@@ -116,14 +118,14 @@ public class BookmarkGameService {
         }
         bookmark.deactivate();
         gameSet.decreaseBookmarks();
-        // sendBookmarkGameNotification(gameSet); // FIXME: 위임 후 대기, 알림 기준이 밸런스게임인지, 밸런스게임 세트인지에 따라 적용
+        sendBookmarkGameNotification(gameSet);
     }
 
-    private void sendBookmarkGameNotification(Game game) {
-        Member member = null; // FIXME: 위임 후 대기, 알림 기준이 밸런스게임인지, 밸런스게임 세트인지에 따라 적용
-        long bookmarkedCount = game.getGameSet().getBookmarks();
+    private void sendBookmarkGameNotification(GameSet gameSet) {
+        Member member = gameSet.getMember(); // FIXME: 위임 후 대기, 알림 기준이 밸런스게임인지, 밸런스게임 세트인지에 따라 적용
+        long bookmarkedCount = gameSet.getBookmarks();
         String bookmarkCountKey = "BOOKMARK_" + bookmarkedCount;
-        Map<String, Boolean> notificationHistory = game.getNotificationHistory();
+        Map<String, Boolean> notificationHistory = gameSet.getNotificationHistory();
         String category = WRITTEN_GAME.getCategory();
 
         boolean isMilestoneBookmarked = (bookmarkedCount == FIRST_STANDARD_OF_NOTIFICATION.getCount() ||
@@ -136,17 +138,17 @@ public class BookmarkGameService {
 
         // 북마크 개수가 10, 50, 100*n개, 1000*n개 일 때 알림
         if (isMilestoneBookmarked && !notificationHistory.getOrDefault(bookmarkCountKey, false)) {
-            notificationService.sendGameNotification(member, game, category, GAME_BOOKMARK.format(bookmarkedCount));
+            notificationService.sendGameNotification(member, gameSet, category, GAME_BOOKMARK.format(bookmarkedCount));
             // 북마크 개수가 100개일 때 배찌 획득 알림
             if (bookmarkedCount == THIRD_STANDARD_OF_NOTIFICATION.getCount()) {
-                notificationService.sendGameNotification(member, game, category, GAME_BOOKMARK_100.getMessage());
+                notificationService.sendGameNotification(member, gameSet, category, GAME_BOOKMARK_100.getMessage());
             }
             // 북마크 개수가 1000개일 때 배찌 획득 알림
             else if (bookmarkedCount == FOURTH_STANDARD_OF_NOTIFICATION.getCount()) {
-                notificationService.sendGameNotification(member, game, category, GAME_BOOKMARK_1000.getMessage());
+                notificationService.sendGameNotification(member, gameSet, category, GAME_BOOKMARK_1000.getMessage());
             }
             notificationHistory.put(bookmarkCountKey, true);
-            game.setNotificationHistory(notificationHistory);
+            gameSet.setNotificationHistory(notificationHistory);
         }
     }
 }
