@@ -4,6 +4,7 @@ import balancetalk.global.common.BaseTimeEntity;
 import balancetalk.global.exception.BalanceTalkException;
 import balancetalk.global.exception.ErrorCode;
 import balancetalk.member.domain.Member;
+import balancetalk.vote.domain.VoteOption;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -92,5 +93,9 @@ public class GameSet extends BaseTimeEntity {
             game.addGameSet(this);
             game.getGameOptions().forEach(option -> option.addGame(game));
         });
+    }
+
+    public long getVoteCount() {
+        return games.get(0).getVoteCount(VoteOption.A) + games.get(0).getVoteCount(VoteOption.B);
     }
 }
