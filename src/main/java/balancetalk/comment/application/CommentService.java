@@ -70,7 +70,7 @@ public class CommentService {
             throw new BalanceTalkException(NOT_FOUND_VOTE_OPTION);
         }
 
-        if (!member.hasVotedTalkPick(talkPick) && !talkPick.getMember().equals(member)) {
+        if (member.cannotWriteComment(talkPick)) {
             throw new BalanceTalkException(NOT_FOUND_VOTE);
         }
 

@@ -189,4 +189,12 @@ public class Member extends BaseTimeEntity {
     public int getBookmarkedPostsCount() {
         return talkPickBookmarks.size() + gameBookmarks.size();
     }
+
+    public boolean cannotWriteComment(TalkPick talkPick) {
+        return (!this.hasVotedTalkPick(talkPick) && !isWriterOf(talkPick));
+    }
+
+    public boolean isWriterOf(TalkPick talkPick) {
+        return talkPicks.contains(talkPick);
+    }
 }
