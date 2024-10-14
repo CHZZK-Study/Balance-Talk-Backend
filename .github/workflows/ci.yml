@@ -37,28 +37,12 @@ jobs:
         restore-keys: ${{ runner.os }}-gradle
     - name: Build and analyze
       env:
+        GIT_ACCESS_TOKEN: ${{ secrets.GIT_ACCESS_TOKEN }}
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
-      run: |  
-        ./gradlew build sonar --info \
+      run: |
+        ./gradlew build sonar --info --stacktrace \
           -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_KEY }} \
-          -Dsonar.branch.name=main
-    # - name: Build and analyze
-    #   env:
-    #     GIT_ACCESS_TOKEN: ${{ secrets.GIT_ACCESS_TOKEN }}
-    #     SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-    #     SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
-    #   run: |
-    #     ./gradlew build sonar --info --stacktrace \
-    #       -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_KEY }} \
-    #       -Dsonar.pullrequest.key=${{ github.event.pull_request.number }} \
-    #       -Dsonar.pullrequest.branch=${{ github.HEAD_REF }} \
-    #       -Dsonar.pullrequest.base=main
-    # - name: SonarQube Quality Gate check
-    #   id: sonarqube-quality-gate-check
-    #   uses: sonarsource/sonarqube-quality-gate-action@master
-    #   timeout-minutes: 5
-    #   env:
-    #    SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-    #    SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
-            
+          -Dsonar.pullrequest.key=${{ github.event.pull_request.number }} \
+          -Dsonar.pullrequest.branch=${{ github.HEAD_REF }} \
+          -Dsonar.pullrequest.base=main
