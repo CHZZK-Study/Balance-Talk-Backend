@@ -41,11 +41,11 @@ jobs:
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
       run: |
-        ./gradlew build sonar \
+        ./gradlew build sonar --stacktrace \
           -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_KEY }} \
           -Dsonar.pullrequest.key=${{ github.event.pull_request.number }} \
           -Dsonar.pullrequest.branch=${{ github.HEAD_REF }} \
-          -Dsonar.pullrequest.base=${{ github.BASE_REF }}
+          -Dsonar.pullrequest.base=main
     # - name: SonarQube Quality Gate check
     #   id: sonarqube-quality-gate-check
     #   uses: sonarsource/sonarqube-quality-gate-action@master
