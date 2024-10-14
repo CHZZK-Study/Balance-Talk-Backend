@@ -68,6 +68,10 @@ public class CommentService {
             throw new BalanceTalkException(NOT_FOUND_VOTE);
         }
 
+        if (member.cannotWriteComment(talkPick)) {
+            throw new BalanceTalkException(NOT_FOUND_VOTE);
+        }
+
         Comment comment = createCommentRequest.toEntity(member, talkPick);
         commentRepository.save(comment);
         sendCommentNotification(talkPick);
@@ -183,6 +187,7 @@ public class CommentService {
 
                 comment.setIsBest(likeCount >= MIN_COUNT_FOR_BEST_COMMENT);
                 CommentOrderByBestResponse response = CommentOrderByBestResponse.fromEntity(comment, option, likeCount, myLike);
+
                 if (comment.getIsBest()) {
                     bestComments.add(response);
                 } else {
@@ -199,6 +204,7 @@ public class CommentService {
 
                 comment.setIsBest(likeCount == maxLikes);
                 CommentOrderByBestResponse response = CommentOrderByBestResponse.fromEntity(comment, option, likeCount, myLike);
+
                 if (comment.getIsBest()) {
                     bestComments.add(response);
                 } else {
