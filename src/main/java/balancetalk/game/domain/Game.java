@@ -42,10 +42,6 @@ public class Game extends BaseTimeEntity {
     private List<GameOption> gameOptions = new ArrayList<>();
 
     @NotBlank
-    @Size(max = 50)
-    private String title;
-
-    @NotBlank
     @Size(max = 100)
     private String description;
 
@@ -71,7 +67,6 @@ public class Game extends BaseTimeEntity {
     }
 
     public void updateGame(Game newGame) {
-        this.title = newGame.getTitle();
         this.description = newGame.getDescription();
         this.editedAt = LocalDateTime.now();
         IntStream.range(0, this.gameOptions.size())

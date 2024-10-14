@@ -20,7 +20,7 @@ public class SearchGameResponse {
     @Schema(description = "밸런스 게임 세트 ID", example = "1")
     private long gameSetId;
 
-    @Schema(description = "밸런스 게임 제목", example = "제목")
+    @Schema(description = "밸런스게임 세트 제목", example = "제목")
     private String title;
 
     @Schema(description = "선택지 A 이미지", example = "https://pikko-image.s3.ap-northeast-2.amazonaws.com/balance-game/067cc56e-21b7-468f-a2c1-4839036ee7cd_unnamed.png")
@@ -39,7 +39,7 @@ public class SearchGameResponse {
         return SearchGameResponse.builder()
                 .gameSetId(game.getGameSet().getId())
                 .id(game.getId())
-                .title(game.getTitle())
+                .title(game.getGameSet().getTitle())
                 .optionAImg(game.getGameOptions().get(0).getImgUrl())
                 .optionBImg(game.getGameOptions().get(1).getImgUrl())
                 .subTag(game.getGameSet().getSubTag())
