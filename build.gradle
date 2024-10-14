@@ -35,7 +35,7 @@ repositories {
 sonar {
 	properties {
 		property "sonar.projectKey", "PICKO-BE"
-    		property "sonar.projectName", "Balance-Talk-Backend"
+    		property "sonar.projectName", "PICKO-BE"
 	}
 }
 
