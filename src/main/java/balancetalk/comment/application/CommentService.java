@@ -3,6 +3,8 @@ package balancetalk.comment.application;
 import balancetalk.comment.domain.Comment;
 import balancetalk.comment.domain.CommentRepository;
 import balancetalk.comment.dto.CommentDto;
+import balancetalk.comment.dto.CommentDto.BestCommentResponse;
+import balancetalk.comment.dto.CommentDto.LatestCommentResponse;
 import balancetalk.global.exception.BalanceTalkException;
 import balancetalk.global.exception.ErrorCode;
 import balancetalk.global.notification.application.NotificationService;
@@ -68,6 +70,10 @@ public class CommentService {
             throw new BalanceTalkException(NOT_FOUND_VOTE_OPTION);
         }
 
+        if (member.cannotWriteComment(talkPick)) {
+            throw new BalanceTalkException(NOT_FOUND_VOTE);
+        }
+
         Comment comment = createCommentRequest.toEntity(member, talkPick);
         commentRepository.save(comment);
         sendCommentNotification(talkPick);
@@ -89,6 +95,10 @@ public class CommentService {
         // 부모 댓글의 depth가 maxDepth를 초과하는 경우 예외 처리 (답글에 답글 불가)
         validateDepth(parentComment);
 
+        if (!member.hasVotedTalkPick(talkPick) && !talkPick.getMember().equals(member)) {
+            throw new BalanceTalkException(NOT_FOUND_VOTE);
+        }
+
         Comment commentReply = createCommentRequest.toEntity(member, talkPick, parentComment);
         commentRepository.save(commentReply);
 
@@ -98,8 +108,8 @@ public class CommentService {
     }
 
     @Transactional(readOnly = true)
-    public Page<CommentDto.CommentResponse> findAllComments(Long talkPickId, Pageable pageable,
-                                                            GuestOrApiMember guestOrApiMember) {
+    public Page<LatestCommentResponse> findAllComments(Long talkPickId, Pageable pageable,
+                                                       GuestOrApiMember guestOrApiMember) {
         validateTalkPickId(talkPickId);
 
         Page<Comment> comments = commentRepository.findAllByTalkPickIdAndParentIsNull(talkPickId, pageable);
@@ -107,13 +117,13 @@ public class CommentService {
         return comments.map(comment -> {
             int likesCount = likeRepository.countByResourceIdAndLikeType(comment.getId(), LikeType.COMMENT);
             boolean myLike = isCommentMyLiked(comment.getId(), guestOrApiMember);
-            return CommentDto.CommentResponse.fromEntity(comment, likesCount, myLike);
+            return LatestCommentResponse.fromEntity(comment, likesCount, myLike);
         });
     }
 
     @Transactional(readOnly = true)
-    public Page<CommentDto.CommentResponse> findAllReplies(Long parentId, Long talkPickId, Pageable pageable,
-                                                        GuestOrApiMember guestOrApiMember) {
+    public List<LatestCommentResponse> findAllReplies(Long parentId, Long talkPickId, GuestOrApiMember guestOrApiMember) {
+
         // 부모 댓글이 존재하는지 확인
         validateCommentId(parentId);
         validateTalkPickId(talkPickId);
@@ -121,25 +131,25 @@ public class CommentService {
         long memberId = guestOrApiMember.getMemberId();
 
         // 해당 부모 댓글의 답글 조회
-        Page<Comment> replies = commentRepository.findAllRepliesByParentIdOrderByMemberAndCreatedAt(parentId, memberId, pageable);
+        List<Comment> replies = commentRepository.findAllRepliesByParentIdOrderByMemberAndCreatedAt(parentId, memberId);
 
-        return replies.map(reply -> {
+        return replies.stream().map(reply -> {
             int likesCount = likeRepository.countByResourceIdAndLikeType(reply.getId(), LikeType.COMMENT);
             boolean myLike = isCommentMyLiked(reply.getId(), guestOrApiMember);
-            return CommentDto.CommentResponse.fromEntity(reply, likesCount, myLike);
-        });
+            return LatestCommentResponse.fromEntity(reply, likesCount, myLike);})
+                .toList();
     }
 
 
     @Transactional(readOnly = true)
-    public Page<CommentDto.CommentResponse> findAllBestComments(Long talkPickId, Pageable pageable,
-                                                                GuestOrApiMember guestOrApiMember) {
+    public Page<BestCommentResponse> findAllBestComments(Long talkPickId, Pageable pageable,
+                                                         GuestOrApiMember guestOrApiMember) {
         validateTalkPickId(talkPickId);
 
         List<Comment> allComments = commentRepository.findByTalkPickIdAndParentIsNullOrderByLikesCountDescCreatedAtAsc(talkPickId,
                 LikeType.COMMENT);
-        List<CommentDto.CommentResponse> bestComments = new ArrayList<>();
-        List<CommentDto.CommentResponse> otherComments = new ArrayList<>();
+        List<BestCommentResponse> bestComments = new ArrayList<>();
+        List<BestCommentResponse> otherComments = new ArrayList<>();
 
         // 최대 좋아요 수 구하기
         int maxLikes = allComments.stream()
@@ -153,7 +163,7 @@ public class CommentService {
                 boolean myLike = isCommentMyLiked(comment.getId(), guestOrApiMember);
                 int likeCount = likeRepository.countByResourceIdAndLikeType(comment.getId(), LikeType.COMMENT);
                 comment.setIsBest(likeCount >= MIN_COUNT_FOR_BEST_COMMENT);
-                CommentDto.CommentResponse response = CommentDto.CommentResponse.fromEntity(comment, likeCount, myLike);
+                BestCommentResponse response = BestCommentResponse.fromEntity(comment, likeCount, myLike);
                 if (comment.getIsBest()) {
                     bestComments.add(response);
                 } else {
@@ -165,7 +175,7 @@ public class CommentService {
                 boolean myLike = isCommentMyLiked(comment.getId(), guestOrApiMember);
                 int likeCount = likeRepository.countByResourceIdAndLikeType(comment.getId(), LikeType.COMMENT);
                 comment.setIsBest(likeCount == maxLikes);
-                CommentDto.CommentResponse response = CommentDto.CommentResponse.fromEntity(comment, likeCount, myLike);
+                BestCommentResponse response = BestCommentResponse.fromEntity(comment, likeCount, myLike);
                 if (comment.getIsBest()) {
                     bestComments.add(response);
                 } else {
@@ -174,10 +184,10 @@ public class CommentService {
             }
         }
 
-        bestComments.sort(Comparator.comparing(CommentDto.CommentResponse::getCreatedAt));
-        otherComments.sort(Comparator.comparing(CommentDto.CommentResponse::getCreatedAt));
+        bestComments.sort(Comparator.comparing(BestCommentResponse::getCreatedAt).reversed());
+        otherComments.sort(Comparator.comparing(BestCommentResponse::getCreatedAt).reversed());
 
-        List<CommentDto.CommentResponse> result = new ArrayList<>();
+        List<BestCommentResponse> result = new ArrayList<>();
         result.addAll(bestComments);
         result.addAll(otherComments);
 

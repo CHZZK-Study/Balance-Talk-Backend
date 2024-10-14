@@ -1,7 +1,8 @@
 package balancetalk.comment.presentation;
 
 import balancetalk.comment.application.CommentService;
-import balancetalk.comment.dto.CommentDto.CommentResponse;
+import balancetalk.comment.dto.CommentDto.BestCommentResponse;
+import balancetalk.comment.dto.CommentDto.LatestCommentResponse;
 import balancetalk.comment.dto.CommentDto.CreateCommentRequest;
 import balancetalk.comment.dto.CommentDto.UpdateCommentRequest;
 import balancetalk.global.utils.AuthPrincipal;
@@ -11,6 +12,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -43,8 +45,8 @@ public class CommentController {
 
     @GetMapping
     @Operation(summary = "최신 댓글 목록 조회", description = "talkPick-id에 해당하는 게시글에 있는 모든 댓글을 최신순으로 정렬해 조회한다.")
-    public Page<CommentResponse> findAllCommentsByPostIdSortedByCreatedAt(@PathVariable Long talkPickId, Pageable pageable,
-                                                                          @Parameter(hidden = true) @AuthPrincipal GuestOrApiMember guestOrApiMember) {
+    public Page<LatestCommentResponse> findAllCommentsByPostIdSortedByCreatedAt(@PathVariable Long talkPickId, Pageable pageable,
+                                                                                @Parameter(hidden = true) @AuthPrincipal GuestOrApiMember guestOrApiMember) {
         Pageable sortedByCreatedAtDesc = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(),
                 Sort.by("createdAt").descending());
         return commentService.findAllComments(talkPickId, sortedByCreatedAtDesc, guestOrApiMember);
@@ -52,17 +54,16 @@ public class CommentController {
 
     @GetMapping("/best")
     @Operation(summary = "베스트 댓글 목록 조회", description = "talkPick-id에 해당하는 게시글에 있는 모든 댓글을 베스트 및 좋아요 순으로 정렬해 조회한다.")
-    public Page<CommentResponse> findAllBestCommentsByPostId(@PathVariable Long talkPickId, Pageable pageable,
-                                                             @Parameter(hidden = true) @AuthPrincipal GuestOrApiMember guestOrApiMember) {
+    public Page<BestCommentResponse> findAllBestCommentsByPostId(@PathVariable Long talkPickId, Pageable pageable,
+                                                                 @Parameter(hidden = true) @AuthPrincipal GuestOrApiMember guestOrApiMember) {
         return commentService.findAllBestComments(talkPickId, pageable, guestOrApiMember);
     }
 
     @GetMapping("/{commentId}/replies")
     @Operation(summary = "답글 목록 조회", description = "talkPick-id에 해당하는 게시글에 있는 댓글인 comment-id에 존재하는 모든 답글을 조회한다.")
-    public Page<CommentResponse> findAllRepliesByCommentId(@PathVariable Long commentId, @PathVariable Long talkPickId,
-                                                           Pageable pageable,
-                                                           @Parameter(hidden = true) @AuthPrincipal GuestOrApiMember guestOrApiMember) {
-        return commentService.findAllReplies(commentId, talkPickId, pageable, guestOrApiMember);
+    public List<LatestCommentResponse> findAllRepliesByCommentId(@PathVariable Long commentId, @PathVariable Long talkPickId,
+                                                                 @Parameter(hidden = true) @AuthPrincipal GuestOrApiMember guestOrApiMember) {
+        return commentService.findAllReplies(commentId, talkPickId, guestOrApiMember);
     }
 
     @PutMapping("/{commentId}")
