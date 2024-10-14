@@ -83,18 +83,17 @@ public class GameService {
         Map<Long, Boolean> bookmarkMap = new ConcurrentHashMap<>();
         Map<Long, VoteOption> voteOptionMap = new ConcurrentHashMap<>();
 
-        GameBookmark gameBookmark = gameBookmarkRepository.findByMemberAndGameSetId(member, gameSetId)
-                .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_BOOKMARK));
-
-        boolean isEndGameSet = gameBookmark.getIsEndGameSet();
+        Optional<GameBookmark> optionalGameBookmark = gameBookmarkRepository.findByMemberAndGameSetId(member, gameSetId);
+        boolean isEndGameSet = optionalGameBookmark.map(GameBookmark::getIsEndGameSet).orElse(false);
 
         for (Game game : games) {
-            Long bookmarkedGameId = gameBookmark.getGameId();
-
-            boolean hasBookmarked = (bookmarkedGameId != null && bookmarkedGameId.equals(game.getId()));
+            boolean hasBookmarked = optionalGameBookmark
+                    .map(gameBookmark -> gameBookmark.getGameId() != null && gameBookmark.getGameId().equals(game.getId()))
+                            .orElse(false);
 
             bookmarkMap.put(game.getId(), hasBookmarked);
             Optional<GameVote> myVote = member.getVoteOnGameOption(member, game);
+
             if (myVote.isPresent()) {
                 voteOptionMap.put(game.getId(), myVote.get().getVoteOption());
             }
