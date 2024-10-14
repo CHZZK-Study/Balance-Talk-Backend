@@ -39,7 +39,10 @@ jobs:
       env:
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
-      run: ./gradlew build sonar --info
+      run: |  
+        ./gradlew build sonar \
+          -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_KEY }} \
+          -Dsonar.branch.name=main
     # - name: Build and analyze
     #   env:
     #     GIT_ACCESS_TOKEN: ${{ secrets.GIT_ACCESS_TOKEN }}
