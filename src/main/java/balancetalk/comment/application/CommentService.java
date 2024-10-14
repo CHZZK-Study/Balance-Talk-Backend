@@ -3,8 +3,8 @@ package balancetalk.comment.application;
 import balancetalk.comment.domain.Comment;
 import balancetalk.comment.domain.CommentRepository;
 import balancetalk.comment.dto.CommentDto;
-import balancetalk.comment.dto.CommentDto.CommentOrderByBestResponse;
-import balancetalk.comment.dto.CommentDto.CommentOrderByCreatedAtResponse;
+import balancetalk.comment.dto.CommentDto.BestCommentResponse;
+import balancetalk.comment.dto.CommentDto.LatestCommentResponse;
 import balancetalk.global.exception.BalanceTalkException;
 import balancetalk.global.exception.ErrorCode;
 import balancetalk.global.notification.application.NotificationService;
@@ -93,7 +93,7 @@ public class CommentService {
         // 부모 댓글의 depth가 maxDepth를 초과하는 경우 예외 처리 (답글에 답글 불가)
         validateDepth(parentComment);
 
-        if (!member.hasVotedTalkPick(talkPick) && !talkPick.getMember().equals(member)) {
+        if (member.cannotWriteComment(talkPick)) {
             throw new BalanceTalkException(NOT_FOUND_VOTE);
         }
 
@@ -115,8 +115,8 @@ public class CommentService {
     }
 
     @Transactional(readOnly = true)
-    public Page<CommentOrderByCreatedAtResponse> findAllComments(Long talkPickId, Pageable pageable,
-                                                                 GuestOrApiMember guestOrApiMember) {
+    public Page<LatestCommentResponse> findAllComments(Long talkPickId, Pageable pageable,
+                                                       GuestOrApiMember guestOrApiMember) {
         validateTalkPickId(talkPickId);
         TalkPick talkPick = talkPickRepository.findById(talkPickId)
                 .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_TALK_PICK));
@@ -129,12 +129,12 @@ public class CommentService {
             Member member = comment.getMember();
             VoteOption option = member.getVoteOnTalkPick(talkPick)
                     .isPresent() ? member.getVoteOnTalkPick(talkPick).get().getVoteOption() : null;
-            return CommentOrderByCreatedAtResponse.fromEntity(comment, option, likesCount, myLike);
+            return LatestCommentResponse.fromEntity(comment, option, likesCount, myLike);
         });
     }
 
     @Transactional(readOnly = true)
-    public List<CommentOrderByCreatedAtResponse> findAllReplies(Long parentId, Long talkPickId, GuestOrApiMember guestOrApiMember) {
+    public List<LatestCommentResponse> findAllReplies(Long parentId, Long talkPickId, GuestOrApiMember guestOrApiMember) {
 
         // 부모 댓글이 존재하는지 확인
         validateCommentId(parentId);
@@ -153,22 +153,22 @@ public class CommentService {
                     Member member = reply.getMember();
                     VoteOption option = member.getVoteOnTalkPick(talkPick)
                             .isPresent() ? member.getVoteOnTalkPick(talkPick).get().getVoteOption() : null;
-            return CommentOrderByCreatedAtResponse.fromEntity(reply, option, likesCount, myLike);})
+            return LatestCommentResponse.fromEntity(reply, option, likesCount, myLike);})
                 .toList();
     }
 
 
     @Transactional(readOnly = true)
-    public Page<CommentOrderByBestResponse> findAllBestComments(Long talkPickId, Pageable pageable,
-                                                                GuestOrApiMember guestOrApiMember) {
+    public Page<BestCommentResponse> findAllBestComments(Long talkPickId, Pageable pageable,
+                                                         GuestOrApiMember guestOrApiMember) {
         validateTalkPickId(talkPickId);
         TalkPick talkPick = talkPickRepository.findById(talkPickId)
                 .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_TALK_PICK));
 
         List<Comment> allComments = commentRepository.findByTalkPickIdAndParentIsNullOrderByLikesCountDescCreatedAtAsc(talkPickId,
                 LikeType.COMMENT);
-        List<CommentOrderByBestResponse> bestComments = new ArrayList<>();
-        List<CommentOrderByBestResponse> otherComments = new ArrayList<>();
+        List<BestCommentResponse> bestComments = new ArrayList<>();
+        List<BestCommentResponse> otherComments = new ArrayList<>();
 
         // 최대 좋아요 수 구하기
         int maxLikes = allComments.stream()
@@ -186,7 +186,7 @@ public class CommentService {
                         .isPresent() ? member.getVoteOnTalkPick(talkPick).get().getVoteOption() : null;
 
                 comment.setIsBest(likeCount >= MIN_COUNT_FOR_BEST_COMMENT);
-                CommentOrderByBestResponse response = CommentOrderByBestResponse.fromEntity(comment, option, likeCount, myLike);
+                BestCommentResponse response = BestCommentResponse.fromEntity(comment, option, likeCount, myLike);
 
                 if (comment.getIsBest()) {
                     bestComments.add(response);
@@ -203,7 +203,7 @@ public class CommentService {
                         .isPresent() ? member.getVoteOnTalkPick(talkPick).get().getVoteOption() : null;
 
                 comment.setIsBest(likeCount == maxLikes);
-                CommentOrderByBestResponse response = CommentOrderByBestResponse.fromEntity(comment, option, likeCount, myLike);
+                BestCommentResponse response = BestCommentResponse.fromEntity(comment, option, likeCount, myLike);
 
                 if (comment.getIsBest()) {
                     bestComments.add(response);
@@ -213,10 +213,10 @@ public class CommentService {
             }
         }
 
-        bestComments.sort(Comparator.comparing(CommentOrderByBestResponse::getCreatedAt).reversed());
-        otherComments.sort(Comparator.comparing(CommentOrderByBestResponse::getCreatedAt).reversed());
+        bestComments.sort(Comparator.comparing(BestCommentResponse::getCreatedAt).reversed());
+        otherComments.sort(Comparator.comparing(BestCommentResponse::getCreatedAt).reversed());
 
-        List<CommentOrderByBestResponse> result = new ArrayList<>();
+        List<BestCommentResponse> result = new ArrayList<>();
         result.addAll(bestComments);
         result.addAll(otherComments);
 

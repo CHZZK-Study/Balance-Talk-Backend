@@ -6,7 +6,6 @@ import balancetalk.talkpick.domain.TalkPick;
 import balancetalk.talkpick.domain.ViewStatus;
 import balancetalk.vote.domain.VoteOption;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -70,7 +69,7 @@ public class CommentDto {
     @AllArgsConstructor
     @Builder
     @Schema(description = "최신순 댓글 조회 응답")
-    public static class CommentOrderByCreatedAtResponse {
+    public static class LatestCommentResponse {
 
         @Schema(description = "댓글 id", example = "1")
         private Long id;
@@ -117,8 +116,8 @@ public class CommentDto {
         @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy.MM.dd hh:mm")
         private LocalDateTime lastModifiedAt;
 
-        public static CommentOrderByCreatedAtResponse fromEntity(Comment comment, VoteOption voteOption, int likesCount, boolean myLike) {
-            return CommentOrderByCreatedAtResponse.builder()
+        public static LatestCommentResponse fromEntity(Comment comment, VoteOption voteOption, int likesCount, boolean myLike) {
+            return LatestCommentResponse.builder()
                     .id(comment.getId())
                     .content(comment.getContent())
                     .nickname(comment.getMember().getNickname())
@@ -141,7 +140,7 @@ public class CommentDto {
     @AllArgsConstructor
     @Builder
     @Schema(description = "베스트순 댓글 조회 응답")
-    public static class CommentOrderByBestResponse {
+    public static class BestCommentResponse {
 
         @Schema(description = "댓글 id", example = "1")
         private Long id;
@@ -191,8 +190,8 @@ public class CommentDto {
         @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy.MM.dd hh:mm")
         private LocalDateTime lastModifiedAt;
 
-        public static CommentOrderByBestResponse fromEntity(Comment comment, VoteOption voteOption, int likesCount, boolean myLike) {
-            return CommentOrderByBestResponse.builder()
+        public static BestCommentResponse fromEntity(Comment comment, VoteOption voteOption, int likesCount, boolean myLike) {
+            return BestCommentResponse.builder()
                     .id(comment.getId())
                     .content(comment.getContent())
                     .nickname(comment.getMember().getNickname())
