@@ -23,6 +23,9 @@ public class GameSetDto {
     @Data
     public static class CreateGameSetRequest {
 
+        @Schema(description = "밸런스게임 세트 제목", example = "밸런스게임 세트 제목")
+        private String title;
+
         @Schema(description = "밸런스 게임 메인 태그", example = "커플")
         private String mainTag;
 
@@ -31,8 +34,9 @@ public class GameSetDto {
 
         private List<CreateOrUpdateGame> games;
 
-        public GameSet toEntity(MainTag mainTag, Member member) {
+        public GameSet toEntity(String title, MainTag mainTag, Member member) {
             return GameSet.builder()
+                    .title(title)
                     .mainTag(mainTag)
                     .subTag(subTag)
                     .member(member)
@@ -63,9 +67,6 @@ public class GameSetDto {
         @Schema(description = "서브 태그", example = "서브 태그")
         private String subTag;
 
-        @Schema(description = "게시글 제목", example = "제목")
-        private String title;
-
         private List<String> images;
 
         public static GameSetResponse fromEntity(GameSet gameSet) {
@@ -79,7 +80,6 @@ public class GameSetDto {
                     .id(gameSet.getId())
                     .mainTag(gameSet.getMainTag().getName())
                     .subTag(gameSet.getSubTag())
-                    .title(game.getTitle())
                     .images(images)
                     .build();
         }
@@ -93,6 +93,9 @@ public class GameSetDto {
 
         @Schema(description = "작성자", example = "멤버")
         private String member;
+
+        @Schema(description = "밸런스게임 세트 제목", example = "밸런스게임 세트 제목")
+        private String title;
 
         @Schema(description = "작성 날짜", example = "2024-10-07T21:55:19.591909")
         private LocalDateTime createdAt;
@@ -114,6 +117,7 @@ public class GameSetDto {
 
             return GameSetDetailResponse.builder()
                     .member(gameSet.getMember().getNickname())
+                    .title(gameSet.getTitle())
                     .createdAt(gameSet.getCreatedAt())
                     .mainTag(gameSet.getMainTag().getName())
                     .subTag(gameSet.getSubTag())

@@ -19,7 +19,7 @@ public interface GameRepository extends JpaRepository<Game, Long> {
             "LEFT JOIN game_option go ON go.game_id = g.id " +
             "WHERE " +
             "gs.sub_tag = :query OR " +
-            "g.title = :query OR " +
+            "gs.title = :query OR " +
             "g.description = :query OR " +
             "go.name = :query OR " +
             "go.description = :query",
@@ -32,8 +32,10 @@ public interface GameRepository extends JpaRepository<Game, Long> {
             "INNER JOIN game_option go ON go.game_id = g.id " +
             "WHERE " +
             "MATCH(gs.sub_tag) AGAINST (:query IN NATURAL LANGUAGE MODE) OR " +
-            "MATCH(g.title, g.description) AGAINST (:query IN NATURAL LANGUAGE MODE) OR " +
-            "MATCH(go.name, go.description) AGAINST (:query IN NATURAL LANGUAGE MODE)",
+            "MATCH(gs.title) AGAINST (:query IN NATURAL LANGUAGE MODE) OR " +
+            "MATCH(g.description) AGAINST (:query IN NATURAL LANGUAGE MODE) OR " +
+            "MATCH(go.name) AGAINST (:query IN NATURAL LANGUAGE MODE) OR " +
+            "MATCH(go.description) AGAINST (:query IN NATURAL LANGUAGE MODE)",
             nativeQuery = true)
     List<Game> searchNaturalLanguage(@Param("query") String query);
 }

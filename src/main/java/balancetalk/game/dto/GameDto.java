@@ -25,9 +25,6 @@ public class GameDto {
     @Schema(description = "밸런스 게임 생성 혹은 수정 요청")
     public static class CreateOrUpdateGame {
 
-        @Schema(description = "제목", example = "제목")
-        private String title;
-
         @Schema(description = "게임 추가 설명", example = "추가 설명")
         private String description;
 
@@ -35,7 +32,6 @@ public class GameDto {
 
         public Game toEntity() {
             return Game.builder()
-                    .title(title)
                     .description(description)
                     .gameOptions(gameOptions.stream().map(GameOptionDto::toEntity).toList())
                     .editedAt(LocalDateTime.now())
@@ -58,9 +54,6 @@ public class GameDto {
         @Schema(description = "밸런스 게임 id", example = "1")
         private Long id;
 
-        @Schema(description = "밸런스 게임 제목", example = "제목")
-        private String title;
-
         @Schema(description = "게임 추가 설명", example = "추가 설명")
         private String description;
 
@@ -72,7 +65,6 @@ public class GameDto {
         public static GameResponse fromEntity(Game game, boolean isBookmarked) {
             return GameResponse.builder()
                     .id(game.getId())
-                    .title(game.getTitle())
                     .description(game.getDescription())
                     .gameOptions(game.getGameOptions().stream().map(GameOptionDto::fromEntity).toList())
                     .myBookmark(isBookmarked)
@@ -112,7 +104,6 @@ public class GameDto {
         public static GameDetailResponse fromEntity(Game game, boolean myBookmark, VoteOption votedOption) {
             return GameDetailResponse.builder()
                     .id(game.getId())
-                    .title(game.getTitle())
                     .description(game.getDescription())
                     .gameOptions(game.getGameOptions().stream().map(GameOptionDto::fromEntity).toList())
                     .votesCountOfOptionA(game.getVoteCount(A))
@@ -153,7 +144,7 @@ public class GameDto {
         @Schema(description = "밸런스 게임 ID", example = "1")
         private long gameId;
 
-        @Schema(description = "밸런스 게임 제목", example = "제목")
+        @Schema(description = "밸런스게임 세트 제목", example = "제목")
         private String title;
 
         @Schema(description = "투표한 선택지", example = "A")
@@ -181,7 +172,7 @@ public class GameDto {
         public static GameMyPageResponse from(Game game) {
             return GameMyPageResponse.builder()
                     .gameId(game.getId())
-                    .title(game.getTitle())
+                    .title(game.getGameSet().getTitle())
                     .optionAImg(game.getGameOptions().get(0).getImgUrl())
                     .optionBImg(game.getGameOptions().get(1).getImgUrl())
                     .subTag(game.getGameSet().getSubTag())
@@ -194,7 +185,7 @@ public class GameDto {
             return GameMyPageResponse.builder()
                     .gameSetId(game.getGameSet().getId())
                     .gameId(game.getId())
-                    .title(game.getTitle())
+                    .title(game.getGameSet().getTitle())
                     .optionAImg(game.getGameOptions().get(0).getImgUrl())
                     .optionBImg(game.getGameOptions().get(1).getImgUrl())
                     .isBookmarked(bookmark.isActive())
@@ -207,7 +198,7 @@ public class GameDto {
         public static GameMyPageResponse from(Game game, GameVote vote) {
             return GameMyPageResponse.builder()
                     .gameId(game.getId())
-                    .title(game.getTitle())
+                    .title(game.getGameSet().getTitle())
                     .optionAImg(game.getGameOptions().get(0).getImgUrl())
                     .optionBImg(game.getGameOptions().get(1).getImgUrl())
                     .voteOption(vote.getVoteOption())

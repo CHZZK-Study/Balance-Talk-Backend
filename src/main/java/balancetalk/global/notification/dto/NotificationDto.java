@@ -52,7 +52,7 @@ public class NotificationDto {
             return Notification.builder()
                     .member(member)
                     .category(category)
-                    .resourceTitle(game.getTitle())
+                    // .resourceTitle(game.getTitle())
                     .message(message)
                     .readStatus(false)
                     .build();

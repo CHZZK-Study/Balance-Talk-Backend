@@ -54,6 +54,7 @@ public class GameService {
         Member member = apiMember.toMember(memberRepository);
         MainTag mainTag = gameTagRepository.findByName(request.getMainTag())
                 .orElseThrow(() -> new BalanceTalkException(ErrorCode.NOT_FOUND_GAME_TOPIC));
+        String title = request.getTitle();
 
         List<CreateOrUpdateGame> gameRequests = request.getGames();
 
@@ -61,7 +62,7 @@ public class GameService {
             throw new BalanceTalkException(ErrorCode.BALANCE_GAME_SIZE_TEN);
         }
 
-        GameSet gameSet = request.toEntity(mainTag, member);
+        GameSet gameSet = request.toEntity(title, mainTag, member);
         List<Game> games = gameSet.getGames();
         gameSet.addGames(games);
         gameSetRepository.save(gameSet);
