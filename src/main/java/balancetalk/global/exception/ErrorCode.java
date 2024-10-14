@@ -1,10 +1,10 @@
 package balancetalk.global.exception;
 
-import static org.springframework.http.HttpStatus.*;
-
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+
+import static org.springframework.http.HttpStatus.*;
 
 @Getter
 @RequiredArgsConstructor
@@ -104,7 +104,7 @@ public enum ErrorCode {
     // 500
     REDIS_CONNECTION_FAIL(INTERNAL_SERVER_ERROR, "Redis 연결에 실패했습니다."),
     FAIL_SEND_EMAIL(INTERNAL_SERVER_ERROR, "이메일 발송에 실패했습니다."),
-    NOT_UPLOADED_IMAGE_FOR_DB_ERROR(INTERNAL_SERVER_ERROR, "이미지 정보를 저장하던 중 문제가 생겨 업로드에 실패했습니다."),
+    FAIL_UPLOAD_FILE(INTERNAL_SERVER_ERROR, "파일 업로드에 실패했습니다."),
     SEND_NOTIFICATION_FAIL(INTERNAL_SERVER_ERROR, "알림 전송에 실패했습니다."),
     FAIL_PARSE_NOTIFICATION_HISTORY(INTERNAL_SERVER_ERROR, "알림 내역 파싱에 실패했습니다."),
     FAIL_SERIALIZE_NOTIFICATION_HISTORY(INTERNAL_SERVER_ERROR, "알림 내역 직렬화에 실패했습니다."),
