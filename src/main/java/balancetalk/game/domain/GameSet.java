@@ -95,7 +95,7 @@ public class GameSet extends BaseTimeEntity {
         });
     }
 
-    public long getVoteCount() {
+    public long getVotesCount() {
         return games.get(0).getVoteCount(VoteOption.A) + games.get(0).getVoteCount(VoteOption.B);
     }
 }
