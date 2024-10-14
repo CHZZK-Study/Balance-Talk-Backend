@@ -24,7 +24,7 @@ public class Notification extends BaseTimeEntity {
     @NotBlank
     private String category;
 
-    // FIXME : 임시 주석처리 @NotBlank
+    @NotBlank
     private String resourceTitle;
 
     @NotBlank

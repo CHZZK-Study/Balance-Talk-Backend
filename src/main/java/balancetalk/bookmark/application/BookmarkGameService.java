@@ -122,7 +122,7 @@ public class BookmarkGameService {
     }
 
     private void sendBookmarkGameNotification(GameSet gameSet) {
-        Member member = gameSet.getMember(); // FIXME: 위임 후 대기, 알림 기준이 밸런스게임인지, 밸런스게임 세트인지에 따라 적용
+        Member member = gameSet.getMember();
         long bookmarkedCount = gameSet.getBookmarks();
         String bookmarkCountKey = "BOOKMARK_" + bookmarkedCount;
         Map<String, Boolean> notificationHistory = gameSet.getNotificationHistory();

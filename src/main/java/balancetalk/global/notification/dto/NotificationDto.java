@@ -52,7 +52,7 @@ public class NotificationDto {
             return Notification.builder()
                     .member(member)
                     .category(category)
-                    // FIXME : 임시 주석처리. 밸런스게임 세트에는 제목이 없음... .resourceTitle(gameSet.ge())
+                    .resourceTitle(gameSet.getTitle())
                     .message(message)
                     .readStatus(false)
                     .build();
@@ -62,7 +62,7 @@ public class NotificationDto {
     @Data
     @Builder
     @AllArgsConstructor
-    @Schema(description = "톡픽 알림 응답 요청")
+    @Schema(description = "알림 응답 요청")
     public static class NotificationResponse {
 
         @Schema(description = "알림 id", example = "1")
