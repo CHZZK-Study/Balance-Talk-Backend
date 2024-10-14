@@ -78,7 +78,7 @@ public class JwtTokenProvider {
         String cookieName = "refreshToken";
         Cookie cookie = new Cookie(cookieName, refreshToken);
         cookie.setHttpOnly(true);
-        cookie.setSecure(true);
+        // cookie.setSecure(true);
         cookie.setPath("/");
         cookie.setMaxAge(60 * 60 * 24); // accessToken 유효
         return cookie;
@@ -88,7 +88,7 @@ public class JwtTokenProvider {
         String cookieName = "accessToken";
         Cookie cookie = new Cookie(cookieName, accessToken);
         cookie.setHttpOnly(true);
-        cookie.setSecure(true);
+        // cookie.setSecure(true);
         cookie.setPath("/");
         cookie.setMaxAge(60 * 60 * 24);
         return cookie;
