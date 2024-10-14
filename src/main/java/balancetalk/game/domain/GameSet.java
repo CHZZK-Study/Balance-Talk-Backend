@@ -1,10 +1,15 @@
 package balancetalk.game.domain;
 
+import static balancetalk.global.exception.ErrorCode.FAIL_PARSE_NOTIFICATION_HISTORY;
+import static balancetalk.global.exception.ErrorCode.FAIL_SERIALIZE_NOTIFICATION_HISTORY;
+
 import balancetalk.global.common.BaseTimeEntity;
 import balancetalk.global.exception.BalanceTalkException;
 import balancetalk.global.exception.ErrorCode;
 import balancetalk.member.domain.Member;
 import balancetalk.vote.domain.VoteOption;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -17,8 +22,11 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.validation.constraints.PositiveOrZero;
 import jakarta.validation.constraints.Size;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -32,6 +40,8 @@ import org.hibernate.annotations.ColumnDefault;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class GameSet extends BaseTimeEntity {
+
+    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -59,6 +69,9 @@ public class GameSet extends BaseTimeEntity {
     @PositiveOrZero
     @ColumnDefault("0")
     private Long bookmarks;
+
+    @Column(columnDefinition = "TEXT")
+    private String notificationHistory;
 
     public void increaseViews() {
         this.views++;
@@ -97,5 +110,25 @@ public class GameSet extends BaseTimeEntity {
 
     public long getVotesCount() {
         return games.get(0).getVoteCount(VoteOption.A) + games.get(0).getVoteCount(VoteOption.B);
+    }
+
+    public Map<String, Boolean> getNotificationHistory() {
+        if (notificationHistory == null) {
+            return new HashMap<>();
+        }
+        try {
+            return OBJECT_MAPPER.readValue(notificationHistory, new TypeReference<Map<String, Boolean>>() {});
+        } catch (IOException e) {
+            throw new BalanceTalkException(FAIL_PARSE_NOTIFICATION_HISTORY);
+        }
+    }
+
+    // 알림 이력 저장
+    public void setNotificationHistory(Map<String, Boolean> history) {
+        try {
+            this.notificationHistory = OBJECT_MAPPER.writeValueAsString(history);
+        } catch (IOException e) {
+            throw new BalanceTalkException(FAIL_SERIALIZE_NOTIFICATION_HISTORY);
+        }
     }
 }

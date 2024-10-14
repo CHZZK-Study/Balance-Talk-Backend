@@ -28,8 +28,6 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Game extends BaseTimeEntity {
 
-    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
@@ -50,9 +48,6 @@ public class Game extends BaseTimeEntity {
     private String description;
 
     private LocalDateTime editedAt;
-
-    @Column(columnDefinition = "TEXT")
-    private String notificationHistory;
 
     public long getVoteCount(VoteOption optionType) {
         GameOption option = gameOptions.stream()
@@ -76,26 +71,5 @@ public class Game extends BaseTimeEntity {
         this.editedAt = LocalDateTime.now();
         IntStream.range(0, this.gameOptions.size())
                 .forEach(i -> this.gameOptions.get(i).updateOption(newGame.getGameOptions().get(i)));
-    }
-
-    // 알림 이력 조회
-    public Map<String, Boolean> getNotificationHistory() {
-        if (notificationHistory == null) {
-            return new HashMap<>();
-        }
-        try {
-            return OBJECT_MAPPER.readValue(notificationHistory, new TypeReference<Map<String, Boolean>>() {});
-        } catch (IOException e) {
-            throw new BalanceTalkException(FAIL_PARSE_NOTIFICATION_HISTORY);
-        }
-    }
-
-    // 알림 이력 저장
-    public void setNotificationHistory(Map<String, Boolean> history) {
-        try {
-            this.notificationHistory = OBJECT_MAPPER.writeValueAsString(history);
-        } catch (IOException e) {
-            throw new BalanceTalkException(FAIL_SERIALIZE_NOTIFICATION_HISTORY);
-        }
     }
 }
