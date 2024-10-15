@@ -34,8 +34,8 @@ repositories {
 
 sonar {
 	properties {
-		property "sonar.projectKey", "CHZZK-Study_Balance-Talk-Backend"
-		property "sonar.organization", "picko-be"
+		property "sonar.projectKey", "PICKO-BE"
+		property "sonar.organization", "pick-o"
 		property "sonar.host.url", "https://sonarcloud.io"
 	}
 }
