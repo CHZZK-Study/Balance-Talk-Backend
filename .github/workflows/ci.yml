@@ -1,18 +1,16 @@
 name: build
 
 on:
+  push:
+    branches:
+      - main
   pull_request:
-    types: [ opened, synchronize ]
-    branches: [ "main" ]
+    types: [opened, synchronize, reopened]
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - name: Set Timezone
-      uses: szenius/set-timezone@v2.0
-      with:
-        timezoneLinux: "Asia/Seoul"
     - name: Checkout sources
       uses: actions/checkout@v4
       with:
@@ -24,14 +22,14 @@ jobs:
       with:
         java-version: '17'
         distribution: 'temurin'
-    - name: Cache SonarQube packages
-      uses: actions/cache@v1
+    - name: Cache SonarCloud packages
+      uses: actions/cache@v4
       with:
         path: ~/.sonar/cache
         key: ${{ runner.os }}-sonar
         restore-keys: ${{ runner.os }}-sonar
     - name: Cache Gradle packages
-      uses: actions/cache@v1
+      uses: actions/cache@v4
       with:
         path: ~/.gradle/caches
         key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle') }}
@@ -40,9 +38,4 @@ jobs:
       env:
         GIT_ACCESS_TOKEN: ${{ secrets.GIT_ACCESS_TOKEN }}
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
-      run: |
-        ./gradlew build sonar --info --stacktrace \
-          -Dsonar.pullrequest.key=${{ github.event.pull_request.number }} \
-          -Dsonar.pullrequest.branch=${{ github.HEAD_REF }} \
-          -Dsonar.pullrequest.base=main
+      run: ./gradlew build sonar --info
