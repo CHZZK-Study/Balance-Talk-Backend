@@ -1,4 +1,4 @@
-name: CI/CD
+name: deploy
 
 on:
   push:
@@ -16,6 +16,10 @@ jobs:
         with:
             token: ${{ secrets.GIT_ACCESS_TOKEN }}
             submodules: recursive
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@417ae3ccd767c252f5661f1ace9f835f9654f2b5 # v3.1.0
+      - name: Build with Gradle Wrapper
+        run: ./gradlew build
       - name: Make zip file
         run: zip -r ./$GITHUB_SHA.zip .
       - name: Configure AWS credentials
