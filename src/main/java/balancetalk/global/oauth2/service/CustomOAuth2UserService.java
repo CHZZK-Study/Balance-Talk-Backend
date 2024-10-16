@@ -24,9 +24,9 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
-//    private static final String OAUTH2_PASSWORD = "OAUTH2_PASSWORD";
-    @Value("${spring.security.user.password}")
+    @Value("${spring.security.security.oauth2-password}")
     private String oauth2Password;
+
     private final MemberRepository memberRepository;
 
     @Override
