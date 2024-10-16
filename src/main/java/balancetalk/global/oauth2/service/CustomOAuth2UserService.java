@@ -30,8 +30,6 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
 
         OAuth2User oAuth2User = super.loadUser(userRequest);
-        log.info("Loading user: {}", oAuth2User);
-
         String registrationId = userRequest.getClientRegistration().getRegistrationId();
 
         Oauth2Response oauth2Response = switch (registrationId) {
@@ -48,7 +46,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             String encodedPassword = passwordEncoder().encode(OAUTH2_PASSWORD);
             Oauth2Dto oauth2Dto = Oauth2Dto.builder()
                     .name(hideNickname(oauth2Response.getEmail()))
-                    .email(oauth2Response.getEmail())
+                    .email(oauth2Response.getProvider() + "_" + oauth2Response.getEmail())
                     .username(username)
                     .role(Role.USER)
                     .password(encodedPassword)
