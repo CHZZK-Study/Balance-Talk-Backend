@@ -12,7 +12,6 @@ import lombok.Data;
 public class Oauth2Dto {
 
     private String name;
-    private String username;
     private String email;
     private Role role;
     private String password;
@@ -20,7 +19,6 @@ public class Oauth2Dto {
     public Member toEntity() {
         return Member.builder()
                 .nickname(name)
-                .username(username)
                 .email(email)
                 .role(Role.USER)
                 .password(password)

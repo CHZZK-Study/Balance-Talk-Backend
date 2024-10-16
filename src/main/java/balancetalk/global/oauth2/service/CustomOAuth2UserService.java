@@ -12,6 +12,7 @@ import balancetalk.member.domain.MemberRepository;
 import balancetalk.member.domain.Role;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
@@ -23,7 +24,9 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
-    private static final String OAUTH2_PASSWORD = "OAUTH2_PASSWORD";
+//    private static final String OAUTH2_PASSWORD = "OAUTH2_PASSWORD";
+    @Value("${spring.security.user.password}")
+    private String oauth2Password;
     private final MemberRepository memberRepository;
 
     @Override
@@ -39,15 +42,14 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             default -> null;
         };
 
-        String username = oauth2Response.getProvider() + " " + oauth2Response.getProviderId();
-        Member findMember = memberRepository.findByUsername(username);
+        String email = oauth2Response.getEmail();
+        Member findMember = memberRepository.findByEmail(email).orElse(null);
 
         if (findMember == null) {
-            String encodedPassword = passwordEncoder().encode(OAUTH2_PASSWORD);
+            String encodedPassword = passwordEncoder().encode(oauth2Password);
             Oauth2Dto oauth2Dto = Oauth2Dto.builder()
                     .name(hideNickname(oauth2Response.getEmail()))
                     .email(oauth2Response.getProvider() + "_" + oauth2Response.getEmail())
-                    .username(username)
                     .role(Role.USER)
                     .password(encodedPassword)
                     .build();
@@ -61,7 +63,6 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             Oauth2Dto oauth2Dto = Oauth2Dto.builder()
                     .name(findMember.getNickname())
                     .email(findMember.getEmail())
-                    .username(findMember.getUsername())
                     .role(findMember.getRole())
                     .build();
             return new CustomOAuth2User(oauth2Dto);
