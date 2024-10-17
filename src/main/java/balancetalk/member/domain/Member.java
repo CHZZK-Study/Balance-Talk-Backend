@@ -46,8 +46,6 @@ public class Member extends BaseTimeEntity {
     @NotBlank
     private String password;
 
-    private String username; // 소셜 로그인으로 가입했을 때 식별하기 위해 설정
-
     @Enumerated(value = EnumType.STRING)
     private Role role;
 
