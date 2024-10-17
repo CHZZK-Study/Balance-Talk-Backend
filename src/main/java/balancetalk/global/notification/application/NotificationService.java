@@ -1,6 +1,6 @@
 package balancetalk.global.notification.application;
 
-import balancetalk.game.domain.Game;
+import balancetalk.game.domain.GameSet;
 import balancetalk.global.exception.BalanceTalkException;
 import balancetalk.global.notification.domain.Notification;
 import balancetalk.global.notification.domain.NotificationRepository;
@@ -69,9 +69,9 @@ public class NotificationService {
     }
 
     @Transactional
-    public void sendGameNotification(Member member, Game game,
+    public void sendGameNotification(Member member, GameSet gameSet,
                                          String category, String message) {
-        Notification notification = GameNotificationRequest.toEntity(member, game, category, message);
+        Notification notification = GameNotificationRequest.toEntity(member, gameSet, category, message);
 
         notificationRepository.save(notification);
       

@@ -1,6 +1,6 @@
 package balancetalk.global.notification.dto;
 
-import balancetalk.game.domain.Game;
+import balancetalk.game.domain.GameSet;
 import balancetalk.global.notification.domain.Notification;
 import balancetalk.member.domain.Member;
 import balancetalk.talkpick.domain.TalkPick;
@@ -48,11 +48,11 @@ public class NotificationDto {
         @Schema(description = "알림 상세 메시지", example = "작성한 댓글이 하트 10개를 달성했어요.")
         private String message;
 
-        public static Notification toEntity(Member member, Game game, String category, String message) {
+        public static Notification toEntity(Member member, GameSet gameSet, String category, String message) {
             return Notification.builder()
                     .member(member)
                     .category(category)
-                    // .resourceTitle(game.getTitle())
+                    .resourceTitle(gameSet.getTitle())
                     .message(message)
                     .readStatus(false)
                     .build();
@@ -62,7 +62,7 @@ public class NotificationDto {
     @Data
     @Builder
     @AllArgsConstructor
-    @Schema(description = "톡픽 알림 응답 요청")
+    @Schema(description = "알림 응답 요청")
     public static class NotificationResponse {
 
         @Schema(description = "알림 id", example = "1")
