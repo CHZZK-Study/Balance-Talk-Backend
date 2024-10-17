@@ -61,6 +61,9 @@ public class GameSetDto {
         @Schema(description = "밸런스 게임 세트 id", example = "1")
         private Long id;
 
+        @Schema(description = "밸런스 게임 제목", example = "제목")
+        private String title;
+
         @Schema(description = "메인 태그", example = "사랑")
         private String mainTag;
 
@@ -78,6 +81,7 @@ public class GameSetDto {
             ));
             return GameSetResponse.builder()
                     .id(gameSet.getId())
+                    .title(gameSet.getTitle())
                     .mainTag(gameSet.getMainTag().getName())
                     .subTag(gameSet.getSubTag())
                     .images(images)
