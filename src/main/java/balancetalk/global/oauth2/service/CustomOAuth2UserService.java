@@ -10,6 +10,7 @@ import balancetalk.global.oauth2.dto.Oauth2Response;
 import balancetalk.member.domain.Member;
 import balancetalk.member.domain.MemberRepository;
 import balancetalk.member.domain.Role;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -42,14 +43,15 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             default -> null;
         };
 
-        String email = oauth2Response.getEmail();
+        String email = getEmail(oauth2Response);
+        String provider = getProvider(oauth2Response);
         Member findMember = memberRepository.findByEmail(email).orElse(null);
 
         if (findMember == null) {
             String encodedPassword = passwordEncoder().encode(oauth2Password);
             Oauth2Dto oauth2Dto = Oauth2Dto.builder()
-                    .name(hideNickname(oauth2Response.getEmail()))
-                    .email(oauth2Response.getProvider() + "_" + oauth2Response.getEmail())
+                    .name(hideNickname(email))
+                    .email(provider + "_" + email)
                     .role(Role.USER)
                     .password(encodedPassword)
                     .build();
@@ -78,5 +80,17 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             sb.setCharAt(i, '*');
         }
         return sb.toString();
+    }
+
+    private String getEmail(Oauth2Response oauth2Response) {
+        return Optional.ofNullable(oauth2Response)
+                .map(Oauth2Response::getEmail)
+                .orElse("null");
+    }
+
+    private String getProvider(Oauth2Response oauth2Response) {
+        return Optional.ofNullable(oauth2Response)
+                .map(Oauth2Response::getProvider)
+                .orElse("null");
     }
 }
