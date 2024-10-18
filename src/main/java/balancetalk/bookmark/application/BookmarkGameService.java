@@ -125,7 +125,7 @@ public class BookmarkGameService {
         Member member = gameSet.getMember();
         long bookmarkedCount = gameSet.getBookmarks();
         String bookmarkCountKey = "BOOKMARK_" + bookmarkedCount;
-        Map<String, Boolean> notificationHistory = gameSet.getNotificationHistory();
+        Map<String, Boolean> notificationHistory = gameSet.getNotificationHistory().mappingNotification();
         String category = WRITTEN_GAME.getCategory();
 
         boolean isMilestoneBookmarked = (bookmarkedCount == FIRST_STANDARD_OF_NOTIFICATION.getCount() ||
@@ -148,7 +148,7 @@ public class BookmarkGameService {
                 notificationService.sendGameNotification(member, gameSet, category, GAME_BOOKMARK_1000.getMessage());
             }
             notificationHistory.put(bookmarkCountKey, true);
-            gameSet.setNotificationHistory(notificationHistory);
+            gameSet.getNotificationHistory().setNotificationHistory(notificationHistory);
         }
     }
 }

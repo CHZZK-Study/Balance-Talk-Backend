@@ -121,7 +121,7 @@ public class CommentLikeService {
         Member member = comment.getMember();
         TalkPick talkPick = comment.getTalkPick();
         String likeCountKey = "LIKE_" + likeCount;
-        Map<String, Boolean> notificationHistory = comment.getNotificationHistory();
+        Map<String, Boolean> notificationHistory = comment.getNotificationHistory().mappingNotification();
         String category = OTHERS_TALK_PICK.getCategory();
 
         if (member.equals(talkPick.getMember())) {
@@ -148,7 +148,7 @@ public class CommentLikeService {
                 notificationService.sendTalkPickNotification(member, talkPick, category, COMMENT_LIKE_1000.getMessage());
             }
             notificationHistory.put(likeCountKey, true);
-            comment.setNotificationHistory(notificationHistory);
+            comment.getNotificationHistory().setNotificationHistory(notificationHistory);
         }
     }
 }

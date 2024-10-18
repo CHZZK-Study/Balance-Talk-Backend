@@ -98,7 +98,7 @@ public class VoteGameService {
         Member member = gameSet.getMember();
         long votedCount = gameSet.getVotesCount();
         String voteCountKey = "VOTE_" + votedCount;
-        Map<String, Boolean> notificationHistory = gameSet.getNotificationHistory();
+        Map<String, Boolean> notificationHistory = gameSet.getNotificationHistory().mappingNotification();
         String category = WRITTEN_GAME.getCategory();
 
         boolean isMilestoneVoted = (votedCount == FIRST_STANDARD_OF_NOTIFICATION.getCount() ||
@@ -121,7 +121,7 @@ public class VoteGameService {
                 notificationService.sendGameNotification(member, gameSet, category, GAME_VOTE_1000.getMessage());
             }
             notificationHistory.put(voteCountKey, true);
-            gameSet.setNotificationHistory(notificationHistory);
+            gameSet.getNotificationHistory().setNotificationHistory(notificationHistory);
         }
     }
 }

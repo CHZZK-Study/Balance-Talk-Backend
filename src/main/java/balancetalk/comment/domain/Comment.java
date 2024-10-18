@@ -1,12 +1,10 @@
 package balancetalk.comment.domain;
 
 import balancetalk.global.common.BaseTimeEntity;
-import balancetalk.global.exception.BalanceTalkException;
+import balancetalk.global.notification.domain.NotificationHistory;
 import balancetalk.member.domain.Member;
 import balancetalk.talkpick.domain.TalkPick;
 import balancetalk.talkpick.domain.ViewStatus;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -14,15 +12,9 @@ import jakarta.validation.constraints.Size;
 import lombok.*;
 import org.springframework.lang.Nullable;
 
-import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-
-import static balancetalk.global.exception.ErrorCode.FAIL_PARSE_NOTIFICATION_HISTORY;
-import static balancetalk.global.exception.ErrorCode.FAIL_SERIALIZE_NOTIFICATION_HISTORY;
 
 @Entity
 @Builder
@@ -32,8 +24,6 @@ import static balancetalk.global.exception.ErrorCode.FAIL_SERIALIZE_NOTIFICATION
 public class Comment extends BaseTimeEntity {
 
     private static final int MIN_COUNT_FOR_BLIND = 5;
-
-    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -70,12 +60,12 @@ public class Comment extends BaseTimeEntity {
     @Transient
     private Boolean isNotifiedForFirstReply = false;
 
-    @Column(columnDefinition = "TEXT")
-    private String notificationHistory;
-
     private LocalDateTime editedAt;
 
     private boolean isEdited;
+
+    @Embedded
+    private NotificationHistory notificationHistory;
 
     public void updateContent(String content) {
         this.content = content;
@@ -102,26 +92,5 @@ public class Comment extends BaseTimeEntity {
 
     public void setIsNotifiedForFirstReplyTrue() {
         this.isNotifiedForFirstReply = true;
-    }
-
-    // 알림 이력 조회
-    public Map<String, Boolean> getNotificationHistory() {
-        if (notificationHistory == null) {
-            return new HashMap<>();
-        }
-        try {
-            return OBJECT_MAPPER.readValue(notificationHistory, new TypeReference<Map<String, Boolean>>() {});
-        } catch (IOException e) {
-            throw new BalanceTalkException(FAIL_PARSE_NOTIFICATION_HISTORY);
-        }
-    }
-
-    // 알림 이력 저장
-    public void setNotificationHistory(Map<String, Boolean> history) {
-        try {
-            this.notificationHistory = OBJECT_MAPPER.writeValueAsString(history);
-        } catch (IOException e) {
-            throw new BalanceTalkException(FAIL_SERIALIZE_NOTIFICATION_HISTORY);
-        }
     }
 }

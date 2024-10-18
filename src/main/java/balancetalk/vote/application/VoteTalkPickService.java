@@ -100,7 +100,7 @@ public class VoteTalkPickService {
         Member member = talkPick.getMember();
         long votedCount = talkPick.getVotes().size();
         String voteCountKey = "VOTE_" + votedCount;
-        Map<String, Boolean> notificationHistory = talkPick.getNotificationHistory();
+        Map<String, Boolean> notificationHistory = talkPick.getNotificationHistory().mappingNotification();
         String category = WRITTEN_TALK_PICK.getCategory();
 
         boolean isMilestoneVoted = (votedCount == FIRST_STANDARD_OF_NOTIFICATION.getCount() ||
@@ -123,7 +123,7 @@ public class VoteTalkPickService {
                 notificationService.sendTalkPickNotification(member, talkPick, category, TALK_PICK_VOTE_1000.getMessage());
             }
             notificationHistory.put(voteCountKey, true);
-            talkPick.setNotificationHistory(notificationHistory);
+            talkPick.getNotificationHistory().setNotificationHistory(notificationHistory);
         }
     }
 
@@ -144,7 +144,7 @@ public class VoteTalkPickService {
     }
 
     private void notifyMembersBasedOnRatio(TalkPick talkPick, VoteOption voteOption, double ratio, long totalVotesCount) {
-        Map<String, Boolean> notificationHistory = talkPick.getNotificationHistory();
+        Map<String, Boolean> notificationHistory = talkPick.getNotificationHistory().mappingNotification();
         long countKey = 0;
         String voteRatioCountKey = "";
         String category = MY_PICK.getCategory();
@@ -209,7 +209,7 @@ public class VoteTalkPickService {
             notificationHistory.put(voteRatioCountKey + voteOption.name(), true);
         }
 
-        talkPick.setNotificationHistory(notificationHistory);
+        talkPick.getNotificationHistory().setNotificationHistory(notificationHistory);
     }
 
     private List<Member> getMembersWhoVotedForOption(TalkPick talkPick, VoteOption option) {
