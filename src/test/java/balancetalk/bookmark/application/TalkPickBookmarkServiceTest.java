@@ -4,6 +4,7 @@ import balancetalk.bookmark.domain.GameBookmarkRepository;
 import balancetalk.bookmark.domain.TalkPickBookmark;
 import balancetalk.bookmark.domain.BookmarkGenerator;
 import balancetalk.bookmark.domain.TalkPickBookmarkRepository;
+import balancetalk.global.notification.domain.NotificationHistory;
 import balancetalk.member.domain.Member;
 import balancetalk.member.domain.MemberRepository;
 import balancetalk.member.dto.ApiMember;
@@ -56,6 +57,9 @@ class TalkPickBookmarkServiceTest {
         TalkPickBookmark talkPickBookmark = mock(TalkPickBookmark.class);
         TalkPick talkPick = mock(TalkPick.class);
 
+        NotificationHistory notificationHistory = new NotificationHistory();
+        when(talkPick.getNotificationHistory()).thenReturn(notificationHistory);
+
         when(talkPickReader.readById(any())).thenReturn(talkPick);
         when(memberRepository.findById(any())).thenReturn(Optional.ofNullable(member));
         when(bookmarkGenerator.generate(talkPick, member)).thenReturn(talkPickBookmark);
@@ -71,6 +75,9 @@ class TalkPickBookmarkServiceTest {
     void createBookmark_Success_ThenActivateBookmark() {
         // given
         TalkPick talkPick = mock(TalkPick.class);
+
+        NotificationHistory notificationHistory = new NotificationHistory();
+        when(talkPick.getNotificationHistory()).thenReturn(notificationHistory);
 
         TalkPickBookmark talkPickBookmark = TalkPickBookmark.builder()
                 .talkPick(talkPick)
