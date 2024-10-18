@@ -8,12 +8,11 @@ import static balancetalk.global.notification.domain.NotificationStandard.FOURTH
 import static balancetalk.global.notification.domain.NotificationStandard.SECOND_STANDARD_OF_NOTIFICATION;
 import static balancetalk.global.notification.domain.NotificationStandard.THIRD_STANDARD_OF_NOTIFICATION;
 import static balancetalk.global.notification.domain.NotificationTitleCategory.WRITTEN_GAME;
-import static balancetalk.vote.domain.VoteOption.A;
-import static balancetalk.vote.domain.VoteOption.B;
 
 import balancetalk.game.domain.Game;
 import balancetalk.game.domain.GameOption;
 import balancetalk.game.domain.GameReader;
+import balancetalk.game.domain.GameSet;
 import balancetalk.global.exception.BalanceTalkException;
 import balancetalk.global.exception.ErrorCode;
 import balancetalk.global.notification.application.NotificationService;
@@ -55,7 +54,7 @@ public class VoteGameService {
         }
         voteRepository.save(request.toEntity(member, gameOption));
         gameOption.increaseVotesCount();
-        sendVoteGameNotification(game);
+        sendVoteGameNotification(game.getGameSet());
     }
 
     public void updateVote(Long gameId, VoteRequest request, ApiMember apiMember) {
@@ -95,11 +94,11 @@ public class VoteGameService {
         voteOnGame.get().getGameOption().decreaseVotesCount();
     }
 
-    private void sendVoteGameNotification(Game game) {
-        Member member = null; // TODO: GameSet으로 변경됨에 따라 수정 필요
-        long votedCount = game.getVoteCount(A) + game.getVoteCount(B);
+    private void sendVoteGameNotification(GameSet gameSet) {
+        Member member = gameSet.getMember();
+        long votedCount = gameSet.getVotesCount();
         String voteCountKey = "VOTE_" + votedCount;
-        Map<String, Boolean> notificationHistory = game.getNotificationHistory();
+        Map<String, Boolean> notificationHistory = gameSet.getNotificationHistory().mappingNotification();
         String category = WRITTEN_GAME.getCategory();
 
         boolean isMilestoneVoted = (votedCount == FIRST_STANDARD_OF_NOTIFICATION.getCount() ||
@@ -112,17 +111,17 @@ public class VoteGameService {
 
         // 투표 개수가 10, 50, 100*n개, 1000*n개 일 때 알림
         if (isMilestoneVoted && !notificationHistory.getOrDefault(voteCountKey, false)) {
-            notificationService.sendGameNotification(member, game, category, GAME_VOTE.format(votedCount));
+            notificationService.sendGameNotification(member, gameSet, category, GAME_VOTE.format(votedCount));
             // 투표 개수가 100개일 때 배찌 획득 알림
             if (votedCount == THIRD_STANDARD_OF_NOTIFICATION.getCount()) {
-                notificationService.sendGameNotification(member, game, category, GAME_VOTE_100.getMessage());
+                notificationService.sendGameNotification(member, gameSet, category, GAME_VOTE_100.getMessage());
             }
             // 투표 개수가 1000개일 때 배찌 획득 알림
             else if (votedCount == FOURTH_STANDARD_OF_NOTIFICATION.getCount()) {
-                notificationService.sendGameNotification(member, game, category, GAME_VOTE_1000.getMessage());
+                notificationService.sendGameNotification(member, gameSet, category, GAME_VOTE_1000.getMessage());
             }
             notificationHistory.put(voteCountKey, true);
-            game.setNotificationHistory(notificationHistory);
+            gameSet.getNotificationHistory().setNotificationHistory(notificationHistory);
         }
     }
 }

@@ -302,7 +302,7 @@ public class CommentService {
         TalkPick talkPick = parentComment.getTalkPick();
         String replyCountKey = "REPLY_" + replyCount;
         String firstReplyKey = "FIRST_REPLY";
-        Map<String, Boolean> notificationHistory = parentComment.getNotificationHistory();
+        Map<String, Boolean> notificationHistory = parentComment.getNotificationHistory().mappingNotification();
         String category = OTHERS_TALK_PICK.getCategory();
 
         // 모든 답글 중 원래 댓글 작성자가 아닌 다른 사용자가 처음으로 답글을 달았는지 확인
@@ -327,14 +327,14 @@ public class CommentService {
                     COMMENT_REPLY_100.getMessage());
         }
         notificationHistory.put(firstReplyKey, true);
-        parentComment.setNotificationHistory(notificationHistory);
+        parentComment.getNotificationHistory().setNotificationHistory(notificationHistory);
     }
 
     private void sendCommentNotification(TalkPick talkPick) {
         long commentCount = talkPick.getComments().size();
         Member member = talkPick.getMember();
         String commentCountKey = "COMMENT_" + commentCount;
-        Map<String, Boolean> notificationHistory = talkPick.getNotificationHistory();
+        Map<String, Boolean> notificationHistory = talkPick.getNotificationHistory().mappingNotification();
         String category = WRITTEN_TALK_PICK.getCategory();
 
         boolean isMilestoneCommented = (commentCount == FIRST_STANDARD_OF_NOTIFICATION.getCount() ||
@@ -357,7 +357,7 @@ public class CommentService {
                 notificationService.sendTalkPickNotification(member, talkPick, category, TALK_PICK_COMMENT_1000.getMessage());
             }
             notificationHistory.put(commentCountKey, true);
-            talkPick.setNotificationHistory(notificationHistory);
+            talkPick.getNotificationHistory().setNotificationHistory(notificationHistory);
         }
     }
 }

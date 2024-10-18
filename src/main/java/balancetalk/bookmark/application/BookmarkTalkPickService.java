@@ -78,7 +78,7 @@ public class BookmarkTalkPickService {
         Member member = talkPick.getMember();
         long bookmarkedCount = talkPick.getBookmarks();
         String bookmarkCountKey = "BOOKMARK_" + bookmarkedCount;
-        Map<String, Boolean> notificationHistory = talkPick.getNotificationHistory();
+        Map<String, Boolean> notificationHistory = talkPick.getNotificationHistory().mappingNotification();
         String category = WRITTEN_TALK_PICK.getCategory();
 
         boolean isMilestoneBookmarked = (bookmarkedCount == FIRST_STANDARD_OF_NOTIFICATION.getCount() ||
@@ -101,7 +101,7 @@ public class BookmarkTalkPickService {
                 notificationService.sendTalkPickNotification(member, talkPick, category, TALK_PICK_BOOKMARK_1000.getMessage());
             }
             notificationHistory.put(bookmarkCountKey, true);
-            talkPick.setNotificationHistory(notificationHistory);
+            talkPick.getNotificationHistory().setNotificationHistory(notificationHistory);
         }
     }
 }
