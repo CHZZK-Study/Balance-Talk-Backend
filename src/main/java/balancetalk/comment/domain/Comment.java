@@ -65,7 +65,7 @@ public class Comment extends BaseTimeEntity {
     private boolean isEdited;
 
     @Embedded
-    private NotificationHistory notificationHistory;
+    private NotificationHistory notificationHistory = new NotificationHistory();
 
     public void updateContent(String content) {
         this.content = content;
@@ -92,5 +92,12 @@ public class Comment extends BaseTimeEntity {
 
     public void setIsNotifiedForFirstReplyTrue() {
         this.isNotifiedForFirstReply = true;
+    }
+
+    public NotificationHistory getNotificationHistory() {
+        if (this.notificationHistory == null) {
+            this.notificationHistory = new NotificationHistory();
+        }
+        return this.notificationHistory;
     }
 }

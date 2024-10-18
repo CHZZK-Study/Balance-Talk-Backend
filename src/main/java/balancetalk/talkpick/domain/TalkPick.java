@@ -75,7 +75,7 @@ public class TalkPick extends BaseTimeEntity {
     private List<Comment> comments = new ArrayList<>();
 
     @Embedded
-    private NotificationHistory notificationHistory;
+    private NotificationHistory notificationHistory = new NotificationHistory();
 
     public void increaseViews() {
         this.views++;
@@ -118,5 +118,12 @@ public class TalkPick extends BaseTimeEntity {
 
     public void updateSummary(Summary newSummary) {
         this.summary = newSummary;
+    }
+
+    public NotificationHistory getNotificationHistory() {
+        if (this.notificationHistory == null) {
+            this.notificationHistory = new NotificationHistory();
+        }
+        return this.notificationHistory;
     }
 }

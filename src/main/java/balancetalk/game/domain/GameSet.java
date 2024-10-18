@@ -68,7 +68,7 @@ public class GameSet extends BaseTimeEntity {
     private Long bookmarks;
 
     @Embedded
-    private NotificationHistory notificationHistory;
+    private NotificationHistory notificationHistory = new NotificationHistory();
 
     public void increaseViews() {
         this.views++;
@@ -107,5 +107,12 @@ public class GameSet extends BaseTimeEntity {
 
     public long getVotesCount() {
         return games.get(0).getVoteCount(VoteOption.A) + games.get(0).getVoteCount(VoteOption.B);
+    }
+
+    public NotificationHistory getNotificationHistory() {
+        if (this.notificationHistory == null) {
+            this.notificationHistory = new NotificationHistory();
+        }
+        return this.notificationHistory;
     }
 }
