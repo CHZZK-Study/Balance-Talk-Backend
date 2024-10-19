@@ -97,15 +97,6 @@ public class CommentService {
             throw new BalanceTalkException(NOT_FOUND_VOTE);
         }
 
-        // option이 VoteOption에 존재하는 값인지 확인 및 예외 처리
-        VoteOption option = member.getVoteOnTalkPick(talkPick)
-                .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_VOTE))
-                .getVoteOption();
-
-        if (option == null || !EnumSet.allOf(VoteOption.class).contains(option)) {
-            throw new BalanceTalkException(NOT_FOUND_VOTE_OPTION);
-        }
-
         Comment commentReply = createCommentRequest.toEntity(member, talkPick, parentComment);
         commentRepository.save(commentReply);
 
