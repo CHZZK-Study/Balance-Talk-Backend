@@ -179,7 +179,6 @@ public class GameDto {
                     .build();
         }
 
-        
         public static GameMyPageResponse from(Game game, GameBookmark bookmark) {
             return GameMyPageResponse.builder()
                     .gameSetId(game.getGameSet().getId())
