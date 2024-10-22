@@ -45,6 +45,7 @@ public class VoteGameService {
 
         if (guestOrApiMember.isGuest()) {
             voteRepository.save(request.toEntity(null, gameOption));
+            gameOption.increaseVotesCount();
             return;
         }
 
@@ -68,15 +69,27 @@ public class VoteGameService {
         }
 
         GameVote vote = voteOnGame.get();
+        String previousVote = vote.getVoteOption().name();
+
+        if(previousVote.equals(request.getVoteOption())) { // 수정하려는 투표가 이전과 동일할 때 예외처리
+            throw new BalanceTalkException(ErrorCode.SAME_VOTE);
+        }
+
         GameOption gameOption = getGameOption(game, request);
 
-        vote.updateVoteOption(request.getVoteOption());
+        vote.getGameOption().decreaseVotesCount(); // 이전 선택지의 투표수는 감소
+        gameOption.increaseVotesCount(); // 바꾼 선택지의 투표수는 증가
+
         vote.updateGameOption(gameOption);
     }
 
     private GameOption getGameOption(Game game, VoteRequest request) {
+        String requestOption = request.getVoteOption();
         return game.getGameOptions().stream()
-                .filter(option -> option.getOptionType().equals(request.getVoteOption()))
+                .filter(option -> {
+                    String optionType = option.getOptionType().name();
+                    return optionType.equals(requestOption);
+                })
                 .findFirst()
                 .orElseThrow(() -> new BalanceTalkException(ErrorCode.NOT_FOUND_VOTE_OPTION));
     }
@@ -91,7 +104,9 @@ public class VoteGameService {
             throw new BalanceTalkException(ErrorCode.NOT_FOUND_VOTE);
         }
         voteRepository.delete(voteOnGame.get());
-        voteOnGame.get().getGameOption().decreaseVotesCount();
+
+        GameVote vote = voteOnGame.get();
+        vote.getGameOption().decreaseVotesCount(); // 해당 선택지의 투표수 감소
     }
 
     private void sendVoteGameNotification(GameSet gameSet) {
