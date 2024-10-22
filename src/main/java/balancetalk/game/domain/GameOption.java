@@ -79,6 +79,8 @@ public class GameOption {
     }
 
     public void decreaseVotesCount() {
-        this.votesCount--;
+        if (this.votesCount > 0) {
+            this.votesCount--;
+        }
     }
 }
