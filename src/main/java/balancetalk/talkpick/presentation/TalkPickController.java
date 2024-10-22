@@ -7,11 +7,19 @@ import balancetalk.talkpick.application.TalkPickService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
@@ -28,7 +36,7 @@ public class TalkPickController {
 
     @Operation(summary = "톡픽 생성", description = "톡픽을 생성합니다.")
     @PostMapping
-    public Long createTalkPick(@RequestBody final CreateOrUpdateTalkPickRequest request,
+    public Long createTalkPick(@RequestBody @Valid final CreateOrUpdateTalkPickRequest request,
                                @Parameter(hidden = true) @AuthPrincipal final ApiMember apiMember) {
         return talkPickService.createTalkPick(request, apiMember);
     }
@@ -51,7 +59,7 @@ public class TalkPickController {
     @Operation(summary = "톡픽 수정", description = "톡픽을 수정합니다.")
     @PutMapping("/{talkPickId}")
     public void updateTalkPick(@PathVariable final Long talkPickId,
-                               @RequestBody final CreateOrUpdateTalkPickRequest request,
+                               @RequestBody @Valid final CreateOrUpdateTalkPickRequest request,
                                @Parameter(hidden = true) @AuthPrincipal final ApiMember apiMember) {
         talkPickService.updateTalkPick(talkPickId, request, apiMember);
     }
