@@ -71,7 +71,7 @@ public class VoteGameService {
         GameVote vote = voteOnGame.get();
         String previousVote = vote.getVoteOption().name();
 
-        if(previousVote.equals(request.getVoteOption())) { // 수정하려는 투표가 이전과 동일할 때 예외처리
+        if (previousVote.equals(request.getVoteOption())) { // 수정하려는 투표가 이전과 동일할 때 예외처리
             throw new BalanceTalkException(ErrorCode.SAME_VOTE);
         }
 

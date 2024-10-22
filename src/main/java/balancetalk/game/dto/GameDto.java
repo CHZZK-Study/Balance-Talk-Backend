@@ -43,7 +43,6 @@ public class GameDto {
                     .map(GameOptionDto::getStoredName)
                     .toList();
         }
-
     }
 
     @Data
