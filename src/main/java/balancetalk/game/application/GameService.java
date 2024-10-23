@@ -75,31 +75,25 @@ public class GameService {
         gameSet.increaseViews();
 
         if (guestOrApiMember.isGuest()) { // 비회원인 경우
-            return GameSetDetailResponse.fromEntity(gameSet, new ConcurrentHashMap<>(), new ConcurrentHashMap<>(), false); // 게스트인 경우 북마크, 선택 옵션 없음
+            return GameSetDetailResponse.fromEntity(gameSet, null, new ConcurrentHashMap<>(), false); // 게스트인 경우 북마크, 선택 옵션 없음
         }
 
         Member member = guestOrApiMember.toMember(memberRepository);
         List<Game> games = gameSet.getGames();
 
-        Map<Long, Boolean> bookmarkMap = new ConcurrentHashMap<>();
+        GameBookmark gameBookmark = member.getGameBookmarkOf(gameSet)
+                .orElse(null);
+
         Map<Long, VoteOption> voteOptionMap = new ConcurrentHashMap<>();
 
-        Optional<GameBookmark> optionalGameBookmark = gameBookmarkRepository.findByMemberAndGameSetId(member, gameSetId);
-        boolean isEndGameSet = optionalGameBookmark.map(GameBookmark::getIsEndGameSet).orElse(false);
+        boolean isEndGameSet = (gameBookmark != null) && gameBookmark.getIsEndGameSet();
 
         for (Game game : games) {
-            boolean hasBookmarked = optionalGameBookmark
-                    .map(gameBookmark -> gameBookmark.getGameId() != null && gameBookmark.getGameId().equals(game.getId()))
-                            .orElse(false);
-
-            bookmarkMap.put(game.getId(), hasBookmarked);
             Optional<GameVote> myVote = member.getVoteOnGameOption(member, game);
 
-            if (myVote.isPresent()) {
-                voteOptionMap.put(game.getId(), myVote.get().getVoteOption());
-            }
+            myVote.ifPresent(gameVote -> voteOptionMap.put(game.getId(), gameVote.getVoteOption()));
         }
-        return GameSetDetailResponse.fromEntity(gameSet, bookmarkMap, voteOptionMap, isEndGameSet);
+        return GameSetDetailResponse.fromEntity(gameSet, gameBookmark, voteOptionMap, isEndGameSet);
     }
 
     public void updateBalanceGame(Long gameSetId, Long gameId, CreateOrUpdateGame request, ApiMember apiMember) {
