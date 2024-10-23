@@ -100,6 +100,7 @@ public enum ErrorCode {
     SAME_PASSWORD(CONFLICT, "변경하려는 비밀번호가 현재와 동일합니다. 다른 비밀번호를 입력해주세요."),
     ALREADY_REPORTED_POST(CONFLICT, "이미 신고한 게시글 입니다."),
     ALREADY_REPORTED_COMMENT(CONFLICT, "이미 신고한 댓글 입니다."),
+    SAME_VOTE(CONFLICT, "변경하려는 선택지가 이전과 동일합니다."),
 
     // 500
     REDIS_CONNECTION_FAIL(INTERNAL_SERVER_ERROR, "Redis 연결에 실패했습니다."),

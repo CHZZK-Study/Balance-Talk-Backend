@@ -81,9 +81,6 @@ public class GameDto {
         @Schema(description = "밸런스 게임 id", example = "1")
         private Long id;
 
-        @Schema(description = "밸런스 게임 제목", example = "제목")
-        private String title;
-
         @Schema(description = "게임 추가 설명", example = "추가 설명")
         private String description;
 

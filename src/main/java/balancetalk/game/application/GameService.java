@@ -1,7 +1,5 @@
 package balancetalk.game.application;
 
-import static balancetalk.global.exception.ErrorCode.NOT_FOUND_BOOKMARK;
-
 import balancetalk.bookmark.domain.GameBookmark;
 import balancetalk.file.domain.FileType;
 import balancetalk.file.domain.repository.FileRepository;
@@ -131,7 +129,8 @@ public class GameService {
 
     public void createGameMainTag(final CreateGameMainTagRequest request, final ApiMember apiMember) {
         apiMember.toMember(memberRepository);
-        if (gameTagRepository.existsByName(request.getName())) {
+        boolean hasGameTag = gameTagRepository.existsByName(request.getName());
+        if (hasGameTag) {
             throw new BalanceTalkException(ErrorCode.ALREADY_REGISTERED_TAG);
         }
         MainTag mainTag = request.toEntity();
