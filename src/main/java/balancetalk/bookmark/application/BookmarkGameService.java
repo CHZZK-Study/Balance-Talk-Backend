@@ -61,6 +61,7 @@ public class BookmarkGameService {
         member.getGameBookmarkOf(gameSet)
                 .ifPresentOrElse(
                         bookmark -> {
+                            increaseBookmarkCountForActivation(bookmark, gameSet);
                             bookmark.activate();
                             bookmark.setIsEndGameSet(false); // 밸런스게임 세트 종료 표시 해제
                             bookmark.updateGameId(gameId); //gameId도 업데이트
@@ -70,6 +71,12 @@ public class BookmarkGameService {
                             gameSet.increaseBookmarks();
                             sendBookmarkGameNotification(gameSet);
                         });
+    }
+
+    private void increaseBookmarkCountForActivation(GameBookmark bookmark, GameSet gameSet) {
+        if (!bookmark.isActive()) {
+            gameSet.increaseBookmarks();
+        }
     }
 
     public void createEndGameSetBookmark(final Long gameSetId, final ApiMember apiMember) {
@@ -87,6 +94,7 @@ public class BookmarkGameService {
         member.getGameBookmarkOf(gameSet)
                 .ifPresentOrElse(
                         bookmark -> {
+                            increaseBookmarkCountForActivation(bookmark, gameSet);
                             bookmark.activate();
                             bookmark.setIsEndGameSet(true); // 밸런스게임 세트 종료 표시
                             voteRepository.deleteAllByMemberIdAndGameOption_Game_GameSet(member.getId(), gameSet);
@@ -117,6 +125,7 @@ public class BookmarkGameService {
             throw new BalanceTalkException(ErrorCode.ALREADY_DELETED_BOOKMARK);
         }
         bookmark.deactivate();
+        bookmark.setIsEndGameSet(false);
         gameSet.decreaseBookmarks();
         sendBookmarkGameNotification(gameSet);
     }
