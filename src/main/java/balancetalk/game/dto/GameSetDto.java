@@ -134,7 +134,8 @@ public class GameSetDto {
                     .isEndBookmarked(gameBookmark != null && gameBookmark.isActive())
                     .gameDetailResponses(gameSet.getGames().stream()
                             .map(game -> GameDetailResponse.fromEntity(game,
-                                    gameBookmark != null && gameBookmark.getGameId().equals(game.getId()),
+                                    gameBookmark != null && gameBookmark.getGameId().equals(game.getId())
+                                    && gameBookmark.isActive(),
                                     voteOptionMap.get(game.getId())))
                             .toList())
                     .build();
