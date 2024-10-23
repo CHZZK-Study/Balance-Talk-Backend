@@ -1,8 +1,12 @@
 package balancetalk.game.application;
 
+import static balancetalk.global.exception.ErrorCode.BALANCE_GAME_SEARCH_BLANK;
+import static balancetalk.global.exception.ErrorCode.BALANCE_GAME_SEARCH_LENGTH;
+
 import balancetalk.game.domain.Game;
 import balancetalk.game.domain.repository.GameRepository;
 import balancetalk.game.dto.SearchGameResponse;
+import balancetalk.global.exception.BalanceTalkException;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -23,6 +27,15 @@ public class SearchGameService {
 
     public Page<SearchGameResponse> search(String query, Pageable pageable, String sort) {
         List<Game> resultList = new CopyOnWriteArrayList<>();
+
+        // 검색어가 공백이거나 2자 미만일 경우 예외 처리
+        if (query.isBlank()) {
+            throw new BalanceTalkException(BALANCE_GAME_SEARCH_BLANK);
+        }
+
+        if (query.replaceAll(" ", "").length() < 2) {
+            throw new BalanceTalkException(BALANCE_GAME_SEARCH_LENGTH);
+        }
 
         // 1. 완전 일치 검색
         searchExactMatch(query, resultList, sort);
