@@ -1,7 +1,5 @@
 package balancetalk.game.application;
 
-import static balancetalk.global.exception.ErrorCode.NOT_FOUND_BOOKMARK;
-
 import balancetalk.bookmark.domain.GameBookmark;
 import balancetalk.file.domain.FileType;
 import balancetalk.file.domain.repository.FileRepository;
@@ -48,7 +46,6 @@ public class GameService {
     private final MemberRepository memberRepository;
     private final GameTagRepository gameTagRepository;
     private final FileRepository fileRepository;
-    private final GameBookmarkRepository gameBookmarkRepository;
 
     public void createBalanceGameSet(final CreateGameSetRequest request, final ApiMember apiMember) {
         Member member = apiMember.toMember(memberRepository);
@@ -75,7 +72,8 @@ public class GameService {
         gameSet.increaseViews();
 
         if (guestOrApiMember.isGuest()) { // 비회원인 경우
-            return GameSetDetailResponse.fromEntity(gameSet, null, new ConcurrentHashMap<>(), false); // 게스트인 경우 북마크, 선택 옵션 없음
+            // 게스트인 경우 북마크, 선택 옵션 없음
+            return GameSetDetailResponse.fromEntity(gameSet, null, new ConcurrentHashMap<>(), false);
         }
 
         Member member = guestOrApiMember.toMember(memberRepository);
