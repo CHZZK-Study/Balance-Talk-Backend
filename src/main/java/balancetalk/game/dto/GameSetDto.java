@@ -1,5 +1,6 @@
 package balancetalk.game.dto;
 
+import balancetalk.bookmark.domain.GameBookmark;
 import balancetalk.game.domain.Game;
 import balancetalk.game.domain.GameSet;
 import balancetalk.game.domain.MainTag;
@@ -116,8 +117,12 @@ public class GameSetDto {
         @JsonProperty("isEndGameSet")
         private boolean isEndGameSet;
 
-        public static GameSetDetailResponse fromEntity(GameSet gameSet, Map<Long, Boolean> bookmarkMap,
-                                                       Map<Long, VoteOption> voteOptionMap, boolean isEndGameSet) {
+        @Schema(description = "밸런스게임 세트 엔딩 페이지에 사용되는 북마크 filled 여부", example = "false")
+        @JsonProperty("isEndBookmarked")
+        private boolean isEndBookmarked;
+
+        public static GameSetDetailResponse fromEntity(GameSet gameSet, GameBookmark gameBookmark, boolean isEndGameSet,
+                                                       List<GameDetailResponse> gameDetailResponses) {
 
             return GameSetDetailResponse.builder()
                     .member(gameSet.getMember().getNickname())
@@ -126,11 +131,8 @@ public class GameSetDto {
                     .mainTag(gameSet.getMainTag().getName())
                     .subTag(gameSet.getSubTag())
                     .isEndGameSet(isEndGameSet)
-                    .gameDetailResponses(gameSet.getGames().stream()
-                            .map(game -> GameDetailResponse.fromEntity(game,
-                                    bookmarkMap.getOrDefault(game.getId(), false),
-                                    voteOptionMap.get(game.getId())))
-                            .toList())
+                    .isEndBookmarked(gameBookmark != null && gameBookmark.isActive())
+                    .gameDetailResponses(gameDetailResponses)
                     .build();
         }
     }

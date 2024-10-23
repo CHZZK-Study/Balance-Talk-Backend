@@ -3,7 +3,6 @@ package balancetalk.game.application;
 import balancetalk.bookmark.domain.GameBookmark;
 import balancetalk.file.domain.FileType;
 import balancetalk.file.domain.repository.FileRepository;
-import balancetalk.bookmark.domain.GameBookmarkRepository;
 import balancetalk.game.domain.Game;
 import balancetalk.game.domain.GameSet;
 import balancetalk.game.domain.MainTag;
@@ -11,6 +10,7 @@ import balancetalk.game.domain.repository.GameSetRepository;
 import balancetalk.game.domain.repository.GameTagRepository;
 import balancetalk.game.dto.GameDto.CreateGameMainTagRequest;
 import balancetalk.game.dto.GameDto.CreateOrUpdateGame;
+import balancetalk.game.dto.GameDto.GameDetailResponse;
 import balancetalk.game.dto.GameSetDto.CreateGameSetRequest;
 import balancetalk.game.dto.GameSetDto.GameSetDetailResponse;
 import balancetalk.game.dto.GameSetDto.GameSetResponse;
@@ -46,7 +46,6 @@ public class GameService {
     private final MemberRepository memberRepository;
     private final GameTagRepository gameTagRepository;
     private final FileRepository fileRepository;
-    private final GameBookmarkRepository gameBookmarkRepository;
 
     public void createBalanceGameSet(final CreateGameSetRequest request, final ApiMember apiMember) {
         Member member = apiMember.toMember(memberRepository);
@@ -73,31 +72,40 @@ public class GameService {
         gameSet.increaseViews();
 
         if (guestOrApiMember.isGuest()) { // 비회원인 경우
-            return GameSetDetailResponse.fromEntity(gameSet, new ConcurrentHashMap<>(), new ConcurrentHashMap<>(), false); // 게스트인 경우 북마크, 선택 옵션 없음
+            // 게스트인 경우 북마크, 선택 옵션 없음
+            return GameSetDetailResponse.fromEntity(gameSet, null, false,
+                    gameSet.getGames().stream()
+                    .map(game -> GameDetailResponse.fromEntity(game, false, null))
+                    .toList());
         }
 
         Member member = guestOrApiMember.toMember(memberRepository);
         List<Game> games = gameSet.getGames();
 
-        Map<Long, Boolean> bookmarkMap = new ConcurrentHashMap<>();
+        GameBookmark gameBookmark = member.getGameBookmarkOf(gameSet)
+                .orElse(null);
+
         Map<Long, VoteOption> voteOptionMap = new ConcurrentHashMap<>();
 
-        Optional<GameBookmark> optionalGameBookmark = gameBookmarkRepository.findByMemberAndGameSetId(member, gameSetId);
-        boolean isEndGameSet = optionalGameBookmark.map(GameBookmark::getIsEndGameSet).orElse(false);
+        boolean isEndGameSet = (gameBookmark != null) && gameBookmark.getIsEndGameSet();
 
         for (Game game : games) {
-            boolean hasBookmarked = optionalGameBookmark
-                    .map(gameBookmark -> gameBookmark.getGameId() != null && gameBookmark.getGameId().equals(game.getId()))
-                            .orElse(false);
-
-            bookmarkMap.put(game.getId(), hasBookmarked);
             Optional<GameVote> myVote = member.getVoteOnGameOption(member, game);
 
-            if (myVote.isPresent()) {
-                voteOptionMap.put(game.getId(), myVote.get().getVoteOption());
-            }
+            myVote.ifPresent(gameVote -> voteOptionMap.put(game.getId(), gameVote.getVoteOption()));
         }
-        return GameSetDetailResponse.fromEntity(gameSet, bookmarkMap, voteOptionMap, isEndGameSet);
+
+        return GameSetDetailResponse.fromEntity(gameSet, gameBookmark, isEndGameSet,
+                gameSet.getGames().stream()
+                        .map(game -> GameDetailResponse.fromEntity(
+                                game, isBookmarkedActiveForGame(gameBookmark, game), voteOptionMap.get(game.getId())))
+                        .toList());
+    }
+
+    public boolean isBookmarkedActiveForGame(GameBookmark gameBookmark, Game game) {
+        return gameBookmark != null
+                && gameBookmark.getGameId().equals(game.getId())
+                && gameBookmark.isActive();
     }
 
     public void updateBalanceGame(Long gameSetId, Long gameId, CreateOrUpdateGame request, ApiMember apiMember) {

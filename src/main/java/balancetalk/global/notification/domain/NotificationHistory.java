@@ -18,14 +18,14 @@ public class NotificationHistory {
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
     @Column(columnDefinition = "TEXT")
-    private String notificationHistory;
+    private String notificationHistoryJson;
 
     public Map<String, Boolean> mappingNotification() {
-        if (notificationHistory == null) {
+        if (notificationHistoryJson == null) {
             return new HashMap<>();
         }
         try {
-            return OBJECT_MAPPER.readValue(notificationHistory, new TypeReference<Map<String, Boolean>>() {});
+            return OBJECT_MAPPER.readValue(notificationHistoryJson, new TypeReference<Map<String, Boolean>>() {});
         } catch (IOException e) {
             throw new BalanceTalkException(FAIL_PARSE_NOTIFICATION_HISTORY);
         }
@@ -33,7 +33,7 @@ public class NotificationHistory {
 
     public void setNotificationHistory(Map<String, Boolean> history) {
         try {
-            this.notificationHistory = OBJECT_MAPPER.writeValueAsString(history);
+            this.notificationHistoryJson = OBJECT_MAPPER.writeValueAsString(history);
         } catch (IOException e) {
             throw new BalanceTalkException(FAIL_SERIALIZE_NOTIFICATION_HISTORY);
         }
