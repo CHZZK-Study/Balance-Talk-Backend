@@ -7,7 +7,6 @@ import balancetalk.game.domain.Game;
 import balancetalk.game.domain.repository.GameRepository;
 import balancetalk.game.dto.SearchGameResponse;
 import balancetalk.global.exception.BalanceTalkException;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -33,7 +32,7 @@ public class SearchGameService {
             throw new BalanceTalkException(BALANCE_GAME_SEARCH_BLANK);
         }
 
-        if (query.replaceAll(" ", "").length() < 2) {
+        if (query.replace(" ", "").length() < 2) {
             throw new BalanceTalkException(BALANCE_GAME_SEARCH_LENGTH);
         }
 
