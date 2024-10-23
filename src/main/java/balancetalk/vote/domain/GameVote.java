@@ -4,7 +4,6 @@ import balancetalk.game.domain.GameOption;
 import balancetalk.global.common.BaseTimeEntity;
 import balancetalk.member.domain.Member;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 @Entity
@@ -26,23 +25,16 @@ public class GameVote extends BaseTimeEntity {
     @JoinColumn(name = "game_option_id")
     private GameOption gameOption;
 
-    @Enumerated(value = EnumType.STRING)
-    @NotNull
-    private VoteOption voteOption;
+    public VoteOption getVoteOption() {
+        return gameOption.getOptionType();
+    }
 
     public boolean matchesGameOption(GameOption gameOption) {
         return this.gameOption.equals(gameOption);
     }
 
-    public void updateVoteOption(VoteOption newVoteOption) {
-        this.voteOption = newVoteOption;
-    }
 
     public void updateGameOption(GameOption gameOption) {
         this.gameOption = gameOption;
-    }
-
-    public boolean isVoteOptionEquals(VoteOption voteOption) {
-        return this.voteOption.equals(voteOption);
     }
 }
