@@ -3,7 +3,6 @@ package balancetalk.game.application;
 import balancetalk.bookmark.domain.GameBookmark;
 import balancetalk.file.domain.FileType;
 import balancetalk.file.domain.repository.FileRepository;
-import balancetalk.bookmark.domain.GameBookmarkRepository;
 import balancetalk.game.domain.Game;
 import balancetalk.game.domain.GameSet;
 import balancetalk.game.domain.MainTag;
