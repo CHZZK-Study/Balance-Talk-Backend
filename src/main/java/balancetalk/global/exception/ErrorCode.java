@@ -38,6 +38,8 @@ public enum ErrorCode {
     ALREADY_DELETED_BOOKMARK(BAD_REQUEST, "이미 북마크가 취소된 상태입니다."),
     SORT_REQUIRED(BAD_REQUEST, "정렬 조건은 필수입니다."),
     BALANCE_GAME_SIZE_TEN(BAD_REQUEST, "밸런스 게임의 갯수는 10개여야 합니다."),
+    BALANCE_GAME_SEARCH_BLANK(BAD_REQUEST, "검색어는 공백이어선 안 됩니다."),
+    BALANCE_GAME_SEARCH_LENGTH(BAD_REQUEST, "검색어는 공백 제외 2자 이상이어야 합니다."),
 
     // 401
     MISMATCHED_EMAIL_OR_PASSWORD(UNAUTHORIZED, "이메일 또는 비밀번호가 잘못되었습니다."),
