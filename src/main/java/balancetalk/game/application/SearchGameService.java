@@ -24,6 +24,8 @@ public class SearchGameService {
 
     private final GameRepository gameRepository;
 
+    private static final int MINIMUM_SEARCH_LENGTH = 2;
+
     public Page<SearchGameResponse> search(String query, Pageable pageable, String sort) {
         List<Game> resultList = new CopyOnWriteArrayList<>();
 
@@ -32,7 +34,7 @@ public class SearchGameService {
             throw new BalanceTalkException(BALANCE_GAME_SEARCH_BLANK);
         }
 
-        if (query.replace(" ", "").length() < 2) {
+        if (query.replace(" ", "").length() < MINIMUM_SEARCH_LENGTH) {
             throw new BalanceTalkException(BALANCE_GAME_SEARCH_LENGTH);
         }
 
