@@ -125,6 +125,7 @@ public class BookmarkGameService {
             throw new BalanceTalkException(ErrorCode.ALREADY_DELETED_BOOKMARK);
         }
         bookmark.deactivate();
+        bookmark.setIsEndGameSet(false);
         gameSet.decreaseBookmarks();
         sendBookmarkGameNotification(gameSet);
     }
