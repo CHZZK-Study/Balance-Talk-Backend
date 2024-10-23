@@ -8,5 +8,5 @@ public interface GameTagRepository extends JpaRepository<MainTag, Long> {
 
     Optional<MainTag> findByName(String name);
 
-    Boolean existsByName(String mainTag);
+    boolean existsByName(String mainTag);
 }
