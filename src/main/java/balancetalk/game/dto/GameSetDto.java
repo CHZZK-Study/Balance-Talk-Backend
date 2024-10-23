@@ -121,8 +121,8 @@ public class GameSetDto {
         @JsonProperty("isEndBookmarked")
         private boolean isEndBookmarked;
 
-        public static GameSetDetailResponse fromEntity(GameSet gameSet, GameBookmark gameBookmark,
-                                                       Map<Long, VoteOption> voteOptionMap, boolean isEndGameSet) {
+        public static GameSetDetailResponse fromEntity(GameSet gameSet, GameBookmark gameBookmark, boolean isEndGameSet,
+                                                       List<GameDetailResponse> gameDetailResponses) {
 
             return GameSetDetailResponse.builder()
                     .member(gameSet.getMember().getNickname())
@@ -132,12 +132,7 @@ public class GameSetDto {
                     .subTag(gameSet.getSubTag())
                     .isEndGameSet(isEndGameSet)
                     .isEndBookmarked(gameBookmark != null && gameBookmark.isActive())
-                    .gameDetailResponses(gameSet.getGames().stream()
-                            .map(game -> GameDetailResponse.fromEntity(game,
-                                    gameBookmark != null && gameBookmark.getGameId().equals(game.getId())
-                                    && gameBookmark.isActive(),
-                                    voteOptionMap.get(game.getId())))
-                            .toList())
+                    .gameDetailResponses(gameDetailResponses)
                     .build();
         }
     }

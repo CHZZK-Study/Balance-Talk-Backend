@@ -10,6 +10,7 @@ import balancetalk.game.domain.repository.GameSetRepository;
 import balancetalk.game.domain.repository.GameTagRepository;
 import balancetalk.game.dto.GameDto.CreateGameMainTagRequest;
 import balancetalk.game.dto.GameDto.CreateOrUpdateGame;
+import balancetalk.game.dto.GameDto.GameDetailResponse;
 import balancetalk.game.dto.GameSetDto.CreateGameSetRequest;
 import balancetalk.game.dto.GameSetDto.GameSetDetailResponse;
 import balancetalk.game.dto.GameSetDto.GameSetResponse;
@@ -72,7 +73,10 @@ public class GameService {
 
         if (guestOrApiMember.isGuest()) { // 비회원인 경우
             // 게스트인 경우 북마크, 선택 옵션 없음
-            return GameSetDetailResponse.fromEntity(gameSet, null, new ConcurrentHashMap<>(), false);
+            return GameSetDetailResponse.fromEntity(gameSet, null, false,
+                    gameSet.getGames().stream()
+                    .map(game -> GameDetailResponse.fromEntity(game, false, null))
+                    .toList());
         }
 
         Member member = guestOrApiMember.toMember(memberRepository);
@@ -90,7 +94,18 @@ public class GameService {
 
             myVote.ifPresent(gameVote -> voteOptionMap.put(game.getId(), gameVote.getVoteOption()));
         }
-        return GameSetDetailResponse.fromEntity(gameSet, gameBookmark, voteOptionMap, isEndGameSet);
+
+        return GameSetDetailResponse.fromEntity(gameSet, gameBookmark, isEndGameSet,
+                gameSet.getGames().stream()
+                        .map(game -> GameDetailResponse.fromEntity(
+                                game, isBookmarkedActiveForGame(gameBookmark, game), voteOptionMap.get(game.getId())))
+                        .toList());
+    }
+
+    public boolean isBookmarkedActiveForGame(GameBookmark gameBookmark, Game game) {
+        return gameBookmark != null
+                && gameBookmark.getGameId().equals(game.getId())
+                && gameBookmark.isActive();
     }
 
     public void updateBalanceGame(Long gameSetId, Long gameId, CreateOrUpdateGame request, ApiMember apiMember) {
