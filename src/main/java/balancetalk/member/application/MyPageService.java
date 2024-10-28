@@ -7,6 +7,7 @@ import balancetalk.bookmark.domain.TalkPickBookmarkRepository;
 import balancetalk.comment.domain.Comment;
 import balancetalk.comment.domain.CommentRepository;
 import balancetalk.game.domain.Game;
+import balancetalk.game.domain.GameSet;
 import balancetalk.game.domain.repository.GameRepository;
 import balancetalk.game.domain.repository.GameSetRepository;
 import balancetalk.game.dto.GameDto.GameMyPageResponse;
@@ -121,13 +122,12 @@ public class MyPageService {
 
     public Page<GameMyPageResponse> findAllGamesByMember(ApiMember apiMember, Pageable pageable) {
         Member member = apiMember.toMember(memberRepository);
-        Page<Game> games = null; // FIXME: 수정 필요
-                // gameSetRepository.findAllByMemberIdOrderByEditedAtDesc(member.getId(), pageable);
+        Page<GameSet> gameSets = gameSetRepository.findAllByMemberIdOrderByEditedAtDesc(member.getId(), pageable);
 
-        List<GameMyPageResponse> responses = games.stream()
+        List<GameMyPageResponse> responses = gameSets.stream()
                 .map(GameMyPageResponse::from)
                 .collect(Collectors.toList());
 
-        return new PageImpl<>(responses, pageable, games.getTotalElements());
+        return new PageImpl<>(responses, pageable, gameSets.getTotalElements());
     }
 }

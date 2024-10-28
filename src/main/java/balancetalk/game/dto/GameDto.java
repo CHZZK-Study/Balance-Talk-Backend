@@ -4,6 +4,7 @@ import static balancetalk.vote.domain.VoteOption.*;
 
 import balancetalk.bookmark.domain.GameBookmark;
 import balancetalk.game.domain.Game;
+import balancetalk.game.domain.GameSet;
 import balancetalk.game.domain.MainTag;
 import balancetalk.vote.domain.GameVote;
 import balancetalk.vote.domain.VoteOption;
@@ -166,15 +167,15 @@ public class GameDto {
         @Schema(description = "밸런스 게임 메인 태그 이름", example = "인기")
         private String mainTagName;
 
-        public static GameMyPageResponse from(Game game) {
+        public static GameMyPageResponse from(GameSet gameSet) {
             return GameMyPageResponse.builder()
-                    .gameId(game.getId())
-                    .title(game.getGameSet().getTitle())
-                    .optionAImg(game.getGameOptions().get(0).getImgUrl())
-                    .optionBImg(game.getGameOptions().get(1).getImgUrl())
-                    .subTag(game.getGameSet().getSubTag())
-                    .mainTagName(game.getGameSet().getMainTag().getName())
-                    .editedAt(game.getEditedAt())
+                    .gameSetId(gameSet.getId())
+                    .title(gameSet.getTitle())
+                    .optionAImg(gameSet.getGames().get(0).getGameOptions().get(0).getImgUrl())
+                    .optionBImg(gameSet.getGames().get(0).getGameOptions().get(1).getImgUrl())
+                    .subTag(gameSet.getSubTag())
+                    .mainTagName(gameSet.getMainTag().getName())
+                    .editedAt(gameSet.getEditedAt())
                     .build();
         }
 
