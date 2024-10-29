@@ -122,4 +122,12 @@ public class GameSet extends BaseTimeEntity {
     public void updateGameSet() {
         this.editedAt = LocalDateTime.now();
     }
+
+    public String getFirstGameOptionAImgUrl() {
+        return games.get(0).getGameOptions().get(0).getImgUrl();
+    }
+
+    public String getFirstGameOptionBImgUrl() {
+        return games.get(0).getGameOptions().get(1).getImgUrl();
+    }
 }
