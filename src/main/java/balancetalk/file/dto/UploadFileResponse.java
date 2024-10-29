@@ -17,7 +17,6 @@ public class UploadFileResponse {
                     + "]")
     private List<String> imgUrls;
 
-    @Schema(description = "업로드한 이미지 고유 이름 목록",
-            example = "[\"121\",\n\"255\"]")
+    @Schema(description = "업로드한 이미지 파일 ID 목록", example = "[121, 255]")
     private List<Long> fileIds;
 }

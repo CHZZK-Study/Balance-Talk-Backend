@@ -18,6 +18,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.CopyObjectRequest;
 
 import static balancetalk.global.exception.ErrorCode.FAIL_UPLOAD_FILE;
 import static balancetalk.global.exception.ErrorCode.NOT_FOUND_FILE;
@@ -29,6 +31,7 @@ public class FileService {
 
     private static final String TEMP_DIRECTORY_PATH = "temp/";
 
+    private final S3Client s3Client;
     private final S3Operations s3Operations;
     private final FileProcessor fileProcessor;
     private final FileRepository fileRepository;
@@ -95,5 +98,19 @@ public class FileService {
                 .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_FILE));
         fileRepository.delete(file);
         s3Operations.deleteObject(bucket, file.getS3Key());
+    }
+
+    @Transactional
+    public void moveDirectory(File file, String destinationKey) {
+        String sourceKey = file.getS3Key();
+        CopyObjectRequest copyObjectRequest = CopyObjectRequest.builder()
+                .sourceBucket(bucket)
+                .sourceKey(sourceKey)
+                .destinationBucket(bucket)
+                .destinationKey(destinationKey)
+                .build();
+        s3Client.copyObject(copyObjectRequest);
+        s3Operations.deleteObject(bucket, sourceKey);
+        file.updateS3KeyAndUrl(destinationKey, s3EndPoint + destinationKey);
     }
 }
