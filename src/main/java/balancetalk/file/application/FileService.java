@@ -93,8 +93,8 @@ public class FileService {
     }
 
     @Transactional
-    public void deleteImageByStoredName(String storedName) {
-        File file = fileRepository.findByStoredName(storedName)
+    public void deleteImageById(Long fileId) {
+        File file = fileRepository.findById(fileId)
                 .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_FILE));
         fileRepository.delete(file);
         s3Operations.deleteObject(bucket, file.getS3Key());
@@ -109,8 +109,11 @@ public class FileService {
                 .destinationBucket(bucket)
                 .destinationKey(destinationKey)
                 .build();
+
         s3Client.copyObject(copyObjectRequest);
-        s3Operations.deleteObject(bucket, sourceKey);
+        if (sourceKey.contains(TEMP_DIRECTORY_PATH)) {
+            s3Operations.deleteObject(bucket, sourceKey);
+        }
         file.updateS3KeyAndUrl(destinationKey, s3EndPoint + destinationKey);
     }
 }
