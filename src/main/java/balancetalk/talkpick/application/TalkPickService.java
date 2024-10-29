@@ -87,7 +87,12 @@ public class TalkPickService {
         Member member = apiMember.toMember(memberRepository);
         TalkPick talkPick = member.getTalkPickById(talkPickId);
         talkPick.update(request.toEntity(member));
-//        fileRepository.updateResourceIdAndTypeByStoredNames(talkPickId, FileType.TALK_PICK, request.getStoredNames());
+
+        List<File> files = fileRepository.findAllById(request.getFileIds());
+        for (File file : files) {
+            String destinationKey = getDestinationKey(talkPick.getId(), file);
+            fileService.moveDirectory(file, destinationKey);
+        }
     }
 
     @Transactional
