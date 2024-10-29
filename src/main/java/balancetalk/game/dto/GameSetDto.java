@@ -7,14 +7,12 @@ import balancetalk.game.domain.MainTag;
 import balancetalk.game.dto.GameDto.CreateOrUpdateGame;
 import balancetalk.game.dto.GameDto.GameDetailResponse;
 import balancetalk.member.domain.Member;
-import balancetalk.vote.domain.VoteOption;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -43,6 +41,7 @@ public class GameSetDto {
                     .member(member)
                     .games(games.stream().map(CreateOrUpdateGame::toEntity).toList())
                     .bookmarks(0L)
+                    .editedAt(LocalDateTime.now())
                     .build();
         }
 

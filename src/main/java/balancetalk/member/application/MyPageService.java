@@ -7,6 +7,7 @@ import balancetalk.bookmark.domain.TalkPickBookmarkRepository;
 import balancetalk.comment.domain.Comment;
 import balancetalk.comment.domain.CommentRepository;
 import balancetalk.game.domain.Game;
+import balancetalk.game.domain.GameSet;
 import balancetalk.game.domain.repository.GameRepository;
 import balancetalk.game.domain.repository.GameSetRepository;
 import balancetalk.game.dto.GameDto.GameMyPageResponse;
@@ -29,7 +30,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -54,7 +54,7 @@ public class MyPageService {
                     TalkPick talkPick = bookmark.getTalkPick();
                     return TalkPickMyPageResponse.from(talkPick, bookmark);
                 })
-                .collect(Collectors.toList());
+                .toList();
 
         return new PageImpl<>(responses, pageable, bookmarks.getTotalElements());
     }
@@ -65,7 +65,7 @@ public class MyPageService {
 
         List<TalkPickMyPageResponse> responses = votes.stream()
                 .map(vote -> TalkPickMyPageResponse.from(vote.getTalkPick(), vote))
-                .collect(Collectors.toList());
+                .toList();
 
         return new PageImpl<>(responses, pageable, votes.getTotalElements());
     }
@@ -76,7 +76,7 @@ public class MyPageService {
 
         List<TalkPickMyPageResponse> responses = comments.stream()
                 .map(comment -> TalkPickMyPageResponse.from(comment.getTalkPick(), comment))
-                .collect(Collectors.toList());
+                .toList();
 
         return new PageImpl<>(responses, pageable, comments.getTotalElements());
     }
@@ -87,7 +87,7 @@ public class MyPageService {
 
         List<TalkPickMyPageResponse> responses = talkPicks.stream()
                 .map(TalkPickMyPageResponse::fromMyTalkPick)
-                .collect(Collectors.toList());
+                .toList();
 
         return new PageImpl<>(responses, pageable, talkPicks.getTotalElements());
     }
@@ -102,7 +102,7 @@ public class MyPageService {
                             .orElseThrow(() -> new BalanceTalkException(ErrorCode.NOT_FOUND_BALANCE_GAME));
                     return GameMyPageResponse.from(game, bookmark);
                 })
-                .collect(Collectors.toList());
+                .toList();
 
         return new PageImpl<>(responses, pageable, bookmarks.getTotalElements());
     }
@@ -114,20 +114,19 @@ public class MyPageService {
 
         List<GameMyPageResponse> responses = votes.stream()
                 .map(vote -> GameMyPageResponse.from(vote.getGameOption().getGame(), vote))
-                .collect(Collectors.toList());
+                .toList();
 
         return new PageImpl<>(responses, pageable, votes.getTotalElements());
     }
 
     public Page<GameMyPageResponse> findAllGamesByMember(ApiMember apiMember, Pageable pageable) {
         Member member = apiMember.toMember(memberRepository);
-        Page<Game> games = null; // FIXME: 수정 필요
-                // gameSetRepository.findAllByMemberIdOrderByEditedAtDesc(member.getId(), pageable);
+        Page<GameSet> gameSets = gameSetRepository.findAllByMemberIdOrderByEditedAtDesc(member.getId(), pageable);
 
-        List<GameMyPageResponse> responses = games.stream()
+        List<GameMyPageResponse> responses = gameSets.stream()
                 .map(GameMyPageResponse::from)
-                .collect(Collectors.toList());
+                .toList();
 
-        return new PageImpl<>(responses, pageable, games.getTotalElements());
+        return new PageImpl<>(responses, pageable, gameSets.getTotalElements());
     }
 }

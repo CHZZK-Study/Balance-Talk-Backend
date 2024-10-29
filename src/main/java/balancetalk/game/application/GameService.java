@@ -113,6 +113,7 @@ public class GameService {
         GameSet gameSet = member.getGameSetById(gameSetId);
         Game game = gameSet.getGameById(gameId);
         game.updateGame(request.toEntity());
+        gameSet.updateGameSet();
         fileRepository.updateResourceIdAndTypeByStoredNames(gameId, FileType.GAME, request.extractStoresNames());
     }
 
