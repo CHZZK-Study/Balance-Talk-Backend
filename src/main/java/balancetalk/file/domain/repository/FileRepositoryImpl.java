@@ -33,7 +33,7 @@ public class FileRepositoryImpl implements FileRepositoryCustom {
                 .fetch();
 
         return images.stream()
-                .map(image -> "%s%s".formatted(image.getPath(), image.getStoredName()))
+                .map(File::getS3Url)
                 .toList();
     }
 

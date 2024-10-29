@@ -49,8 +49,9 @@ public class FileService {
 
         try {
             for (MultipartFile multipartFile : multipartFiles.multipartFiles()) {
-                File file = fileProcessor.process(multipartFile, s3EndPoint + fileType.getUploadDir(), fileType);
+                File file = fileProcessor.process(multipartFile, fileType);
                 String s3Key = "%s%s%s".formatted(fileType.getUploadDir(), TEMP_DIRECTORY_PATH, file.getStoredName());
+                file.updateS3KeyAndUrl(s3Key, getS3Url(fileType, file.getStoredName()));
                 s3Keys.add(s3Key);
 
                 // DB 저장
@@ -66,6 +67,10 @@ public class FileService {
             deleteFailedUploads(s3Keys);
             throw new BalanceTalkException(FAIL_UPLOAD_FILE);
         }
+    }
+
+    private String getS3Url(FileType fileType, String storedName) {
+        return "%s%s%s%s".formatted(s3EndPoint, fileType.getUploadDir(), TEMP_DIRECTORY_PATH, storedName);
     }
 
     private Long saveFileMetadata(File file) {

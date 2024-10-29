@@ -2,21 +2,20 @@ package balancetalk.file.domain;
 
 import balancetalk.global.exception.BalanceTalkException;
 import balancetalk.global.exception.ErrorCode;
-import org.springframework.stereotype.Component;
-import org.springframework.web.multipart.MultipartFile;
-
 import java.util.Arrays;
 import java.util.UUID;
+import org.springframework.stereotype.Component;
+import org.springframework.web.multipart.MultipartFile;
 
 @Component
 public class FileProcessor {
 
-    public File process(MultipartFile multipartFile, String path, FileType fileType) {
+    public File process(MultipartFile multipartFile, FileType fileType) {
         String originalName = multipartFile.getOriginalFilename();
         String storedName = createRandomName(originalName);
         long size = multipartFile.getSize();
         FileFormat fileFormat = convertMimeTypeToFileFormat(multipartFile.getContentType());
-        return createFile(originalName, storedName, fileFormat, path, fileType, size);
+        return createFile(originalName, storedName, fileFormat, fileType, size);
     }
 
     private String createRandomName(String originalName) {
@@ -32,15 +31,13 @@ public class FileProcessor {
 
     private File createFile(String uploadName,
                             String storedName,
-                            FileFormat FileFormat,
-                            String path,
+                            FileFormat fileFormat,
                             FileType fileType,
                             long size) {
         return File.builder()
                 .uploadName(uploadName)
                 .storedName(storedName)
-                .fileFormat(FileFormat)
-                .path(path)
+                .fileFormat(fileFormat)
                 .size(size)
                 .fileType(fileType)
                 .build();
