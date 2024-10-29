@@ -45,7 +45,7 @@ public class FileService {
 
         List<String> s3Keys = new ArrayList<>();
         List<String> imgUrls = new ArrayList<>();
-        List<String> storedNames = new ArrayList<>();
+        List<Long> fileIds = new ArrayList<>();
 
         try {
             for (MultipartFile multipartFile : multipartFiles.multipartFiles()) {
@@ -54,13 +54,13 @@ public class FileService {
                 s3Keys.add(s3Key);
 
                 // DB 저장
-                storedNames.add(saveFileMetadata(file));
+                fileIds.add(saveFileMetadata(file));
 
                 // S3 업로드
                 imgUrls.add(uploadToS3(multipartFile, s3Key));
             }
 
-            return new UploadFileResponse(imgUrls, storedNames);
+            return new UploadFileResponse(imgUrls, fileIds);
         } catch (Exception e) {
             log.error("error = ", e);
             deleteFailedUploads(s3Keys);
@@ -68,9 +68,9 @@ public class FileService {
         }
     }
 
-    private String saveFileMetadata(File file) {
+    private Long saveFileMetadata(File file) {
         fileRepository.save(file);
-        return file.getStoredName();
+        return file.getId();
     }
 
     private String uploadToS3(MultipartFile multipartFile, String s3Key) throws IOException {
