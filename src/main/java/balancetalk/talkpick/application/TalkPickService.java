@@ -40,7 +40,7 @@ public class TalkPickService {
         List<File> files = fileRepository.findAllById(request.getFileIds());
         for (File file : files) {
             String destinationKey = getDestinationKey(savedTalkPick.getId(), file);
-            fileService.moveDirectory(file, destinationKey);
+            fileService.update(file, TALK_PICK, destinationKey);
         }
 
         return savedTalkPick.getId();
@@ -91,7 +91,7 @@ public class TalkPickService {
         List<File> files = fileRepository.findAllById(request.getFileIds());
         for (File file : files) {
             String destinationKey = getDestinationKey(talkPick.getId(), file);
-            fileService.moveDirectory(file, destinationKey);
+            fileService.update(file, TALK_PICK, destinationKey);
         }
     }
 

@@ -55,4 +55,8 @@ public class File extends BaseTimeEntity {
         this.s3Key = newS3Key;
         this.s3Url = newS3Url;
     }
+
+    public void updateFileType(FileType fileType) {
+        this.fileType = fileType;
+    }
 }

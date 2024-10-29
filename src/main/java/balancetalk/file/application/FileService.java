@@ -101,7 +101,7 @@ public class FileService {
     }
 
     @Transactional
-    public void moveDirectory(File file, String destinationKey) {
+    public void update(File file, FileType fileType, String destinationKey) {
         String sourceKey = file.getS3Key();
         CopyObjectRequest copyObjectRequest = CopyObjectRequest.builder()
                 .sourceBucket(bucket)
@@ -111,9 +111,10 @@ public class FileService {
                 .build();
 
         s3Client.copyObject(copyObjectRequest);
-        if (sourceKey.contains(TEMP_DIRECTORY_PATH)) {
+        if (sourceKey.contains("temp")) {
             s3Operations.deleteObject(bucket, sourceKey);
         }
         file.updateS3KeyAndUrl(destinationKey, s3EndPoint + destinationKey);
+        file.updateFileType(fileType);
     }
 }
