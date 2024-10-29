@@ -9,16 +9,15 @@ import balancetalk.file.dto.UploadFileResponse;
 import balancetalk.global.exception.BalanceTalkException;
 import io.awspring.cloud.s3.S3Operations;
 import io.awspring.cloud.s3.S3Resource;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 import static balancetalk.global.exception.ErrorCode.FAIL_UPLOAD_FILE;
 import static balancetalk.global.exception.ErrorCode.NOT_FOUND_FILE;
@@ -27,6 +26,8 @@ import static balancetalk.global.exception.ErrorCode.NOT_FOUND_FILE;
 @Service
 @RequiredArgsConstructor
 public class FileService {
+
+    private static final String TEMP_DIRECTORY_PATH = "temp/";
 
     private final S3Operations s3Operations;
     private final FileProcessor fileProcessor;
@@ -49,7 +50,7 @@ public class FileService {
         try {
             for (MultipartFile multipartFile : multipartFiles.multipartFiles()) {
                 File file = fileProcessor.process(multipartFile, s3EndPoint + fileType.getUploadDir(), fileType);
-                String s3Key = fileType.getUploadDir() + file.getStoredName();
+                String s3Key = "%s%s%s".formatted(fileType.getUploadDir(), TEMP_DIRECTORY_PATH, file.getStoredName());
                 s3Keys.add(s3Key);
 
                 // DB 저장
