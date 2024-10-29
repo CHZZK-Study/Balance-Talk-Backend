@@ -1,5 +1,11 @@
 package balancetalk.talkpick.application;
 
+import static balancetalk.file.domain.FileType.TALK_PICK;
+import static balancetalk.global.exception.ErrorCode.NOT_FOUND_TALK_PICK;
+import static balancetalk.talkpick.dto.TalkPickDto.CreateOrUpdateTalkPickRequest;
+import static balancetalk.talkpick.dto.TalkPickDto.TalkPickDetailResponse;
+import static balancetalk.talkpick.dto.TalkPickDto.TalkPickResponse;
+
 import balancetalk.file.application.FileService;
 import balancetalk.file.domain.File;
 import balancetalk.file.domain.repository.FileRepository;
@@ -18,10 +24,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import static balancetalk.file.domain.FileType.TALK_PICK;
-import static balancetalk.global.exception.ErrorCode.NOT_FOUND_TALK_PICK;
-import static balancetalk.talkpick.dto.TalkPickDto.*;
 
 @Service
 @RequiredArgsConstructor
