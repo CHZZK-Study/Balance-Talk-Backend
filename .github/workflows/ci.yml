@@ -39,7 +39,3 @@ jobs:
         GIT_ACCESS_TOKEN: ${{ secrets.GIT_ACCESS_TOKEN }}
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
       run: ./gradlew build sonar --info
-    - name: Update D-n Labels
-      uses: naver/d-day-labeler@latest
-      with:
-        token: ${{ secrets.GIT_ACCESS_TOKEN }}
