@@ -1,11 +1,11 @@
 package balancetalk.file.domain;
 
 public enum FileType {
-    TALK_PICK("talk-pick/", 10),
-    TEMP_TALK_PICK("temp-talk-pick/", 10),
-    GAME("balance-game/", 1),
-    TEMP_GAME("temp-balance-game/", 10),
-    MEMBER("member/", 1);
+    TALK_PICK("talks/", 10),
+    TEMP_TALK_PICK("temp-talks/", 10),
+    GAME("games/", 1),
+    TEMP_GAME("temp-games/", 10),
+    MEMBER("members/", 1);
 
     private final String uploadDir;
     private final int maxCount;
