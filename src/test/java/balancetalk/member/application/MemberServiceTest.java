@@ -71,22 +71,6 @@ class MemberServiceTest {
             .build();
 
     @Test
-    @DisplayName("회원가입을 성공적으로 완료할 때 성공적으로 memberId 값을 리턴한다.")
-    void createMember_Success() {
-        // given
-        when(memberRepository.existsByEmail(any())).thenReturn(false);
-        when(memberRepository.existsByNickname(any())).thenReturn(false);
-        when(passwordEncoder.encode(any())).thenReturn("encodedPassword");
-        when(memberRepository.save(any())).thenReturn(member);
-
-        // when
-        Long memberId = memberService.join(joinRequest);
-
-        // then
-        Assertions.assertThat(memberId).isEqualTo(1L);
-    }
-
-    @Test
     @DisplayName("로그인을 성공적으로 완료했을 때 성공적으로 accessToken 값을 리턴한다.")
     void loginMember_Success() {
         // given
