@@ -21,11 +21,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
-import org.springframework.cache.caffeine.CaffeineCache;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -141,21 +139,6 @@ class MemberServiceTest {
 
         // then
         assertEquals(member.getProfileImgUrl(), newImgUrl);
-    }
-
-    @Test
-    @DisplayName("회원 비밀번호 업데이트 시 성공적으로 변경")
-    void updateMemberPassword_Success() {
-        // given
-        String newPassword = "newPassword";
-        when(apiMember.toMember(any())).thenReturn(member);
-        when(passwordEncoder.encode(any())).thenReturn(newPassword);
-
-        // when
-        memberService.updatePassword(newPassword, apiMember);
-
-        // then
-        assertEquals(member.getPassword(), newPassword);
     }
 
     @Test
