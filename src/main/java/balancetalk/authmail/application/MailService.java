@@ -1,11 +1,10 @@
 package balancetalk.authmail.application;
 
+import static jakarta.mail.Message.RecipientType.TO;
+
 import balancetalk.authmail.dto.EmailDto.EmailRequest;
 import balancetalk.authmail.dto.EmailDto.EmailVerification;
 import balancetalk.authmail.dto.EmailDto.PasswordResetRequest;
-
-import static jakarta.mail.Message.RecipientType.TO;
-
 import balancetalk.global.caffeine.CacheType;
 import balancetalk.global.exception.BalanceTalkException;
 import balancetalk.global.exception.ErrorCode;
@@ -23,7 +22,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.UUID;
-
 
 @Service
 @RequiredArgsConstructor
