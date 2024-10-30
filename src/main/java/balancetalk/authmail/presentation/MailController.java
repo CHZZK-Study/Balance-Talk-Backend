@@ -1,7 +1,8 @@
 package balancetalk.authmail.presentation;
 
-import static balancetalk.authmail.dto.EmailDto.*;
-
+import balancetalk.authmail.dto.EmailDto.EmailRequest;
+import balancetalk.authmail.dto.EmailDto.EmailVerification;
+import balancetalk.authmail.dto.EmailDto.PasswordResetRequest;
 import balancetalk.authmail.application.MailService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;

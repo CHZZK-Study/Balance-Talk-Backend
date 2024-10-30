@@ -66,8 +66,7 @@ public class MemberService {
                         cache -> cache.put(member.getId(), refreshToken),
                         () -> {
                             throw new BalanceTalkException(ErrorCode.CACHE_NOT_FOUND);
-                        }
-                );
+                        });
         Cookie cookie = jwtTokenProvider.createCookie(refreshToken);
         response.addCookie(cookie);
         return accessToken;
