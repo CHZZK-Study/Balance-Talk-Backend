@@ -1,5 +1,15 @@
 package balancetalk.member.application;
 
+import static balancetalk.global.exception.ErrorCode.ALREADY_REGISTERED_EMAIL;
+import static balancetalk.global.exception.ErrorCode.ALREADY_REGISTERED_NICKNAME;
+import static balancetalk.global.exception.ErrorCode.AUTHENTICATION_REQUIRED;
+import static balancetalk.global.exception.ErrorCode.CACHE_NOT_FOUND;
+import static balancetalk.global.exception.ErrorCode.FORBIDDEN_MEMBER_DELETE;
+import static balancetalk.global.exception.ErrorCode.MISMATCHED_EMAIL_OR_PASSWORD;
+import static balancetalk.global.exception.ErrorCode.NOT_FOUND_MEMBER;
+import static balancetalk.global.exception.ErrorCode.PASSWORD_MISMATCH;
+import static balancetalk.global.exception.ErrorCode.SAME_NICKNAME;
+
 import balancetalk.global.caffeine.CacheType;
 import balancetalk.global.exception.BalanceTalkException;
 import balancetalk.global.jwt.JwtTokenProvider;
@@ -23,7 +33,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
-import static balancetalk.global.exception.ErrorCode.*;
 
 @Slf4j
 @Service
