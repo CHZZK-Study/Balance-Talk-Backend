@@ -3,13 +3,21 @@ package balancetalk.member.dto;
 import balancetalk.member.domain.Member;
 import balancetalk.member.domain.Role;
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
+import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import java.time.LocalDateTime;
 
 public class MemberDto {
+
+    private MemberDto() {
+
+    }
 
     @Data
     @Builder
@@ -34,11 +42,14 @@ public class MemberDto {
         @Schema(description = "회원 비밀번호", example = "Test1234test!")
         private String password;
 
+        @NotBlank
+        @Size(min = 10, max = 20)
+        @Pattern(regexp = "^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d@$!%*#?&]{10,20}$")
+        @Schema(description = "비밀번호 확인", example = "Test1234test!")
+        private String passwordConfirm;
+
         @Schema(description = "회원 권한", example = "USER")
         private Role role;
-
-        @Schema(description = "회원 프로필 url", example = "https://pikko-image.s3.ap-northeast-2.amazonaws.com/member/511ca5c7-4367-40d1-ab18-3a8f0f4332a7_unnamed.png")
-        private String profileImgUrl;
 
         public Member toEntity() {
             return Member.builder()
@@ -46,7 +57,6 @@ public class MemberDto {
                     .email(email)
                     .password(password)
                     .role(Role.USER)
-                    .profileImgUrl(profileImgUrl)
                     .build();
         }
     }
