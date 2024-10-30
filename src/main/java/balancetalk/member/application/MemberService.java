@@ -10,21 +10,19 @@ import balancetalk.member.dto.ApiMember;
 import balancetalk.member.dto.MemberDto.JoinRequest;
 import balancetalk.member.dto.MemberDto.LoginRequest;
 import balancetalk.member.dto.MemberDto.MemberResponse;
-import com.github.benmanes.caffeine.cache.Cache;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.CacheManager;
-import org.springframework.cache.caffeine.CaffeineCache;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static balancetalk.global.exception.ErrorCode.ALREADY_REGISTERED_EMAIL;
 import static balancetalk.global.exception.ErrorCode.ALREADY_REGISTERED_NICKNAME;
@@ -63,8 +61,13 @@ public class MemberService {
         String accessToken = jwtTokenProvider.createAccessToken(authentication, member.getId());
         String refreshToken = jwtTokenProvider.createRefreshToken(authentication, member.getId());
 
-        cacheManager.getCache(CacheType.RefreshToken.getCacheName()).put(member.getId(), refreshToken);
-
+        Optional.ofNullable(cacheManager.getCache(CacheType.RefreshToken.getCacheName()))
+                .ifPresentOrElse(
+                        cache -> cache.put(member.getId(), refreshToken),
+                        () -> {
+                            throw new BalanceTalkException(ErrorCode.CACHE_NOT_FOUND);
+                        }
+                );
         Cookie cookie = jwtTokenProvider.createCookie(refreshToken);
         response.addCookie(cookie);
         return accessToken;
@@ -82,7 +85,7 @@ public class MemberService {
         List<Member> members = memberRepository.findAll();
         return members.stream()
                 .map(MemberResponse::fromEntity)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     public void updateNickname(final String newNickname, ApiMember apiMember) {
@@ -91,14 +94,6 @@ public class MemberService {
             throw new BalanceTalkException(ErrorCode.SAME_NICKNAME);
         }
         member.updateNickname(newNickname);
-    }
-
-    public void updatePassword(final String newPassword, ApiMember apiMember) {
-        Member member = apiMember.toMember(memberRepository);
-        if (passwordEncoder.matches(newPassword, member.getPassword())) {
-            throw new BalanceTalkException(ErrorCode.SAME_PASSWORD);
-        }
-        member.updatePassword(passwordEncoder.encode(newPassword));
     }
 
     public void updateImage(final String profileImgUrl, ApiMember apiMember) {
