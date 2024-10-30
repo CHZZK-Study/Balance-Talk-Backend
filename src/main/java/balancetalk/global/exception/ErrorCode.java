@@ -41,6 +41,7 @@ public enum ErrorCode {
     BALANCE_GAME_SEARCH_BLANK(BAD_REQUEST, "검색어는 공백이어선 안 됩니다."),
     BALANCE_GAME_SEARCH_LENGTH(BAD_REQUEST, "검색어는 공백 제외 2자 이상이어야 합니다."),
     PASSWORD_MISMATCH(BAD_REQUEST, "비밀번호가 일치하지 않습니다."),
+    CACHE_NOT_FOUND(BAD_REQUEST, "캐시를 찾을 수 없습니다."),
 
     // 401
     MISMATCHED_EMAIL_OR_PASSWORD(UNAUTHORIZED, "이메일 또는 비밀번호가 잘못되었습니다."),
