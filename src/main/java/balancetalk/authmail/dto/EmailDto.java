@@ -6,12 +6,16 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import lombok.NoArgsConstructor;
 
 @Data
 public class EmailDto {
+
+    private EmailDto() {
+
+    } 
 
     @Data
     @NoArgsConstructor

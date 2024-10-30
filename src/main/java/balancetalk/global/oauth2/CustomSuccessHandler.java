@@ -36,8 +36,8 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         String accessToken = jwtTokenProvider.createAccessToken(authentication, member.getId());
         String refreshToken = jwtTokenProvider.createRefreshToken(authentication, member.getId());
 
-        response.addCookie(jwtTokenProvider.createCookie(refreshToken));
-        response.addCookie(jwtTokenProvider.createAccessCookie(accessToken));
+        response.addCookie(JwtTokenProvider.createCookie(refreshToken));
+        response.addCookie(JwtTokenProvider.createAccessCookie(accessToken));
         response.sendRedirect("http://43.202.175.99:8080");
     }
 
