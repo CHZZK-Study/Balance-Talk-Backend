@@ -3,6 +3,9 @@ package balancetalk.authmail.application;
 import balancetalk.authmail.dto.EmailDto.EmailRequest;
 import balancetalk.authmail.dto.EmailDto.EmailVerification;
 import balancetalk.authmail.dto.EmailDto.PasswordResetRequest;
+
+import static jakarta.mail.Message.RecipientType.TO;
+
 import balancetalk.global.caffeine.CacheType;
 import balancetalk.global.exception.BalanceTalkException;
 import balancetalk.global.exception.ErrorCode;
@@ -21,7 +24,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.UUID;
 
-import static jakarta.mail.Message.RecipientType.TO;
 
 @Service
 @RequiredArgsConstructor
