@@ -100,10 +100,15 @@ public class GameSet extends BaseTimeEntity {
         return games.stream().anyMatch(game -> game.getId().equals(gameId));
     }
 
+    public void addGame(Game game) {
+        this.games.add(game);
+        game.assignGameSet(this);
+    }
+
     public void addGames(List<Game> games) {
         this.games = games;
         games.forEach(game -> {
-            game.addGameSet(this);
+            game.assignGameSet(this);
             game.getGameOptions().forEach(option -> option.addGame(game));
         });
     }
