@@ -6,8 +6,8 @@ import static balancetalk.talkpick.dto.TalkPickDto.CreateOrUpdateTalkPickRequest
 import static balancetalk.talkpick.dto.TalkPickDto.TalkPickDetailResponse;
 import static balancetalk.talkpick.dto.TalkPickDto.TalkPickResponse;
 
-import balancetalk.file.application.FileService;
 import balancetalk.file.domain.File;
+import balancetalk.file.domain.FileHandler;
 import balancetalk.file.domain.repository.FileRepository;
 import balancetalk.global.exception.BalanceTalkException;
 import balancetalk.member.domain.Member;
@@ -32,24 +32,15 @@ public class TalkPickService {
     private final MemberRepository memberRepository;
     private final TalkPickRepository talkPickRepository;
     private final FileRepository fileRepository;
-    private final FileService fileService;
+    private final FileHandler fileHandler;
 
     @Transactional
     public Long createTalkPick(CreateOrUpdateTalkPickRequest request, ApiMember apiMember) {
         Member member = apiMember.toMember(memberRepository);
         TalkPick savedTalkPick = talkPickRepository.save(request.toEntity(member));
-
         List<File> files = fileRepository.findAllById(request.getFileIds());
-        for (File file : files) {
-            String destinationKey = getDestinationKey(savedTalkPick.getId(), file);
-            fileService.update(file, TALK_PICK, destinationKey);
-        }
-
+        fileHandler.relocateFiles(files, savedTalkPick.getId(), TALK_PICK);
         return savedTalkPick.getId();
-    }
-
-    private String getDestinationKey(Long talkPickId, File file) {
-        return "%s%d/%s".formatted(TALK_PICK.getUploadDir(), talkPickId, file.getStoredName());
     }
 
     @Transactional
@@ -89,12 +80,8 @@ public class TalkPickService {
         Member member = apiMember.toMember(memberRepository);
         TalkPick talkPick = member.getTalkPickById(talkPickId);
         talkPick.update(request.toEntity(member));
-
         List<File> files = fileRepository.findAllById(request.getFileIds());
-        for (File file : files) {
-            String destinationKey = getDestinationKey(talkPick.getId(), file);
-            fileService.update(file, TALK_PICK, destinationKey);
-        }
+        fileHandler.relocateFiles(files, talkPick.getId(), TALK_PICK);
     }
 
     @Transactional

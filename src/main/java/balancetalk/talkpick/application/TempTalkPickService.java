@@ -1,7 +1,11 @@
 package balancetalk.talkpick.application;
 
-import balancetalk.file.application.FileService;
+import static balancetalk.file.domain.FileType.TEMP_TALK_PICK;
+import static balancetalk.talkpick.dto.TempTalkPickDto.FindTempTalkPickResponse;
+import static balancetalk.talkpick.dto.TempTalkPickDto.SaveTempTalkPickRequest;
+
 import balancetalk.file.domain.File;
+import balancetalk.file.domain.FileHandler;
 import balancetalk.file.domain.repository.FileRepository;
 import balancetalk.global.exception.BalanceTalkException;
 import balancetalk.global.exception.ErrorCode;
@@ -15,10 +19,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import static balancetalk.file.domain.FileType.TEMP_TALK_PICK;
-import static balancetalk.talkpick.dto.TempTalkPickDto.FindTempTalkPickResponse;
-import static balancetalk.talkpick.dto.TempTalkPickDto.SaveTempTalkPickRequest;
-
 @Service
 @RequiredArgsConstructor
 public class TempTalkPickService {
@@ -26,7 +26,7 @@ public class TempTalkPickService {
     private final MemberRepository memberRepository;
     private final TempTalkPickRepository tempTalkPickRepository;
     private final FileRepository fileRepository;
-    private final FileService fileService;
+    private final FileHandler fileHandler;
 
     @Transactional
     public void createTempTalkPick(SaveTempTalkPickRequest request, ApiMember apiMember) {
@@ -35,23 +35,12 @@ public class TempTalkPickService {
 
         if (member.hasTempTalkPick()) {
             Long tempTalkPickId = member.updateTempTalkPick(request.toEntity(member));
-            moveDirectory(files, tempTalkPickId);
+            fileHandler.relocateFiles(files, tempTalkPickId, TEMP_TALK_PICK);
             return;
         }
 
         TempTalkPick savedTempTalkPick = tempTalkPickRepository.save(request.toEntity(member));
-        moveDirectory(files, savedTempTalkPick.getId());
-    }
-
-    private void moveDirectory(List<File> files, Long tempTalkPickId) {
-        for (File file : files) {
-            String destinationKey = getDestinationKey(tempTalkPickId, file);
-            fileService.update(file, TEMP_TALK_PICK, destinationKey);
-        }
-    }
-
-    private String getDestinationKey(Long tempTalkPickId, File file) {
-        return "%s%d/%s".formatted(TEMP_TALK_PICK.getUploadDir(), tempTalkPickId, file.getStoredName());
+        fileHandler.relocateFiles(files, savedTempTalkPick.getId(), TEMP_TALK_PICK);
     }
 
     public FindTempTalkPickResponse findTempTalkPick(ApiMember apiMember) {
