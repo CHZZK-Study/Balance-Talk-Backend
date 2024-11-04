@@ -1,8 +1,17 @@
 package balancetalk.member.application;
 
+import static balancetalk.global.exception.ErrorCode.ALREADY_REGISTERED_EMAIL;
+import static balancetalk.global.exception.ErrorCode.ALREADY_REGISTERED_NICKNAME;
+import static balancetalk.global.exception.ErrorCode.AUTHENTICATION_REQUIRED;
+import static balancetalk.global.exception.ErrorCode.CACHE_NOT_FOUND;
+import static balancetalk.global.exception.ErrorCode.FORBIDDEN_MEMBER_DELETE;
+import static balancetalk.global.exception.ErrorCode.MISMATCHED_EMAIL_OR_PASSWORD;
+import static balancetalk.global.exception.ErrorCode.NOT_FOUND_MEMBER;
+import static balancetalk.global.exception.ErrorCode.PASSWORD_MISMATCH;
+import static balancetalk.global.exception.ErrorCode.SAME_NICKNAME;
+
 import balancetalk.global.caffeine.CacheType;
 import balancetalk.global.exception.BalanceTalkException;
-import balancetalk.global.exception.ErrorCode;
 import balancetalk.global.jwt.JwtTokenProvider;
 import balancetalk.member.domain.Member;
 import balancetalk.member.domain.MemberRepository;
@@ -10,24 +19,20 @@ import balancetalk.member.dto.ApiMember;
 import balancetalk.member.dto.MemberDto.JoinRequest;
 import balancetalk.member.dto.MemberDto.LoginRequest;
 import balancetalk.member.dto.MemberDto.MemberResponse;
-import com.github.benmanes.caffeine.cache.Cache;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.CacheManager;
-import org.springframework.cache.caffeine.CaffeineCache;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
-import java.util.stream.Collectors;
 
-import static balancetalk.global.exception.ErrorCode.ALREADY_REGISTERED_EMAIL;
-import static balancetalk.global.exception.ErrorCode.ALREADY_REGISTERED_NICKNAME;
 
 @Slf4j
 @Service
@@ -47,6 +52,9 @@ public class MemberService {
         if (memberRepository.existsByNickname(joinRequest.getNickname())) {
             throw new BalanceTalkException(ALREADY_REGISTERED_NICKNAME);
         }
+        if (!joinRequest.getPassword().equals(joinRequest.getPasswordConfirm())) {
+            throw new BalanceTalkException(PASSWORD_MISMATCH);
+        }
         joinRequest.setPassword(passwordEncoder.encode(joinRequest.getPassword()));
         Member member = joinRequest.toEntity();
         return memberRepository.save(member).getId();
@@ -54,18 +62,22 @@ public class MemberService {
 
     public String login(final LoginRequest loginRequest, HttpServletResponse response) {
         Member member = memberRepository.findByEmail(loginRequest.getEmail())
-                .orElseThrow(() -> new BalanceTalkException(ErrorCode.MISMATCHED_EMAIL_OR_PASSWORD));
+                .orElseThrow(() -> new BalanceTalkException(MISMATCHED_EMAIL_OR_PASSWORD));
         if (!passwordEncoder.matches(loginRequest.getPassword(), member.getPassword())) {
-            throw new BalanceTalkException(ErrorCode.MISMATCHED_EMAIL_OR_PASSWORD);
+            throw new BalanceTalkException(MISMATCHED_EMAIL_OR_PASSWORD);
         }
 
         Authentication authentication = jwtTokenProvider.getAuthenticationByEmail(loginRequest.getEmail());
         String accessToken = jwtTokenProvider.createAccessToken(authentication, member.getId());
         String refreshToken = jwtTokenProvider.createRefreshToken(authentication, member.getId());
 
-        cacheManager.getCache(CacheType.RefreshToken.getCacheName()).put(member.getId(), refreshToken);
-
-        Cookie cookie = jwtTokenProvider.createCookie(refreshToken);
+        Optional.ofNullable(cacheManager.getCache(CacheType.RefreshToken.getCacheName()))
+                .ifPresentOrElse(
+                        cache -> cache.put(member.getId(), refreshToken),
+                        () -> {
+                            throw new BalanceTalkException(CACHE_NOT_FOUND);
+                        });
+        Cookie cookie = JwtTokenProvider.createCookie(refreshToken);
         response.addCookie(cookie);
         return accessToken;
     }
@@ -73,7 +85,7 @@ public class MemberService {
     @Transactional(readOnly = true)
     public MemberResponse findById(Long memberId) {
         Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new BalanceTalkException(ErrorCode.NOT_FOUND_MEMBER));
+                .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_MEMBER));
         return MemberResponse.fromEntity(member);
     }
 
@@ -82,23 +94,15 @@ public class MemberService {
         List<Member> members = memberRepository.findAll();
         return members.stream()
                 .map(MemberResponse::fromEntity)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     public void updateNickname(final String newNickname, ApiMember apiMember) {
         Member member = apiMember.toMember(memberRepository);
         if (member.getNickname().equals(newNickname)) {
-            throw new BalanceTalkException(ErrorCode.SAME_NICKNAME);
+            throw new BalanceTalkException(SAME_NICKNAME);
         }
         member.updateNickname(newNickname);
-    }
-
-    public void updatePassword(final String newPassword, ApiMember apiMember) {
-        Member member = apiMember.toMember(memberRepository);
-        if (passwordEncoder.matches(newPassword, member.getPassword())) {
-            throw new BalanceTalkException(ErrorCode.SAME_PASSWORD);
-        }
-        member.updatePassword(passwordEncoder.encode(newPassword));
     }
 
     public void updateImage(final String profileImgUrl, ApiMember apiMember) {
@@ -109,10 +113,10 @@ public class MemberService {
     public void delete(final LoginRequest loginRequest, ApiMember apiMember) {
         Member member = apiMember.toMember(memberRepository);
         if (!member.getEmail().equals(loginRequest.getEmail())) {
-            throw new BalanceTalkException(ErrorCode.FORBIDDEN_MEMBER_DELETE);
+            throw new BalanceTalkException(FORBIDDEN_MEMBER_DELETE);
         }
         if (!passwordEncoder.matches(loginRequest.getPassword(), member.getPassword())) {
-            throw new BalanceTalkException(ErrorCode.MISMATCHED_EMAIL_OR_PASSWORD);
+            throw new BalanceTalkException(MISMATCHED_EMAIL_OR_PASSWORD);
         }
         memberRepository.deleteByEmail(member.getEmail());
     }
@@ -120,13 +124,13 @@ public class MemberService {
     public void logout() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null) {
-            throw new BalanceTalkException(ErrorCode.AUTHENTICATION_REQUIRED);
+            throw new BalanceTalkException(AUTHENTICATION_REQUIRED);
         }
     }
 
     public void verifyNickname(String nickname) {
         if (memberRepository.existsByNickname(nickname)) {
-            throw new BalanceTalkException(ErrorCode.ALREADY_REGISTERED_NICKNAME);
+            throw new BalanceTalkException(ALREADY_REGISTERED_NICKNAME);
         }
     }
 

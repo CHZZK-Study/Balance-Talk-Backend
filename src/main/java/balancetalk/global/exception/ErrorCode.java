@@ -40,6 +40,8 @@ public enum ErrorCode {
     BALANCE_GAME_SIZE_TEN(BAD_REQUEST, "밸런스 게임의 갯수는 10개여야 합니다."),
     BALANCE_GAME_SEARCH_BLANK(BAD_REQUEST, "검색어는 공백이어선 안 됩니다."),
     BALANCE_GAME_SEARCH_LENGTH(BAD_REQUEST, "검색어는 공백 제외 2자 이상이어야 합니다."),
+    PASSWORD_MISMATCH(BAD_REQUEST, "비밀번호가 일치하지 않습니다."),
+    CACHE_NOT_FOUND(BAD_REQUEST, "캐시를 찾을 수 없습니다."),
 
     // 401
     MISMATCHED_EMAIL_OR_PASSWORD(UNAUTHORIZED, "이메일 또는 비밀번호가 잘못되었습니다."),
@@ -85,7 +87,7 @@ public enum ErrorCode {
     NOT_FOUND_BALANCE_GAME_SET(NOT_FOUND, "존재하지 않는 밸런스 게임 세트 입니다."),
     NOT_FOUND_BALANCE_GAME(NOT_FOUND, "존재하지 않는 밸런스 게임입니다."),
     NOT_FOUND_BALANCE_GAME_THAT_GAME_SET(NOT_FOUND, "해당 밸런스 게임 세트에 존재하지 않는 밸런스 게임입니다."),
-    NOT_FOUND_GAME_TOPIC(NOT_FOUND, "존재하지 않는 밸런스 게임 주제입니다."),
+    NOT_FOUND_MAIN_TAG(NOT_FOUND, "존재하지 않는 메인 태그입니다."),
     NOT_FOUND_TALK_PICK_THAT_MEMBER(NOT_FOUND, "해당 회원이 작성하지 않은 톡픽입니다."),
     NOT_FOUND_TEMP_TALK_PICK(NOT_FOUND, "임시 저장한 톡픽이 존재하지 않습니다."),
     NOT_FOUND_NOTIFICATION(NOT_FOUND, "존재하지 않는 알림입니다."),
