@@ -1,6 +1,7 @@
 package balancetalk.game.dto;
 
-import static balancetalk.vote.domain.VoteOption.*;
+import static balancetalk.vote.domain.VoteOption.A;
+import static balancetalk.vote.domain.VoteOption.B;
 
 import balancetalk.bookmark.domain.GameBookmark;
 import balancetalk.game.domain.Game;
@@ -11,12 +12,12 @@ import balancetalk.vote.domain.VoteOption;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.v3.oas.annotations.media.Schema;
+import java.time.LocalDateTime;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import java.time.LocalDateTime;
 
 public class GameDto {
 
@@ -39,9 +40,9 @@ public class GameDto {
                     .build();
         }
 
-        public List<String> extractStoresNames() {
+        public List<Long> getFileIds() {
             return this.gameOptions.stream()
-                    .map(GameOptionDto::getStoredName)
+                    .map(GameOptionDto::getFileId)
                     .toList();
         }
     }

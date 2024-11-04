@@ -39,16 +39,9 @@ public class GameSetDto {
                     .mainTag(mainTag)
                     .subTag(subTag)
                     .member(member)
-                    .games(games.stream().map(CreateOrUpdateGame::toEntity).toList())
                     .bookmarks(0L)
                     .editedAt(LocalDateTime.now())
                     .build();
-        }
-
-        public List<String> extractAllStoredNames() {
-            return games.stream()
-                    .flatMap(game -> game.extractStoresNames().stream())
-                    .toList();
         }
     }
 

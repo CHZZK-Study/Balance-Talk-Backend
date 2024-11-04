@@ -1,20 +1,12 @@
 package balancetalk.game.domain;
 
-import static balancetalk.global.exception.ErrorCode.FAIL_PARSE_NOTIFICATION_HISTORY;
-import static balancetalk.global.exception.ErrorCode.FAIL_SERIALIZE_NOTIFICATION_HISTORY;
-
 import balancetalk.global.common.BaseTimeEntity;
 import balancetalk.global.exception.BalanceTalkException;
 import balancetalk.global.exception.ErrorCode;
 import balancetalk.vote.domain.VoteOption;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.stream.IntStream;
 import lombok.*;
 import java.time.LocalDateTime;
@@ -53,7 +45,7 @@ public class Game extends BaseTimeEntity {
         return option.getVotesCount();
     }
 
-    public void addGameSet(GameSet gameSet) {
+    public void assignGameSet(GameSet gameSet) {
         this.gameSet = gameSet;
     }
 

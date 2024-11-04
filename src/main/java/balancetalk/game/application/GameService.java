@@ -1,11 +1,15 @@
 package balancetalk.game.application;
 
+import static balancetalk.file.domain.FileType.GAME;
+
 import balancetalk.bookmark.domain.GameBookmark;
-import balancetalk.file.domain.FileType;
+import balancetalk.file.domain.File;
+import balancetalk.file.domain.FileHandler;
 import balancetalk.file.domain.repository.FileRepository;
 import balancetalk.game.domain.Game;
 import balancetalk.game.domain.GameSet;
 import balancetalk.game.domain.MainTag;
+import balancetalk.game.domain.repository.GameRepository;
 import balancetalk.game.domain.repository.GameSetRepository;
 import balancetalk.game.domain.repository.MainTagRepository;
 import balancetalk.game.dto.GameDto.CreateGameMainTagRequest;
@@ -42,10 +46,13 @@ public class GameService {
     private static final int PAGE_INITIAL_INDEX = 0;
     private static final int PAGE_LIMIT = 16;
     private static final int GAME_SIZE = 10;
+
+    private final GameRepository gameRepository;
     private final GameSetRepository gameSetRepository;
     private final MemberRepository memberRepository;
     private final MainTagRepository mainTagRepository;
     private final FileRepository fileRepository;
+    private final FileHandler fileHandler;
 
     public void createBalanceGameSet(final CreateGameSetRequest request, final ApiMember apiMember) {
         Member member = apiMember.toMember(memberRepository);
@@ -54,16 +61,20 @@ public class GameService {
         String title = request.getTitle();
 
         List<CreateOrUpdateGame> gameRequests = request.getGames();
-
         if (gameRequests.size() < GAME_SIZE) {
             throw new BalanceTalkException(ErrorCode.BALANCE_GAME_SIZE_TEN);
         }
 
         GameSet gameSet = request.toEntity(title, mainTag, member);
-        List<Game> games = gameSet.getGames();
-        gameSet.addGames(games);
         gameSetRepository.save(gameSet);
-        fileRepository.updateResourceIdAndTypeByStoredNames(gameSet.getId(), FileType.GAME, request.extractAllStoredNames());
+
+        for (CreateOrUpdateGame gameRequest : gameRequests) {
+            Game game = gameRequest.toEntity();
+            game.assignGameSet(gameSet);
+            gameRepository.save(game);
+            List<File> files = fileRepository.findAllById(gameRequest.getFileIds());
+            fileHandler.relocateFiles(files, game.getId(), GAME);
+        }
     }
 
     public GameSetDetailResponse findBalanceGameSet(final Long gameSetId, final GuestOrApiMember guestOrApiMember) {
@@ -75,8 +86,8 @@ public class GameService {
             // 게스트인 경우 북마크, 선택 옵션 없음
             return GameSetDetailResponse.fromEntity(gameSet, null, false,
                     gameSet.getGames().stream()
-                    .map(game -> GameDetailResponse.fromEntity(game, false, null))
-                    .toList());
+                            .map(game -> GameDetailResponse.fromEntity(game, false, null))
+                            .toList());
         }
 
         Member member = guestOrApiMember.toMember(memberRepository);
@@ -114,7 +125,9 @@ public class GameService {
         Game game = gameSet.getGameById(gameId);
         game.updateGame(request.toEntity());
         gameSet.updateGameSet();
-        fileRepository.updateResourceIdAndTypeByStoredNames(gameId, FileType.GAME, request.extractStoresNames());
+
+        List<File> files = fileRepository.findAllById(request.getFileIds());
+        fileHandler.relocateFiles(files, game.getId(), GAME);
     }
 
     public void deleteBalanceGameSet(final Long gameSetId, final ApiMember apiMember) {
@@ -126,14 +139,14 @@ public class GameService {
         Pageable pageable = PageRequest.of(PAGE_INITIAL_INDEX, PAGE_LIMIT);
         List<GameSet> gameSets = gameSetRepository.findGamesByCreationDate(tagName, pageable);
         return gameSets.stream()
-                .map(gameSet -> GameSetResponse.fromEntity(gameSet)).toList();
+                .map(GameSetResponse::fromEntity).toList();
     }
 
     public List<GameSetResponse> findBestGames(final String tagName) {
         Pageable pageable = PageRequest.of(PAGE_INITIAL_INDEX, PAGE_LIMIT);
         List<GameSet> gameSets = gameSetRepository.findGamesByViews(tagName, pageable);
         return gameSets.stream()
-                .map(gameSet -> GameSetResponse.fromEntity(gameSet)).toList();
+                .map(GameSetResponse::fromEntity).toList();
     }
 
     public void createGameMainTag(final CreateGameMainTagRequest request, final ApiMember apiMember) {

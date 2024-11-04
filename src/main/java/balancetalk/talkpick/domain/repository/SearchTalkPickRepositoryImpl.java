@@ -53,7 +53,7 @@ public class SearchTalkPickRepositoryImpl implements SearchTalkPickRepositoryCus
 
     private List<SearchTalkPickResponse> findByExactMatch(String keyword, Pageable pageable, int limit) {
         return queryFactory
-                .select(new QSearchTalkPickResponse(talkPick, file.path.concat(file.storedName)))
+                .select(new QSearchTalkPickResponse(talkPick, file.s3Url))
                 .from(talkPick)
                 .leftJoin(file)
                 .on(talkPick.id.eq(file.resourceId), file.id.eq(getMinFileIdByResourceIdAndType()))
@@ -110,7 +110,7 @@ public class SearchTalkPickRepositoryImpl implements SearchTalkPickRepositoryCus
 
     private List<SearchTalkPickResponse> findByNaturalMode(String keyword, Pageable pageable, int limit) {
         return queryFactory
-                .select(new QSearchTalkPickResponse(talkPick, file.path.concat(file.storedName)))
+                .select(new QSearchTalkPickResponse(talkPick, file.s3Url))
                 .from(talkPick)
                 .leftJoin(file)
                 .on(talkPick.id.eq(file.resourceId), file.id.eq(getMinFileIdByResourceIdAndType()))

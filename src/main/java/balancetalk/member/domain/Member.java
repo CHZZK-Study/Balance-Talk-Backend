@@ -176,7 +176,7 @@ public class Member extends BaseTimeEntity {
         return tempTalkPick.update(newTempTalkPick);
     }
 
-    public Long updateTempGameSet(TempGameSet newTempGameSet) {
+    public TempGameSet updateTempGameSet(TempGameSet newTempGameSet) {
         return tempGameSet.updateTempGameSet(newTempGameSet);
     }
 

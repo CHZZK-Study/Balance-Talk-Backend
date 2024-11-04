@@ -1,6 +1,13 @@
 package balancetalk.talkpick.application;
 
-import balancetalk.file.domain.FileType;
+import static balancetalk.file.domain.FileType.TALK_PICK;
+import static balancetalk.global.exception.ErrorCode.NOT_FOUND_TALK_PICK;
+import static balancetalk.talkpick.dto.TalkPickDto.CreateOrUpdateTalkPickRequest;
+import static balancetalk.talkpick.dto.TalkPickDto.TalkPickDetailResponse;
+import static balancetalk.talkpick.dto.TalkPickDto.TalkPickResponse;
+
+import balancetalk.file.domain.File;
+import balancetalk.file.domain.FileHandler;
 import balancetalk.file.domain.repository.FileRepository;
 import balancetalk.global.exception.BalanceTalkException;
 import balancetalk.member.domain.Member;
@@ -10,17 +17,13 @@ import balancetalk.member.dto.GuestOrApiMember;
 import balancetalk.talkpick.domain.TalkPick;
 import balancetalk.talkpick.domain.repository.TalkPickRepository;
 import balancetalk.vote.domain.TalkPickVote;
+import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
-import java.util.Optional;
-
-import static balancetalk.global.exception.ErrorCode.NOT_FOUND_TALK_PICK;
-import static balancetalk.talkpick.dto.TalkPickDto.*;
 
 @Service
 @RequiredArgsConstructor
@@ -29,13 +32,14 @@ public class TalkPickService {
     private final MemberRepository memberRepository;
     private final TalkPickRepository talkPickRepository;
     private final FileRepository fileRepository;
+    private final FileHandler fileHandler;
 
     @Transactional
     public Long createTalkPick(CreateOrUpdateTalkPickRequest request, ApiMember apiMember) {
         Member member = apiMember.toMember(memberRepository);
         TalkPick savedTalkPick = talkPickRepository.save(request.toEntity(member));
-        fileRepository.updateResourceIdAndTypeByStoredNames(savedTalkPick.getId(), FileType.TALK_PICK, request.getStoredNames());
-
+        List<File> files = fileRepository.findAllById(request.getFileIds());
+        fileHandler.relocateFiles(files, savedTalkPick.getId(), TALK_PICK);
         return savedTalkPick.getId();
     }
 
@@ -45,8 +49,8 @@ public class TalkPickService {
                 .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_TALK_PICK));
         talkPick.increaseViews();
 
-        List<String> imgUrls = fileRepository.findImgUrlsByResourceIdAndFileType(talkPickId, FileType.TALK_PICK);
-        List<String> imgStoredNames = fileRepository.findStoredNamesByResourceIdAndFileType(talkPickId, FileType.TALK_PICK);
+        List<String> imgUrls = fileRepository.findImgUrlsByResourceIdAndFileType(talkPickId, TALK_PICK);
+        List<String> imgStoredNames = fileRepository.findStoredNamesByResourceIdAndFileType(talkPickId, TALK_PICK);
 
         if (guestOrApiMember.isGuest()) {
             return TalkPickDetailResponse.from(talkPick, imgUrls, imgStoredNames, false, null);
@@ -76,7 +80,8 @@ public class TalkPickService {
         Member member = apiMember.toMember(memberRepository);
         TalkPick talkPick = member.getTalkPickById(talkPickId);
         talkPick.update(request.toEntity(member));
-        fileRepository.updateResourceIdAndTypeByStoredNames(talkPickId, FileType.TALK_PICK, request.getStoredNames());
+        List<File> files = fileRepository.findAllById(request.getFileIds());
+        fileHandler.relocateFiles(files, talkPick.getId(), TALK_PICK);
     }
 
     @Transactional

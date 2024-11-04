@@ -4,7 +4,6 @@ import balancetalk.game.domain.MainTag;
 import balancetalk.game.domain.TempGameSet;
 import balancetalk.game.dto.TempGameDto.CreateTempGameRequest;
 import balancetalk.game.dto.TempGameDto.TempGameDetailResponse;
-import balancetalk.game.dto.TempGameOptionDto.CreateTempGameOption;
 import balancetalk.member.domain.Member;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.List;
@@ -29,15 +28,7 @@ public class TempGameSetDto {
                     .mainTag(mainTag)
                     .subTag(subTag)
                     .member(member)
-                    .tempGames(tempGames.stream().map(CreateTempGameRequest::toEntity).toList())
                     .build();
-        }
-
-        public List <String> extractStoredNames() {
-            return this.getTempGames().stream()
-                    .flatMap(tempGame -> tempGame.getTempGameOptions().stream())
-                    .map(CreateTempGameOption::getStoredName)
-                    .toList();
         }
     }
 
