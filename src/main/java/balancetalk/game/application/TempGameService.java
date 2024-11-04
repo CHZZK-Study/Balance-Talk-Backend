@@ -6,7 +6,7 @@ import balancetalk.file.domain.repository.FileRepository;
 import balancetalk.game.domain.MainTag;
 import balancetalk.game.domain.TempGame;
 import balancetalk.game.domain.TempGameSet;
-import balancetalk.game.domain.repository.GameTagRepository;
+import balancetalk.game.domain.repository.MainTagRepository;
 import balancetalk.game.domain.repository.TempGameSetRepository;
 import balancetalk.game.dto.TempGameSetDto.CreateTempGameSetRequest;
 import balancetalk.game.dto.TempGameSetDto.TempGameSetResponse;
@@ -26,13 +26,13 @@ public class TempGameService {
     private final MemberRepository memberRepository;
     private final TempGameSetRepository tempGameSetRepository;
     private final FileRepository fileRepository;
-    private final GameTagRepository gameTagRepository;
+    private final MainTagRepository mainTagRepository;
 
     @Transactional
     public void createTempGame(CreateTempGameSetRequest request, ApiMember apiMember) {
         Member member = apiMember.toMember(memberRepository);
-        MainTag mainTag = gameTagRepository.findByName(request.getMainTag())
-                .orElseThrow(() -> new BalanceTalkException(ErrorCode.NOT_FOUND_GAME_TOPIC));
+        MainTag mainTag = mainTagRepository.findByName(request.getMainTag())
+                .orElseThrow(() -> new BalanceTalkException(ErrorCode.NOT_FOUND_MAIN_TAG));
 
         List<String> storedNames = request.extractStoredNames();
 
