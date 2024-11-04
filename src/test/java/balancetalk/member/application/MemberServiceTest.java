@@ -15,17 +15,14 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.util.Collections;
 import java.util.Optional;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
-import org.springframework.cache.caffeine.CaffeineCache;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -71,22 +68,6 @@ class MemberServiceTest {
             .email(joinRequest.getEmail())
             .nickname(joinRequest.getNickname())
             .build();
-
-    @Test
-    @DisplayName("회원가입을 성공적으로 완료할 때 성공적으로 memberId 값을 리턴한다.")
-    void createMember_Success() {
-        // given
-        when(memberRepository.existsByEmail(any())).thenReturn(false);
-        when(memberRepository.existsByNickname(any())).thenReturn(false);
-        when(passwordEncoder.encode(any())).thenReturn("encodedPassword");
-        when(memberRepository.save(any())).thenReturn(member);
-
-        // when
-        Long memberId = memberService.join(joinRequest);
-
-        // then
-        Assertions.assertThat(memberId).isEqualTo(1L);
-    }
 
     @Test
     @DisplayName("로그인을 성공적으로 완료했을 때 성공적으로 accessToken 값을 리턴한다.")
@@ -141,21 +122,6 @@ class MemberServiceTest {
 
         // then
         assertEquals(member.getProfileImgUrl(), newImgUrl);
-    }
-
-    @Test
-    @DisplayName("회원 비밀번호 업데이트 시 성공적으로 변경")
-    void updateMemberPassword_Success() {
-        // given
-        String newPassword = "newPassword";
-        when(apiMember.toMember(any())).thenReturn(member);
-        when(passwordEncoder.encode(any())).thenReturn(newPassword);
-
-        // when
-        memberService.updatePassword(newPassword, apiMember);
-
-        // then
-        assertEquals(member.getPassword(), newPassword);
     }
 
     @Test

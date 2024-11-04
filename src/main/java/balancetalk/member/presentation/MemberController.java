@@ -10,7 +10,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -63,18 +62,7 @@ public class MemberController {
     @Operation(summary = "회원 닉네임 수정", description = "회원 닉네임을 수정한다.")
     public void updateNickname(@Valid @NotBlank @RequestBody @Size(min = 2, max = 10) final String newNickname,
                                @Parameter(hidden = true) @AuthPrincipal ApiMember apiMember) {
-        // TODO: RequestBody 빈 값일 때 에러체킹 x
         memberService.updateNickname(newNickname, apiMember);
-    }
-
-    @ResponseStatus(HttpStatus.OK)
-    @PutMapping(value = "/password", consumes = "text/plain")
-    @Operation(summary = "회원 비밀번호 수정", description = "회원 패스워드를 수정한다.")
-    public void updatePassword(@RequestBody @Size(min = 10, max = 20)
-                               @Pattern(regexp = "^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d@$!%*#?&]{10,20}$") final String newPassword,
-                               @Parameter(hidden = true) @AuthPrincipal ApiMember apiMember) {
-        // TODO: RequestBody 빈 값일 때 에러체킹 x
-        memberService.updatePassword(newPassword, apiMember);
     }
 
     @ResponseStatus(HttpStatus.OK)

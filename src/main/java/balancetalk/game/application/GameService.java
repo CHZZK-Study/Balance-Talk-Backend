@@ -11,7 +11,7 @@ import balancetalk.game.domain.GameSet;
 import balancetalk.game.domain.MainTag;
 import balancetalk.game.domain.repository.GameRepository;
 import balancetalk.game.domain.repository.GameSetRepository;
-import balancetalk.game.domain.repository.GameTagRepository;
+import balancetalk.game.domain.repository.MainTagRepository;
 import balancetalk.game.dto.GameDto.CreateGameMainTagRequest;
 import balancetalk.game.dto.GameDto.CreateOrUpdateGame;
 import balancetalk.game.dto.GameDto.GameDetailResponse;
@@ -50,14 +50,14 @@ public class GameService {
     private final GameRepository gameRepository;
     private final GameSetRepository gameSetRepository;
     private final MemberRepository memberRepository;
-    private final GameTagRepository gameTagRepository;
+    private final MainTagRepository mainTagRepository;
     private final FileRepository fileRepository;
     private final FileHandler fileHandler;
 
     public void createBalanceGameSet(final CreateGameSetRequest request, final ApiMember apiMember) {
         Member member = apiMember.toMember(memberRepository);
-        MainTag mainTag = gameTagRepository.findByName(request.getMainTag())
-                .orElseThrow(() -> new BalanceTalkException(ErrorCode.NOT_FOUND_GAME_TOPIC));
+        MainTag mainTag = mainTagRepository.findByName(request.getMainTag())
+                .orElseThrow(() -> new BalanceTalkException(ErrorCode.NOT_FOUND_MAIN_TAG));
         String title = request.getTitle();
 
         List<CreateOrUpdateGame> gameRequests = request.getGames();
@@ -135,27 +135,27 @@ public class GameService {
         gameSetRepository.deleteById(gameSetId);
     }
 
-    public List<GameSetResponse> findLatestGames(final String topicName) {
+    public List<GameSetResponse> findLatestGames(final String tagName) {
         Pageable pageable = PageRequest.of(PAGE_INITIAL_INDEX, PAGE_LIMIT);
-        List<GameSet> gameSets = gameSetRepository.findGamesByCreationDate(topicName, pageable);
+        List<GameSet> gameSets = gameSetRepository.findGamesByCreationDate(tagName, pageable);
         return gameSets.stream()
                 .map(GameSetResponse::fromEntity).toList();
     }
 
-    public List<GameSetResponse> findBestGames(final String topicName) {
+    public List<GameSetResponse> findBestGames(final String tagName) {
         Pageable pageable = PageRequest.of(PAGE_INITIAL_INDEX, PAGE_LIMIT);
-        List<GameSet> gameSets = gameSetRepository.findGamesByViews(topicName, pageable);
+        List<GameSet> gameSets = gameSetRepository.findGamesByViews(tagName, pageable);
         return gameSets.stream()
                 .map(GameSetResponse::fromEntity).toList();
     }
 
     public void createGameMainTag(final CreateGameMainTagRequest request, final ApiMember apiMember) {
         apiMember.toMember(memberRepository);
-        boolean hasGameTag = gameTagRepository.existsByName(request.getName());
+        boolean hasGameTag = mainTagRepository.existsByName(request.getName());
         if (hasGameTag) {
             throw new BalanceTalkException(ErrorCode.ALREADY_REGISTERED_TAG);
         }
         MainTag mainTag = request.toEntity();
-        gameTagRepository.save(mainTag);
+        mainTagRepository.save(mainTag);
     }
 }

@@ -10,16 +10,11 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 import java.io.IOException;
 
-import static balancetalk.global.jwt.JwtTokenProvider.createAccessCookie;
-import static balancetalk.global.jwt.JwtTokenProvider.createCookie;
-
-@Slf4j
 @Component
 @RequiredArgsConstructor
 public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
@@ -41,8 +36,8 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         String accessToken = jwtTokenProvider.createAccessToken(authentication, member.getId());
         String refreshToken = jwtTokenProvider.createRefreshToken(authentication, member.getId());
 
-        response.addCookie(createCookie(refreshToken));
-        response.addCookie(createAccessCookie(accessToken));
+        response.addCookie(JwtTokenProvider.createCookie(refreshToken));
+        response.addCookie(JwtTokenProvider.createAccessCookie(accessToken));
         response.sendRedirect("http://43.202.175.99:8080");
     }
 
