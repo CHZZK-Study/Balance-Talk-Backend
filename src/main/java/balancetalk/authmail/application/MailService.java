@@ -37,7 +37,22 @@ public class MailService {
     private final MemberRepository memberRepository;
     private final BCryptPasswordEncoder passwordEncoder;
 
-    public void sendAuthenticationNumber(EmailRequest request) {
+    public void sendSignUpCode(EmailRequest request) {
+        String email = request.getEmail();
+        boolean userExist = memberRepository.existsByEmail(email);
+        if (userExist) {
+            throw new BalanceTalkException(ErrorCode.ALREADY_REGISTERED_EMAIL);
+        }
+        MimeMessage message = createTempCode(request);
+        javaMailSender.send(message);
+    }
+
+    public void sendPasswordReset(EmailRequest request) {
+        String email = request.getEmail();
+        boolean userExist = memberRepository.existsByEmail(email);
+        if (!userExist) {
+            throw new BalanceTalkException(ErrorCode.NOT_FOUND_MEMBER);
+        }
         MimeMessage message = createTempCode(request);
         javaMailSender.send(message);
     }
@@ -52,7 +67,7 @@ public class MailService {
         try {
             message.setFrom(SENDER_EMAIL);
             message.setRecipients(TO, request.getEmail());
-            message.setSubject("[BalanceTalk] 인증 번호");
+            message.setSubject("[PICK-O] 인증 번호");
             String body = "";
             body += "<h3>" + "요청하신 인증 번호입니다." + "</h3>";
             body += "<h1>" + authCode + "</h1>";
