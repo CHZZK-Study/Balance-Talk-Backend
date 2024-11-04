@@ -29,15 +29,8 @@ public class TempGameSetDto {
                     .mainTag(mainTag)
                     .subTag(subTag)
                     .member(member)
-                    .tempGames(tempGames.stream().map(CreateTempGameRequest::toEntity).toList())
+//                    .tempGames(tempGames.stream().map(CreateTempGameRequest::toEntity).toList())
                     .build();
-        }
-
-        public List <String> extractStoredNames() {
-            return this.getTempGames().stream()
-                    .flatMap(tempGame -> tempGame.getTempGameOptions().stream())
-                    .map(CreateTempGameOption::getStoredName)
-                    .toList();
         }
     }
 

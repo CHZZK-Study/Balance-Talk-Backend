@@ -57,13 +57,13 @@ public class TempGameSet extends BaseTimeEntity {
     public void addTempGames(List<TempGame> tempGames) {
         this.tempGames = tempGames;
         tempGames.forEach(tempGame -> {
-            tempGame.addTempGameSet(this);
+            tempGame.assignTempGameSet(this);
             tempGame.getTempGameOptions().forEach(tempGameOption -> tempGameOption.addTempGame(tempGame));
         });
     }
 
 
-    public Long updateTempGameSet(TempGameSet newTempGameSet) {
+    public TempGameSet updateTempGameSet(TempGameSet newTempGameSet) {
         this.mainTag = newTempGameSet.getMainTag();
         this.subTag = newTempGameSet.getSubTag();
 
@@ -77,10 +77,10 @@ public class TempGameSet extends BaseTimeEntity {
                             existingGame -> existingGame.updateTempGame(newGame),
                             () -> {
                                 this.tempGames.add(newGame);
-                                newGame.addTempGameSet(this);
+                                newGame.assignTempGameSet(this);
                             }
                     );
         });
-        return id;
+        return this;
     }
 }

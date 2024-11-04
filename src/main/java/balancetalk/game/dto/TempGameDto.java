@@ -33,6 +33,12 @@ public class TempGameDto {
                     .bookmarks(0L)
                     .build();
         }
+
+        public List<Long> getFileIds() {
+            return this.tempGameOptions.stream()
+                    .map(CreateTempGameOption::getFileId)
+                    .toList();
+        }
     }
 
     @Data

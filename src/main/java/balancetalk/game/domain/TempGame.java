@@ -54,7 +54,7 @@ public class TempGame extends BaseTimeEntity {
     @ColumnDefault("0")
     private Long bookmarks;
 
-    public void addTempGameSet(TempGameSet tempGameSet) {
+    public void assignTempGameSet(TempGameSet tempGameSet) {
         this.tempGameSet = tempGameSet;
     }
 
