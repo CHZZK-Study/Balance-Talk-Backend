@@ -5,6 +5,7 @@ import balancetalk.member.dto.ApiMember;
 import balancetalk.member.dto.GuestOrApiMember;
 import balancetalk.vote.application.VoteGameService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -22,20 +23,21 @@ public class VoteGameController {
     @Operation(summary = "밸런스 게임 투표 생성", description = "밸런스 게임에서 원하는 선택지에 투표합니다.")
     @PostMapping
     public void createVoteGame(@PathVariable Long gameId, @RequestBody VoteRequest request,
-                               @AuthPrincipal GuestOrApiMember guestOrApiMember) {
+                               @Parameter(hidden = true) @AuthPrincipal GuestOrApiMember guestOrApiMember) {
         voteGameService.createVote(gameId, request, guestOrApiMember);
     }
 
     @Operation(summary = "밸런스 게임 투표 수정", description = "밸런스 게임 투표를 수정합니다.")
     @PutMapping
     public void updateVoteGame(@PathVariable Long gameId, @RequestBody VoteRequest request,
-                               @AuthPrincipal ApiMember apiMember) {
+                               @Parameter(hidden = true) @AuthPrincipal ApiMember apiMember) {
         voteGameService.updateVote(gameId, request, apiMember);
     }
 
     @Operation(summary = "밸런스 게임 투표 삭제", description = "밸런스 게임 투표를 삭제합니다.")
     @DeleteMapping
-    public void deleteVoteGame(@PathVariable Long gameId, @AuthPrincipal ApiMember apiMember) {
+    public void deleteVoteGame(@PathVariable Long gameId,
+                               @Parameter(hidden = true) @AuthPrincipal ApiMember apiMember) {
         voteGameService.deleteVote(gameId, apiMember);
     }
 }
