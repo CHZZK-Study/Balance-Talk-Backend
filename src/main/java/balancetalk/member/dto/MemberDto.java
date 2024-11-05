@@ -119,4 +119,25 @@ public class MemberDto {
                     .build();
         }
     }
+
+    @Data
+    @Builder
+    @AllArgsConstructor
+    @Schema(description = "회원 활동 정보 응답")
+    public static class MemberActivityResponse {
+
+        @Schema(description = "작성한 게시글 수", example = "23")
+        private int postsCount;
+
+        @Schema(description = "저장한 게시글 수", example = "21")
+        private int bookmarkedPostsCount;
+
+        public static MemberActivityResponse fromEntity(Member member) {
+            return MemberActivityResponse.builder()
+                    .postsCount(member.getPostsCount())
+                    .bookmarkedPostsCount(member.getBookmarkedPostsCount())
+                    .build();
+        }
+    }
+
 }

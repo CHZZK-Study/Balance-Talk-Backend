@@ -18,6 +18,7 @@ import balancetalk.member.domain.MemberRepository;
 import balancetalk.member.dto.ApiMember;
 import balancetalk.member.dto.MemberDto.JoinRequest;
 import balancetalk.member.dto.MemberDto.LoginRequest;
+import balancetalk.member.dto.MemberDto.MemberActivityResponse;
 import balancetalk.member.dto.MemberDto.MemberResponse;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -132,6 +133,11 @@ public class MemberService {
         if (memberRepository.existsByNickname(nickname)) {
             throw new BalanceTalkException(ALREADY_REGISTERED_NICKNAME);
         }
+    }
+
+    public MemberActivityResponse getMemberActivity(ApiMember apiMember) {
+        Member member = apiMember.toMember(memberRepository);
+        return MemberActivityResponse.fromEntity(member);
     }
 
     public String reissueAccessToken(HttpServletRequest request) {
