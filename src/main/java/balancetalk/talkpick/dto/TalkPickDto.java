@@ -28,7 +28,7 @@ public class TalkPickDto {
     @AllArgsConstructor
     public static class CreateOrUpdateTalkPickRequest {
 
-        private TalkPickFields talkPickFields;
+        private BaseTalkPickFields baseFields;
 
         @Schema(description = "첨부한 이미지 파일 ID 목록", example = "[12, 41]")
         private List<Long> fileIds;
@@ -36,11 +36,11 @@ public class TalkPickDto {
         public TalkPick toEntity(Member member) {
             return TalkPick.builder()
                     .member(member)
-                    .title(talkPickFields.getTitle())
-                    .content(talkPickFields.getContent())
-                    .optionA(talkPickFields.getOptionA())
-                    .optionB(talkPickFields.getOptionB())
-                    .sourceUrl(talkPickFields.getSourceUrl())
+                    .title(baseFields.getTitle())
+                    .content(baseFields.getContent())
+                    .optionA(baseFields.getOptionA())
+                    .optionB(baseFields.getOptionB())
+                    .sourceUrl(baseFields.getSourceUrl())
                     .views(0L)
                     .bookmarks(0L)
                     .viewStatus(NORMAL)
@@ -58,7 +58,7 @@ public class TalkPickDto {
         @Schema(description = "톡픽 ID", example = "톡픽 ID")
         private long id;
 
-        private TalkPickFields talkPickFields;
+        private BaseTalkPickFields baseFields;
 
         private SummaryResponse summary;
 
@@ -106,7 +106,7 @@ public class TalkPickDto {
                                                   VoteOption votedOption) {
             return TalkPickDetailResponse.builder()
                     .id(entity.getId())
-                    .talkPickFields(TalkPickFields.builder()
+                    .baseFields(BaseTalkPickFields.builder()
                             .title(entity.getTitle())
                             .content(entity.getContent())
                             .optionA(entity.getOptionA())

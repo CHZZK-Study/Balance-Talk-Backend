@@ -10,7 +10,7 @@ import lombok.Getter;
 @Getter
 @Builder
 @AllArgsConstructor
-public class TalkPickFields {
+public class BaseTalkPickFields {
 
     @Schema(description = "제목", example = "제목")
     @NotBlank(message = "제목은 공백을 허용하지 않습니다.")
