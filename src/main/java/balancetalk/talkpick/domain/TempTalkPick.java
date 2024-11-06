@@ -21,20 +21,16 @@ public class TempTalkPick {
     @JoinColumn(name = "member_id")
     private Member member;
 
-    @NotBlank
     @Size(max = 50)
     private String title;
 
-    @NotBlank
     @Column(columnDefinition = "LONGTEXT")
     private String content;
 
-    @NotBlank
     @Size(max = 10)
     @Column(name = "option_a")
     private String optionA;
 
-    @NotBlank
     @Size(max = 10)
     @Column(name = "option_b")
     private String optionB;
