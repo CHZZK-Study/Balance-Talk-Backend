@@ -96,13 +96,6 @@ public class MemberController {
         memberService.verifyNickname(nickname);
     }
 
-    @ResponseStatus(HttpStatus.OK)
-    @GetMapping("/activity")
-    @Operation(summary = "회원 활동 정보 조회", description = "회원 활동 정보를 조회한다.")
-    public MemberActivityResponse getActivity(@Parameter(hidden = true) @AuthPrincipal ApiMember apiMember) {
-        return memberService.getMemberActivity(apiMember);
-    }
-
     @ResponseStatus(HttpStatus.CREATED)
     @GetMapping("/reissue")
     @Operation(summary = "액세스 토큰 재발급", description = "만료된 액세스 토큰을 재발급 받는다.")

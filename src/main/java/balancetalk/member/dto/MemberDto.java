@@ -126,6 +126,9 @@ public class MemberDto {
     @Schema(description = "회원 활동 정보 응답")
     public static class MemberActivityResponse {
 
+        @Schema(description = "회원 프로필 URL", example = "https://pikko-image.s3.ap-northeast-2.amazonaws.com/member/511ca5c7-4367-40d1-ab18-3a8f0f4332a7_unnamed.pn")
+        private String profileImageUrl;
+
         @Schema(description = "작성한 게시글 수", example = "23")
         private int postsCount;
 
@@ -134,6 +137,7 @@ public class MemberDto {
 
         public static MemberActivityResponse fromEntity(Member member) {
             return MemberActivityResponse.builder()
+                    .profileImageUrl(member.getProfileImgUrl())
                     .postsCount(member.getPostsCount())
                     .bookmarkedPostsCount(member.getBookmarkedPostsCount())
                     .build();

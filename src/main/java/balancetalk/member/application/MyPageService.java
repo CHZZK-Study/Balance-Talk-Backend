@@ -16,6 +16,7 @@ import balancetalk.global.exception.ErrorCode;
 import balancetalk.member.domain.Member;
 import balancetalk.member.domain.MemberRepository;
 import balancetalk.member.dto.ApiMember;
+import balancetalk.member.dto.MemberDto.MemberActivityResponse;
 import balancetalk.talkpick.domain.TalkPick;
 import balancetalk.talkpick.domain.repository.TalkPickRepository;
 import balancetalk.talkpick.dto.TalkPickDto.TalkPickMyPageResponse;
@@ -128,5 +129,10 @@ public class MyPageService {
                 .toList();
 
         return new PageImpl<>(responses, pageable, gameSets.getTotalElements());
+    }
+
+    public MemberActivityResponse getMemberActivity(ApiMember apiMember) {
+        Member member = apiMember.toMember(memberRepository);
+        return MemberActivityResponse.fromEntity(member);
     }
 }
