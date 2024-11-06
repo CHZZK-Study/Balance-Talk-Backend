@@ -10,7 +10,6 @@ import balancetalk.game.domain.MainTag;
 import balancetalk.game.domain.TempGame;
 import balancetalk.game.domain.TempGameSet;
 import balancetalk.game.domain.repository.MainTagRepository;
-import balancetalk.game.domain.repository.TempGameRepository;
 import balancetalk.game.domain.repository.TempGameSetRepository;
 import balancetalk.game.dto.TempGameSetDto.CreateTempGameSetRequest;
 import balancetalk.game.dto.TempGameSetDto.TempGameSetResponse;
@@ -19,6 +18,7 @@ import balancetalk.global.exception.ErrorCode;
 import balancetalk.member.domain.Member;
 import balancetalk.member.domain.MemberRepository;
 import balancetalk.member.dto.ApiMember;
+import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -29,7 +29,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class TempGameService {
     private final MemberRepository memberRepository;
     private final TempGameSetRepository tempGameSetRepository;
-    private final TempGameRepository tempGameRepository;
     private final FileRepository fileRepository;
     private final FileHandler fileHandler;
     private final MainTagRepository mainTagRepository;
@@ -41,9 +40,8 @@ public class TempGameService {
                 .orElseThrow(() -> new BalanceTalkException(ErrorCode.NOT_FOUND_MAIN_TAG));
 
         if (member.hasTempGameSet()) {
-            List<CreateTempGameRequest> tempGameRequests = request.getTempGames();
-
             TempGameSet tempGameSet = member.updateTempGameSet(request.toEntity(mainTag, member));
+            List<CreateTempGameRequest> tempGameRequests = request.getTempGames();
             List<TempGame> tempGames = tempGameSet.getTempGames();
 
             for (int i = 0; i < tempGameRequests.size(); i++) {
@@ -57,17 +55,18 @@ public class TempGameService {
         }
 
         TempGameSet tempGameSet = request.toEntity(mainTag, member);
-        tempGameSetRepository.save(tempGameSet);
-
         List<CreateTempGameRequest> tempGameRequests = request.getTempGames();
+        List<TempGame> tempGames = new ArrayList<>();
+
         for (CreateTempGameRequest tempGameRequest : tempGameRequests) {
             TempGame tempGame = tempGameRequest.toEntity();
-            tempGame.assignTempGameSet(tempGameSet);
-            tempGameRepository.save(tempGame);
+            tempGames.add(tempGame);
             List<File> files = fileRepository.findAllById(tempGameRequest.getFileIds());
             fileHandler.relocateFiles(files, tempGame.getId(), TEMP_GAME);
-
         }
+
+        tempGameSet.addTempGames(tempGames);
+        tempGameSetRepository.save(tempGameSet);
     }
 
     public TempGameSetResponse findTempGameSet(ApiMember apiMember) {

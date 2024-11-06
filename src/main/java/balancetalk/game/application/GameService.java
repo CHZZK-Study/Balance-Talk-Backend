@@ -9,7 +9,6 @@ import balancetalk.file.domain.repository.FileRepository;
 import balancetalk.game.domain.Game;
 import balancetalk.game.domain.GameSet;
 import balancetalk.game.domain.MainTag;
-import balancetalk.game.domain.repository.GameRepository;
 import balancetalk.game.domain.repository.GameSetRepository;
 import balancetalk.game.domain.repository.MainTagRepository;
 import balancetalk.game.dto.GameDto.CreateGameMainTagRequest;
@@ -27,6 +26,7 @@ import balancetalk.member.dto.GuestOrApiMember;
 import balancetalk.vote.domain.GameVote;
 import balancetalk.vote.domain.VoteOption;
 import jakarta.transaction.Transactional;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -47,7 +47,6 @@ public class GameService {
     private static final int PAGE_LIMIT = 16;
     private static final int GAME_SIZE = 10;
 
-    private final GameRepository gameRepository;
     private final GameSetRepository gameSetRepository;
     private final MemberRepository memberRepository;
     private final MainTagRepository mainTagRepository;
@@ -66,15 +65,16 @@ public class GameService {
         }
 
         GameSet gameSet = request.toEntity(title, mainTag, member);
-        gameSetRepository.save(gameSet);
-
+        List<Game> games = new ArrayList<>();
         for (CreateOrUpdateGame gameRequest : gameRequests) {
             Game game = gameRequest.toEntity();
-            game.assignGameSet(gameSet);
-            gameRepository.save(game);
+            games.add(game);
             List<File> files = fileRepository.findAllById(gameRequest.getFileIds());
             fileHandler.relocateFiles(files, game.getId(), GAME);
         }
+
+        gameSet.addGames(games);
+        gameSetRepository.save(gameSet);
     }
 
     public GameSetDetailResponse findBalanceGameSet(final Long gameSetId, final GuestOrApiMember guestOrApiMember) {
