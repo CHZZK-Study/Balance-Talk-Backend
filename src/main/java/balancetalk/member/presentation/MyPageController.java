@@ -4,6 +4,7 @@ import balancetalk.game.dto.GameDto.GameMyPageResponse;
 import balancetalk.global.utils.AuthPrincipal;
 import balancetalk.member.application.MyPageService;
 import balancetalk.member.dto.ApiMember;
+import balancetalk.member.dto.MemberDto.MemberActivityResponse;
 import balancetalk.talkpick.dto.TalkPickDto.TalkPickMyPageResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -12,9 +13,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -93,5 +96,12 @@ public class MyPageController {
 
         Pageable pageable = PageRequest.of(page, size);
         return myPageService.findAllGamesByMember(apiMember, pageable);
+    }
+
+    @ResponseStatus(HttpStatus.OK)
+    @GetMapping("/activity")
+    @Operation(summary = "회원 활동 정보 조회", description = "회원 활동 정보를 조회한다.")
+    public MemberActivityResponse getActivity(@Parameter(hidden = true) @AuthPrincipal ApiMember apiMember) {
+        return myPageService.getMemberActivity(apiMember);
     }
 }
