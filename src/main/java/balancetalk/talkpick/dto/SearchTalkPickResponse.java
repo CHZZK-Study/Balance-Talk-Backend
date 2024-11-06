@@ -3,9 +3,8 @@ package balancetalk.talkpick.dto;
 import balancetalk.talkpick.domain.TalkPick;
 import com.querydsl.core.annotations.QueryProjection;
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.Data;
-
 import java.time.LocalDateTime;
+import lombok.Data;
 
 @Schema(description = "톡픽 검색 응답")
 @Data
