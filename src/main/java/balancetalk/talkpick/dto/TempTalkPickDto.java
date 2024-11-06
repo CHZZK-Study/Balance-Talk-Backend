@@ -30,6 +30,10 @@ public class TempTalkPickDto {
                     .member(member)
                     .build();
         }
+
+        public boolean containsFileIds() {
+            return fileIds != null;
+        }
     }
 
     @Schema(description = "임시 저장한 톡픽 조회 응답")

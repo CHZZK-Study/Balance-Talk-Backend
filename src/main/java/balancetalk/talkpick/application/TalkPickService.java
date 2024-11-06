@@ -38,9 +38,16 @@ public class TalkPickService {
     public Long createTalkPick(CreateOrUpdateTalkPickRequest request, ApiMember apiMember) {
         Member member = apiMember.toMember(memberRepository);
         TalkPick savedTalkPick = talkPickRepository.save(request.toEntity(member));
-        List<File> files = fileRepository.findAllById(request.getFileIds());
-        fileHandler.relocateFiles(files, savedTalkPick.getId(), TALK_PICK);
-        return savedTalkPick.getId();
+        Long savedTalkPickId = savedTalkPick.getId();
+        relocateFilesIfContainsFileIds(request, savedTalkPickId);
+        return savedTalkPickId;
+    }
+
+    private void relocateFilesIfContainsFileIds(CreateOrUpdateTalkPickRequest request, Long talkPickId) {
+        if (request.containsFileIds()) {
+            List<File> files = fileRepository.findAllById(request.getFileIds());
+            fileHandler.relocateFiles(files, talkPickId, TALK_PICK);
+        }
     }
 
     @Transactional
@@ -80,8 +87,7 @@ public class TalkPickService {
         Member member = apiMember.toMember(memberRepository);
         TalkPick talkPick = member.getTalkPickById(talkPickId);
         talkPick.update(request.toEntity(member));
-        List<File> files = fileRepository.findAllById(request.getFileIds());
-        fileHandler.relocateFiles(files, talkPick.getId(), TALK_PICK);
+        relocateFilesIfContainsFileIds(request, talkPick.getId());
     }
 
     @Transactional
