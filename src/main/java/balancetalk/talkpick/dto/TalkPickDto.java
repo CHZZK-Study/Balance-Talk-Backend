@@ -1,5 +1,9 @@
 package balancetalk.talkpick.dto;
 
+import static balancetalk.talkpick.domain.ViewStatus.NORMAL;
+import static balancetalk.vote.domain.VoteOption.A;
+import static balancetalk.vote.domain.VoteOption.B;
+
 import balancetalk.bookmark.domain.TalkPickBookmark;
 import balancetalk.comment.domain.Comment;
 import balancetalk.member.domain.Member;
@@ -10,19 +14,12 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.querydsl.core.annotations.QueryProjection;
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
-
-import static balancetalk.talkpick.domain.ViewStatus.NORMAL;
-import static balancetalk.vote.domain.VoteOption.A;
-import static balancetalk.vote.domain.VoteOption.B;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
 
 public class TalkPickDto {
 
@@ -31,27 +28,7 @@ public class TalkPickDto {
     @AllArgsConstructor
     public static class CreateOrUpdateTalkPickRequest {
 
-        @Schema(description = "제목", example = "제목")
-        @NotBlank(message = "제목은 공백을 허용하지 않습니다.")
-        @Size(max = 50, message = "제목은 50자 이하여야 합니다.")
-        private String title;
-
-        @Schema(description = "본문 내용", example = "본문 내용")
-        @NotBlank(message = "본문 내용은 공백을 허용하지 않습니다.")
-        private String content;
-
-        @Schema(description = "선택지 A 이름", example = "선택지 A 이름")
-        @NotBlank(message = "선택지 이름은 공백을 허용하지 않습니다.")
-        @Size(max = 10, message = "선택지 이름은 10자 이하여야 합니다.")
-        private String optionA;
-
-        @Schema(description = "선택지 B 이름", example = "선택지 B 이름")
-        @NotBlank(message = "선택지 이름은 공백을 허용하지 않습니다.")
-        @Size(max = 10, message = "선택지 이름은 10자 이하여야 합니다.")
-        private String optionB;
-
-        @Schema(description = "출처 URL", example = "https://github.com/CHZZK-Study/Balance-Talk-Backend/issues/506")
-        private String sourceUrl;
+        private BaseTalkPickFields baseFields;
 
         @Schema(description = "첨부한 이미지 파일 ID 목록", example = "[12, 41]")
         private List<Long> fileIds;
@@ -59,11 +36,11 @@ public class TalkPickDto {
         public TalkPick toEntity(Member member) {
             return TalkPick.builder()
                     .member(member)
-                    .title(title)
-                    .content(content)
-                    .optionA(optionA)
-                    .optionB(optionB)
-                    .sourceUrl(sourceUrl)
+                    .title(baseFields.getTitle())
+                    .content(baseFields.getContent())
+                    .optionA(baseFields.getOptionA())
+                    .optionB(baseFields.getOptionB())
+                    .sourceUrl(baseFields.getSourceUrl())
                     .views(0L)
                     .bookmarks(0L)
                     .viewStatus(NORMAL)
@@ -81,36 +58,19 @@ public class TalkPickDto {
         @Schema(description = "톡픽 ID", example = "톡픽 ID")
         private long id;
 
-        @Schema(description = "제목", example = "톡픽 제목")
-        private String title;
-
-        @Schema(description = "본문 내용", example = "톡픽 본문 내용")
-        private String content;
+        private BaseTalkPickFields baseFields;
 
         private SummaryResponse summary;
 
-        @Schema(description = "선택지 A 이름", example = "선택지 A 이름")
-        private String optionA;
-
-        @Schema(description = "선택지 B 이름", example = "선택지 B 이름")
-        private String optionB;
-
-        @Schema(description = "출처 URL", example = "https://github.com/CHZZK-Study/Balance-Talk-Backend/issues/506")
-        private String sourceUrl;
-
         @Schema(description = "톡픽 작성 시 첨부한 이미지 URL 목록",
-                example = "[" +
-                        "\"https://picko-image.s3.ap-northeast-2.amazonaws.com/temp-talk-pick/9b4856fe-b624-4e54-ad80-a94e083301d2_czz.png\",\n" +
-                        "\"https://picko-image.s3.ap-northeast-2.amazonaws.com/temp-talk-pick/fdcbd97b-f9be-45d1-b855-43f3fd17d5a6_6d588490-d5d4-4e47-b5d0-957e6ed4830b_prom.jpeg\"" +
-                        "]")
+                example = "["
+                        + "\"https://picko-image.amazonaws.com/temp-talk-pick/ad80-a94e083301d2_czz.png\",\n"
+                        + "\"https://picko-image.amazonaws.com/temp-talk-pick/957e6ed4830b_prom.jpeg\""
+                        + "]")
         private List<String> imgUrls;
 
-        @Schema(description = "톡픽 작성 시 첨부한 이미지 고유 이름",
-                example = "[" +
-                        "\"9b4856fe-b624-4e54-ad80-a94e083301d2_czz.png\",\n" +
-                        "\"fdcbd97b-f9be-45d1-b855-43f3fd17d5a6_6d588490-d5d4-4e47-b5d0-957e6ed4830b_prom.jpeg\"" +
-                        "]")
-        private List<String> imgStoredNames;
+        @Schema(description = "톡픽 작성 시 첨부한 이미지 파일 ID", example = "[1, 41]")
+        private List<Long> fileIds;
 
         @Schema(description = "선택지 A 투표수", example = "12")
         private long votesCountOfOptionA;
@@ -141,19 +101,21 @@ public class TalkPickDto {
 
         public static TalkPickDetailResponse from(TalkPick entity,
                                                   List<String> imgUrls,
-                                                  List<String> imgStoredNames,
+                                                  List<Long> fileIds,
                                                   boolean myBookmark,
                                                   VoteOption votedOption) {
             return TalkPickDetailResponse.builder()
                     .id(entity.getId())
-                    .title(entity.getTitle())
-                    .content(entity.getContent())
+                    .baseFields(BaseTalkPickFields.builder()
+                            .title(entity.getTitle())
+                            .content(entity.getContent())
+                            .optionA(entity.getOptionA())
+                            .optionB(entity.getOptionB())
+                            .sourceUrl(entity.getSourceUrl())
+                            .build())
                     .summary(new SummaryResponse(entity.getSummary()))
-                    .optionA(entity.getOptionA())
-                    .optionB(entity.getOptionB())
-                    .sourceUrl(entity.getSourceUrl())
                     .imgUrls(imgUrls)
-                    .imgStoredNames(imgStoredNames)
+                    .fileIds(fileIds)
                     .votesCountOfOptionA(entity.votesCountOf(A))
                     .votesCountOfOptionB(entity.votesCountOf(B))
                     .views(entity.getViews())
@@ -192,7 +154,8 @@ public class TalkPickDto {
         private long bookmarks;
 
         @QueryProjection
-        public TalkPickResponse(Long id, String title, String writer, LocalDateTime createdAt, long views, long bookmarks) {
+        public TalkPickResponse(Long id, String title, String writer, LocalDateTime createdAt,
+                                long views, long bookmarks) {
             this.id = id;
             this.title = title;
             this.writer = writer;
@@ -233,15 +196,6 @@ public class TalkPickDto {
         @Schema(description = "최종 수정일(마이페이지 등록 날짜)")
         @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy.MM.dd")
         private LocalDateTime editedAt;
-
-        /*
-        @Schema(description = "선택지 A 이미지", example = "https://pikko-image.s3.ap-northeast-2.amazonaws.com/balance-game/067cc56e-21b7-468f-a2c1-4839036ee7cd_unnamed.png")
-        private String optionAImg;
-
-        @Schema(description = "선택지 B 이미지", example = "https://pikko-image.s3.ap-northeast-2.amazonaws.com/balance-game/1157461e-a685-42fd-837e-7ed490894ca6_unnamed.png")
-        private String optionBImg;
-
-         */ // TODO : 톡픽 선택지 이미지 저장 구현 시 완성 가능
 
         public static TalkPickMyPageResponse from(TalkPick talkPick, TalkPickBookmark talkPickBookmark) {
             return TalkPickMyPageResponse.builder()
