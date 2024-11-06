@@ -14,8 +14,6 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.querydsl.core.annotations.QueryProjection;
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -30,27 +28,7 @@ public class TalkPickDto {
     @AllArgsConstructor
     public static class CreateOrUpdateTalkPickRequest {
 
-        @Schema(description = "제목", example = "제목")
-        @NotBlank(message = "제목은 공백을 허용하지 않습니다.")
-        @Size(max = 50, message = "제목은 50자 이하여야 합니다.")
-        private String title;
-
-        @Schema(description = "본문 내용", example = "본문 내용")
-        @NotBlank(message = "본문 내용은 공백을 허용하지 않습니다.")
-        private String content;
-
-        @Schema(description = "선택지 A 이름", example = "선택지 A 이름")
-        @NotBlank(message = "선택지 이름은 공백을 허용하지 않습니다.")
-        @Size(max = 10, message = "선택지 이름은 10자 이하여야 합니다.")
-        private String optionA;
-
-        @Schema(description = "선택지 B 이름", example = "선택지 B 이름")
-        @NotBlank(message = "선택지 이름은 공백을 허용하지 않습니다.")
-        @Size(max = 10, message = "선택지 이름은 10자 이하여야 합니다.")
-        private String optionB;
-
-        @Schema(description = "출처 URL", example = "https://github.com/CHZZK-Study/Balance-Talk-Backend/issues/506")
-        private String sourceUrl;
+        private TalkPickFields talkPickFields;
 
         @Schema(description = "첨부한 이미지 파일 ID 목록", example = "[12, 41]")
         private List<Long> fileIds;
@@ -58,11 +36,11 @@ public class TalkPickDto {
         public TalkPick toEntity(Member member) {
             return TalkPick.builder()
                     .member(member)
-                    .title(title)
-                    .content(content)
-                    .optionA(optionA)
-                    .optionB(optionB)
-                    .sourceUrl(sourceUrl)
+                    .title(talkPickFields.getTitle())
+                    .content(talkPickFields.getContent())
+                    .optionA(talkPickFields.getOptionA())
+                    .optionB(talkPickFields.getOptionB())
+                    .sourceUrl(talkPickFields.getSourceUrl())
                     .views(0L)
                     .bookmarks(0L)
                     .viewStatus(NORMAL)
@@ -80,22 +58,9 @@ public class TalkPickDto {
         @Schema(description = "톡픽 ID", example = "톡픽 ID")
         private long id;
 
-        @Schema(description = "제목", example = "톡픽 제목")
-        private String title;
-
-        @Schema(description = "본문 내용", example = "톡픽 본문 내용")
-        private String content;
+        private TalkPickFields talkPickFields;
 
         private SummaryResponse summary;
-
-        @Schema(description = "선택지 A 이름", example = "선택지 A 이름")
-        private String optionA;
-
-        @Schema(description = "선택지 B 이름", example = "선택지 B 이름")
-        private String optionB;
-
-        @Schema(description = "출처 URL", example = "https://github.com/CHZZK-Study/Balance-Talk-Backend/issues/506")
-        private String sourceUrl;
 
         @Schema(description = "톡픽 작성 시 첨부한 이미지 URL 목록",
                 example = "["
@@ -141,12 +106,14 @@ public class TalkPickDto {
                                                   VoteOption votedOption) {
             return TalkPickDetailResponse.builder()
                     .id(entity.getId())
-                    .title(entity.getTitle())
-                    .content(entity.getContent())
+                    .talkPickFields(TalkPickFields.builder()
+                            .title(entity.getTitle())
+                            .content(entity.getContent())
+                            .optionA(entity.getOptionA())
+                            .optionB(entity.getOptionB())
+                            .sourceUrl(entity.getSourceUrl())
+                            .build())
                     .summary(new SummaryResponse(entity.getSummary()))
-                    .optionA(entity.getOptionA())
-                    .optionB(entity.getOptionB())
-                    .sourceUrl(entity.getSourceUrl())
                     .imgUrls(imgUrls)
                     .fileIds(fileIds)
                     .votesCountOfOptionA(entity.votesCountOf(A))
@@ -187,7 +154,8 @@ public class TalkPickDto {
         private long bookmarks;
 
         @QueryProjection
-        public TalkPickResponse(Long id, String title, String writer, LocalDateTime createdAt, long views, long bookmarks) {
+        public TalkPickResponse(Long id, String title, String writer, LocalDateTime createdAt,
+                                long views, long bookmarks) {
             this.id = id;
             this.title = title;
             this.writer = writer;
