@@ -47,6 +47,10 @@ public class TalkPickDto {
                     .editedAt(LocalDateTime.now())
                     .build();
         }
+
+        public boolean containsFileIds() {
+            return fileIds != null;
+        }
     }
 
     @Schema(description = "톡픽 상세 조회 응답")
