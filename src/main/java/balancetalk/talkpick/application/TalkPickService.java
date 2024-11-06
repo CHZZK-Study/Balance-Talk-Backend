@@ -50,10 +50,10 @@ public class TalkPickService {
         talkPick.increaseViews();
 
         List<String> imgUrls = fileRepository.findImgUrlsByResourceIdAndFileType(talkPickId, TALK_PICK);
-        List<String> imgStoredNames = fileRepository.findStoredNamesByResourceIdAndFileType(talkPickId, TALK_PICK);
+        List<Long> fileIds = fileRepository.findIdsByResourceIdAndFileType(talkPickId, TALK_PICK);
 
         if (guestOrApiMember.isGuest()) {
-            return TalkPickDetailResponse.from(talkPick, imgUrls, imgStoredNames, false, null);
+            return TalkPickDetailResponse.from(talkPick, imgUrls, fileIds, false, null);
         }
 
         Member member = guestOrApiMember.toMember(memberRepository);
@@ -61,10 +61,10 @@ public class TalkPickService {
         Optional<TalkPickVote> myVote = member.getVoteOnTalkPick(talkPick);
 
         if (myVote.isEmpty()) {
-            return TalkPickDetailResponse.from(talkPick, imgUrls, imgStoredNames, hasBookmarked, null);
+            return TalkPickDetailResponse.from(talkPick, imgUrls, fileIds, hasBookmarked, null);
         }
 
-        return TalkPickDetailResponse.from(talkPick, imgUrls, imgStoredNames, hasBookmarked, myVote.get().getVoteOption());
+        return TalkPickDetailResponse.from(talkPick, imgUrls, fileIds, hasBookmarked, myVote.get().getVoteOption());
     }
 
     public Page<TalkPickResponse> findPaged(Pageable pageable) {

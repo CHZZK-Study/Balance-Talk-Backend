@@ -1,5 +1,9 @@
 package balancetalk.talkpick.dto;
 
+import static balancetalk.talkpick.domain.ViewStatus.NORMAL;
+import static balancetalk.vote.domain.VoteOption.A;
+import static balancetalk.vote.domain.VoteOption.B;
+
 import balancetalk.bookmark.domain.TalkPickBookmark;
 import balancetalk.comment.domain.Comment;
 import balancetalk.member.domain.Member;
@@ -12,17 +16,12 @@ import com.querydsl.core.annotations.QueryProjection;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
-
-import static balancetalk.talkpick.domain.ViewStatus.NORMAL;
-import static balancetalk.vote.domain.VoteOption.A;
-import static balancetalk.vote.domain.VoteOption.B;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
 
 public class TalkPickDto {
 
@@ -99,18 +98,14 @@ public class TalkPickDto {
         private String sourceUrl;
 
         @Schema(description = "톡픽 작성 시 첨부한 이미지 URL 목록",
-                example = "[" +
-                        "\"https://picko-image.s3.ap-northeast-2.amazonaws.com/temp-talk-pick/9b4856fe-b624-4e54-ad80-a94e083301d2_czz.png\",\n" +
-                        "\"https://picko-image.s3.ap-northeast-2.amazonaws.com/temp-talk-pick/fdcbd97b-f9be-45d1-b855-43f3fd17d5a6_6d588490-d5d4-4e47-b5d0-957e6ed4830b_prom.jpeg\"" +
-                        "]")
+                example = "["
+                        + "\"https://picko-image.amazonaws.com/temp-talk-pick/ad80-a94e083301d2_czz.png\",\n"
+                        + "\"https://picko-image.amazonaws.com/temp-talk-pick/957e6ed4830b_prom.jpeg\""
+                        + "]")
         private List<String> imgUrls;
 
-        @Schema(description = "톡픽 작성 시 첨부한 이미지 고유 이름",
-                example = "[" +
-                        "\"9b4856fe-b624-4e54-ad80-a94e083301d2_czz.png\",\n" +
-                        "\"fdcbd97b-f9be-45d1-b855-43f3fd17d5a6_6d588490-d5d4-4e47-b5d0-957e6ed4830b_prom.jpeg\"" +
-                        "]")
-        private List<String> imgStoredNames;
+        @Schema(description = "톡픽 작성 시 첨부한 이미지 파일 ID", example = "[1, 41]")
+        private List<Long> fileIds;
 
         @Schema(description = "선택지 A 투표수", example = "12")
         private long votesCountOfOptionA;
@@ -141,7 +136,7 @@ public class TalkPickDto {
 
         public static TalkPickDetailResponse from(TalkPick entity,
                                                   List<String> imgUrls,
-                                                  List<String> imgStoredNames,
+                                                  List<Long> fileIds,
                                                   boolean myBookmark,
                                                   VoteOption votedOption) {
             return TalkPickDetailResponse.builder()
@@ -153,7 +148,7 @@ public class TalkPickDto {
                     .optionB(entity.getOptionB())
                     .sourceUrl(entity.getSourceUrl())
                     .imgUrls(imgUrls)
-                    .imgStoredNames(imgStoredNames)
+                    .fileIds(fileIds)
                     .votesCountOfOptionA(entity.votesCountOf(A))
                     .votesCountOfOptionB(entity.votesCountOf(B))
                     .views(entity.getViews())
