@@ -33,4 +33,16 @@ public class BaseTalkPickFields {
 
     @Schema(description = "출처 URL", example = "https://github.com/CHZZK-Study/Balance-Talk-Backend/issues/506")
     private String sourceUrl;
+
+    public static BaseTalkPickFields from(String title, String content,
+                                          String optionA, String optionB,
+                                          String sourceUrl) {
+        return BaseTalkPickFields.builder()
+                .title(title)
+                .content(content)
+                .optionA(optionA)
+                .optionB(optionB)
+                .sourceUrl(sourceUrl)
+                .build();
+    }
 }
