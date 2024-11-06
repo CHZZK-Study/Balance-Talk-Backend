@@ -229,15 +229,6 @@ public class TalkPickDto {
         @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy.MM.dd")
         private LocalDateTime editedAt;
 
-        /*
-        @Schema(description = "선택지 A 이미지", example = "https://pikko-image.s3.ap-northeast-2.amazonaws.com/balance-game/067cc56e-21b7-468f-a2c1-4839036ee7cd_unnamed.png")
-        private String optionAImg;
-
-        @Schema(description = "선택지 B 이미지", example = "https://pikko-image.s3.ap-northeast-2.amazonaws.com/balance-game/1157461e-a685-42fd-837e-7ed490894ca6_unnamed.png")
-        private String optionBImg;
-
-         */ // TODO : 톡픽 선택지 이미지 저장 구현 시 완성 가능
-
         public static TalkPickMyPageResponse from(TalkPick talkPick, TalkPickBookmark talkPickBookmark) {
             return TalkPickMyPageResponse.builder()
                     .id(talkPick.getId())
