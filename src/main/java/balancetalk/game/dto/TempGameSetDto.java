@@ -27,6 +27,7 @@ public class TempGameSetDto {
             return TempGameSet.builder()
                     .mainTag(mainTag)
                     .subTag(subTag)
+                    .tempGames(tempGames.stream().map(CreateTempGameRequest::toEntity).toList())
                     .member(member)
                     .build();
         }
@@ -42,7 +43,7 @@ public class TempGameSetDto {
         public static TempGameSetResponse fromEntity(TempGameSet tempGameSet) {
             return TempGameSetResponse.builder()
                     .tempGameDetailResponses(tempGameSet.getTempGames().stream()
-                            .map(tempGame -> TempGameDetailResponse.fromEntity(tempGame)).toList()
+                            .map(TempGameDetailResponse::fromEntity).toList()
                     ).build();
         }
     }
