@@ -97,6 +97,16 @@ public class GameService {
                 .toList();
 
         gameSet.updateGameSet(request.getTitle(), newGames);
+
+        // 각 게임과 파일을 한 번씩 매핑하여 업데이트
+        for (int i = 0; i < newGames.size(); i++) {
+            Game game = newGames.get(i);
+            CreateOrUpdateGame gameRequest = request.getGames().get(i);
+
+            // 파일 재배치 처리
+            List<File> files = fileRepository.findAllById(gameRequest.getFileIds());
+            fileHandler.relocateFiles(files, game.getId(), GAME);
+        }
     }
 
     public GameSetDetailResponse findBalanceGameSet(final Long gameSetId, final GuestOrApiMember guestOrApiMember) {

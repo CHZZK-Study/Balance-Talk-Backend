@@ -45,7 +45,7 @@ public class GameOptionDto {
     }
 
     public GameOption toEntity(FileRepository fileRepository) {
-        String validUrl = fileRepository.existsByStoredName(this.imgUrl) ? this.imgUrl : null;
+        String validUrl = fileRepository.existsByS3Url(this.imgUrl) ? this.imgUrl : null;
         return GameOption.builder()
                 .name(name)
                 .imgUrl(validUrl)
