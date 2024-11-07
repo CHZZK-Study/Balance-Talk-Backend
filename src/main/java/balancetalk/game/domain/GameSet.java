@@ -1,8 +1,6 @@
 package balancetalk.game.domain;
 
 import balancetalk.global.common.BaseTimeEntity;
-import balancetalk.global.exception.BalanceTalkException;
-import balancetalk.global.exception.ErrorCode;
 import balancetalk.global.notification.domain.NotificationHistory;
 import balancetalk.member.domain.Member;
 import balancetalk.vote.domain.VoteOption;
@@ -23,6 +21,7 @@ import jakarta.validation.constraints.Size;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.IntStream;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -81,13 +80,6 @@ public class GameSet extends BaseTimeEntity {
         return this.id == id;
     }
 
-    public Game getGameById(long id) {
-        return games.stream()
-                .filter(game -> game.matchesId(id))
-                .findFirst()
-                .orElseThrow(() -> new BalanceTalkException(ErrorCode.NOT_FOUND_BALANCE_GAME));
-    }
-
     public void increaseBookmarks() {
         this.bookmarks++;
     }
@@ -124,8 +116,14 @@ public class GameSet extends BaseTimeEntity {
         return this.notificationHistory;
     }
 
-    public void updateGameSet() {
+    public void updateGameSet(String title, List<Game> newGames) {
+        this.title = title;
         this.editedAt = LocalDateTime.now();
+        IntStream.range(0, this.games.size()).forEach(i -> {
+            Game game = this.games.get(i);
+            Game newGame = newGames.get(i);
+            game.updateGame(newGame);
+        });
     }
 
     public String getFirstGameOptionImgA() {

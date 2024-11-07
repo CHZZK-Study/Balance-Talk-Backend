@@ -4,6 +4,7 @@ import static balancetalk.vote.domain.VoteOption.A;
 import static balancetalk.vote.domain.VoteOption.B;
 
 import balancetalk.bookmark.domain.GameBookmark;
+import balancetalk.file.domain.repository.FileRepository;
 import balancetalk.game.domain.Game;
 import balancetalk.game.domain.GameSet;
 import balancetalk.game.domain.MainTag;
@@ -32,10 +33,12 @@ public class GameDto {
 
         private List<GameOptionDto> gameOptions;
 
-        public Game toEntity() {
+        public Game toEntity(FileRepository fileRepository) {
             return Game.builder()
                     .description(description)
-                    .gameOptions(gameOptions.stream().map(GameOptionDto::toEntity).toList())
+                    .gameOptions(gameOptions.stream()
+                            .map(option -> option.toEntity(fileRepository))
+                            .toList())
                     .editedAt(LocalDateTime.now())
                     .build();
         }

@@ -1,5 +1,6 @@
 package balancetalk.game.dto;
 
+import balancetalk.file.domain.repository.FileRepository;
 import balancetalk.game.domain.GameOption;
 import balancetalk.vote.domain.VoteOption;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -43,10 +44,11 @@ public class GameOptionDto {
                 .build();
     }
 
-    public GameOption toEntity() {
+    public GameOption toEntity(FileRepository fileRepository) {
+        String validUrl = fileRepository.existsByStoredName(this.imgUrl) ? this.imgUrl : null;
         return GameOption.builder()
                 .name(name)
-                .imgUrl(imgUrl)
+                .imgUrl(validUrl)
                 .description(description)
                 .optionType(optionType)
                 .build();

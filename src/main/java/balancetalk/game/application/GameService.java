@@ -14,9 +14,10 @@ import balancetalk.game.domain.repository.MainTagRepository;
 import balancetalk.game.dto.GameDto.CreateGameMainTagRequest;
 import balancetalk.game.dto.GameDto.CreateOrUpdateGame;
 import balancetalk.game.dto.GameDto.GameDetailResponse;
-import balancetalk.game.dto.GameSetDto.CreateGameSetRequest;
+import balancetalk.game.dto.GameSetDto.CreateOrUpdateGameSet;
 import balancetalk.game.dto.GameSetDto.GameSetDetailResponse;
 import balancetalk.game.dto.GameSetDto.GameSetResponse;
+import balancetalk.game.dto.GameSetDto.UpdateGameSet;
 import balancetalk.global.exception.BalanceTalkException;
 import balancetalk.global.exception.ErrorCode;
 import balancetalk.member.domain.Member;
@@ -53,7 +54,7 @@ public class GameService {
     private final FileRepository fileRepository;
     private final FileHandler fileHandler;
 
-    public void createBalanceGameSet(final CreateGameSetRequest request, final ApiMember apiMember) {
+    public void createBalanceGameSet(final CreateOrUpdateGameSet request, final ApiMember apiMember) {
         Member member = apiMember.toMember(memberRepository);
         MainTag mainTag = mainTagRepository.findByName(request.getMainTag())
                 .orElseThrow(() -> new BalanceTalkException(ErrorCode.NOT_FOUND_MAIN_TAG));
@@ -68,18 +69,34 @@ public class GameService {
         List<Game> games = new ArrayList<>();
 
         for (CreateOrUpdateGame gameRequest : gameRequests) {
-            Game game = gameRequest.toEntity();
+            Game game = gameRequest.toEntity(fileRepository);
             games.add(game);
         }
 
         gameSet.addGames(games);
         gameSetRepository.save(gameSet);
 
-        for (int i = 0; i < gameRequests.size(); i++) {
-            CreateOrUpdateGame gameRequest = gameRequests.get(i);
+        processFilesForGamesCreate(request.getGames(), games);
+    }
+
+    private void processFilesForGamesCreate(List<CreateOrUpdateGame> request, List<Game> games) {
+        for (int i = 0; i < request.size(); i++) {
+            CreateOrUpdateGame gameRequest = request.get(i);
+            Game game = games.get(i);
             List<File> files = fileRepository.findAllById(gameRequest.getFileIds());
-            fileHandler.relocateFiles(files, games.get(i).getId(), GAME);
+            fileHandler.relocateFiles(files, game.getId(), GAME);
         }
+    }
+
+    public void updateBalanceGame(Long gameSetId, UpdateGameSet request, ApiMember apiMember) {
+        Member member = apiMember.toMember(memberRepository);
+        GameSet gameSet = member.getGameSetById(gameSetId);
+
+        List<Game> newGames = request.getGames().stream()
+                .map(gameRequest -> gameRequest.toEntity(fileRepository))
+                .toList();
+
+        gameSet.updateGameSet(request.getTitle(), newGames);
     }
 
     public GameSetDetailResponse findBalanceGameSet(final Long gameSetId, final GuestOrApiMember guestOrApiMember) {
@@ -122,17 +139,6 @@ public class GameService {
         return gameBookmark != null
                 && gameBookmark.getGameId().equals(game.getId())
                 && gameBookmark.isActive();
-    }
-
-    public void updateBalanceGame(Long gameSetId, Long gameId, CreateOrUpdateGame request, ApiMember apiMember) {
-        Member member = apiMember.toMember(memberRepository);
-        GameSet gameSet = member.getGameSetById(gameSetId);
-        Game game = gameSet.getGameById(gameId);
-        game.updateGame(request.toEntity());
-        gameSet.updateGameSet();
-
-        List<File> files = fileRepository.findAllById(request.getFileIds());
-        fileHandler.relocateFiles(files, game.getId(), GAME);
     }
 
     public void deleteBalanceGameSet(final Long gameSetId, final ApiMember apiMember) {

@@ -20,7 +20,7 @@ import lombok.Data;
 public class GameSetDto {
 
     @Data
-    public static class CreateGameSetRequest {
+    public static class CreateOrUpdateGameSet {
 
         @Schema(description = "밸런스게임 세트 제목", example = "밸런스게임 세트 제목")
         private String title;
@@ -38,6 +38,25 @@ public class GameSetDto {
                     .title(title)
                     .mainTag(mainTag)
                     .subTag(subTag)
+                    .member(member)
+                    .bookmarks(0L)
+                    .editedAt(LocalDateTime.now())
+                    .build();
+        }
+    }
+
+    @Data
+    public static class UpdateGameSet {
+
+        @Schema(description = "밸런스게임 세트 제목", example = "밸런스게임 세트 제목")
+        private String title;
+
+        @Schema(description = "게임 리스트")
+        private List<CreateOrUpdateGame> games;
+
+        public GameSet toEntity(String title, Member member) {
+            return GameSet.builder()
+                    .title(title)
                     .member(member)
                     .bookmarks(0L)
                     .editedAt(LocalDateTime.now())
