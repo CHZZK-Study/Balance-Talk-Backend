@@ -2,6 +2,7 @@ package balancetalk.game.dto;
 
 import balancetalk.game.domain.GameOption;
 import balancetalk.vote.domain.VoteOption;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -22,6 +23,7 @@ public class GameOptionDto {
             example = "https://pikko-image.s3.ap-northeast-2.amazonaws.com/balance-game/4839036ee7cd_unnamed.png")
     private String imgUrl;
 
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     @Schema(description = "선택지 이미지 파일 ID", example = "12")
     private Long fileId;
 

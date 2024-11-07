@@ -66,15 +66,20 @@ public class GameService {
 
         GameSet gameSet = request.toEntity(title, mainTag, member);
         List<Game> games = new ArrayList<>();
+
         for (CreateOrUpdateGame gameRequest : gameRequests) {
             Game game = gameRequest.toEntity();
             games.add(game);
-            List<File> files = fileRepository.findAllById(gameRequest.getFileIds());
-            fileHandler.relocateFiles(files, game.getId(), GAME);
         }
 
         gameSet.addGames(games);
         gameSetRepository.save(gameSet);
+
+        for (int i = 0; i < gameRequests.size(); i++) {
+            CreateOrUpdateGame gameRequest = gameRequests.get(i);
+            List<File> files = fileRepository.findAllById(gameRequest.getFileIds());
+            fileHandler.relocateFiles(files, games.get(i).getId(), GAME);
+        }
     }
 
     public GameSetDetailResponse findBalanceGameSet(final Long gameSetId, final GuestOrApiMember guestOrApiMember) {
