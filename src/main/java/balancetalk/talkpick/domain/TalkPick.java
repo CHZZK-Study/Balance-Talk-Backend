@@ -65,6 +65,8 @@ public class TalkPick extends BaseTimeEntity {
 
     private LocalDateTime editedAt;
 
+    private boolean isEdited;
+
     @Enumerated(value = EnumType.STRING)
     private ViewStatus viewStatus = ViewStatus.NORMAL;
 
@@ -106,6 +108,7 @@ public class TalkPick extends BaseTimeEntity {
         this.optionB = newTalkPick.getOptionB();
         this.sourceUrl = newTalkPick.getSourceUrl();
         this.editedAt = LocalDateTime.now();
+        this.isEdited = true;
     }
 
     public boolean matchesId(long id) {
@@ -113,7 +116,7 @@ public class TalkPick extends BaseTimeEntity {
     }
 
     public boolean isEdited() {
-        return editedAt != null;
+        return isEdited;
     }
 
     public void updateSummary(Summary newSummary) {
