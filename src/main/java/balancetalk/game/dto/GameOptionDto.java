@@ -1,5 +1,6 @@
 package balancetalk.game.dto;
 
+import balancetalk.file.domain.File;
 import balancetalk.file.domain.repository.FileRepository;
 import balancetalk.game.domain.GameOption;
 import balancetalk.vote.domain.VoteOption;
@@ -45,7 +46,10 @@ public class GameOptionDto {
     }
 
     public GameOption toEntity(FileRepository fileRepository) {
-        String validUrl = fileRepository.existsByS3Url(this.imgUrl) ? this.imgUrl : null;
+        String validUrl = fileRepository.findByS3Url(this.imgUrl)
+                .map(File::getS3Url)
+                .orElse(null);
+
         return GameOption.builder()
                 .name(name)
                 .imgUrl(validUrl)
