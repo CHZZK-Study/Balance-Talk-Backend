@@ -1,12 +1,12 @@
 package balancetalk.game.application;
 
-import static balancetalk.file.domain.FileType.GAME;
-
 import balancetalk.bookmark.domain.GameBookmark;
 import balancetalk.file.domain.File;
 import balancetalk.file.domain.FileHandler;
+import balancetalk.file.domain.FileType;
 import balancetalk.file.domain.repository.FileRepository;
 import balancetalk.game.domain.Game;
+import balancetalk.game.domain.GameOption;
 import balancetalk.game.domain.GameSet;
 import balancetalk.game.domain.MainTag;
 import balancetalk.game.domain.repository.GameSetRepository;
@@ -14,6 +14,7 @@ import balancetalk.game.domain.repository.MainTagRepository;
 import balancetalk.game.dto.GameDto.CreateGameMainTagRequest;
 import balancetalk.game.dto.GameDto.CreateOrUpdateGame;
 import balancetalk.game.dto.GameDto.GameDetailResponse;
+import balancetalk.game.dto.GameOptionDto;
 import balancetalk.game.dto.GameSetDto.CreateOrUpdateGameSet;
 import balancetalk.game.dto.GameSetDto.GameSetDetailResponse;
 import balancetalk.game.dto.GameSetDto.GameSetResponse;
@@ -32,6 +33,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.IntStream;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
@@ -76,16 +78,22 @@ public class GameService {
         gameSet.addGames(games);
         gameSetRepository.save(gameSet);
 
-        processFilesForGamesCreate(request.getGames(), games);
+        processFiles(request.getGames(), games);
     }
 
-    private void processFilesForGamesCreate(List<CreateOrUpdateGame> request, List<Game> games) {
-        for (int i = 0; i < request.size(); i++) {
-            CreateOrUpdateGame gameRequest = request.get(i);
+    private void processFiles(List<CreateOrUpdateGame> requests, List<Game> games) {
+        IntStream.range(0, requests.size()).forEach(i -> {
+            CreateOrUpdateGame gameRequest = requests.get(i);
             Game game = games.get(i);
-            List<File> files = fileRepository.findAllById(gameRequest.getFileIds());
-            fileHandler.relocateFiles(files, game.getId(), GAME);
-        }
+
+            IntStream.range(0, gameRequest.getGameOptions().size()).forEach(j -> {
+                GameOptionDto gameOptionDto = gameRequest.getGameOptions().get(j);
+                GameOption gameOption = game.getGameOptions().get(j);
+
+                List<File> files = fileRepository.findAllByS3Url(gameOptionDto.getImgUrl());
+                fileHandler.relocateFiles(files, gameOption.getId(), FileType.GAME_OPTION);
+            });
+        });
     }
 
     public void updateBalanceGame(Long gameSetId, UpdateGameSet request, ApiMember apiMember) {
@@ -96,17 +104,8 @@ public class GameService {
                 .map(gameRequest -> gameRequest.toEntity(fileRepository))
                 .toList();
 
-        gameSet.updateGameSet(request.getTitle(), newGames);
-
-        // 각 게임과 파일을 한 번씩 매핑하여 업데이트
-        for (int i = 0; i < newGames.size(); i++) {
-            Game game = newGames.get(i);
-            CreateOrUpdateGame gameRequest = request.getGames().get(i);
-
-            // 파일 재배치 처리
-            List<File> files = fileRepository.findAllById(gameRequest.getFileIds());
-            fileHandler.relocateFiles(files, game.getId(), GAME);
-        }
+        gameSet.updateGameSet(request.getTitle(), newGames, fileRepository);
+        gameSetRepository.save(gameSet);
     }
 
     public GameSetDetailResponse findBalanceGameSet(final Long gameSetId, final GuestOrApiMember guestOrApiMember) {
