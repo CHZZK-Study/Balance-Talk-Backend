@@ -101,7 +101,7 @@ public class TalkPickDto {
         private LocalDate createdAt;
 
         @Schema(description = "수정 여부", example = "true")
-        private Boolean isUpdated;
+        private Boolean isEdited;
 
         public static TalkPickDetailResponse from(TalkPick entity,
                                                   List<String> imgUrls,
@@ -128,7 +128,7 @@ public class TalkPickDto {
                     .votedOption(votedOption)
                     .writer(entity.getWriterNickname())
                     .createdAt(entity.getCreatedAt().toLocalDate())
-                    .isUpdated(entity.isEdited())
+                    .isEdited(entity.isEdited())
                     .build();
         }
     }
