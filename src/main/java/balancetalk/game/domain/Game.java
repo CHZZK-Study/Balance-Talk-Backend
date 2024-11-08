@@ -1,5 +1,6 @@
 package balancetalk.game.domain;
 
+import balancetalk.file.domain.repository.FileRepository;
 import balancetalk.global.common.BaseTimeEntity;
 import balancetalk.global.exception.BalanceTalkException;
 import balancetalk.global.exception.ErrorCode;
@@ -28,7 +29,7 @@ public class Game extends BaseTimeEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     private GameSet gameSet;
 
-    @OneToMany(mappedBy = "game", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "game", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<GameOption> gameOptions = new ArrayList<>();
 
     @NotBlank
@@ -49,14 +50,15 @@ public class Game extends BaseTimeEntity {
         this.gameSet = gameSet;
     }
 
-    public boolean matchesId(long id) {
-        return this.id == id;
-    }
 
-    public void updateGame(Game newGame) {
+    public void updateGame(Game newGame, FileRepository fileRepository) {
         this.description = newGame.getDescription();
         this.editedAt = LocalDateTime.now();
-        IntStream.range(0, this.gameOptions.size())
-                .forEach(i -> this.gameOptions.get(i).updateOption(newGame.getGameOptions().get(i)));
+
+        IntStream.range(0, newGame.getGameOptions().size()).forEach(i -> {
+            GameOption currentOption = this.gameOptions.get(i);
+            GameOption newOption = newGame.getGameOptions().get(i);
+            currentOption.updateGameOption(newOption, fileRepository);
+        });
     }
 }

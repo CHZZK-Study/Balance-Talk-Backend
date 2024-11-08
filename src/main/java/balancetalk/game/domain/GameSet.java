@@ -1,5 +1,6 @@
 package balancetalk.game.domain;
 
+import balancetalk.file.domain.repository.FileRepository;
 import balancetalk.global.common.BaseTimeEntity;
 import balancetalk.global.notification.domain.NotificationHistory;
 import balancetalk.member.domain.Member;
@@ -41,7 +42,7 @@ public class GameSet extends BaseTimeEntity {
     @Column(name = "id")
     private Long id;
 
-    @OneToMany(mappedBy = "gameSet", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "gameSet", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Game> games = new ArrayList<>();
 
     @NotBlank
@@ -92,11 +93,6 @@ public class GameSet extends BaseTimeEntity {
         return games.stream().anyMatch(game -> game.getId().equals(gameId));
     }
 
-    public void addGame(Game game) {
-        this.games.add(game);
-        game.assignGameSet(this);
-    }
-
     public void addGames(List<Game> games) {
         this.games = games;
         games.forEach(game -> {
@@ -116,13 +112,14 @@ public class GameSet extends BaseTimeEntity {
         return this.notificationHistory;
     }
 
-    public void updateGameSet(String title, List<Game> newGames) {
+    public void updateGameSet(String title, List<Game> newGames, FileRepository fileRepository) {
         this.title = title;
         this.editedAt = LocalDateTime.now();
+
         IntStream.range(0, this.games.size()).forEach(i -> {
-            Game game = this.games.get(i);
+            Game existingGame = this.games.get(i);
             Game newGame = newGames.get(i);
-            game.updateGame(newGame);
+            existingGame.updateGame(newGame, fileRepository);
         });
     }
 

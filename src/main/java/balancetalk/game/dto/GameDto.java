@@ -6,6 +6,7 @@ import static balancetalk.vote.domain.VoteOption.B;
 import balancetalk.bookmark.domain.GameBookmark;
 import balancetalk.file.domain.repository.FileRepository;
 import balancetalk.game.domain.Game;
+import balancetalk.game.domain.GameOption;
 import balancetalk.game.domain.GameSet;
 import balancetalk.game.domain.MainTag;
 import balancetalk.vote.domain.GameVote;
@@ -34,19 +35,15 @@ public class GameDto {
         private List<GameOptionDto> gameOptions;
 
         public Game toEntity(FileRepository fileRepository) {
+            List<GameOption> options = gameOptions.stream()
+                    .map(option -> option.toEntity(fileRepository))
+                    .toList();
+
             return Game.builder()
                     .description(description)
-                    .gameOptions(gameOptions.stream()
-                            .map(option -> option.toEntity(fileRepository))
-                            .toList())
+                    .gameOptions(options)
                     .editedAt(LocalDateTime.now())
                     .build();
-        }
-
-        public List<Long> getFileIds() {
-            return this.gameOptions.stream()
-                    .map(GameOptionDto::getFileId)
-                    .toList();
         }
     }
 
