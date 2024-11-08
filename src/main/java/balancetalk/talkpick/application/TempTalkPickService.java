@@ -31,16 +31,22 @@ public class TempTalkPickService {
     @Transactional
     public void createTempTalkPick(SaveTempTalkPickRequest request, ApiMember apiMember) {
         Member member = apiMember.toMember(memberRepository);
-        List<File> files = fileRepository.findAllById(request.getFileIds());
 
         if (member.hasTempTalkPick()) {
             Long tempTalkPickId = member.updateTempTalkPick(request.toEntity(member));
-            fileHandler.relocateFiles(files, tempTalkPickId, TEMP_TALK_PICK);
+            relocateFilesIfContainsFileIds(request, tempTalkPickId);
             return;
         }
 
         TempTalkPick savedTempTalkPick = tempTalkPickRepository.save(request.toEntity(member));
-        fileHandler.relocateFiles(files, savedTempTalkPick.getId(), TEMP_TALK_PICK);
+        relocateFilesIfContainsFileIds(request, savedTempTalkPick.getId());
+    }
+
+    private void relocateFilesIfContainsFileIds(SaveTempTalkPickRequest request, Long tempTalkPickId) {
+        if (request.containsFileIds()) {
+            List<File> files = fileRepository.findAllById(request.getFileIds());
+            fileHandler.relocateFiles(files, tempTalkPickId, TEMP_TALK_PICK);
+        }
     }
 
     public FindTempTalkPickResponse findTempTalkPick(ApiMember apiMember) {

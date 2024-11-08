@@ -15,7 +15,7 @@ public class TempTalkPickDto {
     @AllArgsConstructor
     public static class SaveTempTalkPickRequest {
 
-        private BaseTalkPickFields baseFields;
+        private BaseTempTalkPickFields baseFields;
 
         @Schema(description = "첨부한 이미지 ID 목록", example = "[214, 24]")
         private List<Long> fileIds;
@@ -29,6 +29,10 @@ public class TempTalkPickDto {
                     .sourceUrl(baseFields.getSourceUrl())
                     .member(member)
                     .build();
+        }
+
+        public boolean containsFileIds() {
+            return fileIds != null;
         }
     }
 
