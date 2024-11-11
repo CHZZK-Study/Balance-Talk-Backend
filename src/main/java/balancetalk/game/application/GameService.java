@@ -15,7 +15,7 @@ import balancetalk.game.dto.GameDto.CreateGameMainTagRequest;
 import balancetalk.game.dto.GameDto.CreateOrUpdateGame;
 import balancetalk.game.dto.GameDto.GameDetailResponse;
 import balancetalk.game.dto.GameOptionDto;
-import balancetalk.game.dto.GameSetDto.CreateOrUpdateGameSet;
+import balancetalk.game.dto.GameSetDto.CreateGameSet;
 import balancetalk.game.dto.GameSetDto.GameSetDetailResponse;
 import balancetalk.game.dto.GameSetDto.GameSetResponse;
 import balancetalk.game.dto.GameSetDto.UpdateGameSet;
@@ -56,7 +56,7 @@ public class GameService {
     private final FileRepository fileRepository;
     private final FileHandler fileHandler;
 
-    public void createBalanceGameSet(final CreateOrUpdateGameSet request, final ApiMember apiMember) {
+    public void createBalanceGameSet(final CreateGameSet request, final ApiMember apiMember) {
         Member member = apiMember.toMember(memberRepository);
         MainTag mainTag = mainTagRepository.findByName(request.getMainTag())
                 .orElseThrow(() -> new BalanceTalkException(ErrorCode.NOT_FOUND_MAIN_TAG));
@@ -82,13 +82,15 @@ public class GameService {
 
     public void updateBalanceGame(Long gameSetId, UpdateGameSet request, ApiMember apiMember) {
         Member member = apiMember.toMember(memberRepository);
+        MainTag mainTag = mainTagRepository.findByName(request.getMainTag())
+                .orElseThrow(() -> new BalanceTalkException(ErrorCode.NOT_FOUND_MAIN_TAG));
         GameSet gameSet = member.getGameSetById(gameSetId);
 
         List<Game> newGames = request.getGames().stream()
                 .map(gameRequest -> gameRequest.toEntity(fileRepository))
                 .toList();
 
-        gameSet.updateGameSet(request.getTitle(), newGames, fileRepository);
+        gameSet.updateGameSet(request.getTitle(), mainTag, request.getSubTag(), newGames, fileRepository);
         gameSetRepository.save(gameSet);
         processFiles(request.getGames(), gameSet.getGames());
     }

@@ -1,7 +1,7 @@
 package balancetalk.game.presentation;
 
 import balancetalk.game.application.GameService;
-import balancetalk.game.dto.GameSetDto.CreateOrUpdateGameSet;
+import balancetalk.game.dto.GameSetDto.CreateGameSet;
 import balancetalk.game.dto.GameSetDto.GameSetDetailResponse;
 import balancetalk.game.dto.GameSetDto.GameSetResponse;
 import balancetalk.game.dto.GameSetDto.UpdateGameSet;
@@ -27,7 +27,7 @@ public class GameController {
 
     @PostMapping
     @Operation(summary = "밸런스 게임 세트 생성", description = "10개 단위의 밸런스 게임을 가지고 있는 게임 세트를 생성합니다.")
-    public void createGameSet(@RequestBody final CreateOrUpdateGameSet request,
+    public void createGameSet(@RequestBody final CreateGameSet request,
                               @Parameter(hidden = true) @AuthPrincipal final ApiMember apiMember) {
         gameService.createBalanceGameSet(request, apiMember);
     }
