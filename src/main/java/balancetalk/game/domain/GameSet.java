@@ -116,18 +116,17 @@ public class GameSet extends BaseTimeEntity {
                               MainTag mainTag,
                               String subTag,
                               List<Game> newGames,
-                              FileRepository fileRepository)
-            {
-                this.title = title;
-                this.editedAt = LocalDateTime.now();
-                this.mainTag = mainTag;
-                this.subTag = subTag;
-                IntStream.range(0, this.games.size()).forEach(i -> {
-                    Game existingGame = this.games.get(i);
-                    Game newGame = newGames.get(i);
-                    existingGame.updateGame(newGame, fileRepository);
-                });
-            }
+                              FileRepository fileRepository) {
+            this.title = title;
+            this.editedAt = LocalDateTime.now();
+            this.mainTag = mainTag;
+            this.subTag = subTag;
+            IntStream.range(0, this.games.size()).forEach(i -> {
+                Game existingGame = this.games.get(i);
+                Game newGame = newGames.get(i);
+                existingGame.updateGame(newGame, fileRepository);
+            });
+        }
 
     public String getFirstGameOptionImgA() {
         return games.get(0).getGameOptions().get(0).getImgUrl();
