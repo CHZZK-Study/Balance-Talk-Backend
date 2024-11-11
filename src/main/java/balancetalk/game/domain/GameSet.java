@@ -112,7 +112,12 @@ public class GameSet extends BaseTimeEntity {
         return this.notificationHistory;
     }
 
-    public void updateGameSet(String title, MainTag mainTag, String subTag, List<Game> newGames, FileRepository fileRepository) {
+    public void updateGameSet(String title,
+                              MainTag mainTag,
+                              String subTag,
+                              List<Game> newGames,
+                              FileRepository fileRepository)
+    {
         this.title = title;
         this.editedAt = LocalDateTime.now();
         this.mainTag = mainTag;
