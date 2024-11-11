@@ -19,7 +19,6 @@ import balancetalk.global.notification.application.NotificationService;
 import balancetalk.member.domain.Member;
 import balancetalk.member.domain.MemberRepository;
 import balancetalk.member.dto.ApiMember;
-import balancetalk.member.dto.GuestOrApiMember;
 import balancetalk.vote.domain.GameVote;
 import balancetalk.vote.domain.VoteRepository;
 import balancetalk.vote.dto.VoteGameDto.VoteRequest;
@@ -39,17 +38,12 @@ public class VoteGameService {
     private final MemberRepository memberRepository;
     private final NotificationService notificationService;
 
-    public void createVote(Long gameId, VoteRequest request, GuestOrApiMember guestOrApiMember) {
+    public void createVote(Long gameId, VoteRequest request, ApiMember apiMember) {
+        Member member = apiMember.toMember(memberRepository);
+
         Game game = gameReader.findGameById(gameId);
         GameOption gameOption = getGameOption(game, request);
 
-        if (guestOrApiMember.isGuest()) {
-            voteRepository.save(request.toEntity(null, gameOption));
-            gameOption.increaseVotesCount();
-            return;
-        }
-
-        Member member = guestOrApiMember.toMember(memberRepository);
         if (member.hasVotedGame(game)) {
             throw new BalanceTalkException(ErrorCode.ALREADY_VOTE);
         }
