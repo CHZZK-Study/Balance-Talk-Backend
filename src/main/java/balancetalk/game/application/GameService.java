@@ -77,23 +77,7 @@ public class GameService {
 
         gameSet.addGames(games);
         gameSetRepository.save(gameSet);
-
         processFiles(request.getGames(), games);
-    }
-
-    private void processFiles(List<CreateOrUpdateGame> requests, List<Game> games) {
-        IntStream.range(0, requests.size()).forEach(i -> {
-            CreateOrUpdateGame gameRequest = requests.get(i);
-            Game game = games.get(i);
-
-            IntStream.range(0, gameRequest.getGameOptions().size()).forEach(j -> {
-                GameOptionDto gameOptionDto = gameRequest.getGameOptions().get(j);
-                GameOption gameOption = game.getGameOptions().get(j);
-
-                List<File> files = fileRepository.findAllByS3Url(gameOptionDto.getImgUrl());
-                fileHandler.relocateFiles(files, gameOption.getId(), FileType.GAME_OPTION);
-            });
-        });
     }
 
     public void updateBalanceGame(Long gameSetId, UpdateGameSet request, ApiMember apiMember) {
@@ -106,6 +90,22 @@ public class GameService {
 
         gameSet.updateGameSet(request.getTitle(), newGames, fileRepository);
         gameSetRepository.save(gameSet);
+        processFiles(request.getGames(), gameSet.getGames());
+    }
+
+    private void processFiles(List<CreateOrUpdateGame> gameRequests, List<Game> games) {
+        IntStream.range(0, gameRequests.size()).forEach(i -> {
+            CreateOrUpdateGame gameRequest = gameRequests.get(i);
+            Game game = games.get(i);
+
+            IntStream.range(0, gameRequest.getGameOptions().size()).forEach(j -> {
+                GameOptionDto gameOptionDto = gameRequest.getGameOptions().get(j);
+                GameOption gameOption = game.getGameOptions().get(j);
+
+                List<File> files = fileRepository.findAllByS3Url(gameOptionDto.getImgUrl());
+                fileHandler.relocateFiles(files, gameOption.getId(), FileType.GAME_OPTION);
+            });
+        });
     }
 
     public GameSetDetailResponse findBalanceGameSet(final Long gameSetId, final GuestOrApiMember guestOrApiMember) {

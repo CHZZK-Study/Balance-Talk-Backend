@@ -68,10 +68,7 @@ public class GameOption {
     public void updateGameOption(GameOption newGameOption, FileRepository fileRepository) {
         String newImgUrl = newGameOption.getImgUrl();
         if (newImgUrl != null && !newImgUrl.equals(this.imgUrl)) {
-            fileRepository.findByS3Url(newImgUrl).ifPresent(file -> {
-                file.updateResourceId(this.id);
-                this.imgUrl = newImgUrl;
-            });
+            fileRepository.findByS3Url(newImgUrl).ifPresent(file -> this.imgUrl = newImgUrl);
         }
         this.name = newGameOption.getName();
         this.description = newGameOption.getDescription();
