@@ -81,6 +81,7 @@ public class SecurityConfig {
         configuration.addAllowedHeader("Accept");
         configuration.addAllowedHeader("Authorization");
         configuration.addAllowedHeader("refreshToken");
+        configuration.addAllowedHeader("accessToken");
         configuration.addAllowedHeader("Content-Type");
         configuration.addAllowedHeader("Origin");
         configuration.addAllowedHeader("Cookie");
@@ -97,8 +98,6 @@ public class SecurityConfig {
         configuration.addAllowedHeader("User-Agent");
         configuration.addAllowedHeader("Sec-Fetch-Mode");
         configuration.addAllowedHeader("Sec-Fetch-Site");;
-        configuration.addExposedHeader("Authorization");
-        configuration.addExposedHeader("refreshToken");
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE"));
         configuration.setAllowCredentials(true);
         configuration.setMaxAge(MAX_AGE_SEC);
