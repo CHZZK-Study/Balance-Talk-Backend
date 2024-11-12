@@ -111,7 +111,7 @@ public class GameSet extends BaseTimeEntity {
         return this.notificationHistory;
     }
 
-    public void UpdateGameSetRequest(
+    public void updateGameSetRequest(
             String title,
             MainTag mainTag,
             String subTag,

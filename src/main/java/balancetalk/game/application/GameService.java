@@ -89,24 +89,28 @@ public class GameService {
                 .map(gameRequest -> gameRequest.toEntity(fileRepository))
                 .toList();
 
-        gameSet.UpdateGameSetRequest(request.getTitle(), mainTag, request.getSubTag(), newGames);
+        gameSet.updateGameSetRequest(request.getTitle(), mainTag, request.getSubTag(), newGames);
         processFiles(request.getGames(), gameSet.getGames());
     }
 
     private void processFiles(List<CreateOrUpdateGame> gameRequests, List<Game> games) {
-        for(int i = 0; i < gameRequests.size(); i++) {
+        for (int i = 0; i < gameRequests.size(); i++) {
             CreateOrUpdateGame gameRequest = gameRequests.get(i);
             Game game = games.get(i);
 
-            for(int j = 0; j < gameRequest.getGameOptions().size(); j++) {
+            for (int j = 0; j < gameRequest.getGameOptions().size(); j++) {
                 GameOptionDto gameOptionDto = gameRequest.getGameOptions().get(j);
                 GameOption gameOption = game.getGameOptions().get(j);
 
                 if (gameOptionDto.getFileId() == null) {
                     continue;
                 }
+
                 fileRepository.findById(gameOptionDto.getFileId())
-                        .ifPresent(file -> fileHandler.relocateFiles(Collections.singletonList(file), gameOption.getId(), FileType.GAME_OPTION));
+                        .ifPresent(
+                                file -> fileHandler.relocateFiles(Collections.singletonList(file), gameOption.getId(),
+                                        FileType.GAME_OPTION));
+
             }
         }
     }
