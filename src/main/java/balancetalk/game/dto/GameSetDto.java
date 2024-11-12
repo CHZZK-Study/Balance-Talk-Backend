@@ -20,7 +20,7 @@ import lombok.Data;
 public class GameSetDto {
 
     @Data
-    public static class CreateGameSet {
+    public static class CreateGameSetRequest {
 
         @Schema(description = "밸런스게임 세트 제목", example = "밸런스게임 세트 제목")
         private String title;
@@ -46,7 +46,7 @@ public class GameSetDto {
     }
 
     @Data
-    public static class UpdateGameSet {
+    public static class UpdateGameSetRequest {
 
         @Schema(description = "밸런스게임 세트 제목", example = "밸런스게임 세트 제목")
         private String title;
