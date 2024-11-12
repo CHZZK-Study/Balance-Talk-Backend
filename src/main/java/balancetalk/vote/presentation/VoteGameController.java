@@ -2,7 +2,6 @@ package balancetalk.vote.presentation;
 
 import balancetalk.global.utils.AuthPrincipal;
 import balancetalk.member.dto.ApiMember;
-import balancetalk.member.dto.GuestOrApiMember;
 import balancetalk.vote.application.VoteGameService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -23,8 +22,8 @@ public class VoteGameController {
     @Operation(summary = "밸런스 게임 투표 생성", description = "밸런스 게임에서 원하는 선택지에 투표합니다.")
     @PostMapping
     public void createVoteGame(@PathVariable Long gameId, @RequestBody VoteRequest request,
-                               @Parameter(hidden = true) @AuthPrincipal GuestOrApiMember guestOrApiMember) {
-        voteGameService.createVote(gameId, request, guestOrApiMember);
+                               @Parameter(hidden = true) @AuthPrincipal ApiMember apiMember) {
+        voteGameService.createVote(gameId, request, apiMember);
     }
 
     @Operation(summary = "밸런스 게임 투표 수정", description = "밸런스 게임 투표를 수정합니다.")
