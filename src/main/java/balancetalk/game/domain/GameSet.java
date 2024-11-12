@@ -1,6 +1,5 @@
 package balancetalk.game.domain;
 
-import balancetalk.file.domain.repository.FileRepository;
 import balancetalk.global.common.BaseTimeEntity;
 import balancetalk.global.notification.domain.NotificationHistory;
 import balancetalk.member.domain.Member;
@@ -112,12 +111,11 @@ public class GameSet extends BaseTimeEntity {
         return this.notificationHistory;
     }
 
-    public void updateGameSet(
+    public void UpdateGameSetRequest(
             String title,
             MainTag mainTag,
             String subTag,
-            List<Game> newGames,
-            FileRepository fileRepository
+            List<Game> newGames
     ) {
         this.title = title;
         this.editedAt = LocalDateTime.now();
@@ -127,7 +125,7 @@ public class GameSet extends BaseTimeEntity {
         IntStream.range(0, this.games.size()).forEach(i -> {
             Game existingGame = this.games.get(i);
             Game newGame = newGames.get(i);
-            existingGame.updateGame(newGame, fileRepository);
+            existingGame.updateGame(newGame);
         });
     }
 

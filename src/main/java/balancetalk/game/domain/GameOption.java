@@ -1,6 +1,5 @@
 package balancetalk.game.domain;
 
-import balancetalk.file.domain.repository.FileRepository;
 import balancetalk.vote.domain.GameVote;
 import balancetalk.vote.domain.VoteOption;
 import jakarta.persistence.Column;
@@ -65,11 +64,8 @@ public class GameOption {
         this.game = game;
     }
 
-    public void updateGameOption(GameOption newGameOption, FileRepository fileRepository) {
-        String newImgUrl = newGameOption.getImgUrl();
-        if (newImgUrl != null && !newImgUrl.equals(this.imgUrl)) {
-            fileRepository.findByS3Url(newImgUrl).ifPresent(file -> this.imgUrl = newImgUrl);
-        }
+    public void updateGameOption(GameOption newGameOption) {
+        this.imgUrl = newGameOption.getImgUrl();
         this.name = newGameOption.getName();
         this.description = newGameOption.getDescription();
     }

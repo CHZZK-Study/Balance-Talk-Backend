@@ -1,7 +1,6 @@
 package balancetalk.game.application;
 
 import balancetalk.bookmark.domain.GameBookmark;
-import balancetalk.file.domain.File;
 import balancetalk.file.domain.FileHandler;
 import balancetalk.file.domain.FileType;
 import balancetalk.file.domain.repository.FileRepository;
@@ -15,10 +14,10 @@ import balancetalk.game.dto.GameDto.CreateGameMainTagRequest;
 import balancetalk.game.dto.GameDto.CreateOrUpdateGame;
 import balancetalk.game.dto.GameDto.GameDetailResponse;
 import balancetalk.game.dto.GameOptionDto;
-import balancetalk.game.dto.GameSetDto.CreateGameSet;
+import balancetalk.game.dto.GameSetDto.CreateGameSetRequest;
 import balancetalk.game.dto.GameSetDto.GameSetDetailResponse;
 import balancetalk.game.dto.GameSetDto.GameSetResponse;
-import balancetalk.game.dto.GameSetDto.UpdateGameSet;
+import balancetalk.game.dto.GameSetDto.UpdateGameSetRequest;
 import balancetalk.global.exception.BalanceTalkException;
 import balancetalk.global.exception.ErrorCode;
 import balancetalk.member.domain.Member;
@@ -29,11 +28,11 @@ import balancetalk.vote.domain.GameVote;
 import balancetalk.vote.domain.VoteOption;
 import jakarta.transaction.Transactional;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.IntStream;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
@@ -56,7 +55,7 @@ public class GameService {
     private final FileRepository fileRepository;
     private final FileHandler fileHandler;
 
-    public void createBalanceGameSet(final CreateGameSet request, final ApiMember apiMember) {
+    public void createBalanceGameSet(final CreateGameSetRequest request, final ApiMember apiMember) {
         Member member = apiMember.toMember(memberRepository);
         MainTag mainTag = mainTagRepository.findByName(request.getMainTag())
                 .orElseThrow(() -> new BalanceTalkException(ErrorCode.NOT_FOUND_MAIN_TAG));
@@ -80,7 +79,7 @@ public class GameService {
         processFiles(request.getGames(), games);
     }
 
-    public void updateBalanceGame(Long gameSetId, UpdateGameSet request, ApiMember apiMember) {
+    public void updateBalanceGame(Long gameSetId, UpdateGameSetRequest request, ApiMember apiMember) {
         Member member = apiMember.toMember(memberRepository);
         MainTag mainTag = mainTagRepository.findByName(request.getMainTag())
                 .orElseThrow(() -> new BalanceTalkException(ErrorCode.NOT_FOUND_MAIN_TAG));
@@ -90,24 +89,27 @@ public class GameService {
                 .map(gameRequest -> gameRequest.toEntity(fileRepository))
                 .toList();
 
-        gameSet.updateGameSet(request.getTitle(), mainTag, request.getSubTag(), newGames, fileRepository);
+        gameSet.UpdateGameSetRequest(request.getTitle(), mainTag, request.getSubTag(), newGames);
         gameSetRepository.save(gameSet);
         processFiles(request.getGames(), gameSet.getGames());
     }
 
     private void processFiles(List<CreateOrUpdateGame> gameRequests, List<Game> games) {
-        IntStream.range(0, gameRequests.size()).forEach(i -> {
+        for(int i = 0; i < gameRequests.size(); i++) {
             CreateOrUpdateGame gameRequest = gameRequests.get(i);
             Game game = games.get(i);
 
-            IntStream.range(0, gameRequest.getGameOptions().size()).forEach(j -> {
+            for(int j = 0; j < gameRequest.getGameOptions().size(); j++) {
                 GameOptionDto gameOptionDto = gameRequest.getGameOptions().get(j);
                 GameOption gameOption = game.getGameOptions().get(j);
 
-                List<File> files = fileRepository.findAllByS3Url(gameOptionDto.getImgUrl());
-                fileHandler.relocateFiles(files, gameOption.getId(), FileType.GAME_OPTION);
-            });
-        });
+                if (gameOptionDto.getFileId() == null) {
+                    continue;
+                }
+                fileRepository.findById(gameOptionDto.getFileId())
+                        .ifPresent(file -> fileHandler.relocateFiles(Collections.singletonList(file), gameOption.getId(), FileType.GAME_OPTION));
+            }
+        }
     }
 
     public GameSetDetailResponse findBalanceGameSet(final Long gameSetId, final GuestOrApiMember guestOrApiMember) {

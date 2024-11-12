@@ -1,6 +1,5 @@
 package balancetalk.game.domain;
 
-import balancetalk.file.domain.repository.FileRepository;
 import balancetalk.global.common.BaseTimeEntity;
 import balancetalk.global.exception.BalanceTalkException;
 import balancetalk.global.exception.ErrorCode;
@@ -51,14 +50,14 @@ public class Game extends BaseTimeEntity {
     }
 
 
-    public void updateGame(Game newGame, FileRepository fileRepository) {
+    public void updateGame(Game newGame) {
         this.description = newGame.getDescription();
         this.editedAt = LocalDateTime.now();
 
         IntStream.range(0, newGame.getGameOptions().size()).forEach(i -> {
             GameOption currentOption = this.gameOptions.get(i);
             GameOption newOption = newGame.getGameOptions().get(i);
-            currentOption.updateGameOption(newOption, fileRepository);
+            currentOption.updateGameOption(newOption);
         });
     }
 }
