@@ -95,5 +95,14 @@ public class TalkPickService {
         Member member = apiMember.toMember(memberRepository);
         TalkPick talkPick = member.getTalkPickById(talkPickId);
         talkPickRepository.delete(talkPick);
+        deleteFiles(talkPickId);
+    }
+
+    private void deleteFiles(Long talkPickId) {
+        List<File> files = fileRepository.findAllByResourceIdAndFileType(talkPickId, TALK_PICK);
+        if (files.isEmpty()) {
+            return;
+        }
+        fileHandler.deleteFiles(files);
     }
 }
