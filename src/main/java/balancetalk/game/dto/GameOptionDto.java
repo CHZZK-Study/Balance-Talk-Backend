@@ -3,6 +3,8 @@ package balancetalk.game.dto;
 import balancetalk.file.domain.File;
 import balancetalk.file.domain.repository.FileRepository;
 import balancetalk.game.domain.GameOption;
+import balancetalk.global.exception.BalanceTalkException;
+import balancetalk.global.exception.ErrorCode;
 import balancetalk.vote.domain.VoteOption;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -46,13 +48,15 @@ public class GameOptionDto {
     }
 
     public GameOption toEntity(FileRepository fileRepository) {
-        String validUrl = fileRepository.findByS3Url(this.imgUrl)
-                .map(File::getS3Url)
-                .orElse(null);
-
+        String newImgUrl = null;
+        if (fileId != null) {
+            File file = fileRepository.findById(fileId)
+                    .orElseThrow(() -> new BalanceTalkException(ErrorCode.NOT_FOUND_FILE));
+            newImgUrl = file.getS3Url();
+        }
         return GameOption.builder()
                 .name(name)
-                .imgUrl(validUrl)
+                .imgUrl(newImgUrl)
                 .description(description)
                 .optionType(optionType)
                 .build();
