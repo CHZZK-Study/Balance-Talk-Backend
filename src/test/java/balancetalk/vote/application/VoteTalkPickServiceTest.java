@@ -1,24 +1,22 @@
 package balancetalk.vote.application;
 
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.when;
+
 import balancetalk.global.exception.BalanceTalkException;
 import balancetalk.member.domain.Member;
 import balancetalk.member.dto.ApiMember;
-import balancetalk.member.dto.GuestOrApiMember;
 import balancetalk.talkpick.domain.TalkPick;
 import balancetalk.talkpick.domain.TalkPickReader;
 import balancetalk.vote.domain.TalkPickVote;
+import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class VoteTalkPickServiceTest {
@@ -28,9 +26,6 @@ class VoteTalkPickServiceTest {
 
     @Mock
     TalkPickReader talkPickReader;
-
-    @Mock
-    GuestOrApiMember guestOrApiMember;
 
     @Mock
     ApiMember apiMember;
@@ -44,11 +39,10 @@ class VoteTalkPickServiceTest {
         Member member = Member.builder().talkPickVotes(List.of(vote)).build();
 
         when(talkPickReader.readById(any())).thenReturn(talkPick);
-        when(guestOrApiMember.isGuest()).thenReturn(false);
-        when(guestOrApiMember.toMember(any())).thenReturn(member);
+        when(apiMember.toMember(any())).thenReturn(member);
 
         // when, then
-        assertThatThrownBy(() -> voteTalkPickService.createVote(1L, any(), guestOrApiMember))
+        assertThatThrownBy(() -> voteTalkPickService.createVote(1L, any(), apiMember))
                 .isInstanceOf(BalanceTalkException.class);
     }
 

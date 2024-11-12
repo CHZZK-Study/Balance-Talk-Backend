@@ -1,8 +1,9 @@
 package balancetalk.vote.presentation;
 
+import static balancetalk.vote.dto.VoteTalkPickDto.VoteRequest;
+
 import balancetalk.global.utils.AuthPrincipal;
 import balancetalk.member.dto.ApiMember;
-import balancetalk.member.dto.GuestOrApiMember;
 import balancetalk.vote.application.VoteTalkPickService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -17,8 +18,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import static balancetalk.vote.dto.VoteTalkPickDto.VoteRequest;
-
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/votes/talks/{talkPickId}")
@@ -31,8 +30,8 @@ public class VoteTalkPickController {
     @PostMapping
     public void createVoteTalkPick(@PathVariable long talkPickId,
                                    @RequestBody @Valid VoteRequest request,
-                                   @Parameter(hidden = true) @AuthPrincipal GuestOrApiMember guestOrApiMember) {
-        voteTalkPickService.createVote(talkPickId, request, guestOrApiMember);
+                                   @Parameter(hidden = true) @AuthPrincipal ApiMember apiMember) {
+        voteTalkPickService.createVote(talkPickId, request, apiMember);
     }
 
     @Operation(summary = "톡픽 투표 수정", description = "톡픽 투표를 수정합니다.")
