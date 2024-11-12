@@ -37,7 +37,6 @@ import balancetalk.vote.domain.VoteOption;
 import balancetalk.vote.dto.VoteTalkPickDto.VoteRequest;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -208,7 +207,7 @@ public class VoteTalkPickService {
         return talkPick.getVotes().stream()
                 .filter(vote -> vote.getVoteOption().equals(option))
                 .map(TalkPickVote::getMember)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     private void sendNotificationToMembers(Member member, TalkPick talkPick, String category, String message) {
