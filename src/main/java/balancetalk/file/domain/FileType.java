@@ -3,7 +3,7 @@ package balancetalk.file.domain;
 public enum FileType {
     TALK_PICK("talks/", 10),
     TEMP_TALK_PICK("temp-talks/", 10),
-    GAME_OPTION("game-options/", 20),
+    GAME_OPTION("game-options/", 1),
     TEMP_GAME("temp-games/", 10),
     MEMBER("members/", 1);
 
