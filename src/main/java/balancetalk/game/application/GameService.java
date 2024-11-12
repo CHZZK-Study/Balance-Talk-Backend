@@ -90,7 +90,6 @@ public class GameService {
                 .toList();
 
         gameSet.UpdateGameSetRequest(request.getTitle(), mainTag, request.getSubTag(), newGames);
-        gameSetRepository.save(gameSet);
         processFiles(request.getGames(), gameSet.getGames());
     }
 
