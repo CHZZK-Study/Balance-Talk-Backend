@@ -4,7 +4,7 @@ public enum FileType {
     TALK_PICK("talks/", 10),
     TEMP_TALK_PICK("temp-talks/", 10),
     GAME_OPTION("game-options/", 1),
-    TEMP_GAME("temp-games/", 10),
+    TEMP_GAME_OPTION("temp-game-options/", 1),
     MEMBER("members/", 1);
 
     private final String uploadDir;
