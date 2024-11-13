@@ -127,7 +127,7 @@ public class Member extends BaseTimeEntity {
     public boolean hasVotedGame(Game game) {
         return gameVotes.stream()
                 .anyMatch(vote -> game.getGameOptions().stream()
-                        .anyMatch(gameOption -> vote.matchesGameOption(gameOption)));
+                        .anyMatch(vote::matchesGameOption));
     }
 
     public boolean isMyTalkPick(TalkPick talkPick) {
@@ -174,10 +174,6 @@ public class Member extends BaseTimeEntity {
 
     public Long updateTempTalkPick(TempTalkPick newTempTalkPick) {
         return tempTalkPick.update(newTempTalkPick);
-    }
-
-    public TempGameSet updateTempGameSet(TempGameSet newTempGameSet) {
-        return tempGameSet.updateTempGameSet(newTempGameSet);
     }
 
     public int getPostsCount() {
