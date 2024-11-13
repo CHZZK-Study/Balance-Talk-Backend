@@ -1,8 +1,6 @@
 package balancetalk.game.domain;
 
 import balancetalk.global.common.BaseTimeEntity;
-import balancetalk.global.exception.BalanceTalkException;
-import balancetalk.global.exception.ErrorCode;
 import balancetalk.global.notification.domain.NotificationHistory;
 import balancetalk.member.domain.Member;
 import balancetalk.vote.domain.VoteOption;
@@ -23,6 +21,7 @@ import jakarta.validation.constraints.Size;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.IntStream;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -42,7 +41,7 @@ public class GameSet extends BaseTimeEntity {
     @Column(name = "id")
     private Long id;
 
-    @OneToMany(mappedBy = "gameSet", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "gameSet", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Game> games = new ArrayList<>();
 
     @NotBlank
@@ -81,13 +80,6 @@ public class GameSet extends BaseTimeEntity {
         return this.id == id;
     }
 
-    public Game getGameById(long id) {
-        return games.stream()
-                .filter(game -> game.matchesId(id))
-                .findFirst()
-                .orElseThrow(() -> new BalanceTalkException(ErrorCode.NOT_FOUND_BALANCE_GAME));
-    }
-
     public void increaseBookmarks() {
         this.bookmarks++;
     }
@@ -98,11 +90,6 @@ public class GameSet extends BaseTimeEntity {
 
     public boolean hasGame(Long gameId) {
         return games.stream().anyMatch(game -> game.getId().equals(gameId));
-    }
-
-    public void addGame(Game game) {
-        this.games.add(game);
-        game.assignGameSet(this);
     }
 
     public void addGames(List<Game> games) {
@@ -124,8 +111,22 @@ public class GameSet extends BaseTimeEntity {
         return this.notificationHistory;
     }
 
-    public void updateGameSet() {
+    public void updateGameSetRequest(
+            String title,
+            MainTag mainTag,
+            String subTag,
+            List<Game> newGames
+    ) {
+        this.title = title;
         this.editedAt = LocalDateTime.now();
+        this.mainTag = mainTag;
+        this.subTag = subTag;
+
+        IntStream.range(0, this.games.size()).forEach(i -> {
+            Game existingGame = this.games.get(i);
+            Game newGame = newGames.get(i);
+            existingGame.updateGame(newGame);
+        });
     }
 
     public String getFirstGameOptionImgA() {
