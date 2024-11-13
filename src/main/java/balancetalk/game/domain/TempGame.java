@@ -11,19 +11,16 @@ import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.PositiveOrZero;
 import jakarta.validation.constraints.Size;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.stream.IntStream;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.ColumnDefault;
 
 @Entity
 @Getter
@@ -49,25 +46,14 @@ public class TempGame extends BaseTimeEntity {
 
     private LocalDateTime editedAt;
 
-    public void assignTempGameSet(TempGameSet tempGameSet) {
-        this.tempGameSet = tempGameSet;
-    }
-
     public void updateTempGame(TempGame newTempGame) {
-        // this.title = newTempGame.getTitle();
         this.description = newTempGame.getDescription();
-        Map<Long, TempGameOption> newTempGameOptions = new HashMap<>();
+        this.editedAt = LocalDateTime.now();
 
-        for (TempGameOption tempGameOption : tempGameOptions) {
-            newTempGameOptions.put(tempGameOption.getId(), tempGameOption);
-        }
-
-        tempGameOptions.forEach(option -> {
-            TempGameOption newOption = newTempGameOptions.get(option.getId());
-            if (newOption != null) {
-                option.update(newOption);
-                newTempGameOptions.remove(option.getId());
-            }
+        IntStream.range(0, newTempGame.getTempGameOptions().size()).forEach(i -> {
+            TempGameOption currentOption = this.tempGameOptions.get(i);
+            TempGameOption newOption = newTempGame.getTempGameOptions().get(i);
+            currentOption.updateTempGameOption(newOption);
         });
     }
 }

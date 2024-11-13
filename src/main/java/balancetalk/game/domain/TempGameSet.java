@@ -19,6 +19,7 @@ import jakarta.validation.constraints.Size;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.IntStream;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -66,33 +67,14 @@ public class TempGameSet extends BaseTimeEntity {
 
     private LocalDateTime editedAt;
 
-    public void addTempGames(List<TempGame> tempGames) {
-        this.tempGames = tempGames;
-        tempGames.forEach(tempGame -> {
-            tempGame.assignTempGameSet(this);
-            tempGame.getTempGameOptions().forEach(tempGameOption -> tempGameOption.addTempGame(tempGame));
+    public void updateTempGameSet(String title, List<TempGame> newTempGames) {
+        this.title = title;
+        this.editedAt = LocalDateTime.now();
+
+        IntStream.range(0, this.tempGames.size()).forEach(i -> {
+            TempGame existingGame = this.tempGames.get(i);
+            TempGame newGame = newTempGames.get(i);
+            existingGame.updateTempGame(newGame);
         });
-    }
-
-
-    public TempGameSet updateTempGameSet(TempGameSet newTempGameSet) {
-        this.mainTag = newTempGameSet.getMainTag();
-        this.subTag = newTempGameSet.getSubTag();
-
-        List<TempGame> newTempGames = newTempGameSet.getTempGames();
-
-        newTempGames.forEach(newGame -> {
-            this.tempGames.stream()
-                    .filter(existingGame -> existingGame.getId().equals(newGame.getId()))
-                    .findFirst()
-                    .ifPresentOrElse(
-                            existingGame -> existingGame.updateTempGame(newGame),
-                            () -> {
-                                this.tempGames.add(newGame);
-                                newGame.assignTempGameSet(this);
-                            }
-                    );
-        });
-        return this;
     }
 }

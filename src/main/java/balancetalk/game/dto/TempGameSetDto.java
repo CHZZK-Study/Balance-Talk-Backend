@@ -1,5 +1,6 @@
 package balancetalk.game.dto;
 
+import balancetalk.game.domain.MainTag;
 import balancetalk.game.domain.TempGameSet;
 import balancetalk.game.dto.TempGameDto.CreateTempGameRequest;
 import balancetalk.member.domain.Member;
@@ -17,11 +18,19 @@ public class TempGameSetDto {
         @Schema(description = "밸런스게임 세트 제목", example = "밸런스게임 세트 제목")
         private String title;
 
+        @Schema(description = "밸런스 게임 메인 태그", example = "커플")
+        private String mainTag;
+
+        @Schema(description = "밸런스 게임 서브 태그", example = "커플지옥")
+        private String subTag;
+
         private List<CreateTempGameRequest> tempGames;
 
-        public TempGameSet toEntity(String title, Member member) {
+        public TempGameSet toEntity(String title, MainTag mainTag, Member member) {
             return TempGameSet.builder()
                     .title(title)
+                    .mainTag(mainTag)
+                    .subTag(subTag)
                     .member(member)
                     .bookmarks(0L)
                     .editedAt(LocalDateTime.now())

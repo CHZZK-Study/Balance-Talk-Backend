@@ -53,14 +53,9 @@ public class TempGameOption {
     @JoinColumn(name = "temp_game_id")
     private TempGame tempGame;
 
-    public void addTempGame(TempGame tempGame) {
-        this.tempGame = tempGame;
-    }
-
-    public void update (TempGameOption newTempGameOption){
-        this.name = newTempGameOption.getName();
+    public void updateTempGameOption (TempGameOption newTempGameOption){
         this.imgUrl = newTempGameOption.getImgUrl();
+        this.name = newTempGameOption.getName();
         this.description = newTempGameOption.getDescription();
-        this.optionType = newTempGameOption.getOptionType();
     }
 }
