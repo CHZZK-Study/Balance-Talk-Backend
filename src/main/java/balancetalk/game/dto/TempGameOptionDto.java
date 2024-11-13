@@ -1,6 +1,11 @@
 package balancetalk.game.dto;
 
+import balancetalk.file.domain.File;
+import balancetalk.file.domain.repository.FileRepository;
+import balancetalk.game.domain.GameOption;
 import balancetalk.game.domain.TempGameOption;
+import balancetalk.global.exception.BalanceTalkException;
+import balancetalk.global.exception.ErrorCode;
 import balancetalk.vote.domain.VoteOption;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
@@ -28,10 +33,16 @@ public class TempGameOptionDto {
         @Schema(description = "선택지", example = "A")
         private VoteOption optionType;
 
-        public TempGameOption toEntity() {
+        public TempGameOption toEntity(FileRepository fileRepository) {
+            String newImgUrl = null;
+            if (fileId != null) {
+                File file = fileRepository.findById(fileId)
+                        .orElseThrow(() -> new BalanceTalkException(ErrorCode.NOT_FOUND_FILE));
+                newImgUrl = file.getS3Url();
+            }
             return TempGameOption.builder()
                     .name(name)
-                    .imgUrl(imgUrl)
+                    .imgUrl(newImgUrl)
                     .description(description)
                     .optionType(optionType)
                     .build();

@@ -12,12 +12,14 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.PositiveOrZero;
 import jakarta.validation.constraints.Size;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.ColumnDefault;
 
 @Entity
 @Getter
@@ -42,6 +44,10 @@ public class TempGameOption {
 
     @Enumerated(value = EnumType.STRING)
     private VoteOption optionType;
+
+    @PositiveOrZero
+    @ColumnDefault("0")
+    private long votesCount;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "temp_game_id")

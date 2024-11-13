@@ -13,6 +13,7 @@ import jakarta.persistence.OneToMany;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.PositiveOrZero;
 import jakarta.validation.constraints.Size;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -43,23 +44,17 @@ public class TempGame extends BaseTimeEntity {
     private List<TempGameOption> tempGameOptions = new ArrayList<>();
 
     @NotBlank
-    @Size(max = 50)
-    private String title;
-
-    @NotBlank
     @Size(max = 100)
     private String description;
 
-    @PositiveOrZero
-    @ColumnDefault("0")
-    private Long bookmarks;
+    private LocalDateTime editedAt;
 
     public void assignTempGameSet(TempGameSet tempGameSet) {
         this.tempGameSet = tempGameSet;
     }
 
     public void updateTempGame(TempGame newTempGame) {
-        this.title = newTempGame.getTitle();
+        // this.title = newTempGame.getTitle();
         this.description = newTempGame.getDescription();
         Map<Long, TempGameOption> newTempGameOptions = new HashMap<>();
 

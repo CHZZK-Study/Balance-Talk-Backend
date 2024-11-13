@@ -13,8 +13,10 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.PositiveOrZero;
 import jakarta.validation.constraints.Size;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.AccessLevel;
@@ -39,6 +41,10 @@ public class TempGameSet extends BaseTimeEntity {
     @OneToMany(mappedBy = "tempGameSet", cascade = CascadeType.ALL)
     private List<TempGame> tempGames = new ArrayList<>();
 
+    @NotBlank
+    @Size(max = 50)
+    private String title;
+
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
@@ -53,6 +59,12 @@ public class TempGameSet extends BaseTimeEntity {
 
     @Size(max = 10)
     private String subTag;
+
+    @PositiveOrZero
+    @ColumnDefault("0")
+    private Long bookmarks;
+
+    private LocalDateTime editedAt;
 
     public void addTempGames(List<TempGame> tempGames) {
         this.tempGames = tempGames;

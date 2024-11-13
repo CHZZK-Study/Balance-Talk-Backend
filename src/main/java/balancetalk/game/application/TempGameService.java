@@ -36,37 +36,9 @@ public class TempGameService {
     @Transactional
     public void createTempGame(CreateTempGameSetRequest request, ApiMember apiMember) {
         Member member = apiMember.toMember(memberRepository);
-        MainTag mainTag = mainTagRepository.findByName(request.getMainTag())
-                .orElseThrow(() -> new BalanceTalkException(ErrorCode.NOT_FOUND_MAIN_TAG));
-
         if (member.hasTempGameSet()) {
-            TempGameSet tempGameSet = member.updateTempGameSet(request.toEntity(mainTag, member));
-            List<CreateTempGameRequest> tempGameRequests = request.getTempGames();
-            List<TempGame> tempGames = tempGameSet.getTempGames();
 
-            for (int i = 0; i < tempGameRequests.size(); i++) {
-                CreateTempGameRequest tempGameRequest = tempGameRequests.get(i);
-                List<File> files = fileRepository.findAllById(tempGameRequest.getFileIds());
-
-                TempGame tempGame = tempGames.get(i);
-                fileHandler.relocateFiles(files, tempGame.getId(), TEMP_GAME);
-            }
-            return;
         }
-
-        TempGameSet tempGameSet = request.toEntity(mainTag, member);
-        List<CreateTempGameRequest> tempGameRequests = request.getTempGames();
-        List<TempGame> tempGames = new ArrayList<>();
-
-        for (CreateTempGameRequest tempGameRequest : tempGameRequests) {
-            TempGame tempGame = tempGameRequest.toEntity();
-            tempGames.add(tempGame);
-            List<File> files = fileRepository.findAllById(tempGameRequest.getFileIds());
-            fileHandler.relocateFiles(files, tempGame.getId(), TEMP_GAME);
-        }
-
-        tempGameSet.addTempGames(tempGames);
-        tempGameSetRepository.save(tempGameSet);
     }
 
     public TempGameSetResponse findTempGameSet(ApiMember apiMember) {
@@ -74,6 +46,6 @@ public class TempGameService {
         TempGameSet tempGameSet = tempGameSetRepository.findByMember(member)
                 .orElseThrow(() -> new BalanceTalkException(ErrorCode.NOT_FOUND_BALANCE_GAME_SET));
 
-        return TempGameSetResponse.fromEntity(tempGameSet);
+        return null;
     }
 }
