@@ -46,6 +46,22 @@ public class GameSetDto {
     }
 
     @Data
+    public static class UpdateGameSetRequest {
+
+        @Schema(description = "밸런스게임 세트 제목", example = "밸런스게임 세트 제목")
+        private String title;
+
+        @Schema(description = "밸런스 게임 메인 태그", example = "커플")
+        private String mainTag;
+
+        @Schema(description = "밸런스 게임 서브 태그", example = "커플지옥")
+        private String subTag;
+
+        @Schema(description = "게임 리스트")
+        private List<CreateOrUpdateGame> games;
+    }
+
+    @Data
     @Builder
     @AllArgsConstructor
     @Schema(description = "밸런스 게임 세트 목록 조회 응답")
