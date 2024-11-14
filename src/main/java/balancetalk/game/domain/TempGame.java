@@ -12,7 +12,6 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.IntStream;
@@ -44,12 +43,12 @@ public class TempGame extends BaseTimeEntity {
     @Size(max = 100)
     private String description;
 
-    private LocalDateTime editedAt;
+    public void assignTempGameSet(TempGameSet tempGameSet) {
+        this.tempGameSet = tempGameSet;
+    }
 
     public void updateTempGame(TempGame newTempGame) {
         this.description = newTempGame.getDescription();
-        this.editedAt = LocalDateTime.now();
-
         IntStream.range(0, newTempGame.getTempGameOptions().size()).forEach(i -> {
             TempGameOption currentOption = this.tempGameOptions.get(i);
             TempGameOption newOption = newTempGame.getTempGameOptions().get(i);

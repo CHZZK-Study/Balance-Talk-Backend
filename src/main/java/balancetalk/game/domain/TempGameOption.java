@@ -12,14 +12,12 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.PositiveOrZero;
 import jakarta.validation.constraints.Size;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.ColumnDefault;
 
 @Entity
 @Getter
@@ -37,7 +35,7 @@ public class TempGameOption {
     @Size(max = 30)
     private String name;
 
-    private String imgUrl;
+    private Long fileId;
 
     @Size(max = 50)
     private String description;
@@ -45,16 +43,16 @@ public class TempGameOption {
     @Enumerated(value = EnumType.STRING)
     private VoteOption optionType;
 
-    @PositiveOrZero
-    @ColumnDefault("0")
-    private long votesCount;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "temp_game_id")
     private TempGame tempGame;
 
+    public void assignTempGame(TempGame tempGame) {
+        this.tempGame = tempGame;
+    }
+
     public void updateTempGameOption (TempGameOption newTempGameOption){
-        this.imgUrl = newTempGameOption.getImgUrl();
+        this.fileId = newTempGameOption.getFileId();
         this.name = newTempGameOption.getName();
         this.description = newTempGameOption.getDescription();
     }

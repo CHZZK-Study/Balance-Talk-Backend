@@ -11,7 +11,6 @@ import balancetalk.game.domain.TempGameOption;
 import balancetalk.game.domain.TempGameSet;
 import balancetalk.game.domain.repository.MainTagRepository;
 import balancetalk.game.domain.repository.TempGameSetRepository;
-import balancetalk.game.dto.TempGameOptionDto.CreateTempGameOption;
 import balancetalk.game.dto.TempGameSetDto.CreateTempGameSetRequest;
 import balancetalk.game.dto.TempGameSetDto.TempGameSetResponse;
 import balancetalk.global.exception.BalanceTalkException;
@@ -19,6 +18,7 @@ import balancetalk.global.exception.ErrorCode;
 import balancetalk.member.domain.Member;
 import balancetalk.member.domain.MemberRepository;
 import balancetalk.member.dto.ApiMember;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -55,13 +55,20 @@ public class TempGameService {
         if (member.hasTempGameSet()) { // 기존 임시저장이 존재하는 경우
             TempGameSet existGame = member.getTempGameSet();
             existGame.updateTempGameSet(request.getTitle(), newTempGames);
+            processTempGameFiles(tempGames, newTempGames);
+            return;
         }
 
-        else {
-            TempGameSet tempGameSet = request.toEntity(request.getTitle(), mainTag, member);
-            tempGameSetRepository.save(tempGameSet);
+        TempGameSet tempGameSet = request.toEntity(request.getTitle(), mainTag, member);
+        List<TempGame> games = new ArrayList<>();
+
+        for (CreateTempGameRequest tempGame : tempGames) {
+            TempGame game = tempGame.toEntity(fileRepository);
+            games.add(game);
         }
-        processTempGameFiles(tempGames, newTempGames);
+        tempGameSet.addGames(games);
+        tempGameSetRepository.save(tempGameSet);
+        processTempGameFiles(tempGames, tempGameSet.getTempGames());
     }
 
     private void processTempGameFiles(List<CreateTempGameRequest> requests, List<TempGame> tempGames) {
@@ -70,26 +77,24 @@ public class TempGameService {
             TempGame tempGame = tempGames.get(i);
 
             for (int j = 0; j < gameRequest.getTempGameOptions().size(); j++) {
-                CreateTempGameOption gameOptionDto = gameRequest.getTempGameOptions().get(j);
                 TempGameOption tempGameOption = tempGame.getTempGameOptions().get(j);
 
-                if (gameOptionDto.getFileId() == null) {
+                if (tempGameOption.getFileId() == null) {
                     continue;
                 }
 
-                fileRepository.findById(gameOptionDto.getFileId())
-                        .ifPresent(
-                                file -> fileHandler.relocateFiles(Collections.singletonList(file), tempGameOption.getId(),
-                                        TEMP_GAME_OPTION));
+                fileRepository.findById(tempGameOption.getFileId())
+                        .ifPresent(file -> fileHandler.relocateFiles(Collections.singletonList(file),
+                                tempGameOption.getId(), TEMP_GAME_OPTION));
             }
         }
     }
 
+    @Transactional(readOnly = true)
     public TempGameSetResponse findTempGameSet(ApiMember apiMember) {
         Member member = apiMember.toMember(memberRepository);
         TempGameSet tempGameSet = tempGameSetRepository.findByMember(member)
                 .orElseThrow(() -> new BalanceTalkException(ErrorCode.NOT_FOUND_BALANCE_GAME_SET));
-
-        return null;
+        return TempGameSetResponse.fromEntity(tempGameSet);
     }
 }

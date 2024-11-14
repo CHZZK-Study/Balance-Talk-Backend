@@ -14,9 +14,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.PositiveOrZero;
 import jakarta.validation.constraints.Size;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.IntStream;
@@ -25,7 +23,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.ColumnDefault;
 
 @Entity
 @Getter
@@ -54,23 +51,19 @@ public class TempGameSet extends BaseTimeEntity {
     @JoinColumn(name = "main_tag_id")
     private MainTag mainTag;
 
-    @PositiveOrZero
-    @ColumnDefault("0")
-    private long views;
-
     @Size(max = 10)
     private String subTag;
 
-    @PositiveOrZero
-    @ColumnDefault("0")
-    private Long bookmarks;
-
-    private LocalDateTime editedAt;
+    public void addGames(List<TempGame> tempGames) {
+        this.tempGames = tempGames;
+        tempGames.forEach(tempGame -> {
+            tempGame.assignTempGameSet(this);
+            tempGame.getTempGameOptions().forEach(option -> option.assignTempGame(tempGame));
+        });
+    }
 
     public void updateTempGameSet(String title, List<TempGame> newTempGames) {
         this.title = title;
-        this.editedAt = LocalDateTime.now();
-
         IntStream.range(0, this.tempGames.size()).forEach(i -> {
             TempGame existingGame = this.tempGames.get(i);
             TempGame newGame = newTempGames.get(i);
