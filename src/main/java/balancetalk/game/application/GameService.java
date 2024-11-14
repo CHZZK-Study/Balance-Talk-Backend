@@ -1,12 +1,11 @@
 package balancetalk.game.application;
 
-import static balancetalk.file.domain.FileType.GAME;
-
 import balancetalk.bookmark.domain.GameBookmark;
-import balancetalk.file.domain.File;
 import balancetalk.file.domain.FileHandler;
+import balancetalk.file.domain.FileType;
 import balancetalk.file.domain.repository.FileRepository;
 import balancetalk.game.domain.Game;
+import balancetalk.game.domain.GameOption;
 import balancetalk.game.domain.GameSet;
 import balancetalk.game.domain.MainTag;
 import balancetalk.game.domain.repository.GameSetRepository;
@@ -14,9 +13,11 @@ import balancetalk.game.domain.repository.MainTagRepository;
 import balancetalk.game.dto.GameDto.CreateGameMainTagRequest;
 import balancetalk.game.dto.GameDto.CreateOrUpdateGame;
 import balancetalk.game.dto.GameDto.GameDetailResponse;
+import balancetalk.game.dto.GameOptionDto;
 import balancetalk.game.dto.GameSetDto.CreateGameSetRequest;
 import balancetalk.game.dto.GameSetDto.GameSetDetailResponse;
 import balancetalk.game.dto.GameSetDto.GameSetResponse;
+import balancetalk.game.dto.GameSetDto.UpdateGameSetRequest;
 import balancetalk.global.exception.BalanceTalkException;
 import balancetalk.global.exception.ErrorCode;
 import balancetalk.member.domain.Member;
@@ -27,6 +28,7 @@ import balancetalk.vote.domain.GameVote;
 import balancetalk.vote.domain.VoteOption;
 import jakarta.transaction.Transactional;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -66,15 +68,51 @@ public class GameService {
 
         GameSet gameSet = request.toEntity(title, mainTag, member);
         List<Game> games = new ArrayList<>();
+
         for (CreateOrUpdateGame gameRequest : gameRequests) {
-            Game game = gameRequest.toEntity();
+            Game game = gameRequest.toEntity(fileRepository);
             games.add(game);
-            List<File> files = fileRepository.findAllById(gameRequest.getFileIds());
-            fileHandler.relocateFiles(files, game.getId(), GAME);
         }
 
         gameSet.addGames(games);
         gameSetRepository.save(gameSet);
+        processFiles(request.getGames(), games);
+    }
+
+    public void updateBalanceGame(Long gameSetId, UpdateGameSetRequest request, ApiMember apiMember) {
+        Member member = apiMember.toMember(memberRepository);
+        MainTag mainTag = mainTagRepository.findByName(request.getMainTag())
+                .orElseThrow(() -> new BalanceTalkException(ErrorCode.NOT_FOUND_MAIN_TAG));
+        GameSet gameSet = member.getGameSetById(gameSetId);
+
+        List<Game> newGames = request.getGames().stream()
+                .map(gameRequest -> gameRequest.toEntity(fileRepository))
+                .toList();
+
+        gameSet.updateGameSetRequest(request.getTitle(), mainTag, request.getSubTag(), newGames);
+        processFiles(request.getGames(), gameSet.getGames());
+    }
+
+    private void processFiles(List<CreateOrUpdateGame> gameRequests, List<Game> games) {
+        for (int i = 0; i < gameRequests.size(); i++) {
+            CreateOrUpdateGame gameRequest = gameRequests.get(i);
+            Game game = games.get(i);
+
+            for (int j = 0; j < gameRequest.getGameOptions().size(); j++) {
+                GameOptionDto gameOptionDto = gameRequest.getGameOptions().get(j);
+                GameOption gameOption = game.getGameOptions().get(j);
+
+                if (gameOptionDto.getFileId() == null) {
+                    continue;
+                }
+
+                fileRepository.findById(gameOptionDto.getFileId())
+                        .ifPresent(
+                                file -> fileHandler.relocateFiles(Collections.singletonList(file), gameOption.getId(),
+                                        FileType.GAME_OPTION));
+
+            }
+        }
     }
 
     public GameSetDetailResponse findBalanceGameSet(final Long gameSetId, final GuestOrApiMember guestOrApiMember) {
@@ -117,17 +155,6 @@ public class GameService {
         return gameBookmark != null
                 && gameBookmark.getGameId().equals(game.getId())
                 && gameBookmark.isActive();
-    }
-
-    public void updateBalanceGame(Long gameSetId, Long gameId, CreateOrUpdateGame request, ApiMember apiMember) {
-        Member member = apiMember.toMember(memberRepository);
-        GameSet gameSet = member.getGameSetById(gameSetId);
-        Game game = gameSet.getGameById(gameId);
-        game.updateGame(request.toEntity());
-        gameSet.updateGameSet();
-
-        List<File> files = fileRepository.findAllById(request.getFileIds());
-        fileHandler.relocateFiles(files, game.getId(), GAME);
     }
 
     public void deleteBalanceGameSet(final Long gameSetId, final ApiMember apiMember) {
