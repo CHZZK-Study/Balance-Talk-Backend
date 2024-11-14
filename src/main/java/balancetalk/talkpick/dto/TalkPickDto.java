@@ -23,10 +23,10 @@ import lombok.Data;
 
 public class TalkPickDto {
 
-    @Schema(description = "톡픽 생성/수정 요청")
+    @Schema(description = "톡픽 생성 요청")
     @Data
     @AllArgsConstructor
-    public static class CreateOrUpdateTalkPickRequest {
+    public static class CreateTalkPickRequest {
 
         private BaseTalkPickFields baseFields;
 
@@ -44,6 +44,33 @@ public class TalkPickDto {
                     .views(0L)
                     .bookmarks(0L)
                     .viewStatus(NORMAL)
+                    .editedAt(LocalDateTime.now())
+                    .build();
+        }
+
+        public boolean containsFileIds() {
+            return fileIds != null;
+        }
+    }
+
+    @Schema(description = "톡픽 수정 요청")
+    @Data
+    @AllArgsConstructor
+    public static class UpdateTalkPickRequest {
+
+        private BaseTalkPickFields baseFields;
+
+        @Schema(description = "첨부한 이미지 파일 ID 목록", example = "[12, 41]")
+        private List<Long> fileIds;
+
+        public TalkPick toEntity(Member member) {
+            return TalkPick.builder()
+                    .member(member)
+                    .title(baseFields.getTitle())
+                    .content(baseFields.getContent())
+                    .optionA(baseFields.getOptionA())
+                    .optionB(baseFields.getOptionB())
+                    .sourceUrl(baseFields.getSourceUrl())
                     .editedAt(LocalDateTime.now())
                     .build();
         }
