@@ -2,9 +2,10 @@ package balancetalk.talkpick.application;
 
 import static balancetalk.file.domain.FileType.TALK_PICK;
 import static balancetalk.global.exception.ErrorCode.NOT_FOUND_TALK_PICK;
-import static balancetalk.talkpick.dto.TalkPickDto.CreateOrUpdateTalkPickRequest;
+import static balancetalk.talkpick.dto.TalkPickDto.CreateTalkPickRequest;
 import static balancetalk.talkpick.dto.TalkPickDto.TalkPickDetailResponse;
 import static balancetalk.talkpick.dto.TalkPickDto.TalkPickResponse;
+import static balancetalk.talkpick.dto.TalkPickDto.UpdateTalkPickRequest;
 
 import balancetalk.file.domain.File;
 import balancetalk.file.domain.FileHandler;
@@ -35,19 +36,19 @@ public class TalkPickService {
     private final FileHandler fileHandler;
 
     @Transactional
-    public Long createTalkPick(CreateOrUpdateTalkPickRequest request, ApiMember apiMember) {
+    public Long createTalkPick(CreateTalkPickRequest request, ApiMember apiMember) {
         Member member = apiMember.toMember(memberRepository);
         TalkPick savedTalkPick = talkPickRepository.save(request.toEntity(member));
         Long savedTalkPickId = savedTalkPick.getId();
-        relocateFilesIfContainsFileIds(request, savedTalkPickId);
+        if (request.containsFileIds()) {
+            relocateFiles(request.getFileIds(), savedTalkPickId);
+        }
         return savedTalkPickId;
     }
 
-    private void relocateFilesIfContainsFileIds(CreateOrUpdateTalkPickRequest request, Long talkPickId) {
-        if (request.containsFileIds()) {
-            List<File> files = fileRepository.findAllById(request.getFileIds());
-            fileHandler.relocateFiles(files, talkPickId, TALK_PICK);
-        }
+    private void relocateFiles(List<Long> fileIds, Long talkPickId) {
+        List<File> files = fileRepository.findAllById(fileIds);
+        fileHandler.relocateFiles(files, talkPickId, TALK_PICK);
     }
 
     @Transactional
@@ -83,11 +84,13 @@ public class TalkPickService {
     }
 
     @Transactional
-    public void updateTalkPick(Long talkPickId, CreateOrUpdateTalkPickRequest request, ApiMember apiMember) {
+    public void updateTalkPick(Long talkPickId, UpdateTalkPickRequest request, ApiMember apiMember) {
         Member member = apiMember.toMember(memberRepository);
         TalkPick talkPick = member.getTalkPickById(talkPickId);
         talkPick.update(request.toEntity(member));
-        relocateFilesIfContainsFileIds(request, talkPick.getId());
+        if (request.containsFileIds()) {
+            relocateFiles(request.getFileIds(), talkPickId);
+        }
     }
 
     @Transactional

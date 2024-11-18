@@ -64,9 +64,9 @@ public class GameOption {
         this.game = game;
     }
 
-    public void updateOption(GameOption newGameOption) {
-        this.name = newGameOption.getName();
+    public void updateGameOption(GameOption newGameOption) {
         this.imgUrl = newGameOption.getImgUrl();
+        this.name = newGameOption.getName();
         this.description = newGameOption.getDescription();
     }
 

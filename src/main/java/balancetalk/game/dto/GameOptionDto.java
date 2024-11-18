@@ -1,7 +1,12 @@
 package balancetalk.game.dto;
 
+import balancetalk.file.domain.File;
+import balancetalk.file.domain.repository.FileRepository;
 import balancetalk.game.domain.GameOption;
+import balancetalk.global.exception.BalanceTalkException;
+import balancetalk.global.exception.ErrorCode;
 import balancetalk.vote.domain.VoteOption;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -22,6 +27,7 @@ public class GameOptionDto {
             example = "https://pikko-image.s3.ap-northeast-2.amazonaws.com/balance-game/4839036ee7cd_unnamed.png")
     private String imgUrl;
 
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     @Schema(description = "선택지 이미지 파일 ID", example = "12")
     private Long fileId;
 
@@ -41,10 +47,16 @@ public class GameOptionDto {
                 .build();
     }
 
-    public GameOption toEntity() {
+    public GameOption toEntity(FileRepository fileRepository) {
+        String newImgUrl = null;
+        if (fileId != null) {
+            File file = fileRepository.findById(fileId)
+                    .orElseThrow(() -> new BalanceTalkException(ErrorCode.NOT_FOUND_FILE));
+            newImgUrl = file.getS3Url();
+        }
         return GameOption.builder()
                 .name(name)
-                .imgUrl(imgUrl)
+                .imgUrl(newImgUrl)
                 .description(description)
                 .optionType(optionType)
                 .build();
