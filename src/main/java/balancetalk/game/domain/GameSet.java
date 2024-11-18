@@ -139,6 +139,6 @@ public class GameSet extends BaseTimeEntity {
     }
 
     public List<Long> getGameOptionIds() {
-        return games.stream().flatMap(game -> game.getGameOptionIds().stream()).collect(Collectors.toList());
+        return games.stream().flatMap(game -> game.getGameOptionIds().stream()).toList();
     }
 }
