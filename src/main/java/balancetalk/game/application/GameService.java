@@ -131,8 +131,19 @@ public class GameService {
     }
 
     public void deleteBalanceGameSet(final Long gameSetId, final ApiMember apiMember) {
-        apiMember.toMember(memberRepository);
-        gameSetRepository.deleteById(gameSetId);
+        Member member = apiMember.toMember(memberRepository);
+        GameSet gameSet = member.getGameSetById(gameSetId);
+        gameSetRepository.delete(gameSet);
+        List<Long> gameOptionIds = gameSet.getGameOptionIds();
+        deleteFiles(gameOptionIds);
+    }
+
+    private void deleteFiles(List<Long> gameOptionIds) {
+        List<File> files = fileRepository.findAllByResourceIdsAndFileType(gameOptionIds, GAME);
+        if (files.isEmpty()) {
+            return;
+        }
+        fileHandler.deleteFiles(files);
     }
 
     public List<GameSetResponse> findLatestGames(final String tagName) {

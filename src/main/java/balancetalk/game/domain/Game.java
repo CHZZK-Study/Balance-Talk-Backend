@@ -4,14 +4,26 @@ import balancetalk.global.common.BaseTimeEntity;
 import balancetalk.global.exception.BalanceTalkException;
 import balancetalk.global.exception.ErrorCode;
 import balancetalk.vote.domain.VoteOption;
-import jakarta.persistence.*;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
-import java.util.stream.IntStream;
-import lombok.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.IntStream;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
@@ -58,5 +70,9 @@ public class Game extends BaseTimeEntity {
         this.editedAt = LocalDateTime.now();
         IntStream.range(0, this.gameOptions.size())
                 .forEach(i -> this.gameOptions.get(i).updateOption(newGame.getGameOptions().get(i)));
+    }
+
+    public List<Long> getGameOptionIds() {
+        return gameOptions.stream().map(GameOption::getId).toList();
     }
 }
