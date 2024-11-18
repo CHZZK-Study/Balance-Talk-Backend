@@ -21,6 +21,7 @@ import jakarta.validation.constraints.Size;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -138,6 +139,6 @@ public class GameSet extends BaseTimeEntity {
     }
 
     public List<Long> getGameOptionIds() {
-        return games.stream().map(game -> game.getGameOptionIds()).toList();
+        return games.stream().flatMap(game -> game.getGameOptionIds().stream()).collect(Collectors.toList());
     }
 }
