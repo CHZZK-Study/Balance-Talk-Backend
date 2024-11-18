@@ -19,7 +19,6 @@ import static balancetalk.global.notification.domain.NotificationStandard.THIRD_
 import static balancetalk.global.notification.domain.NotificationStandard.THIRD_STANDARD_OF_VOTE_RATIO_2_1_NOTIFICATION;
 import static balancetalk.global.notification.domain.NotificationStandard.THIRD_STANDARD_OF_VOTE_RATIO_3_1_NOTIFICATION;
 import static balancetalk.global.notification.domain.NotificationTitleCategory.MY_PICK;
-import static balancetalk.global.notification.domain.NotificationTitleCategory.OTHERS_TALK_PICK;
 import static balancetalk.global.notification.domain.NotificationTitleCategory.WRITTEN_TALK_PICK;
 import static balancetalk.vote.domain.VoteOption.A;
 import static balancetalk.vote.domain.VoteOption.B;
@@ -30,7 +29,6 @@ import balancetalk.global.notification.application.NotificationService;
 import balancetalk.member.domain.Member;
 import balancetalk.member.domain.MemberRepository;
 import balancetalk.member.dto.ApiMember;
-import balancetalk.member.dto.GuestOrApiMember;
 import balancetalk.talkpick.domain.TalkPick;
 import balancetalk.talkpick.domain.TalkPickReader;
 import balancetalk.vote.domain.TalkPickVote;
@@ -39,7 +37,6 @@ import balancetalk.vote.domain.VoteOption;
 import balancetalk.vote.dto.VoteTalkPickDto.VoteRequest;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -54,20 +51,15 @@ public class VoteTalkPickService {
     private final NotificationService notificationService;
 
     @Transactional
-    public void createVote(long talkPickId, VoteRequest request, GuestOrApiMember guestOrApiMember) {
+    public void createVote(long talkPickId, VoteRequest request, ApiMember apiMember) {
         TalkPick talkPick = talkPickReader.readById(talkPickId);
-
-        if (guestOrApiMember.isGuest()) {
-            voteRepository.save(request.toEntity(null, talkPick));
-            return;
-        }
-
-        Member member = guestOrApiMember.toMember(memberRepository);
+        Member member = apiMember.toMember(memberRepository);
         if (member.hasVotedTalkPick(talkPick)) {
             throw new BalanceTalkException(ErrorCode.ALREADY_VOTE);
         }
 
         voteRepository.save(request.toEntity(member, talkPick));
+
         sendVoteTalkPickNotification(talkPick);
         sendVoteTalkPickRatioNotification(talkPick);
     }
@@ -153,8 +145,7 @@ public class VoteTalkPickService {
                 && totalVotesCount < SECOND_STANDARD_OF_VOTE_RATIO_2_1_NOTIFICATION.getCount()) {
             countKey = FIRST_STANDARD_OF_VOTE_RATIO_2_1_NOTIFICATION.getCount();
             voteRatioCountKey = VOTE_RATIO_COUNT_KEY.format("2:1", countKey);
-        }
-        else if (totalVotesCount >= SECOND_STANDARD_OF_VOTE_RATIO_2_1_NOTIFICATION.getCount()
+        } else if (totalVotesCount >= SECOND_STANDARD_OF_VOTE_RATIO_2_1_NOTIFICATION.getCount()
                 && totalVotesCount <= THIRD_STANDARD_OF_VOTE_RATIO_2_1_NOTIFICATION.getCount()) {
             countKey = SECOND_STANDARD_OF_VOTE_RATIO_2_1_NOTIFICATION.getCount();
             voteRatioCountKey = VOTE_RATIO_COUNT_KEY.format("2:1", countKey);
@@ -216,7 +207,7 @@ public class VoteTalkPickService {
         return talkPick.getVotes().stream()
                 .filter(vote -> vote.getVoteOption().equals(option))
                 .map(TalkPickVote::getMember)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     private void sendNotificationToMembers(Member member, TalkPick talkPick, String category, String message) {

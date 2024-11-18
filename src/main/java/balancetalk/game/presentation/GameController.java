@@ -4,6 +4,7 @@ import balancetalk.game.application.GameService;
 import balancetalk.game.dto.GameSetDto.CreateGameSetRequest;
 import balancetalk.game.dto.GameSetDto.GameSetDetailResponse;
 import balancetalk.game.dto.GameSetDto.GameSetResponse;
+import balancetalk.game.dto.GameSetDto.UpdateGameSetRequest;
 import balancetalk.global.utils.AuthPrincipal;
 import balancetalk.member.dto.ApiMember;
 import balancetalk.member.dto.GuestOrApiMember;
@@ -14,8 +15,6 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
-
-import static balancetalk.game.dto.GameDto.*;
 
 @Slf4j
 @RestController
@@ -28,24 +27,25 @@ public class GameController {
 
     @PostMapping
     @Operation(summary = "밸런스 게임 세트 생성", description = "10개 단위의 밸런스 게임을 가지고 있는 게임 세트를 생성합니다.")
-    public void createGameSet(@RequestBody final CreateGameSetRequest request,
+    public void createGameSetRequest(@RequestBody final CreateGameSetRequest request,
                               @Parameter(hidden = true) @AuthPrincipal final ApiMember apiMember) {
         gameService.createBalanceGameSet(request, apiMember);
     }
+
+    @PutMapping("/{gameSetId}")
+    @Operation(summary = "밸런스 게임 수정", description = "밸런스 게임을 수정합니다.")
+    public void updateGame(@PathVariable final Long gameSetId,
+                           @RequestBody final UpdateGameSetRequest request,
+                           @Parameter(hidden = true) @AuthPrincipal final ApiMember apiMember) {
+        gameService.updateBalanceGame(gameSetId, request, apiMember);
+    }
+
 
     @GetMapping("/{gameSetId}")
     @Operation(summary = "밸런스 게임 세트 상세 조회", description = "10개 단위의 밸런스 게임을 가지고 있는 게임 세트를 조회합니다.")
     public GameSetDetailResponse findGame(@PathVariable final Long gameSetId,
                                           @Parameter(hidden = true) @AuthPrincipal final GuestOrApiMember guestOrApiMember) {
         return gameService.findBalanceGameSet(gameSetId, guestOrApiMember);
-    }
-
-    @PutMapping("/{gameSetId}/{gameId}")
-    @Operation(summary = "밸런스 게임 수정", description = "밸런스 게임을 수정합니다.")
-    public void updateGame(@PathVariable final Long gameSetId, @PathVariable final Long gameId,
-                           @RequestBody final CreateOrUpdateGame request,
-                           @Parameter(hidden = true) @AuthPrincipal final ApiMember apiMember) {
-        gameService.updateBalanceGame(gameSetId, gameId, request, apiMember);
     }
 
     @DeleteMapping("/{gameSetId}")
