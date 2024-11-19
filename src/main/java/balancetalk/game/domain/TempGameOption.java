@@ -49,7 +49,7 @@ public class TempGameOption {
         this.tempGame = tempGame;
     }
 
-    public void updateTempGameOption (TempGameOption newTempGameOption){
+    public void updateTempGameOption(TempGameOption newTempGameOption) {
         this.name = newTempGameOption.getName();
         this.description = newTempGameOption.getDescription();
     }

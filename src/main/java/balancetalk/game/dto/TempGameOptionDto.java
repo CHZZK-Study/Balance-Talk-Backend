@@ -31,9 +31,8 @@ public class TempGameOptionDto {
     private VoteOption optionType;
 
     public TempGameOption toEntity(FileRepository fileRepository) {
-        if (fileId != null) {
-            fileRepository.findById(fileId)
-                    .orElseThrow(() -> new BalanceTalkException(ErrorCode.NOT_FOUND_FILE));
+        if (fileId != null && !fileRepository.existsById(fileId)) {
+            throw new BalanceTalkException(ErrorCode.NOT_FOUND_FILE);
         }
 
         return TempGameOption.builder()
