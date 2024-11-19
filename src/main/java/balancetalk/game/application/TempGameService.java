@@ -11,6 +11,7 @@ import balancetalk.game.domain.TempGameOption;
 import balancetalk.game.domain.TempGameSet;
 import balancetalk.game.domain.repository.MainTagRepository;
 import balancetalk.game.domain.repository.TempGameSetRepository;
+import balancetalk.game.dto.TempGameOptionDto;
 import balancetalk.game.dto.TempGameSetDto.CreateTempGameSetRequest;
 import balancetalk.game.dto.TempGameSetDto.TempGameSetResponse;
 import balancetalk.global.exception.BalanceTalkException;
@@ -22,6 +23,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,6 +33,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class TempGameService {
 
     private static final int GAME_SIZE = 10;
+    private static final Logger log = LoggerFactory.getLogger(TempGameService.class);
 
     private final MemberRepository memberRepository;
     private final TempGameSetRepository tempGameSetRepository;
@@ -73,20 +77,28 @@ public class TempGameService {
     }
 
     private void processTempGameFiles(List<CreateTempGameRequest> requests, List<TempGame> tempGames) {
+
         for (int i = 0; i < requests.size(); i++) {
             CreateTempGameRequest gameRequest = requests.get(i);
+            List<TempGameOptionDto> tempGameOptions = gameRequest.getTempGameOptions();
             TempGame tempGame = tempGames.get(i);
 
-            for (int j = 0; j < gameRequest.getTempGameOptions().size(); j++) {
-                TempGameOption tempGameOption = tempGame.getTempGameOptions().get(j);
+            List<TempGameOption> gameOptions = tempGame.getTempGameOptions();
 
-                fileRepository.findById(tempGameOption.getId())
+            for(int j = 0; j < tempGameOptions.size(); j++) {
+                TempGameOptionDto tempGameOptionDto = tempGameOptions.get(j);
+                TempGameOption tempGameOption = gameOptions.get(j);
+
+                Long fileId = tempGameOptionDto.getFileId();
+                Long gameOptionId = tempGameOption.getId();
+                if (fileId != null) {
+                    fileRepository.findById(fileId)
                         .ifPresent(file -> fileHandler.relocateFiles(Collections.singletonList(file),
-                                    tempGameOption.getId(), TEMP_GAME_OPTION));
+                               gameOptionId, TEMP_GAME_OPTION));
+                }
             }
         }
     }
-
 
     @Transactional(readOnly = true)
     public TempGameSetResponse findTempGameSet(ApiMember apiMember) {
