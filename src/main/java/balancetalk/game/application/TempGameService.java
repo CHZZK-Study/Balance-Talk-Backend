@@ -85,7 +85,7 @@ public class TempGameService {
 
             List<TempGameOption> gameOptions = tempGame.getTempGameOptions();
 
-            for(int j = 0; j < tempGameOptions.size(); j++) {
+            for (int j = 0; j < tempGameOptions.size(); j++) {
                 TempGameOptionDto tempGameOptionDto = tempGameOptions.get(j);
                 TempGameOption tempGameOption = gameOptions.get(j);
 
