@@ -31,25 +31,23 @@ public class TempGameOptionDto {
     private VoteOption optionType;
 
     public TempGameOption toEntity(FileRepository fileRepository) {
-        Long newFileId = null;
         if (fileId != null) {
-            File file = fileRepository.findById(fileId)
+            fileRepository.findById(fileId)
                     .orElseThrow(() -> new BalanceTalkException(ErrorCode.NOT_FOUND_FILE));
-            newFileId = file.getId();
         }
 
         return TempGameOption.builder()
                 .name(name)
-                .fileId(newFileId)
                 .description(description)
                 .optionType(optionType)
                 .build();
     }
 
-    public static TempGameOptionDto fromEntity(TempGameOption tempGameOption) {
+    public static TempGameOptionDto fromEntity(TempGameOption tempGameOption, Long fileId) {
+
         return TempGameOptionDto.builder()
                 .name(tempGameOption.getName())
-                .fileId(tempGameOption.getFileId())
+                .fileId(fileId)
                 .description(tempGameOption.getDescription())
                 .optionType(tempGameOption.getOptionType())
                 .build();

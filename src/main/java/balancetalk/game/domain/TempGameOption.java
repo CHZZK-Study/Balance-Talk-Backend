@@ -35,8 +35,6 @@ public class TempGameOption {
     @Size(max = 30)
     private String name;
 
-    private Long fileId;
-
     @Size(max = 50)
     private String description;
 
@@ -52,7 +50,6 @@ public class TempGameOption {
     }
 
     public void updateTempGameOption (TempGameOption newTempGameOption){
-        this.fileId = newTempGameOption.getFileId();
         this.name = newTempGameOption.getName();
         this.description = newTempGameOption.getDescription();
     }

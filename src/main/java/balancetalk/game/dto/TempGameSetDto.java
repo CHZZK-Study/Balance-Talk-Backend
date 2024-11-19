@@ -1,5 +1,6 @@
 package balancetalk.game.dto;
 
+import balancetalk.file.domain.repository.FileRepository;
 import balancetalk.game.domain.MainTag;
 import balancetalk.game.domain.TempGameSet;
 import balancetalk.game.dto.TempGameDto.CreateTempGameRequest;
@@ -55,10 +56,10 @@ public class TempGameSetDto {
         @Schema(description = "게임 리스트")
         private List<TempGameResponse> tempGames;
 
-        public static TempGameSetResponse fromEntity(TempGameSet tempGameSet) {
+        public static TempGameSetResponse fromEntity(TempGameSet tempGameSet, FileRepository fileRepository) {
 
             List<TempGameResponse> tempGames = tempGameSet.getTempGames().stream()
-                    .map(tempGame -> TempGameResponse.fromEntity(tempGame))
+                    .map(tempGame -> TempGameResponse.fromEntity(tempGame, fileRepository))
                     .toList();
 
             return TempGameSetResponse.builder()

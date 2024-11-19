@@ -45,9 +45,12 @@ public class TempGameDto {
 
         private List<TempGameOptionDto> tempGameOptions;
 
-        public static TempGameResponse fromEntity(TempGame tempGame) {
+        public static TempGameResponse fromEntity(TempGame tempGame, FileRepository fileRepository) {
             List<TempGameOptionDto> tempGameOptions = tempGame.getTempGameOptions().stream()
-                    .map(TempGameOptionDto::fromEntity)
+                    .map(option -> {
+                        Long fileId = fileRepository.findByResourceId(option.getId()).orElse(null);
+                        return TempGameOptionDto.fromEntity(option, fileId);
+                    })
                     .toList();
 
             return TempGameResponse.builder()

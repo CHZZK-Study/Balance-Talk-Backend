@@ -55,4 +55,8 @@ public class TempGame extends BaseTimeEntity {
             currentOption.updateTempGameOption(newOption);
         });
     }
+
+    public List<Long> getGameOptionIds() {
+        return tempGameOptions.stream().map(TempGameOption::getId).toList();
+    }
 }

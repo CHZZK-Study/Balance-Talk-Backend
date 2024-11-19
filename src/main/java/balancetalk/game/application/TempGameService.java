@@ -5,7 +5,6 @@ import static balancetalk.game.dto.TempGameDto.CreateTempGameRequest;
 
 import balancetalk.file.domain.FileHandler;
 import balancetalk.file.domain.repository.FileRepository;
-import balancetalk.file.domain.repository.FileRepositoryImpl;
 import balancetalk.game.domain.MainTag;
 import balancetalk.game.domain.TempGame;
 import balancetalk.game.domain.TempGameOption;
@@ -23,8 +22,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,14 +30,12 @@ import org.springframework.transaction.annotation.Transactional;
 public class TempGameService {
 
     private static final int GAME_SIZE = 10;
-    private static final Logger log = LoggerFactory.getLogger(TempGameService.class);
 
     private final MemberRepository memberRepository;
     private final TempGameSetRepository tempGameSetRepository;
     private final FileRepository fileRepository;
     private final FileHandler fileHandler;
     private final MainTagRepository mainTagRepository;
-    private final FileRepositoryImpl fileRepositoryImpl;
 
     @Transactional
     public void createTempGame(CreateTempGameSetRequest request, ApiMember apiMember) {
@@ -62,11 +57,6 @@ public class TempGameService {
             existGame.updateTempGameSet(request.getTitle(), newTempGames);
 
             processTempGameFiles(tempGames, existGame.getTempGames());
-            List<Long> idsByResourceIdAndFileType = fileRepositoryImpl.findIdsByResourceIdAndFileType(existGame.getId(),
-                    TEMP_GAME_OPTION);
-            for (Long l : idsByResourceIdAndFileType) {
-                log.info("id={}", l);
-            }
             return;
         }
 
@@ -80,11 +70,6 @@ public class TempGameService {
         tempGameSet.addGames(games);
         tempGameSetRepository.save(tempGameSet);
         processTempGameFiles(tempGames, tempGameSet.getTempGames());
-        List<Long> idsByResourceIdAndFileType = fileRepositoryImpl.findIdsByResourceIdAndFileType(tempGameSet.getId(),
-                TEMP_GAME_OPTION);
-        for (Long l : idsByResourceIdAndFileType) {
-            log.info("id={}", l);
-        }
     }
 
     private void processTempGameFiles(List<CreateTempGameRequest> requests, List<TempGame> tempGames) {
@@ -95,27 +80,19 @@ public class TempGameService {
             for (int j = 0; j < gameRequest.getTempGameOptions().size(); j++) {
                 TempGameOption tempGameOption = tempGame.getTempGameOptions().get(j);
 
-                if (tempGameOption.getFileId() == null) {
-                    continue;
-                }
-
-                fileRepository.findById(tempGameOption.getFileId())
-                        .ifPresent(file -> {
-//                            if (file.getResourceId() != null) {
-//                                throw new BalanceTalkException(ErrorCode.ALREADY_REGISTERED_FILE);
-//                            }
-                            fileHandler.relocateFiles(Collections.singletonList(file),
-                                    tempGameOption.getId(), TEMP_GAME_OPTION);
-                        });
+                fileRepository.findById(tempGameOption.getId())
+                        .ifPresent(file -> fileHandler.relocateFiles(Collections.singletonList(file),
+                                    tempGameOption.getId(), TEMP_GAME_OPTION));
             }
         }
     }
+
 
     @Transactional(readOnly = true)
     public TempGameSetResponse findTempGameSet(ApiMember apiMember) {
         Member member = apiMember.toMember(memberRepository);
         TempGameSet tempGameSet = tempGameSetRepository.findByMember(member)
                 .orElseThrow(() -> new BalanceTalkException(ErrorCode.NOT_FOUND_BALANCE_GAME_SET));
-        return TempGameSetResponse.fromEntity(tempGameSet);
+        return TempGameSetResponse.fromEntity(tempGameSet, fileRepository);
     }
 }
