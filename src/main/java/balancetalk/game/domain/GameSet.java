@@ -47,7 +47,7 @@ public class GameSet extends BaseTimeEntity {
     @NotBlank
     @Size(max = 50)
     private String title;
-    
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
@@ -135,5 +135,9 @@ public class GameSet extends BaseTimeEntity {
 
     public String getFirstGameOptionImgB() {
         return games.get(0).getGameOptions().get(1).getImgUrl();
+    }
+
+    public List<Long> getGameOptionIds() {
+        return games.stream().flatMap(game -> game.getGameOptionIds().stream()).toList();
     }
 }

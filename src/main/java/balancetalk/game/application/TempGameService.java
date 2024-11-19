@@ -5,6 +5,7 @@ import static balancetalk.game.dto.TempGameDto.CreateTempGameRequest;
 
 import balancetalk.file.domain.FileHandler;
 import balancetalk.file.domain.repository.FileRepository;
+import balancetalk.file.domain.repository.FileRepositoryImpl;
 import balancetalk.game.domain.MainTag;
 import balancetalk.game.domain.TempGame;
 import balancetalk.game.domain.TempGameOption;
@@ -22,6 +23,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,12 +33,14 @@ import org.springframework.transaction.annotation.Transactional;
 public class TempGameService {
 
     private static final int GAME_SIZE = 10;
+    private static final Logger log = LoggerFactory.getLogger(TempGameService.class);
 
     private final MemberRepository memberRepository;
     private final TempGameSetRepository tempGameSetRepository;
     private final FileRepository fileRepository;
     private final FileHandler fileHandler;
     private final MainTagRepository mainTagRepository;
+    private final FileRepositoryImpl fileRepositoryImpl;
 
     @Transactional
     public void createTempGame(CreateTempGameSetRequest request, ApiMember apiMember) {
@@ -55,7 +60,13 @@ public class TempGameService {
         if (member.hasTempGameSet()) { // 기존 임시저장이 존재하는 경우
             TempGameSet existGame = member.getTempGameSet();
             existGame.updateTempGameSet(request.getTitle(), newTempGames);
-            processTempGameFiles(tempGames, newTempGames);
+
+            processTempGameFiles(tempGames, existGame.getTempGames());
+            List<Long> idsByResourceIdAndFileType = fileRepositoryImpl.findIdsByResourceIdAndFileType(existGame.getId(),
+                    TEMP_GAME_OPTION);
+            for (Long l : idsByResourceIdAndFileType) {
+                log.info("id={}", l);
+            }
             return;
         }
 
@@ -69,6 +80,11 @@ public class TempGameService {
         tempGameSet.addGames(games);
         tempGameSetRepository.save(tempGameSet);
         processTempGameFiles(tempGames, tempGameSet.getTempGames());
+        List<Long> idsByResourceIdAndFileType = fileRepositoryImpl.findIdsByResourceIdAndFileType(tempGameSet.getId(),
+                TEMP_GAME_OPTION);
+        for (Long l : idsByResourceIdAndFileType) {
+            log.info("id={}", l);
+        }
     }
 
     private void processTempGameFiles(List<CreateTempGameRequest> requests, List<TempGame> tempGames) {
@@ -84,8 +100,13 @@ public class TempGameService {
                 }
 
                 fileRepository.findById(tempGameOption.getFileId())
-                        .ifPresent(file -> fileHandler.relocateFiles(Collections.singletonList(file),
-                                tempGameOption.getId(), TEMP_GAME_OPTION));
+                        .ifPresent(file -> {
+//                            if (file.getResourceId() != null) {
+//                                throw new BalanceTalkException(ErrorCode.ALREADY_REGISTERED_FILE);
+//                            }
+                            fileHandler.relocateFiles(Collections.singletonList(file),
+                                    tempGameOption.getId(), TEMP_GAME_OPTION);
+                        });
             }
         }
     }

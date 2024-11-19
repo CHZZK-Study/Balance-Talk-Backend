@@ -37,7 +37,7 @@ public class TempGameOptionDto {
                     .orElseThrow(() -> new BalanceTalkException(ErrorCode.NOT_FOUND_FILE));
             newFileId = file.getId();
         }
-        
+
         return TempGameOption.builder()
                 .name(name)
                 .fileId(newFileId)
