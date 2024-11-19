@@ -1,5 +1,6 @@
 package balancetalk.file.domain;
 
+import balancetalk.file.domain.repository.FileRepository;
 import io.awspring.cloud.s3.S3Operations;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +15,7 @@ public class FileHandler {
 
     private final S3Client s3Client;
     private final S3Operations s3Operations;
+    private final FileRepository fileRepository;
 
     @Value("${spring.cloud.aws.s3.bucket}")
     private String bucket;
@@ -56,5 +58,12 @@ public class FileHandler {
         file.updateS3KeyAndUrl(s3Key, s3EndPoint + s3Key);
         file.updateResourceId(resourceId);
         file.updateFileType(fileType);
+    }
+
+    public void deleteFiles(List<File> files) {
+        for (File file : files) {
+            s3Operations.deleteObject(bucket, file.getS3Key());
+        }
+        fileRepository.deleteAll(files);
     }
 }

@@ -1,8 +1,10 @@
 package balancetalk.game.application;
 
+import static balancetalk.file.domain.FileType.GAME_OPTION;
+
 import balancetalk.bookmark.domain.GameBookmark;
+import balancetalk.file.domain.File;
 import balancetalk.file.domain.FileHandler;
-import balancetalk.file.domain.FileType;
 import balancetalk.file.domain.repository.FileRepository;
 import balancetalk.game.domain.Game;
 import balancetalk.game.domain.GameOption;
@@ -109,7 +111,7 @@ public class GameService {
                 fileRepository.findById(gameOptionDto.getFileId())
                         .ifPresent(
                                 file -> fileHandler.relocateFiles(Collections.singletonList(file), gameOption.getId(),
-                                        FileType.GAME_OPTION));
+                                        GAME_OPTION));
 
             }
         }
@@ -158,8 +160,19 @@ public class GameService {
     }
 
     public void deleteBalanceGameSet(final Long gameSetId, final ApiMember apiMember) {
-        apiMember.toMember(memberRepository);
-        gameSetRepository.deleteById(gameSetId);
+        Member member = apiMember.toMember(memberRepository);
+        GameSet gameSet = member.getGameSetById(gameSetId);
+        gameSetRepository.delete(gameSet);
+        List<Long> gameOptionIds = gameSet.getGameOptionIds();
+        deleteFiles(gameOptionIds);
+    }
+
+    private void deleteFiles(List<Long> gameOptionIds) {
+        List<File> files = fileRepository.findAllByResourceIdsAndFileType(gameOptionIds, GAME_OPTION);
+        if (files.isEmpty()) {
+            return;
+        }
+        fileHandler.deleteFiles(files);
     }
 
     public List<GameSetResponse> findLatestGames(final String tagName) {
