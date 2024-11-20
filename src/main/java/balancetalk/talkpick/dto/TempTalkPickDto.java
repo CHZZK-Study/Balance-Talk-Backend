@@ -17,8 +17,11 @@ public class TempTalkPickDto {
 
         private BaseTempTalkPickFields baseFields;
 
-        @Schema(description = "첨부한 이미지 ID 목록", example = "[214, 24]")
-        private List<Long> fileIds;
+        @Schema(description = "새로 첨부한 이미지 파일 ID 목록", example = "[12, 41]")
+        private List<Long> newFileIds;
+
+        @Schema(description = "제거할 이미지 파일 ID 목록", example = "[3, 7]")
+        private List<Long> deleteFileIds;
 
         public TempTalkPick toEntity(Member member) {
             return TempTalkPick.builder()
@@ -31,8 +34,16 @@ public class TempTalkPickDto {
                     .build();
         }
 
-        public boolean containsFileIds() {
-            return fileIds != null;
+        public boolean containsNewFileIds() {
+            return newFileIds != null && !newFileIds.isEmpty();
+        }
+
+        public boolean containsDeleteFileIds() {
+            return deleteFileIds != null && !deleteFileIds.isEmpty();
+        }
+
+        public boolean notContainsAnyFileIds() {
+            return !containsNewFileIds() && !containsDeleteFileIds();
         }
     }
 
