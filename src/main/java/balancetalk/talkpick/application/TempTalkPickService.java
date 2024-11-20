@@ -47,16 +47,12 @@ public class TempTalkPickService {
             return;
         }
 
+        List<Long> deletedFileIds = deleteRequestedFiles(request);
+
         if (request.containsNewFileIds()) {
             List<Long> newFileIds = request.getNewFileIds();
-            List<Long> deletedFileIds = deleteRequestedFiles(request);
             newFileIds.removeIf((deletedFileIds::contains));
             relocateFiles(newFileIds, tempTalkPickId);
-            return;
-        }
-
-        if (request.containsDeleteFileIds()) {
-            deleteRequestedFiles(request);
         }
     }
 
