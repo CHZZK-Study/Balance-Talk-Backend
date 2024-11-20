@@ -60,8 +60,11 @@ public class TalkPickDto {
 
         private BaseTalkPickFields baseFields;
 
-        @Schema(description = "첨부한 이미지 파일 ID 목록", example = "[12, 41]")
-        private List<Long> fileIds;
+        @Schema(description = "새로 첨부한 이미지 파일 ID 목록", example = "[12, 41]")
+        private List<Long> newFileIds;
+
+        @Schema(description = "제거할 이미지 파일 ID 목록", example = "[3, 7]")
+        private List<Long> deleteFileIds;
 
         public TalkPick toEntity(Member member) {
             return TalkPick.builder()
@@ -75,8 +78,16 @@ public class TalkPickDto {
                     .build();
         }
 
-        public boolean containsFileIds() {
-            return fileIds != null;
+        public boolean containsNewFileIds() {
+            return newFileIds != null && !newFileIds.isEmpty();
+        }
+
+        public boolean containsDeleteFileIds() {
+            return deleteFileIds != null && !deleteFileIds.isEmpty();
+        }
+
+        public boolean notContainsAnyFileIds() {
+            return !containsNewFileIds() && !containsDeleteFileIds();
         }
     }
 
