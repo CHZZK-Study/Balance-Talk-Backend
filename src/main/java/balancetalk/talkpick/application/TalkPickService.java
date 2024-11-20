@@ -88,8 +88,32 @@ public class TalkPickService {
         Member member = apiMember.toMember(memberRepository);
         TalkPick talkPick = member.getTalkPickById(talkPickId);
         talkPick.update(request.toEntity(member));
-        if (request.containsFileIds()) {
-            relocateFiles(request.getFileIds(), talkPickId);
+
+        if (request.notContainsAnyFileIds()) {
+            return;
+        }
+
+        if (request.containsNewFileIds()) {
+            List<Long> newFileIds = request.getNewFileIds();
+            List<Long> deletedFileIds = deleteRequestedFiles(request);
+            newFileIds.removeIf((deletedFileIds::contains));
+            relocateFiles(newFileIds, talkPickId);
+            return;
+        }
+
+        if (request.containsDeleteFileIds()) {
+            deleteRequestedFiles(request);
+        }
+    }
+
+    private List<Long> deleteRequestedFiles(UpdateTalkPickRequest request) {
+        if (request.containsDeleteFileIds()) {
+            List<Long> deleteFileIds = request.getDeleteFileIds();
+            List<File> files = fileRepository.findAllById(deleteFileIds);
+            fileHandler.deleteFiles(files);
+            return deleteFileIds;
+        } else {
+            return List.of();
         }
     }
 
@@ -98,10 +122,10 @@ public class TalkPickService {
         Member member = apiMember.toMember(memberRepository);
         TalkPick talkPick = member.getTalkPickById(talkPickId);
         talkPickRepository.delete(talkPick);
-        deleteFiles(talkPickId);
+        deleteAllAssociatedFiles(talkPickId);
     }
 
-    private void deleteFiles(Long talkPickId) {
+    private void deleteAllAssociatedFiles(Long talkPickId) {
         List<File> files = fileRepository.findAllByResourceIdAndFileType(talkPickId, TALK_PICK);
         if (files.isEmpty()) {
             return;
