@@ -95,14 +95,14 @@ public class Member extends BaseTimeEntity {
                 .anyMatch(bookmark -> bookmark.matches(gameSet, gameId) && bookmark.isActive());
     }
 
-    public boolean hasBookmarkedGameSet(GameSet gameSet) {
-        return this.gameBookmarks.stream()
-                .anyMatch(bookmark -> bookmark.matches(gameSet) && bookmark.isActive());
-    }
-
     public boolean hasBookmarked(TalkPick talkPick) {
         return this.talkPickBookmarks.stream()
                 .anyMatch(bookmark -> bookmark.matches(talkPick) && bookmark.isActive());
+    }
+
+    public boolean hasBookmarkedGameSet(GameSet gameSet) {
+        return this.gameBookmarks.stream()
+                .anyMatch(bookmark -> bookmark.matches(gameSet) && bookmark.isActive());
     }
 
     public Optional<TalkPickVote> getVoteOnTalkPick(TalkPick talkPick) {
