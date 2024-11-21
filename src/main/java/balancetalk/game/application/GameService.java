@@ -175,18 +175,24 @@ public class GameService {
         fileHandler.deleteFiles(files);
     }
 
-    public List<GameSetResponse> findLatestGames(final String tagName) {
+    public List<GameSetResponse> findLatestGames(final String tagName, final GuestOrApiMember guestOrApiMember) {
+        Member member = guestOrApiMember.toMember(memberRepository);
         Pageable pageable = PageRequest.of(PAGE_INITIAL_INDEX, PAGE_LIMIT);
         List<GameSet> gameSets = gameSetRepository.findGamesByCreationDate(tagName, pageable);
+
         return gameSets.stream()
-                .map(GameSetResponse::fromEntity).toList();
+                .map(gameSet -> GameSetResponse.fromEntity(gameSet, member))
+                .toList();
     }
 
-    public List<GameSetResponse> findBestGames(final String tagName) {
+    public List<GameSetResponse> findBestGames(final String tagName, final GuestOrApiMember guestOrApiMember) {
+        Member member = guestOrApiMember.toMember(memberRepository);
         Pageable pageable = PageRequest.of(PAGE_INITIAL_INDEX, PAGE_LIMIT);
         List<GameSet> gameSets = gameSetRepository.findGamesByViews(tagName, pageable);
+
         return gameSets.stream()
-                .map(GameSetResponse::fromEntity).toList();
+                .map(gameSet -> GameSetResponse.fromEntity(gameSet, member))
+                .toList();
     }
 
     public void createGameMainTag(final CreateGameMainTagRequest request, final ApiMember apiMember) {

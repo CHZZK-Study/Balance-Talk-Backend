@@ -81,7 +81,9 @@ public class GameSetDto {
 
         private List<String> images;
 
-        public static GameSetResponse fromEntity(GameSet gameSet) {
+        private boolean isBookmarked;
+
+        public static GameSetResponse fromEntity(GameSet gameSet, Member member) {
             Game game = gameSet.getGames().get(0);
             List<String> images = new ArrayList<>();
             images.addAll(Arrays.asList(
@@ -94,6 +96,7 @@ public class GameSetDto {
                     .mainTag(gameSet.getMainTag().getName())
                     .subTag(gameSet.getSubTag())
                     .images(images)
+                    .isBookmarked(member.hasBookmarkedGameSet(gameSet))
                     .build();
         }
     }
