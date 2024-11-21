@@ -96,7 +96,7 @@ public class GameSetDto {
                     .mainTag(gameSet.getMainTag().getName())
                     .subTag(gameSet.getSubTag())
                     .images(images)
-                    .isBookmarked(member.hasBookmarkedGameSet(gameSet))
+                    .isBookmarked(member != null && member.hasBookmarkedGameSet(gameSet))
                     .build();
         }
     }

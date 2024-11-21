@@ -28,7 +28,6 @@ import balancetalk.member.dto.ApiMember;
 import balancetalk.member.dto.GuestOrApiMember;
 import balancetalk.vote.domain.GameVote;
 import balancetalk.vote.domain.VoteOption;
-import jakarta.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -37,13 +36,12 @@ import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @Service
-@Transactional
 @RequiredArgsConstructor
 public class GameService {
 
@@ -57,6 +55,7 @@ public class GameService {
     private final FileRepository fileRepository;
     private final FileHandler fileHandler;
 
+    @Transactional
     public void createBalanceGameSet(final CreateGameSetRequest request, final ApiMember apiMember) {
         Member member = apiMember.toMember(memberRepository);
         MainTag mainTag = mainTagRepository.findByName(request.getMainTag())
@@ -81,6 +80,7 @@ public class GameService {
         processFiles(request.getGames(), games);
     }
 
+    @Transactional
     public void updateBalanceGame(Long gameSetId, UpdateGameSetRequest request, ApiMember apiMember) {
         Member member = apiMember.toMember(memberRepository);
         MainTag mainTag = mainTagRepository.findByName(request.getMainTag())
@@ -117,6 +117,7 @@ public class GameService {
         }
     }
 
+    @Transactional(readOnly = true)
     public GameSetDetailResponse findBalanceGameSet(final Long gameSetId, final GuestOrApiMember guestOrApiMember) {
         GameSet gameSet = gameSetRepository.findById(gameSetId)
                 .orElseThrow(() -> new BalanceTalkException(ErrorCode.NOT_FOUND_BALANCE_GAME_SET));
@@ -159,6 +160,7 @@ public class GameService {
                 && gameBookmark.isActive();
     }
 
+    @Transactional
     public void deleteBalanceGameSet(final Long gameSetId, final ApiMember apiMember) {
         Member member = apiMember.toMember(memberRepository);
         GameSet gameSet = member.getGameSetById(gameSetId);
@@ -175,26 +177,33 @@ public class GameService {
         fileHandler.deleteFiles(files);
     }
 
-    public List<GameSetResponse> findLatestGames(final String tagName, final GuestOrApiMember guestOrApiMember) {
-        Member member = guestOrApiMember.toMember(memberRepository);
-        Pageable pageable = PageRequest.of(PAGE_INITIAL_INDEX, PAGE_LIMIT);
+    @Transactional(readOnly = true)
+    public List<GameSetResponse> findLatestGames(final String tagName, final Pageable pageable,
+                                                 final GuestOrApiMember guestOrApiMember) {
         List<GameSet> gameSets = gameSetRepository.findGamesByCreationDate(tagName, pageable);
-
-        return gameSets.stream()
-                .map(gameSet -> GameSetResponse.fromEntity(gameSet, member))
-                .toList();
+        return gameSetResponses(guestOrApiMember, gameSets);
     }
 
-    public List<GameSetResponse> findBestGames(final String tagName, final GuestOrApiMember guestOrApiMember) {
-        Member member = guestOrApiMember.toMember(memberRepository);
-        Pageable pageable = PageRequest.of(PAGE_INITIAL_INDEX, PAGE_LIMIT);
+    @Transactional(readOnly = true)
+    public List<GameSetResponse> findBestGames(final String tagName, final Pageable pageable,
+                                               final GuestOrApiMember guestOrApiMember) {
         List<GameSet> gameSets = gameSetRepository.findGamesByViews(tagName, pageable);
+        return gameSetResponses(guestOrApiMember, gameSets);
+    }
 
+    private List<GameSetResponse> gameSetResponses(GuestOrApiMember guestOrApiMember, List<GameSet> gameSets) {
+        if (guestOrApiMember.isGuest()) {
+            return gameSets.stream()
+                    .map(gameSet -> GameSetResponse.fromEntity(gameSet, null))
+                    .toList();
+        }
+        Member member = guestOrApiMember.toMember(memberRepository);
         return gameSets.stream()
                 .map(gameSet -> GameSetResponse.fromEntity(gameSet, member))
                 .toList();
     }
 
+    @Transactional
     public void createGameMainTag(final CreateGameMainTagRequest request, final ApiMember apiMember) {
         apiMember.toMember(memberRepository);
         boolean hasGameTag = mainTagRepository.existsByName(request.getName());
