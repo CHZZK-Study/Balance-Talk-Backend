@@ -1,12 +1,12 @@
 package balancetalk.file.domain;
 
 import static balancetalk.global.exception.ErrorCode.EXCEEDED_IMAGES_SIZE;
+import static balancetalk.global.exception.ErrorCode.MISSING_MIME_TYPE;
 import static balancetalk.global.exception.ErrorCode.NOT_ATTACH_IMAGE;
 import static balancetalk.global.exception.ErrorCode.NOT_SUPPORTED_MIME_TYPE;
 
 import balancetalk.global.exception.BalanceTalkException;
 import java.util.List;
-import java.util.Objects;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -31,8 +31,13 @@ public record MultipartFiles(List<MultipartFile> multipartFiles, FileType fileTy
 
     private boolean containsNotImage(List<MultipartFile> multipartFiles) {
         return multipartFiles.stream()
-                .anyMatch(multipartFile ->
-                        !Objects.requireNonNull(multipartFile.getContentType()).startsWith("image"));
+                .anyMatch(multipartFile -> {
+                    String contentType = multipartFile.getContentType();
+                    if (contentType == null) {
+                        throw new BalanceTalkException(MISSING_MIME_TYPE);
+                    }
+                    return !contentType.startsWith("image");
+                });
     }
 
     @Override
