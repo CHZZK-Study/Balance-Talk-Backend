@@ -29,9 +29,8 @@ public class File extends BaseTimeEntity {
 
     private Long resourceId;
 
-    @NotNull
-    @Positive
-    private Long size;
+    @Enumerated(value = EnumType.STRING)
+    private FileType fileType;
 
     @NotBlank
     private String uploadName;
@@ -39,11 +38,12 @@ public class File extends BaseTimeEntity {
     @NotBlank
     private String storedName;
 
-    @Enumerated(value = EnumType.STRING)
-    private FileType fileType;
+    @NotBlank
+    private String memeType;
 
-    @Enumerated(value = EnumType.STRING)
-    private FileFormat fileFormat;
+    @NotNull
+    @Positive
+    private Long size;
 
     @NotBlank
     private String s3Key;
