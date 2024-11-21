@@ -34,6 +34,9 @@ public class TempTalkPickService {
 
         if (member.hasTempTalkPick()) {
             Long tempTalkPickId = member.updateTempTalkPick(request.toEntity(member));
+            if (request.isNewRequest()) {
+                fileRepository.deleteByResourceIdAndFileType(tempTalkPickId, TEMP_TALK_PICK);
+            }
             relocateFilesIfContainsFileIds(request, tempTalkPickId);
             return;
         }
@@ -48,6 +51,7 @@ public class TempTalkPickService {
         }
 
         List<Long> deletedFileIds = deleteRequestedFiles(request);
+
 
         if (request.containsNewFileIds()) {
             List<Long> newFileIds = request.getNewFileIds();

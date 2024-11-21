@@ -23,6 +23,9 @@ public class TempTalkPickDto {
         @Schema(description = "제거할 이미지 파일 ID 목록", example = "[3, 7]")
         private List<Long> deleteFileIds;
 
+        @Schema(description = "최근 임시저장된 톡픽 불러오기 여부", example = "true")
+        private Boolean isLoaded;
+
         public TempTalkPick toEntity(Member member) {
             return TempTalkPick.builder()
                     .title(baseFields.getTitle())
@@ -32,6 +35,10 @@ public class TempTalkPickDto {
                     .sourceUrl(baseFields.getSourceUrl())
                     .member(member)
                     .build();
+        }
+
+        public boolean isNewRequest() {
+            return !isLoaded;
         }
 
         public boolean containsNewFileIds() {
