@@ -39,7 +39,7 @@ public class File extends BaseTimeEntity {
     private String storedName;
 
     @NotBlank
-    private String memeType;
+    private String mimeType;
 
     @NotNull
     @Positive

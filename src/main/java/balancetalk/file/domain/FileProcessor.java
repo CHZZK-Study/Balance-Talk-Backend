@@ -11,8 +11,8 @@ public class FileProcessor {
         String originalName = multipartFile.getOriginalFilename();
         String storedName = createRandomName(originalName);
         long size = multipartFile.getSize();
-        String memeType = multipartFile.getContentType();
-        return createFile(originalName, storedName, memeType, fileType, size);
+        String mimeType = multipartFile.getContentType();
+        return createFile(originalName, storedName, fileType, mimeType, size);
     }
 
     private String createRandomName(String originalName) {
@@ -21,15 +21,15 @@ public class FileProcessor {
 
     private File createFile(String uploadName,
                             String storedName,
-                            String memeType,
                             FileType fileType,
+                            String mimeType,
                             long size) {
         return File.builder()
                 .uploadName(uploadName)
                 .storedName(storedName)
-                .memeType(memeType)
-                .size(size)
                 .fileType(fileType)
+                .mimeType(mimeType)
+                .size(size)
                 .build();
     }
 }

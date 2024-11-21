@@ -30,7 +30,7 @@ class FileProcessorTest {
 
         // then
         assertThat(result.getFileType()).isEqualTo(TALK_PICK);
-        assertThat(result.getMemeType()).isEqualTo("image/png");
+        assertThat(result.getMimeType()).isEqualTo("image/png");
         assertThat(result.getUploadName()).isEqualTo(multipartFile.getOriginalFilename());
     }
 }

@@ -2,7 +2,7 @@ package balancetalk.file.domain;
 
 import static balancetalk.global.exception.ErrorCode.EXCEEDED_IMAGES_SIZE;
 import static balancetalk.global.exception.ErrorCode.NOT_ATTACH_IMAGE;
-import static balancetalk.global.exception.ErrorCode.NOT_SUPPORTED_MEME_TYPE;
+import static balancetalk.global.exception.ErrorCode.NOT_SUPPORTED_MIME_TYPE;
 
 import balancetalk.global.exception.BalanceTalkException;
 import java.util.List;
@@ -21,7 +21,7 @@ public record MultipartFiles(List<MultipartFile> multipartFiles, FileType fileTy
             throw new BalanceTalkException(EXCEEDED_IMAGES_SIZE);
         }
         if (containsNotImage(multipartFiles)) {
-            throw new BalanceTalkException(NOT_SUPPORTED_MEME_TYPE);
+            throw new BalanceTalkException(NOT_SUPPORTED_MIME_TYPE);
         }
     }
 
