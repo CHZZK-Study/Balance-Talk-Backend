@@ -2,7 +2,7 @@
 
 ![image](https://github.com/user-attachments/assets/d39ad443-8b06-4fc3-88e0-fd601245b08d)
 
-# [PICK-O 🎯](https://slashpage.com/ject/dk58wg2ej8719mnqevxz?full=true)
+# [PICK-O 🎯](https://pick0.com)
 함께 선택하고 즐기는 밸런스게임 플랫폼, PICK-O
 
 </div>

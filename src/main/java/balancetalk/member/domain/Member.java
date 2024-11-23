@@ -100,6 +100,11 @@ public class Member extends BaseTimeEntity {
                 .anyMatch(bookmark -> bookmark.matches(talkPick) && bookmark.isActive());
     }
 
+    public boolean hasBookmarkedGameSet(GameSet gameSet) {
+        return this.gameBookmarks.stream()
+                .anyMatch(bookmark -> bookmark.matches(gameSet) && bookmark.isActive());
+    }
+
     public Optional<TalkPickVote> getVoteOnTalkPick(TalkPick talkPick) {
         return this.talkPickVotes.stream()
                 .filter(vote -> vote.matchesTalkPick(talkPick))
@@ -120,14 +125,14 @@ public class Member extends BaseTimeEntity {
     public Optional<GameVote> getVoteOnGameOption(Member member, Game game) {
         return member.getGameVotes().stream()
                 .filter(vote -> game.getGameOptions().stream()
-                        .anyMatch(gameOption -> vote.matchesGameOption(gameOption)))
+                        .anyMatch(vote::matchesGameOption))
                 .findAny();
     }
 
     public boolean hasVotedGame(Game game) {
         return gameVotes.stream()
                 .anyMatch(vote -> game.getGameOptions().stream()
-                        .anyMatch(gameOption -> vote.matchesGameOption(gameOption)));
+                        .anyMatch(vote::matchesGameOption));
     }
 
     public boolean isMyTalkPick(TalkPick talkPick) {
