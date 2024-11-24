@@ -20,7 +20,7 @@ public class SearchGameController {
     private final SearchGameService searchGameService;
 
     @Operation(summary = "밸런스게임 검색", description = "밸런스게임을 검색합니다. (정렬 기준 : views, createdAt)")
-    @GetMapping("/search/game")
+    @GetMapping("/search/game-sets")
     public Page<SearchGameResponse> searchTalkPicks(@RequestParam("query") String query,
                                                     @RequestParam(defaultValue = "0") int page,
                                                     @RequestParam(defaultValue = "9", required = false) int size,
