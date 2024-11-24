@@ -14,6 +14,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
 @Slf4j
@@ -57,13 +59,25 @@ public class GameController {
 
     @GetMapping("/latest")
     @Operation(summary = "최신순으로 밸런스 게임 조회", description = "최신순으로 정렬된 16개의 게임 목록을 리턴합니다.")
-    public List<GameSetResponse> findLatestGames(@RequestParam String tagName) {
-        return gameService.findLatestGames(tagName);
+    public List<GameSetResponse> findLatestGames(
+            @RequestParam String tagName,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "16") int size,
+            @Parameter(hidden = true) @AuthPrincipal final GuestOrApiMember guestOrApiMember
+    ) {
+        Pageable pageable = PageRequest.of(page, size);
+        return gameService.findLatestGames(tagName, pageable, guestOrApiMember);
     }
 
     @GetMapping("/best")
     @Operation(summary = "조회수 순으로 밸런스 게임 조회", description = "조회수 순으로 정렬된 16개의 게임 목록을 리턴합니다.")
-    public List<GameSetResponse> findBestGames(@RequestParam String tagName) {
-        return gameService.findBestGames(tagName);
+    public List<GameSetResponse> findBestGames(
+            @RequestParam String tagName,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "16") int size,
+            @Parameter(hidden = true) @AuthPrincipal final GuestOrApiMember guestOrApiMember
+    ) {
+        Pageable pageable = PageRequest.of(page, size);
+        return gameService.findBestGames(tagName, pageable, guestOrApiMember);
     }
 }

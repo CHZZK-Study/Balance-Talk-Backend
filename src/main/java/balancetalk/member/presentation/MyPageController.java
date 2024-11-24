@@ -68,7 +68,7 @@ public class MyPageController {
         return myPageService.findAllTalkPicksByMember(apiMember, pageable);
     }
 
-    @GetMapping("/games/bookmarks")
+    @GetMapping("/game-sets/bookmarks")
     @Operation(summary = "북마크한 밸런스 게임 목록 조회", description = "로그인한 회원이 북마크한 밸런스 게임 목록을 조회한다.")
     public Page<GameMyPageResponse> findAllBookmarkedGames(
             @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "6", required = false) int size,
@@ -78,7 +78,7 @@ public class MyPageController {
         return myPageService.findAllBookmarkedGames(apiMember, pageable);
     }
 
-    @GetMapping("/games/votes")
+    @GetMapping("/game-sets/votes")
     @Operation(summary = "투표한 밸런스 게임 목록 조회", description = "로그인한 회원이 투표한 밸런스 게임 목록을 조회한다.")
     public Page<GameMyPageResponse> findAllVotedGames(
             @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "6", required = false) int size,
@@ -88,7 +88,7 @@ public class MyPageController {
         return myPageService.findAllVotedGames(apiMember, pageable);
     }
 
-    @GetMapping("/games/written")
+    @GetMapping("/game-sets/written")
     @Operation(summary = "내가 작성한 밸런스 게임 목록 조회", description = "로그인한 회원이 작성한 밸런스 게임 목록을 조회한다.")
     public Page<GameMyPageResponse> findAllMyGames(
             @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "6", required = false) int size,
