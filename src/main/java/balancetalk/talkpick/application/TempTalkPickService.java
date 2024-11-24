@@ -43,10 +43,33 @@ public class TempTalkPickService {
     }
 
     private void relocateFilesIfContainsFileIds(SaveTempTalkPickRequest request, Long tempTalkPickId) {
-        if (request.containsFileIds()) {
-            List<File> files = fileRepository.findAllById(request.getFileIds());
-            fileHandler.relocateFiles(files, tempTalkPickId, TEMP_TALK_PICK);
+        if (request.notContainsAnyFileIds()) {
+            return;
         }
+
+        List<Long> deletedFileIds = deleteRequestedFiles(request);
+
+        if (request.containsNewFileIds()) {
+            List<Long> newFileIds = request.getNewFileIds();
+            newFileIds.removeIf((deletedFileIds::contains));
+            relocateFiles(newFileIds, tempTalkPickId);
+        }
+    }
+
+    private List<Long> deleteRequestedFiles(SaveTempTalkPickRequest request) {
+        if (request.containsDeleteFileIds()) {
+            List<Long> deleteFileIds = request.getDeleteFileIds();
+            List<File> files = fileRepository.findAllById(deleteFileIds);
+            fileHandler.deleteFiles(files);
+            return deleteFileIds;
+        } else {
+            return List.of();
+        }
+    }
+
+    private void relocateFiles(List<Long> fileIds, Long tempTalkPickId) {
+        List<File> files = fileRepository.findAllById(fileIds);
+        fileHandler.relocateFiles(files, tempTalkPickId, TEMP_TALK_PICK);
     }
 
     public FindTempTalkPickResponse findTempTalkPick(ApiMember apiMember) {
