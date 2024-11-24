@@ -1,5 +1,6 @@
 package balancetalk.game.dto;
 
+import balancetalk.file.domain.FileType;
 import balancetalk.file.domain.repository.FileRepository;
 import balancetalk.game.domain.TempGame;
 import balancetalk.game.domain.TempGameOption;
@@ -48,7 +49,7 @@ public class TempGameDto {
         public static TempGameResponse fromEntity(TempGame tempGame, FileRepository fileRepository) {
             List<TempGameOptionDto> tempGameOptions = tempGame.getTempGameOptions().stream()
                     .map(option -> {
-                        Long fileId = fileRepository.findByResourceId(option.getId()).orElse(null);
+                        Long fileId = fileRepository.findByResourceIdAndFileType(option.getId(), FileType.TEMP_GAME_OPTION);
                         return TempGameOptionDto.fromEntity(option, fileId);
                     })
                     .toList();

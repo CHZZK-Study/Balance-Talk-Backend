@@ -3,7 +3,6 @@ package balancetalk.file.domain.repository;
 import balancetalk.file.domain.File;
 import balancetalk.file.domain.FileType;
 import java.util.List;
-import java.util.Optional;
 
 public interface FileRepositoryCustom {
 
@@ -15,5 +14,5 @@ public interface FileRepositoryCustom {
 
     List<File> findAllByResourceIdsAndFileType(List<Long> resourceIds, FileType fileType);
 
-    Optional<Long> findByResourceId(Long resourceId);
+    Long findByResourceIdAndFileType(Long resourceId, FileType fileType);
 }
