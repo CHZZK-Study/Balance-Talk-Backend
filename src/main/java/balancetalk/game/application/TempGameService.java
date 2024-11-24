@@ -23,17 +23,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
 public class TempGameService {
-
-    private static final int GAME_SIZE = 10;
-    private static final Logger log = LoggerFactory.getLogger(TempGameService.class);
 
     private final MemberRepository memberRepository;
     private final TempGameSetRepository tempGameSetRepository;
@@ -56,7 +51,6 @@ public class TempGameService {
         if (member.hasTempGameSet()) { // 기존 임시저장이 존재하는 경우
             TempGameSet existGame = member.getTempGameSet();
             existGame.updateTempGameSet(request.getTitle(), newTempGames);
-
             processTempGameFiles(tempGames, existGame.getTempGames());
             return;
         }
