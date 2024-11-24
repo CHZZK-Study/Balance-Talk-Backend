@@ -3,6 +3,8 @@ package balancetalk.talkpick.dto;
 import balancetalk.member.domain.Member;
 import balancetalk.talkpick.domain.TempTalkPick;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -18,10 +20,15 @@ public class TempTalkPickDto {
         private BaseTempTalkPickFields baseFields;
 
         @Schema(description = "새로 첨부한 이미지 파일 ID 목록", example = "[12, 41]")
+        @Size(max = 10, message = "톡픽 생성 시 업로드할 수 있는 파일 개수는 최대 10개입니다.")
         private List<Long> newFileIds;
 
         @Schema(description = "제거할 이미지 파일 ID 목록", example = "[3, 7]")
         private List<Long> deleteFileIds;
+
+        @Schema(description = "최근 임시저장된 톡픽 불러오기 여부", example = "true")
+        @NotNull(message = "isLoaded 필드는 NULL을 허용하지 않습니다.")
+        private Boolean isLoaded;
 
         public TempTalkPick toEntity(Member member) {
             return TempTalkPick.builder()
@@ -32,6 +39,10 @@ public class TempTalkPickDto {
                     .sourceUrl(baseFields.getSourceUrl())
                     .member(member)
                     .build();
+        }
+
+        public boolean isNewRequest() {
+            return !isLoaded;
         }
 
         public boolean containsNewFileIds() {
