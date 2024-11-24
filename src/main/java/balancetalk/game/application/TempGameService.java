@@ -48,9 +48,6 @@ public class TempGameService {
                 .orElseThrow(() -> new BalanceTalkException(ErrorCode.NOT_FOUND_MAIN_TAG));
 
         List<CreateTempGameRequest> tempGames = request.getTempGames();
-        if (tempGames.size() < GAME_SIZE) {
-            throw new BalanceTalkException(ErrorCode.BALANCE_GAME_SIZE_TEN);
-        }
 
         List<TempGame> newTempGames = tempGames.stream()
                 .map(game -> game.toEntity(fileRepository))
@@ -64,7 +61,7 @@ public class TempGameService {
             return;
         }
 
-        TempGameSet tempGameSet = request.toEntity(request.getTitle(), mainTag, member);
+        TempGameSet tempGameSet = request.toEntity(mainTag, member);
         List<TempGame> games = new ArrayList<>();
 
         for (CreateTempGameRequest tempGame : tempGames) {

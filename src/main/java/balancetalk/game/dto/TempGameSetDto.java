@@ -5,6 +5,8 @@ import balancetalk.game.domain.MainTag;
 import balancetalk.game.domain.TempGameSet;
 import balancetalk.game.dto.TempGameDto.CreateTempGameRequest;
 import balancetalk.game.dto.TempGameDto.TempGameResponse;
+import balancetalk.global.exception.BalanceTalkException;
+import balancetalk.global.exception.ErrorCode;
 import balancetalk.member.domain.Member;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.List;
@@ -13,6 +15,8 @@ import lombok.Builder;
 import lombok.Data;
 
 public class TempGameSetDto {
+
+    private static final int GAME_SIZE = 10;
 
     @Data
     public static class CreateTempGameSetRequest {
@@ -28,7 +32,10 @@ public class TempGameSetDto {
 
         private List<CreateTempGameRequest> tempGames;
 
-        public TempGameSet toEntity(String title, MainTag mainTag, Member member) {
+        public TempGameSet toEntity(MainTag mainTag, Member member) {
+            if (tempGames == null || tempGames.size() < GAME_SIZE) {
+                throw new BalanceTalkException(ErrorCode.BALANCE_GAME_SIZE_TEN);
+            }
             return TempGameSet.builder()
                     .title(title)
                     .mainTag(mainTag)
