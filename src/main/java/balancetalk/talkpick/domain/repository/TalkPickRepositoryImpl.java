@@ -1,21 +1,22 @@
 package balancetalk.talkpick.domain.repository;
 
-import balancetalk.talkpick.dto.QTalkPickDto_TalkPickResponse;
-import balancetalk.talkpick.dto.QTodayTalkPickDto_TodayTalkPickResponse;
-import com.querydsl.jpa.impl.JPAQuery;
-import com.querydsl.jpa.impl.JPAQueryFactory;
-import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.support.PageableExecutionUtils;
-
-import java.util.List;
-
 import static balancetalk.global.utils.QuerydslUtils.getOrderSpecifiers;
 import static balancetalk.talkpick.domain.QTalkPick.talkPick;
 import static balancetalk.talkpick.dto.TalkPickDto.TalkPickResponse;
 import static balancetalk.talkpick.dto.TodayTalkPickDto.TodayTalkPickResponse;
 import static balancetalk.vote.domain.QTalkPickVote.talkPickVote;
+
+import balancetalk.talkpick.dto.QTalkPickDto_TalkPickResponse;
+import balancetalk.talkpick.dto.QTodayTalkPickDto_TodayTalkPickResponse;
+import com.querydsl.jpa.JPAExpressions;
+import com.querydsl.jpa.JPQLQuery;
+import com.querydsl.jpa.impl.JPAQuery;
+import com.querydsl.jpa.impl.JPAQueryFactory;
+import java.util.List;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.support.PageableExecutionUtils;
 
 @RequiredArgsConstructor
 public class TalkPickRepositoryImpl implements TalkPickRepositoryCustom {
@@ -30,10 +31,18 @@ public class TalkPickRepositoryImpl implements TalkPickRepositoryCustom {
                 ))
                 .from(talkPick)
                 .leftJoin(talkPick.votes, talkPickVote)
+                .where(talkPick.views.eq(getMaxViews()))
                 .groupBy(talkPick.id)
-                .orderBy(talkPick.views.desc(), talkPickVote.count().desc(), talkPick.createdAt.desc())
+                .orderBy(talkPickVote.count().desc(), talkPick.createdAt.desc())
                 .limit(1)
                 .fetchOne();
+    }
+
+    private JPQLQuery<Long> getMaxViews() {
+        return JPAExpressions.select(talkPick.views.max())
+                .from(talkPick)
+                .orderBy(talkPick.views.desc())
+                .limit(1);
     }
 
     @Override
