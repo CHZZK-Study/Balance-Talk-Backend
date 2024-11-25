@@ -67,4 +67,8 @@ public class File extends BaseTimeEntity {
     public String getS3Key() {
         return "%s%s".formatted(directoryPath, storedName);
     }
+
+    public boolean isUnmapped() {
+        return directoryPath.endsWith("temp/") && resourceId == null;
+    }
 }
