@@ -25,8 +25,8 @@ public class FileHandler {
 
     public void relocateFiles(List<File> files, Long resourceId, FileType fileType) {
         for (File file : files) {
-            String s3Key = relocateWithinS3(file, resourceId, fileType);
-            updateFile(file, s3Key, resourceId, fileType);
+            String newDirectoryPath = relocateWithinS3(file, resourceId, fileType);
+            updateFile(file, newDirectoryPath, resourceId, fileType);
         }
     }
 
@@ -38,7 +38,7 @@ public class FileHandler {
         if (sourceKey.contains("temp")) {
             s3Operations.deleteObject(bucket, sourceKey);
         }
-        return destinationKey;
+        return "%s%d/".formatted(fileType.getUploadDir(), resourceId);
     }
 
     private String getDestinationKey(File file, Long resourceId, FileType fileType) {
@@ -54,8 +54,8 @@ public class FileHandler {
                 .build();
     }
 
-    private void updateFile(File file, String s3Key, Long resourceId, FileType fileType) {
-        file.updateS3KeyAndUrl(s3Key, s3EndPoint + s3Key);
+    private void updateFile(File file, String directoryPath, Long resourceId, FileType fileType) {
+        file.updateDirectoryPathAndImgUrl(directoryPath, s3EndPoint);
         file.updateResourceId(resourceId);
         file.updateFileType(fileType);
     }

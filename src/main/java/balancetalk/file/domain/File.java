@@ -46,14 +46,14 @@ public class File extends BaseTimeEntity {
     private FileFormat fileFormat;
 
     @NotBlank
-    private String s3Key;
+    private String directoryPath;
 
     @NotBlank
-    private String s3Url;
+    private String imgUrl;
 
-    public void updateS3KeyAndUrl(String newS3Key, String newS3Url) {
-        this.s3Key = newS3Key;
-        this.s3Url = newS3Url;
+    public void updateDirectoryPathAndImgUrl(String newDirectoryPath, String s3Endpoint) {
+        this.directoryPath = newDirectoryPath;
+        this.imgUrl = "%s%s%s".formatted(s3Endpoint, newDirectoryPath, storedName);
     }
 
     public void updateResourceId(Long newResourceId) {
@@ -62,5 +62,9 @@ public class File extends BaseTimeEntity {
 
     public void updateFileType(FileType newFileType) {
         this.fileType = newFileType;
+    }
+
+    public String getS3Key() {
+        return "%s%s".formatted(directoryPath, storedName);
     }
 }
