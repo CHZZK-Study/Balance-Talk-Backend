@@ -7,10 +7,8 @@ import static balancetalk.global.exception.ErrorCode.NOT_SUPPORTED_MIME_TYPE;
 
 import balancetalk.global.exception.BalanceTalkException;
 import java.util.List;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.multipart.MultipartFile;
 
-@Slf4j
 public record MultipartFiles(List<MultipartFile> multipartFiles, FileType fileType) {
 
     public MultipartFiles {
