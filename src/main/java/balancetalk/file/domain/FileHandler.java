@@ -2,7 +2,6 @@ package balancetalk.file.domain;
 
 import balancetalk.file.domain.repository.FileRepository;
 import io.awspring.cloud.s3.S3Operations;
-import java.net.URI;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -74,20 +73,18 @@ public class FileHandler {
     private File createNewFile(File file, Long resourceId, FileType fileType, String directoryPath) {
         return File.builder()
                 .resourceId(resourceId)
-                .size(file.getSize())
+                .fileType(fileType)
                 .uploadName(file.getUploadName())
                 .storedName(String.format("%s_%s", UUID.randomUUID(), file.getUploadName()))
-                .fileType(fileType)
+                .mimeType(file.getMimeType())
+                .size(file.getSize())
                 .directoryPath(directoryPath)
                 .imgUrl(getImgUrl(file, directoryPath))
                 .build();
     }
 
     private String getImgUrl(File file, String directoryPath) {
-        return URI.create(s3EndPoint)
-                .resolve(directoryPath)
-                .resolve(file.getStoredName())
-                .toString();
+        return String.format("%s%s%s", s3EndPoint, directoryPath, file.getStoredName());
     }
 
     public void deleteFiles(List<File> files) {
