@@ -50,7 +50,7 @@ public class FileService {
         try {
             for (MultipartFile multipartFile : multipartFiles.multipartFiles()) {
                 File file = fileProcessor.process(multipartFile, fileType);
-                String directoryPath = "%s%s".formatted(fileType.getUploadDir(), TEMP_DIRECTORY_PATH);
+                String directoryPath = String.format("%s%s", fileType.getUploadDir(), TEMP_DIRECTORY_PATH);
                 file.updateDirectoryPathAndImgUrl(directoryPath, s3EndPoint);
                 String s3Key = file.getS3Key();
                 s3Keys.add(s3Key);
