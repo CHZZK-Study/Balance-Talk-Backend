@@ -175,7 +175,7 @@ public class MemberService {
         }
     }
 
-    public boolean validatePassword(String password, ApiMember apiMember) {
+    public boolean verifyPassword(String password, ApiMember apiMember) {
         Member member = apiMember.toMember(memberRepository);
         return passwordEncoder.matches(password, member.getPassword());
     }
