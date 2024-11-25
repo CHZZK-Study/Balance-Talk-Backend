@@ -2,7 +2,9 @@ package balancetalk.file.domain;
 
 import balancetalk.file.domain.repository.FileRepository;
 import io.awspring.cloud.s3.S3Operations;
+import java.net.URI;
 import java.util.List;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -25,8 +27,8 @@ public class FileHandler {
 
     public void relocateFiles(List<File> files, Long resourceId, FileType fileType) {
         for (File file : files) {
-            String s3Key = relocateWithinS3(file, resourceId, fileType);
-            updateFile(file, s3Key, resourceId, fileType);
+            String newDirectoryPath = relocateWithinS3(file, resourceId, fileType);
+            saveOrMapToResource(file, newDirectoryPath, resourceId, fileType);
         }
     }
 
@@ -35,14 +37,14 @@ public class FileHandler {
         String destinationKey = getDestinationKey(file, resourceId, fileType);
         CopyObjectRequest copyObjectRequest = getCopyObjectRequest(sourceKey, destinationKey);
         s3Client.copyObject(copyObjectRequest);
-        if (sourceKey.contains("temp")) {
+        if (file.isUnmapped()) {
             s3Operations.deleteObject(bucket, sourceKey);
         }
-        return destinationKey;
+        return String.format("%s%d/", fileType.getUploadDir(), resourceId);
     }
 
     private String getDestinationKey(File file, Long resourceId, FileType fileType) {
-        return "%s%d/%s".formatted(fileType.getUploadDir(), resourceId, file.getStoredName());
+        return String.format("%s%d/%s", fileType.getUploadDir(), resourceId, file.getStoredName());
     }
 
     private CopyObjectRequest getCopyObjectRequest(String sourceKey, String destinationKey) {
@@ -54,10 +56,33 @@ public class FileHandler {
                 .build();
     }
 
-    private void updateFile(File file, String s3Key, Long resourceId, FileType fileType) {
-        file.updateS3KeyAndUrl(s3Key, s3EndPoint + s3Key);
-        file.updateResourceId(resourceId);
-        file.updateFileType(fileType);
+    private void saveOrMapToResource(File file, String directoryPath, Long resourceId, FileType fileType) {
+        if (file.isUnmapped()) {
+            file.updateDirectoryPathAndImgUrl(directoryPath, s3EndPoint);
+            file.updateResourceId(resourceId);
+            file.updateFileType(fileType);
+            return;
+        }
+        fileRepository.save(createNewFile(file, resourceId, fileType, directoryPath));
+    }
+
+    private File createNewFile(File file, Long resourceId, FileType fileType, String directoryPath) {
+        return File.builder()
+                .resourceId(resourceId)
+                .size(file.getSize())
+                .uploadName(file.getUploadName())
+                .storedName(String.format("%s_%s", UUID.randomUUID(), file.getUploadName()))
+                .fileType(fileType)
+                .directoryPath(directoryPath)
+                .imgUrl(getImgUrl(file, directoryPath))
+                .build();
+    }
+
+    private String getImgUrl(File file, String directoryPath) {
+        return URI.create(s3EndPoint)
+                .resolve(directoryPath)
+                .resolve(file.getStoredName())
+                .toString();
     }
 
     public void deleteFiles(List<File> files) {

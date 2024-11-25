@@ -20,7 +20,7 @@ public class FileRepositoryImpl implements FileRepositoryCustom {
                 .fetch();
 
         return images.stream()
-                .map(File::getS3Url)
+                .map(File::getImgUrl)
                 .toList();
     }
 
@@ -46,5 +46,16 @@ public class FileRepositoryImpl implements FileRepositoryCustom {
                 .from(file)
                 .where(file.fileType.eq(fileType), file.resourceId.in(resourceIds))
                 .fetch();
+    }
+
+    @Override
+    public Long findIdByResourceIdAndFileType(Long resourceId, FileType fileType) {
+        return queryFactory.select(file.id)
+                .from(file)
+                .where(
+                        file.resourceId.eq(resourceId),
+                        file.fileType.eq(fileType)
+                )
+                .fetchOne();
     }
 }

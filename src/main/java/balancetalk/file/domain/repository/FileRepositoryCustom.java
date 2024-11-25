@@ -13,4 +13,6 @@ public interface FileRepositoryCustom {
     List<File> findAllByResourceIdAndFileType(Long resourceId, FileType fileType);
 
     List<File> findAllByResourceIdsAndFileType(List<Long> resourceIds, FileType fileType);
+
+    Long findIdByResourceIdAndFileType(Long resourceId, FileType fileType);
 }
