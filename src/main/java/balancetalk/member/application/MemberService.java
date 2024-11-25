@@ -10,6 +10,8 @@ import static balancetalk.global.exception.ErrorCode.NOT_FOUND_MEMBER;
 import static balancetalk.global.exception.ErrorCode.PASSWORD_MISMATCH;
 import static balancetalk.global.exception.ErrorCode.SAME_NICKNAME;
 
+import balancetalk.file.domain.File;
+import balancetalk.file.domain.repository.FileRepository;
 import balancetalk.global.caffeine.CacheType;
 import balancetalk.global.exception.BalanceTalkException;
 import balancetalk.global.jwt.JwtTokenProvider;
@@ -43,6 +45,7 @@ public class MemberService {
 
     private final JwtTokenProvider jwtTokenProvider;
     private final MemberRepository memberRepository;
+    private final FileRepository fileRepository;
     private final PasswordEncoder passwordEncoder;
     private final CacheManager cacheManager;
 
@@ -87,14 +90,22 @@ public class MemberService {
     public MemberResponse findById(Long memberId) {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_MEMBER));
-        return MemberResponse.fromEntity(member);
+        String profileImgUrl = fileRepository.findById(member.getProfileImgId())
+                .map(File::getImgUrl)
+                .orElse(null);
+        return MemberResponse.fromEntity(member, profileImgUrl);
     }
 
     @Transactional(readOnly = true)
     public List<MemberResponse> findAll() {
         List<Member> members = memberRepository.findAll();
         return members.stream()
-                .map(MemberResponse::fromEntity)
+                .map(member -> {
+                    String profileImgUrl = fileRepository.findById(member.getProfileImgId())
+                            .map(File::getImgUrl)
+                            .orElse(null);
+                    return MemberResponse.fromEntity(member, profileImgUrl);
+                })
                 .toList();
     }
 
@@ -145,13 +156,13 @@ public class MemberService {
 
         if (memberUpdateRequest.getNickname() != null) {
 
-            isSameNickname(memberUpdateRequest, member);
+            validateSameNickname(memberUpdateRequest, member);
 
             member.updateNickname(memberUpdateRequest.getNickname());
         }
     }
 
-    private void isSameNickname(MemberUpdateRequest memberUpdateRequest, Member member) {
+    private void validateSameNickname(MemberUpdateRequest memberUpdateRequest, Member member) {
         if (member.getNickname().equals(memberUpdateRequest.getNickname())) {
             throw new BalanceTalkException(SAME_NICKNAME);
         }
