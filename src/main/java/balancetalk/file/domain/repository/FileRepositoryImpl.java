@@ -49,7 +49,7 @@ public class FileRepositoryImpl implements FileRepositoryCustom {
     }
 
     @Override
-    public Long findByResourceIdAndFileType(Long resourceId, FileType fileType) {
+    public Long findIdByResourceIdAndFileType(Long resourceId, FileType fileType) {
         return queryFactory.select(file.id)
                 .from(file)
                 .where(

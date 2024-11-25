@@ -105,7 +105,6 @@ public enum ErrorCode {
     ALREADY_REPORTED_POST(CONFLICT, "이미 신고한 게시글 입니다."),
     ALREADY_REPORTED_COMMENT(CONFLICT, "이미 신고한 댓글 입니다."),
     SAME_VOTE(CONFLICT, "변경하려는 선택지가 이전과 동일합니다."),
-    ALREADY_REGISTERED_FILE(CONFLICT, "이미 등록된 파일입니다."),
 
     // 500
     REDIS_CONNECTION_FAIL(INTERNAL_SERVER_ERROR, "Redis 연결에 실패했습니다."),

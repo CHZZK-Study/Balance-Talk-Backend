@@ -49,7 +49,7 @@ public class TempGameDto {
         public static TempGameResponse fromEntity(TempGame tempGame, FileRepository fileRepository) {
             List<TempGameOptionDto> tempGameOptions = tempGame.getTempGameOptions().stream()
                     .map(option -> {
-                        Long fileId = fileRepository.findByResourceIdAndFileType(
+                        Long fileId = fileRepository.findIdByResourceIdAndFileType(
                                 option.getId(), FileType.TEMP_GAME_OPTION);
                         return TempGameOptionDto.fromEntity(option, fileId);
                     })

@@ -9,6 +9,7 @@ import balancetalk.global.exception.BalanceTalkException;
 import balancetalk.global.exception.ErrorCode;
 import balancetalk.member.domain.Member;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.Size;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -22,12 +23,14 @@ public class TempGameSetDto {
     public static class CreateTempGameSetRequest {
 
         @Schema(description = "밸런스게임 세트 제목", example = "밸런스게임 세트 제목")
+        @Size(max = 50, message = "제목은 최대 50자까지 입력 가능합니다")
         private String title;
 
         @Schema(description = "밸런스 게임 메인 태그", example = "커플")
         private String mainTag;
 
         @Schema(description = "밸런스 게임 서브 태그", example = "커플지옥")
+        @Size(max = 10, message = "서브 태그는 최대 10자까지 입력 가능합니다")
         private String subTag;
 
         private List<CreateTempGameRequest> tempGames;
