@@ -29,6 +29,6 @@ public class BaseTempTalkPickFields extends BaseTalkPickFields {
     @NotBlank(message = "선택지 이름은 공백을 허용하지 않습니다.")
     @Override
     public String getOptionB() {
-        return super.getOptionA();
+        return super.getOptionB();
     }
 }
