@@ -150,13 +150,11 @@ public class MemberDto {
     @Schema(description = "회원정보 수정 요청")
     public static class MemberUpdateRequest {
 
-        @NotBlank
         @Size(min = 2, max = 10)
         @Schema(description = "회원 닉네임", example = "닉네임")
         private String nickname;
 
         @Schema(description = "이미지 id", example = "1")
-        @Pattern(regexp = "^[0-9]+$", message = "이미지 ID는 숫자만 허용됩니다")
         private Long profileImgId;
 
     }
