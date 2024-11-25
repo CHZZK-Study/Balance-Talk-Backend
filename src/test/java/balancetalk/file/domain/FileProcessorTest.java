@@ -1,16 +1,13 @@
 package balancetalk.file.domain;
 
-import balancetalk.global.exception.BalanceTalkException;
-import org.assertj.core.api.Assertions;
+import static balancetalk.file.domain.FileType.TALK_PICK;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
-
-import static balancetalk.file.domain.FileFormat.PNG;
-import static balancetalk.file.domain.FileType.TALK_PICK;
-import static org.assertj.core.api.Assertions.assertThat;
 
 class FileProcessorTest {
 
@@ -33,20 +30,7 @@ class FileProcessorTest {
 
         // then
         assertThat(result.getFileType()).isEqualTo(TALK_PICK);
-        assertThat(result.getFileFormat()).isEqualTo(PNG);
+        assertThat(result.getMimeType()).isEqualTo("image/png");
         assertThat(result.getUploadName()).isEqualTo(multipartFile.getOriginalFilename());
-    }
-
-    @Test
-    @DisplayName("MultipartFile이 지원하지 않는 파일 형식이라면 예외를 발생시킨다.")
-    void process_Fail_NotSupportedFileFormat() {
-        // given
-        MultipartFile multipartFile =
-                new MockMultipartFile("mockFile", "강아지", "image/gif", "content".getBytes());
-
-        // when, then
-        Assertions.assertThatThrownBy(() ->
-                        fileProcessor.process(multipartFile, TALK_PICK))
-                .isInstanceOf(BalanceTalkException.class);
     }
 }
