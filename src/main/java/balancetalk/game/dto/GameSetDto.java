@@ -6,6 +6,8 @@ import balancetalk.game.domain.GameSet;
 import balancetalk.game.domain.MainTag;
 import balancetalk.game.dto.GameDto.CreateOrUpdateGame;
 import balancetalk.game.dto.GameDto.GameDetailResponse;
+import balancetalk.global.exception.BalanceTalkException;
+import balancetalk.global.exception.ErrorCode;
 import balancetalk.member.domain.Member;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -22,6 +24,8 @@ public class GameSetDto {
     @Data
     public static class CreateGameSetRequest {
 
+        private static final int GAME_SIZE = 10;
+
         @Schema(description = "밸런스게임 세트 제목", example = "밸런스게임 세트 제목")
         private String title;
 
@@ -33,7 +37,11 @@ public class GameSetDto {
 
         private List<CreateOrUpdateGame> games;
 
-        public GameSet toEntity(String title, MainTag mainTag, Member member) {
+        public GameSet toEntity(MainTag mainTag, Member member) {
+            if (games == null || games.size() < GAME_SIZE) {
+                throw new BalanceTalkException(ErrorCode.BALANCE_GAME_SIZE_TEN);
+            }
+
             return GameSet.builder()
                     .title(title)
                     .mainTag(mainTag)
