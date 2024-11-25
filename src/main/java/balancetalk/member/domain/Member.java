@@ -49,7 +49,7 @@ public class Member extends BaseTimeEntity {
     @Enumerated(value = EnumType.STRING)
     private Role role;
 
-    private String profileImgId;
+    private Long profileImgId;
 
     @OneToMany(mappedBy = "member")
     private List<TalkPickVote> talkPickVotes = new ArrayList<>();
@@ -86,7 +86,7 @@ public class Member extends BaseTimeEntity {
         this.password = password;
     }
 
-    public void updateImageId(String profileImgId) {
+    public void updateImageId(Long profileImgId) {
         this.profileImgId = profileImgId;
     }
 
