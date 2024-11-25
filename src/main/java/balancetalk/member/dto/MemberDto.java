@@ -156,6 +156,7 @@ public class MemberDto {
         private String nickname;
 
         @Schema(description = "이미지 id", example = "1")
+        @Pattern(regexp = "^[0-9]+$", message = "이미지 ID는 숫자만 허용됩니다")
         private String profileImgId;
 
     }
