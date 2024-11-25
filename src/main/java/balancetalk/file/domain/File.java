@@ -29,9 +29,8 @@ public class File extends BaseTimeEntity {
 
     private Long resourceId;
 
-    @NotNull
-    @Positive
-    private Long size;
+    @Enumerated(value = EnumType.STRING)
+    private FileType fileType;
 
     @NotBlank
     private String uploadName;
@@ -39,21 +38,22 @@ public class File extends BaseTimeEntity {
     @NotBlank
     private String storedName;
 
-    @Enumerated(value = EnumType.STRING)
-    private FileType fileType;
+    @NotBlank
+    private String mimeType;
 
-    @Enumerated(value = EnumType.STRING)
-    private FileFormat fileFormat;
+    @NotNull
+    @Positive
+    private Long size;
 
     @NotBlank
-    private String s3Key;
+    private String directoryPath;
 
     @NotBlank
-    private String s3Url;
+    private String imgUrl;
 
-    public void updateS3KeyAndUrl(String newS3Key, String newS3Url) {
-        this.s3Key = newS3Key;
-        this.s3Url = newS3Url;
+    public void updateDirectoryPathAndImgUrl(String newDirectoryPath, String s3Endpoint) {
+        this.directoryPath = newDirectoryPath;
+        this.imgUrl = String.format("%s%s%s", s3Endpoint, newDirectoryPath, storedName);
     }
 
     public void updateResourceId(Long newResourceId) {
@@ -62,5 +62,13 @@ public class File extends BaseTimeEntity {
 
     public void updateFileType(FileType newFileType) {
         this.fileType = newFileType;
+    }
+
+    public String getS3Key() {
+        return "%s%s".formatted(directoryPath, storedName);
+    }
+
+    public boolean isUnmapped() {
+        return directoryPath.endsWith("temp/") && resourceId == null;
     }
 }

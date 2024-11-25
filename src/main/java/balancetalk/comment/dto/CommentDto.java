@@ -116,12 +116,12 @@ public class CommentDto {
         @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy.MM.dd hh:mm")
         private LocalDateTime lastModifiedAt;
 
-        public static LatestCommentResponse fromEntity(Comment comment, VoteOption voteOption, int likesCount, boolean myLike) {
+        public static LatestCommentResponse fromEntity(Comment comment, VoteOption voteOption, String profileImgUrl, int likesCount, boolean myLike) {
             return LatestCommentResponse.builder()
                     .id(comment.getId())
                     .content(comment.getContent())
                     .nickname(comment.getMember().getNickname())
-                    .profileImage(comment.getMember().getProfileImgUrl())
+                    .profileImage(profileImgUrl)
                     .talkPickId(comment.getTalkPick().getId())
                     .talkPickTitle(comment.getTalkPick().getTitle())
                     .voteOption(voteOption)
@@ -190,12 +190,12 @@ public class CommentDto {
         @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy.MM.dd hh:mm")
         private LocalDateTime lastModifiedAt;
 
-        public static BestCommentResponse fromEntity(Comment comment, VoteOption voteOption, int likesCount, boolean myLike) {
+        public static BestCommentResponse fromEntity(Comment comment, VoteOption voteOption, String profileImageUrl, int likesCount, boolean myLike) {
             return BestCommentResponse.builder()
                     .id(comment.getId())
                     .content(comment.getContent())
                     .nickname(comment.getMember().getNickname())
-                    .profileImage(comment.getMember().getProfileImgUrl())
+                    .profileImage(profileImageUrl)
                     .talkPickId(comment.getTalkPick().getId())
                     .talkPickTitle(comment.getTalkPick().getTitle())
                     .voteOption(voteOption)
@@ -265,12 +265,12 @@ public class CommentDto {
         @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy.MM.dd hh:mm")
         private LocalDateTime lastModifiedAt;
 
-        public static CommentReplyResponse fromEntity(Comment comment, VoteOption voteOption, int likesCount, boolean myLike) {
+        public static CommentReplyResponse fromEntity(Comment comment, VoteOption voteOption, String profileImageUrl, int likesCount, boolean myLike) {
             return CommentReplyResponse.builder()
                     .id(comment.getId())
                     .content(comment.getContent())
                     .nickname(comment.getMember().getNickname())
-                    .profileImage(comment.getMember().getProfileImgUrl())
+                    .profileImage(profileImageUrl)
                     .talkPickId(comment.getTalkPick().getId())
                     .talkPickTitle(comment.getTalkPick().getTitle())
                     .voteOption(voteOption)

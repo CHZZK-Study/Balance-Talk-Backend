@@ -5,6 +5,8 @@ import balancetalk.comment.domain.CommentRepository;
 import balancetalk.comment.dto.CommentDto;
 import balancetalk.comment.dto.CommentDto.BestCommentResponse;
 import balancetalk.comment.dto.CommentDto.LatestCommentResponse;
+import balancetalk.file.domain.File;
+import balancetalk.file.domain.repository.FileRepository;
 import balancetalk.global.exception.BalanceTalkException;
 import balancetalk.global.exception.ErrorCode;
 import balancetalk.global.notification.application.NotificationService;
@@ -53,6 +55,7 @@ public class CommentService {
     private final MemberRepository memberRepository;
     private final TalkPickRepository talkPickRepository;
     private final LikeRepository likeRepository;
+    private final FileRepository fileRepository;
     private final NotificationService notificationService;
 
     @Value("${comments.max-depth}")
@@ -114,13 +117,16 @@ public class CommentService {
 
         Page<Comment> comments = commentRepository.findAllByTalkPickIdAndParentIsNull(talkPickId, pageable);
 
-        return comments.map(comment -> {
+        return comments.map(comment -> { //TODO : Duplicates 메서드 분리
             int likesCount = likeRepository.countByResourceIdAndLikeType(comment.getId(), LikeType.COMMENT);
             boolean myLike = isCommentMyLiked(comment.getId(), guestOrApiMember);
             Member member = comment.getMember();
             VoteOption option = member.getVoteOnTalkPick(talkPick)
                     .isPresent() ? member.getVoteOnTalkPick(talkPick).get().getVoteOption() : null;
-            return LatestCommentResponse.fromEntity(comment, option, likesCount, myLike);
+            String imgUrl = fileRepository.findById(member.getProfileImgId())
+                    .map(File::getImgUrl)
+                    .orElse(null);
+            return LatestCommentResponse.fromEntity(comment, option, imgUrl, likesCount, myLike);
         });
     }
 
@@ -144,7 +150,10 @@ public class CommentService {
                     Member member = reply.getMember();
                     VoteOption option = member.getVoteOnTalkPick(talkPick)
                             .isPresent() ? member.getVoteOnTalkPick(talkPick).get().getVoteOption() : null;
-            return LatestCommentResponse.fromEntity(reply, option, likesCount, myLike);})
+                    String imgUrl = fileRepository.findById(member.getProfileImgId())
+                            .map(File::getImgUrl)
+                            .orElse(null);
+            return LatestCommentResponse.fromEntity(reply, option, imgUrl, likesCount, myLike);})
                 .toList();
     }
 
@@ -175,9 +184,11 @@ public class CommentService {
                 Member member = comment.getMember();
                 VoteOption option = member.getVoteOnTalkPick(talkPick)
                         .isPresent() ? member.getVoteOnTalkPick(talkPick).get().getVoteOption() : null;
-
+                String imgUrl = fileRepository.findById(member.getProfileImgId())
+                        .map(File::getImgUrl)
+                        .orElse(null);
                 comment.setIsBest(likeCount >= MIN_COUNT_FOR_BEST_COMMENT);
-                BestCommentResponse response = BestCommentResponse.fromEntity(comment, option, likeCount, myLike);
+                BestCommentResponse response = BestCommentResponse.fromEntity(comment, option, imgUrl, likeCount, myLike);
 
                 if (comment.getIsBest()) {
                     bestComments.add(response);
@@ -192,9 +203,12 @@ public class CommentService {
                 Member member = comment.getMember();
                 VoteOption option = member.getVoteOnTalkPick(talkPick)
                         .isPresent() ? member.getVoteOnTalkPick(talkPick).get().getVoteOption() : null;
+                String imgUrl = fileRepository.findById(member.getProfileImgId())
+                        .map(File::getImgUrl)
+                        .orElse(null);
 
                 comment.setIsBest(likeCount == maxLikes);
-                BestCommentResponse response = BestCommentResponse.fromEntity(comment, option, likeCount, myLike);
+                BestCommentResponse response = BestCommentResponse.fromEntity(comment, option, imgUrl, likeCount, myLike);
 
                 if (comment.getIsBest()) {
                     bestComments.add(response);
