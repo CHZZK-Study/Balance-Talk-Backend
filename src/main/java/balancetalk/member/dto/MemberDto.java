@@ -49,7 +49,7 @@ public class MemberDto {
         private String passwordConfirm;
 
         @Schema(description = "이미지 id", example = "1")
-        private String profileImgId;
+        private Long profileImgId;
 
         @Schema(description = "회원 권한", example = "USER")
         private Role role;
@@ -98,7 +98,7 @@ public class MemberDto {
         private String nickname;
 
         @Schema(description = "회원 프로필 이미지 id", example = "1")
-        private String profileImgId;
+        private Long profileImgId;
 
         @Schema(description = "가입일", example = "2024-02-16 13:37:17.391706")
         private LocalDateTime createdAt;
@@ -127,7 +127,7 @@ public class MemberDto {
     public static class MemberActivityResponse {
 
         @Schema(description = "회원 프로필 이미지 id", example = "1")
-        private String profileImgId;
+        private Long profileImgId;
 
         @Schema(description = "작성한 게시글 수", example = "23")
         private int postsCount;
@@ -157,7 +157,7 @@ public class MemberDto {
 
         @Schema(description = "이미지 id", example = "1")
         @Pattern(regexp = "^[0-9]+$", message = "이미지 ID는 숫자만 허용됩니다")
-        private String profileImgId;
+        private Long profileImgId;
 
     }
 }
