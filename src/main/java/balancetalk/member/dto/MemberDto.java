@@ -97,8 +97,8 @@ public class MemberDto {
         @Schema(description = "회원 닉네임", example = "닉네임")
         private String nickname;
 
-        @Schema(description = "회원 프로필 이미지 id", example = "1")
-        private Long profileImgId;
+        @Schema(description = "회원 프로필 이미지 URL", example = "https://balancetalk.s3.ap-northeast-2.amazonaws.com/1")
+        private String profileImgUrl;
 
         @Schema(description = "가입일", example = "2024-02-16 13:37:17.391706")
         private LocalDateTime createdAt;
@@ -109,11 +109,11 @@ public class MemberDto {
         @Schema(description = "저장한 게시글 수", example = "21")
         private int bookmarkedPostsCount;
 
-        public static MemberResponse fromEntity(Member member) {
+        public static MemberResponse fromEntity(Member member, String profileImgUrl) {
             return MemberResponse.builder()
                     .id(member.getId())
                     .nickname(member.getNickname())
-                    .profileImgId(member.getProfileImgId())
+                    .profileImgUrl(profileImgUrl)
                     .postsCount(member.getPostsCount())
                     .bookmarkedPostsCount(member.getBookmarkedPostsCount())
                     .build();
