@@ -10,6 +10,7 @@ import jakarta.persistence.Id;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
+import java.net.URI;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -46,14 +47,17 @@ public class File extends BaseTimeEntity {
     private Long size;
 
     @NotBlank
-    private String s3Key;
+    private String directoryPath;
 
     @NotBlank
-    private String s3Url;
+    private String imgUrl;
 
-    public void updateS3KeyAndUrl(String newS3Key, String newS3Url) {
-        this.s3Key = newS3Key;
-        this.s3Url = newS3Url;
+    public void updateDirectoryPathAndImgUrl(String newDirectoryPath, String s3Endpoint) {
+        this.directoryPath = newDirectoryPath;
+        this.imgUrl = URI.create(s3Endpoint)
+                .resolve(newDirectoryPath)
+                .resolve(storedName)
+                .toString();
     }
 
     public void updateResourceId(Long newResourceId) {
@@ -62,5 +66,13 @@ public class File extends BaseTimeEntity {
 
     public void updateFileType(FileType newFileType) {
         this.fileType = newFileType;
+    }
+
+    public String getS3Key() {
+        return "%s%s".formatted(directoryPath, storedName);
+    }
+
+    public boolean isUnmapped() {
+        return directoryPath.endsWith("temp/") && resourceId == null;
     }
 }
