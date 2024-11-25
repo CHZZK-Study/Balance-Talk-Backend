@@ -140,7 +140,7 @@ public class MemberService {
 
         //FIXME: 이미지 업데이트 메서드 수정 필요
         if (memberUpdateRequest.getProfileImgId() != null) {
-            member.updateImgUrl(memberUpdateRequest.getProfileImgId());
+            member.updateImageId(memberUpdateRequest.getProfileImgId());
         }
 
 

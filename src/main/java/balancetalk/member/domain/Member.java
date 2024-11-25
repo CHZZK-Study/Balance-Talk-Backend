@@ -86,7 +86,7 @@ public class Member extends BaseTimeEntity {
         this.password = password;
     }
 
-    public void updateImgUrl(String profileImgId) {
+    public void updateImageId(String profileImgId) {
         this.profileImgId = profileImgId;
     }
 
