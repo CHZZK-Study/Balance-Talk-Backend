@@ -19,6 +19,7 @@ import balancetalk.member.dto.ApiMember;
 import balancetalk.member.dto.MemberDto.JoinRequest;
 import balancetalk.member.dto.MemberDto.LoginRequest;
 import balancetalk.member.dto.MemberDto.MemberResponse;
+import balancetalk.member.dto.MemberDto.MemberUpdateRequest;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -97,19 +98,6 @@ public class MemberService {
                 .toList();
     }
 
-    public void updateNickname(final String newNickname, ApiMember apiMember) {
-        Member member = apiMember.toMember(memberRepository);
-        if (member.getNickname().equals(newNickname)) {
-            throw new BalanceTalkException(SAME_NICKNAME);
-        }
-        member.updateNickname(newNickname);
-    }
-
-    public void updateImage(final String profileImgUrl, ApiMember apiMember) {
-        Member member = apiMember.toMember(memberRepository);
-        member.updateImgUrl(profileImgUrl);
-    }
-
     public void delete(final LoginRequest loginRequest, ApiMember apiMember) {
         Member member = apiMember.toMember(memberRepository);
         if (!member.getEmail().equals(loginRequest.getEmail())) {
@@ -145,5 +133,19 @@ public class MemberService {
             }
         }
         return null;
+    }
+
+    public void updateMemberInformation(MemberUpdateRequest memberUpdateRequest, ApiMember apiMember) {
+        Member member = apiMember.toMember(memberRepository);
+
+        //FIXME: 이미지 업데이트 메서드 수정 필요
+        if (memberUpdateRequest.getProfileImgId() != null) {
+            member.updateImgUrl(memberUpdateRequest.getProfileImgId());
+        }
+
+        if (member.getNickname().equals(memberUpdateRequest.getNickname())) {
+            throw new BalanceTalkException(SAME_NICKNAME);
+        }
+        member.updateNickname(memberUpdateRequest.getNickname());
     }
 }

@@ -97,34 +97,6 @@ class MemberServiceTest {
     }
 
     @Test
-    @DisplayName("회원 닉네임 업데이트 실행시 성공적으로 변경")
-    void updateMemberNickname_Success() {
-        // given
-        String newNickname = "newNickname";
-        when(apiMember.toMember(any())).thenReturn(member);
-
-        // when
-        memberService.updateNickname(newNickname, apiMember);
-
-        // then
-        assertEquals(member.getNickname(), newNickname);
-    }
-
-    @Test
-    @DisplayName("회원 이미지 업데이트 실행 시 성공적으로 변경")
-    void updateMemberImage_Success() {
-        // given
-        String newImgUrl = "./newImage.png";
-        when(apiMember.toMember(any())).thenReturn(member);
-
-        // when
-        memberService.updateImage(newImgUrl, apiMember);
-
-        // then
-        assertEquals(member.getProfileImgUrl(), newImgUrl);
-    }
-
-    @Test
     @DisplayName("회원 삭제 시 회원 DB에서 정보가 성공적으로 삭제")
     void deleteMember_Success() {
         // given
