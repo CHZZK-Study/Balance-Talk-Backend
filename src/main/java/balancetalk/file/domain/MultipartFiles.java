@@ -31,13 +31,15 @@ public record MultipartFiles(List<MultipartFile> multipartFiles, FileType fileTy
 
     private boolean containsNotImage(List<MultipartFile> multipartFiles) {
         return multipartFiles.stream()
-                .anyMatch(multipartFile -> {
-                    String contentType = multipartFile.getContentType();
-                    if (contentType == null) {
-                        throw new BalanceTalkException(MISSING_MIME_TYPE);
-                    }
-                    return !contentType.startsWith("image");
-                });
+                .anyMatch(this::isNotImage);
+    }
+
+    private boolean isNotImage(MultipartFile multipartFile) {
+        String contentType = multipartFile.getContentType();
+        if (contentType == null) {
+            throw new BalanceTalkException(MISSING_MIME_TYPE);
+        }
+        return !contentType.startsWith("image");
     }
 
     @Override
