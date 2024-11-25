@@ -47,4 +47,15 @@ public class FileRepositoryImpl implements FileRepositoryCustom {
                 .where(file.fileType.eq(fileType), file.resourceId.in(resourceIds))
                 .fetch();
     }
+
+    @Override
+    public Long findIdByResourceIdAndFileType(Long resourceId, FileType fileType) {
+        return queryFactory.select(file.id)
+                .from(file)
+                .where(
+                        file.resourceId.eq(resourceId),
+                        file.fileType.eq(fileType)
+                )
+                .fetchOne();
+    }
 }
