@@ -25,6 +25,11 @@ public class FileHandler {
     @Value("${picko.aws.s3.endpoint}")
     private String s3EndPoint;
 
+    public void relocateFile(File file, Long resourceId, FileType fileType) {
+        String newDirectoryPath = relocateWithinS3(file, resourceId, fileType);
+        saveOrMapToResource(file, newDirectoryPath, resourceId, fileType);
+    }
+
     public void relocateFiles(List<File> files, Long resourceId, FileType fileType) {
         for (File file : files) {
             String newDirectoryPath = relocateWithinS3(file, resourceId, fileType);
