@@ -67,6 +67,7 @@ public enum ErrorCode {
     FORBIDDEN_POST_REPORT(FORBIDDEN, "본인 게시글을 신고할 수 없습니다."),
     FORBIDDEN_COMMENT_REPORT(FORBIDDEN, "본인 댓글을 신고할 수 없습니다."),
     FORBIDDEN_LIKE_OWN_COMMENT(FORBIDDEN, "본인 댓글에는 좋아요를 누를 수 없습니다."),
+    FORBIDDEN_MAIN_TAG_CREATE(FORBIDDEN, "메인 태그 작성 권한이 없습니다."),
 
     // 404
     NOT_FOUND_TALK_PICK(NOT_FOUND, "존재하지 않는 톡픽입니다."),
