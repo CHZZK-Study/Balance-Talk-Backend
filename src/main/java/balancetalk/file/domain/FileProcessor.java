@@ -25,9 +25,9 @@ public class FileProcessor {
                             String mimeType,
                             long size) {
         return File.builder()
-                .uploadName(uploadName)
-                .storedName(storedName)
                 .fileType(fileType)
+                .storedName(storedName)
+                .uploadName(uploadName)
                 .mimeType(mimeType)
                 .size(size)
                 .build();

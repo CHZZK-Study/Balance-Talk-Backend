@@ -10,7 +10,6 @@ import jakarta.persistence.Id;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
-import java.net.URI;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -54,10 +53,7 @@ public class File extends BaseTimeEntity {
 
     public void updateDirectoryPathAndImgUrl(String newDirectoryPath, String s3Endpoint) {
         this.directoryPath = newDirectoryPath;
-        this.imgUrl = URI.create(s3Endpoint)
-                .resolve(newDirectoryPath)
-                .resolve(storedName)
-                .toString();
+        this.imgUrl = String.format("%s%s%s", s3Endpoint, newDirectoryPath, storedName);
     }
 
     public void updateResourceId(Long newResourceId) {
