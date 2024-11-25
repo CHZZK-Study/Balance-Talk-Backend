@@ -174,4 +174,9 @@ public class MemberService {
             throw new BalanceTalkException(SAME_NICKNAME);
         }
     }
+
+    public boolean validatePassword(String password, ApiMember apiMember) {
+        Member member = apiMember.toMember(memberRepository);
+        return passwordEncoder.matches(password, member.getPassword());
+    }
 }

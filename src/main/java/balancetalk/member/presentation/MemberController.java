@@ -84,4 +84,11 @@ public class MemberController {
                                  @Parameter(hidden = true) @AuthPrincipal ApiMember apiMember) {
         memberService.updateMemberInformation(memberUpdateRequest, apiMember);
     }
+
+    @GetMapping("/validate-password")
+    @Operation(summary = "비밀번호 검증", description = "회원의 비밀번호를 검증한다.")
+    public boolean validatePassword(@RequestParam @NotBlank String password,
+                                 @Parameter(hidden = true) @AuthPrincipal ApiMember apiMember) {
+        return memberService.validatePassword(password, apiMember);
+    }
 }
