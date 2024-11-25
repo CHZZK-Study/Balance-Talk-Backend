@@ -59,7 +59,7 @@ public class MemberDto {
                     .nickname(nickname)
                     .email(email)
                     .password(password)
-                    .role(Role.USER)
+                    .role(role)
                     .profileImgId(profileImgId)
                     .build();
         }
