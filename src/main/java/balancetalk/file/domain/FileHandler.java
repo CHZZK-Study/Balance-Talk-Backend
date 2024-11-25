@@ -39,11 +39,11 @@ public class FileHandler {
         if (file.isUnmapped()) {
             s3Operations.deleteObject(bucket, sourceKey);
         }
-        return "%s%d/".formatted(fileType.getUploadDir(), resourceId);
+        return String.format("%s%d/", fileType.getUploadDir(), resourceId);
     }
 
     private String getDestinationKey(File file, Long resourceId, FileType fileType) {
-        return "%s%d/%s".formatted(fileType.getUploadDir(), resourceId, file.getStoredName());
+        return String.format("%s%d/%s", fileType.getUploadDir(), resourceId, file.getStoredName());
     }
 
     private CopyObjectRequest getCopyObjectRequest(String sourceKey, String destinationKey) {
