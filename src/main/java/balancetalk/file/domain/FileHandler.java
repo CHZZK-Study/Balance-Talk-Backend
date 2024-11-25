@@ -72,7 +72,6 @@ public class FileHandler {
                 .uploadName(file.getUploadName())
                 .storedName(String.format("%s_%s", UUID.randomUUID(), file.getUploadName()))
                 .fileType(fileType)
-                .fileFormat(file.getFileFormat())
                 .directoryPath(directoryPath)
                 .imgUrl(String.format("%s%s%s", s3EndPoint, directoryPath, file.getStoredName()))
                 .build();
