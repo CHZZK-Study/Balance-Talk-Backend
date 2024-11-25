@@ -97,6 +97,9 @@ public class MemberDto {
         @Schema(description = "회원 닉네임", example = "닉네임")
         private String nickname;
 
+        @Schema(description = "회원 이메일", example = "test123@naver.com")
+        private String email;
+
         @Schema(description = "회원 프로필 이미지 URL", example = "https://balancetalk.s3.ap-northeast-2.amazonaws.com/1")
         private String profileImgUrl;
 
@@ -113,6 +116,7 @@ public class MemberDto {
             return MemberResponse.builder()
                     .id(member.getId())
                     .nickname(member.getNickname())
+                    .email(member.getEmail())
                     .profileImgUrl(profileImgUrl)
                     .postsCount(member.getPostsCount())
                     .bookmarkedPostsCount(member.getBookmarkedPostsCount())
