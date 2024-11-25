@@ -144,4 +144,19 @@ public class MemberDto {
         }
     }
 
+    @Data
+    @Builder
+    @AllArgsConstructor
+    @Schema(description = "회원정보 수정 요청")
+    public static class MemberUpdateRequest {
+
+        @NotBlank
+        @Size(min = 2, max = 10)
+        @Schema(description = "회원 닉네임", example = "닉네임")
+        private String nickname;
+
+        @Schema(description = "이미지 id", example = "1")
+        private String profileImgId;
+
+    }
 }
