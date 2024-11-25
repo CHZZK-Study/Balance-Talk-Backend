@@ -6,11 +6,14 @@ import static balancetalk.global.exception.ErrorCode.AUTHENTICATION_REQUIRED;
 import static balancetalk.global.exception.ErrorCode.CACHE_NOT_FOUND;
 import static balancetalk.global.exception.ErrorCode.FORBIDDEN_MEMBER_DELETE;
 import static balancetalk.global.exception.ErrorCode.MISMATCHED_EMAIL_OR_PASSWORD;
+import static balancetalk.global.exception.ErrorCode.NOT_FOUND_FILE;
 import static balancetalk.global.exception.ErrorCode.NOT_FOUND_MEMBER;
 import static balancetalk.global.exception.ErrorCode.PASSWORD_MISMATCH;
 import static balancetalk.global.exception.ErrorCode.SAME_NICKNAME;
 
 import balancetalk.file.domain.File;
+import balancetalk.file.domain.FileHandler;
+import balancetalk.file.domain.FileType;
 import balancetalk.file.domain.repository.FileRepository;
 import balancetalk.global.caffeine.CacheType;
 import balancetalk.global.exception.BalanceTalkException;
@@ -47,6 +50,7 @@ public class MemberService {
     private final MemberRepository memberRepository;
     private final FileRepository fileRepository;
     private final PasswordEncoder passwordEncoder;
+    private final FileHandler fileHandler;
     private final CacheManager cacheManager;
 
     public Long join(final JoinRequest joinRequest) {
@@ -151,6 +155,9 @@ public class MemberService {
 
         if (memberUpdateRequest.getProfileImgId() != null) {
             member.updateImageId(memberUpdateRequest.getProfileImgId());
+            File file = fileRepository.findById(member.getProfileImgId())
+                    .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_FILE));
+            fileHandler.relocateFile(file, member.getId(), FileType.MEMBER);
         }
 
 
