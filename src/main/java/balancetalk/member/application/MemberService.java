@@ -143,9 +143,18 @@ public class MemberService {
             member.updateImgUrl(memberUpdateRequest.getProfileImgId());
         }
 
+
+        if (memberUpdateRequest.getNickname() != null) {
+
+            isSameNickname(memberUpdateRequest, member);
+
+            member.updateNickname(memberUpdateRequest.getNickname());
+        }
+    }
+
+    private void isSameNickname(MemberUpdateRequest memberUpdateRequest, Member member) {
         if (member.getNickname().equals(memberUpdateRequest.getNickname())) {
             throw new BalanceTalkException(SAME_NICKNAME);
         }
-        member.updateNickname(memberUpdateRequest.getNickname());
     }
 }
