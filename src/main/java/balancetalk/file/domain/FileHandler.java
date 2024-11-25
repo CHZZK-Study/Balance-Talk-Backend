@@ -2,7 +2,6 @@ package balancetalk.file.domain;
 
 import balancetalk.file.domain.repository.FileRepository;
 import io.awspring.cloud.s3.S3Operations;
-import java.net.URI;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -84,10 +83,7 @@ public class FileHandler {
     }
 
     private String getImgUrl(File file, String directoryPath) {
-        return URI.create(s3EndPoint)
-                .resolve(directoryPath)
-                .resolve(file.getStoredName())
-                .toString();
+        return String.format("%s%s%s", s3EndPoint, directoryPath, file.getStoredName());
     }
 
     public void deleteFiles(List<File> files) {
