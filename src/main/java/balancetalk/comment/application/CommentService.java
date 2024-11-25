@@ -117,14 +117,14 @@ public class CommentService {
 
         Page<Comment> comments = commentRepository.findAllByTalkPickIdAndParentIsNull(talkPickId, pageable);
 
-        return comments.map(comment -> {
+        return comments.map(comment -> { //TODO : Duplicates 메서드 분리
             int likesCount = likeRepository.countByResourceIdAndLikeType(comment.getId(), LikeType.COMMENT);
             boolean myLike = isCommentMyLiked(comment.getId(), guestOrApiMember);
             Member member = comment.getMember();
             VoteOption option = member.getVoteOnTalkPick(talkPick)
                     .isPresent() ? member.getVoteOnTalkPick(talkPick).get().getVoteOption() : null;
             String imgUrl = fileRepository.findById(member.getProfileImgId())
-                    .map(File::getStoredName)
+                    .map(File::getImgUrl)
                     .orElse(null);
             return LatestCommentResponse.fromEntity(comment, option, imgUrl, likesCount, myLike);
         });
@@ -151,7 +151,7 @@ public class CommentService {
                     VoteOption option = member.getVoteOnTalkPick(talkPick)
                             .isPresent() ? member.getVoteOnTalkPick(talkPick).get().getVoteOption() : null;
                     String imgUrl = fileRepository.findById(member.getProfileImgId())
-                            .map(File::getStoredName)
+                            .map(File::getImgUrl)
                             .orElse(null);
             return LatestCommentResponse.fromEntity(reply, option, imgUrl, likesCount, myLike);})
                 .toList();
@@ -185,7 +185,7 @@ public class CommentService {
                 VoteOption option = member.getVoteOnTalkPick(talkPick)
                         .isPresent() ? member.getVoteOnTalkPick(talkPick).get().getVoteOption() : null;
                 String imgUrl = fileRepository.findById(member.getProfileImgId())
-                        .map(File::getStoredName)
+                        .map(File::getImgUrl)
                         .orElse(null);
                 comment.setIsBest(likeCount >= MIN_COUNT_FOR_BEST_COMMENT);
                 BestCommentResponse response = BestCommentResponse.fromEntity(comment, option, imgUrl, likeCount, myLike);
@@ -204,7 +204,7 @@ public class CommentService {
                 VoteOption option = member.getVoteOnTalkPick(talkPick)
                         .isPresent() ? member.getVoteOnTalkPick(talkPick).get().getVoteOption() : null;
                 String imgUrl = fileRepository.findById(member.getProfileImgId())
-                        .map(File::getStoredName)
+                        .map(File::getImgUrl)
                         .orElse(null);
 
                 comment.setIsBest(likeCount == maxLikes);
