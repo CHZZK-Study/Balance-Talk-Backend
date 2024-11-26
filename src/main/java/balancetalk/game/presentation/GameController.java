@@ -70,7 +70,7 @@ public class GameController {
     }
 
     @GetMapping("/best")
-    @Operation(summary = "조회수 순으로 밸런스 게임 조회", description = "조회수 순으로 정렬된 16개의 게임 목록을 리턴합니다.")
+    @Operation(summary = "메인 태그에 해당하는 조회수 순으로 밸런스 게임 조회", description = "조회수 순으로 정렬된 16개의 게임 목록을 리턴합니다.")
     public List<GameSetResponse> findBestGames(
             @RequestParam String tagName,
             @RequestParam(defaultValue = "0") int page,
@@ -79,5 +79,16 @@ public class GameController {
     ) {
         Pageable pageable = PageRequest.of(page, size);
         return gameService.findBestGames(tagName, pageable, guestOrApiMember);
+    }
+
+    @GetMapping("/popular-games")
+    @Operation(summary = "조회수 순으로 밸런스 게임 조회", description = "태그 관계없이 조회수 순으로 정렬된 16개의 게임 목록을 리턴합니다.")
+    public List<GameSetResponse> findPopularGames(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "16") int size,
+            @Parameter(hidden = true) @AuthPrincipal final GuestOrApiMember guestOrApiMember
+    ) {
+        Pageable pageable = PageRequest.of(page, size);
+        return gameService.findPopularGames(pageable, guestOrApiMember);
     }
 }

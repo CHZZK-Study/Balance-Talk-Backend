@@ -184,6 +184,12 @@ public class GameService {
         return gameSetResponses(guestOrApiMember, gameSets);
     }
 
+    @Transactional(readOnly = true)
+    public List<GameSetResponse> findPopularGames(final Pageable pageable, final GuestOrApiMember guestOrApiMember) {
+        List<GameSet> popularGames = gameSetRepository.findPopularGames(pageable);
+        return gameSetResponses(guestOrApiMember, popularGames);
+    }
+
     private List<GameSetResponse> gameSetResponses(GuestOrApiMember guestOrApiMember, List<GameSet> gameSets) {
         if (guestOrApiMember.isGuest()) {
             return gameSets.stream()
