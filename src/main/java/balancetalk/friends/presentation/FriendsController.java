@@ -32,7 +32,7 @@ public class FriendsController {
         friendsService.createFriends(request, apiMember);
     }
 
-    @Operation(summary = "PICK-O 프렌즈 이미지 목록 조회", description = "PICK-O 프렌즈 캐릭터를 생성합니다.")
+    @Operation(summary = "PICK-O 프렌즈 이미지 목록 조회", description = "PICK-O 프렌즈 이미지 목록을 조회합니다.")
     @GetMapping("/images")
     public List<FriendsImageResponse> findAllFriendsImages() {
         return friendsService.findAllFriendsImages();
