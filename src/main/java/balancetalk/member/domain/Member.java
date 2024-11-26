@@ -49,7 +49,7 @@ public class Member extends BaseTimeEntity {
     @Enumerated(value = EnumType.STRING)
     private Role role;
 
-    private String profileImgUrl;
+    private Long profileImgId;
 
     @OneToMany(mappedBy = "member")
     private List<TalkPickVote> talkPickVotes = new ArrayList<>();
@@ -86,8 +86,8 @@ public class Member extends BaseTimeEntity {
         this.password = password;
     }
 
-    public void updateImgUrl(String profileImgUrl) {
-        this.profileImgUrl = profileImgUrl;
+    public void updateImageId(Long profileImgId) {
+        this.profileImgId = profileImgId;
     }
 
     public boolean hasBookmarked(GameSet gameSet, Long gameId) {
@@ -179,10 +179,6 @@ public class Member extends BaseTimeEntity {
 
     public Long updateTempTalkPick(TempTalkPick newTempTalkPick) {
         return tempTalkPick.update(newTempTalkPick);
-    }
-
-    public TempGameSet updateTempGameSet(TempGameSet newTempGameSet) {
-        return tempGameSet.updateTempGameSet(newTempGameSet);
     }
 
     public int getPostsCount() {

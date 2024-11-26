@@ -24,6 +24,7 @@ import balancetalk.global.exception.BalanceTalkException;
 import balancetalk.global.exception.ErrorCode;
 import balancetalk.member.domain.Member;
 import balancetalk.member.domain.MemberRepository;
+import balancetalk.member.domain.Role;
 import balancetalk.member.dto.ApiMember;
 import balancetalk.member.dto.GuestOrApiMember;
 import balancetalk.vote.domain.GameVote;
@@ -45,10 +46,6 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class GameService {
 
-    private static final int PAGE_INITIAL_INDEX = 0;
-    private static final int PAGE_LIMIT = 16;
-    private static final int GAME_SIZE = 10;
-
     private final GameSetRepository gameSetRepository;
     private final MemberRepository memberRepository;
     private final MainTagRepository mainTagRepository;
@@ -60,14 +57,9 @@ public class GameService {
         Member member = apiMember.toMember(memberRepository);
         MainTag mainTag = mainTagRepository.findByName(request.getMainTag())
                 .orElseThrow(() -> new BalanceTalkException(ErrorCode.NOT_FOUND_MAIN_TAG));
-        String title = request.getTitle();
 
         List<CreateOrUpdateGame> gameRequests = request.getGames();
-        if (gameRequests.size() < GAME_SIZE) {
-            throw new BalanceTalkException(ErrorCode.BALANCE_GAME_SIZE_TEN);
-        }
-
-        GameSet gameSet = request.toEntity(title, mainTag, member);
+        GameSet gameSet = request.toEntity(mainTag, member);
         List<Game> games = new ArrayList<>();
 
         for (CreateOrUpdateGame gameRequest : gameRequests) {
@@ -205,7 +197,11 @@ public class GameService {
 
     @Transactional
     public void createGameMainTag(final CreateGameMainTagRequest request, final ApiMember apiMember) {
-        apiMember.toMember(memberRepository);
+        Member member = apiMember.toMember(memberRepository);
+        if (member.getRole() == Role.USER) {
+            throw new BalanceTalkException(ErrorCode.FORBIDDEN_MAIN_TAG_CREATE);
+        }
+
         boolean hasGameTag = mainTagRepository.existsByName(request.getName());
         if (hasGameTag) {
             throw new BalanceTalkException(ErrorCode.ALREADY_REGISTERED_TAG);

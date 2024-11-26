@@ -35,8 +35,6 @@ public class TempGameOption {
     @Size(max = 30)
     private String name;
 
-    private String imgUrl;
-
     @Size(max = 50)
     private String description;
 
@@ -47,14 +45,12 @@ public class TempGameOption {
     @JoinColumn(name = "temp_game_id")
     private TempGame tempGame;
 
-    public void addTempGame(TempGame tempGame) {
+    public void assignTempGame(TempGame tempGame) {
         this.tempGame = tempGame;
     }
 
-    public void update (TempGameOption newTempGameOption){
+    public void updateTempGameOption(TempGameOption newTempGameOption) {
         this.name = newTempGameOption.getName();
-        this.imgUrl = newTempGameOption.getImgUrl();
         this.description = newTempGameOption.getDescription();
-        this.optionType = newTempGameOption.getOptionType();
     }
 }

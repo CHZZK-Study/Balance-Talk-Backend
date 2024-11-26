@@ -48,8 +48,8 @@ public class MemberDto {
         @Schema(description = "비밀번호 확인", example = "Test1234test!")
         private String passwordConfirm;
 
-        @Schema(description = "이미지 url", example = "https://picko-image.s3.ap-northeast-2.amazonaws.com/members/temp/a2ec181b-799f-47ed-9af8-3780d32b7fbc_images.png")
-        private String profileImgUrl;
+        @Schema(description = "이미지 id", example = "1")
+        private Long profileImgId;
 
         @Schema(description = "회원 권한", example = "USER")
         private Role role;
@@ -60,7 +60,7 @@ public class MemberDto {
                     .email(email)
                     .password(password)
                     .role(Role.USER)
-                    .profileImgUrl(profileImgUrl)
+                    .profileImgId(profileImgId)
                     .build();
         }
     }
@@ -97,8 +97,11 @@ public class MemberDto {
         @Schema(description = "회원 닉네임", example = "닉네임")
         private String nickname;
 
-        @Schema(description = "회원 프로필 URL", example = "https://pikko-image.s3.ap-northeast-2.amazonaws.com/member/511ca5c7-4367-40d1-ab18-3a8f0f4332a7_unnamed.pn")
-        private String profileImageUrl;
+        @Schema(description = "회원 이메일", example = "test123@naver.com")
+        private String email;
+
+        @Schema(description = "회원 프로필 이미지 URL", example = "https://balancetalk.s3.ap-northeast-2.amazonaws.com/1")
+        private String profileImgUrl;
 
         @Schema(description = "가입일", example = "2024-02-16 13:37:17.391706")
         private LocalDateTime createdAt;
@@ -109,11 +112,12 @@ public class MemberDto {
         @Schema(description = "저장한 게시글 수", example = "21")
         private int bookmarkedPostsCount;
 
-        public static MemberResponse fromEntity(Member member) {
+        public static MemberResponse fromEntity(Member member, String profileImgUrl) {
             return MemberResponse.builder()
                     .id(member.getId())
                     .nickname(member.getNickname())
-                    .profileImageUrl(member.getProfileImgUrl())
+                    .email(member.getEmail())
+                    .profileImgUrl(profileImgUrl)
                     .postsCount(member.getPostsCount())
                     .bookmarkedPostsCount(member.getBookmarkedPostsCount())
                     .build();
@@ -126,8 +130,8 @@ public class MemberDto {
     @Schema(description = "회원 활동 정보 응답")
     public static class MemberActivityResponse {
 
-        @Schema(description = "회원 프로필 URL", example = "https://pikko-image.s3.ap-northeast-2.amazonaws.com/member/511ca5c7-4367-40d1-ab18-3a8f0f4332a7_unnamed.pn")
-        private String profileImageUrl;
+        @Schema(description = "회원 프로필 이미지 id", example = "1")
+        private Long profileImgId;
 
         @Schema(description = "작성한 게시글 수", example = "23")
         private int postsCount;
@@ -137,11 +141,25 @@ public class MemberDto {
 
         public static MemberActivityResponse fromEntity(Member member) {
             return MemberActivityResponse.builder()
-                    .profileImageUrl(member.getProfileImgUrl())
+                    .profileImgId(member.getProfileImgId())
                     .postsCount(member.getPostsCount())
                     .bookmarkedPostsCount(member.getBookmarkedPostsCount())
                     .build();
         }
     }
 
+    @Data
+    @Builder
+    @AllArgsConstructor
+    @Schema(description = "회원정보 수정 요청")
+    public static class MemberUpdateRequest {
+
+        @Size(min = 2, max = 10)
+        @Schema(description = "회원 닉네임", example = "닉네임")
+        private String nickname;
+
+        @Schema(description = "이미지 id", example = "1")
+        private Long profileImgId;
+
+    }
 }

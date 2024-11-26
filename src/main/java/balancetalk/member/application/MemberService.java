@@ -6,10 +6,15 @@ import static balancetalk.global.exception.ErrorCode.AUTHENTICATION_REQUIRED;
 import static balancetalk.global.exception.ErrorCode.CACHE_NOT_FOUND;
 import static balancetalk.global.exception.ErrorCode.FORBIDDEN_MEMBER_DELETE;
 import static balancetalk.global.exception.ErrorCode.MISMATCHED_EMAIL_OR_PASSWORD;
+import static balancetalk.global.exception.ErrorCode.NOT_FOUND_FILE;
 import static balancetalk.global.exception.ErrorCode.NOT_FOUND_MEMBER;
 import static balancetalk.global.exception.ErrorCode.PASSWORD_MISMATCH;
 import static balancetalk.global.exception.ErrorCode.SAME_NICKNAME;
 
+import balancetalk.file.domain.File;
+import balancetalk.file.domain.FileHandler;
+import balancetalk.file.domain.FileType;
+import balancetalk.file.domain.repository.FileRepository;
 import balancetalk.global.caffeine.CacheType;
 import balancetalk.global.exception.BalanceTalkException;
 import balancetalk.global.jwt.JwtTokenProvider;
@@ -19,6 +24,7 @@ import balancetalk.member.dto.ApiMember;
 import balancetalk.member.dto.MemberDto.JoinRequest;
 import balancetalk.member.dto.MemberDto.LoginRequest;
 import balancetalk.member.dto.MemberDto.MemberResponse;
+import balancetalk.member.dto.MemberDto.MemberUpdateRequest;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -42,7 +48,9 @@ public class MemberService {
 
     private final JwtTokenProvider jwtTokenProvider;
     private final MemberRepository memberRepository;
+    private final FileRepository fileRepository;
     private final PasswordEncoder passwordEncoder;
+    private final FileHandler fileHandler;
     private final CacheManager cacheManager;
 
     public Long join(final JoinRequest joinRequest) {
@@ -86,28 +94,23 @@ public class MemberService {
     public MemberResponse findById(Long memberId) {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_MEMBER));
-        return MemberResponse.fromEntity(member);
+        String profileImgUrl = fileRepository.findById(member.getProfileImgId())
+                .map(File::getImgUrl)
+                .orElse(null);
+        return MemberResponse.fromEntity(member, profileImgUrl);
     }
 
     @Transactional(readOnly = true)
     public List<MemberResponse> findAll() {
         List<Member> members = memberRepository.findAll();
         return members.stream()
-                .map(MemberResponse::fromEntity)
+                .map(member -> {
+                    String profileImgUrl = fileRepository.findById(member.getProfileImgId())
+                            .map(File::getImgUrl)
+                            .orElse(null);
+                    return MemberResponse.fromEntity(member, profileImgUrl);
+                })
                 .toList();
-    }
-
-    public void updateNickname(final String newNickname, ApiMember apiMember) {
-        Member member = apiMember.toMember(memberRepository);
-        if (member.getNickname().equals(newNickname)) {
-            throw new BalanceTalkException(SAME_NICKNAME);
-        }
-        member.updateNickname(newNickname);
-    }
-
-    public void updateImage(final String profileImgUrl, ApiMember apiMember) {
-        Member member = apiMember.toMember(memberRepository);
-        member.updateImgUrl(profileImgUrl);
     }
 
     public void delete(final LoginRequest loginRequest, ApiMember apiMember) {
@@ -145,5 +148,35 @@ public class MemberService {
             }
         }
         return null;
+    }
+
+    public void updateMemberInformation(MemberUpdateRequest memberUpdateRequest, ApiMember apiMember) {
+        Member member = apiMember.toMember(memberRepository);
+
+        if (memberUpdateRequest.getProfileImgId() != null) {
+            member.updateImageId(memberUpdateRequest.getProfileImgId());
+            File file = fileRepository.findById(member.getProfileImgId())
+                    .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_FILE));
+            fileHandler.relocateFile(file, member.getId(), FileType.MEMBER);
+        }
+
+
+        if (memberUpdateRequest.getNickname() != null) {
+
+            validateSameNickname(memberUpdateRequest, member);
+
+            member.updateNickname(memberUpdateRequest.getNickname());
+        }
+    }
+
+    private void validateSameNickname(MemberUpdateRequest memberUpdateRequest, Member member) {
+        if (member.getNickname().equals(memberUpdateRequest.getNickname())) {
+            throw new BalanceTalkException(SAME_NICKNAME);
+        }
+    }
+
+    public boolean verifyPassword(String password, ApiMember apiMember) {
+        Member member = apiMember.toMember(memberRepository);
+        return passwordEncoder.matches(password, member.getPassword());
     }
 }

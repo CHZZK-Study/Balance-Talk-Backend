@@ -52,7 +52,7 @@ public class GameOptionDto {
         if (fileId != null) {
             File file = fileRepository.findById(fileId)
                     .orElseThrow(() -> new BalanceTalkException(ErrorCode.NOT_FOUND_FILE));
-            newImgUrl = file.getS3Url();
+            newImgUrl = file.getImgUrl();
         }
         return GameOption.builder()
                 .name(name)
