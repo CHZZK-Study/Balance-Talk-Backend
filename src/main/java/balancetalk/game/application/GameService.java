@@ -198,7 +198,7 @@ public class GameService {
     @Transactional
     public void createGameMainTag(final CreateGameMainTagRequest request, final ApiMember apiMember) {
         Member member = apiMember.toMember(memberRepository);
-        if (member.isUser()) {
+        if (member.isRoleUser()) {
             throw new BalanceTalkException(ErrorCode.FORBIDDEN_MAIN_TAG_CREATE);
         }
 

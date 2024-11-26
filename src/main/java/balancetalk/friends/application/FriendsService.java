@@ -31,7 +31,7 @@ public class FriendsService {
     @Transactional
     public void createFriends(CreateFriendsRequest request, ApiMember apiMember) {
         Member member = apiMember.toMember(memberRepository);
-        if (member.isUser()) {
+        if (member.isRoleUser()) {
             throw new BalanceTalkException(ErrorCode.FORBIDDEN_PICK_O_FRIENDS_OPERATION);
         }
         Friends savedFriends = friendsRepository.save(request.toEntity());
