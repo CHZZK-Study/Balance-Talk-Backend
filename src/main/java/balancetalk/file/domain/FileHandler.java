@@ -93,4 +93,9 @@ public class FileHandler {
         }
         fileRepository.deleteAll(files);
     }
+
+    public void deleteFile(File file) {
+        s3Operations.deleteObject(bucket, file.getS3Key());
+        fileRepository.delete(file);
+    }
 }
