@@ -152,17 +152,16 @@ public class CommentService {
         return replies.stream().map(reply -> {
             int likesCount = likeRepository.countByResourceIdAndLikeType(reply.getId(), LikeType.COMMENT);
             boolean myLike = isCommentMyLiked(reply.getId(), guestOrApiMember);
-                    Member member = reply.getMember();
-                    VoteOption option = member.getVoteOnTalkPick(talkPick)
-                            .isPresent() ? member.getVoteOnTalkPick(talkPick).get().getVoteOption() : null;
+            Member member = reply.getMember();
+            VoteOption option = member.getVoteOnTalkPick(talkPick)
+                    .isPresent() ? member.getVoteOnTalkPick(talkPick).get().getVoteOption() : null;
+            if (member.getProfileImgId() == null) {
+                return LatestCommentResponse.fromEntity(reply, option, null, likesCount, myLike);
+            }
 
-             if (member.getProfileImgId() == null) {
-                 return LatestCommentResponse.fromEntity(reply, option, null, likesCount, myLike);
-             }
-
-             String imgUrl = fileRepository.findById(member.getProfileImgId())
-                     .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_FILE))
-                     .getImgUrl();
+            String imgUrl = fileRepository.findById(member.getProfileImgId())
+                    .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_FILE))
+                    .getImgUrl();
 
             return LatestCommentResponse.fromEntity(reply, option, imgUrl, likesCount, myLike);})
                 .toList();
