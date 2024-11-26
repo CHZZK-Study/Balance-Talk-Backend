@@ -35,7 +35,7 @@ public class FriendsDto {
         }
     }
 
-    @Schema(description = "PICK-O 프렌즈 캐릭터 생성 요청")
+    @Schema(description = "PICK-O 프렌즈 이미지 응답")
     @Data
     @Builder
     @AllArgsConstructor
