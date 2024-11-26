@@ -24,7 +24,6 @@ import balancetalk.global.exception.BalanceTalkException;
 import balancetalk.global.exception.ErrorCode;
 import balancetalk.member.domain.Member;
 import balancetalk.member.domain.MemberRepository;
-import balancetalk.member.domain.Role;
 import balancetalk.member.dto.ApiMember;
 import balancetalk.member.dto.GuestOrApiMember;
 import balancetalk.vote.domain.GameVote;
@@ -199,7 +198,7 @@ public class GameService {
     @Transactional
     public void createGameMainTag(final CreateGameMainTagRequest request, final ApiMember apiMember) {
         Member member = apiMember.toMember(memberRepository);
-        if (member.getRole() == Role.USER) {
+        if (member.isRoleUser()) {
             throw new BalanceTalkException(ErrorCode.FORBIDDEN_MAIN_TAG_CREATE);
         }
 
