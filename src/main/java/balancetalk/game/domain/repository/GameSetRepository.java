@@ -23,6 +23,7 @@ public interface GameSetRepository extends JpaRepository<GameSet, Long> {
     List<GameSet> findGamesByViews(@Param("name") String mainTag, Pageable pageable);
 
     @Query("SELECT g FROM GameSet g " +
-            "ORDER BY g.views DESC, g.createdAt DESC")
+            "ORDER BY g.views DESC, " +
+            "g.createdAt DESC")
     List<GameSet> findPopularGames(Pageable pageable);
 }
