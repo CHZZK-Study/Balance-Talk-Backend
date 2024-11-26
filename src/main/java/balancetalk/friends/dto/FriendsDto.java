@@ -5,10 +5,13 @@ import balancetalk.friends.domain.Friends;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class FriendsDto {
 
     @Schema(description = "PICK-O 프렌즈 캐릭터 생성 요청")
