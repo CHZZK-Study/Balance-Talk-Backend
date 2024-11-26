@@ -1,7 +1,9 @@
 package balancetalk.member.domain;
 
-import balancetalk.bookmark.domain.TalkPickBookmark;
+import static balancetalk.member.domain.Role.USER;
+
 import balancetalk.bookmark.domain.GameBookmark;
+import balancetalk.bookmark.domain.TalkPickBookmark;
 import balancetalk.game.domain.Game;
 import balancetalk.game.domain.GameSet;
 import balancetalk.game.domain.TempGameSet;
@@ -13,14 +15,26 @@ import balancetalk.talkpick.domain.TalkPick;
 import balancetalk.talkpick.domain.TempTalkPick;
 import balancetalk.vote.domain.GameVote;
 import balancetalk.vote.domain.TalkPickVote;
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
-import lombok.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Builder
@@ -195,6 +209,10 @@ public class Member extends BaseTimeEntity {
 
     public boolean isWriterOf(TalkPick talkPick) {
         return talkPicks.contains(talkPick);
+    }
+
+    public boolean isRoleUser() {
+        return role == USER;
     }
 
     public boolean hasProfileImgId() {

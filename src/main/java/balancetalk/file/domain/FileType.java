@@ -5,7 +5,8 @@ public enum FileType {
     TEMP_TALK_PICK("temp-talks/", 10),
     GAME_OPTION("game-options/", 1),
     TEMP_GAME_OPTION("temp-game-options/", 1),
-    MEMBER("members/", 1);
+    MEMBER("members/", 1),
+    FRIENDS("friends/", 1);
 
     private final String uploadDir;
     private final int maxCount;
