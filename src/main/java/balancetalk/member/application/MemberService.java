@@ -63,7 +63,13 @@ public class MemberService {
             throw new BalanceTalkException(PASSWORD_MISMATCH);
         }
         joinRequest.setPassword(passwordEncoder.encode(joinRequest.getPassword()));
-        memberRepository.save(joinRequest.toEntity());
+        Member savedMember = memberRepository.save(joinRequest.toEntity());
+
+        if (joinRequest.hasProfileImgId()) {
+            File newProfileImgFile = fileRepository.findById(joinRequest.getProfileImgId())
+                    .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_FILE));
+            fileHandler.relocateFile(newProfileImgFile, savedMember.getId(), FileType.MEMBER);
+        }
     }
 
     public String login(final LoginRequest loginRequest, HttpServletResponse response) {
@@ -152,6 +158,9 @@ public class MemberService {
         Member member = apiMember.toMember(memberRepository);
 
         if (memberUpdateRequest.getProfileImgId() != null) {
+            if (member.hasProfileImgId()) {
+                fileRepository.deleteById(member.getProfileImgId());
+            }
             member.updateImageId(memberUpdateRequest.getProfileImgId());
             File file = fileRepository.findById(member.getProfileImgId())
                     .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_FILE));

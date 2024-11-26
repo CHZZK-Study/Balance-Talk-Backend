@@ -63,6 +63,10 @@ public class MemberDto {
                     .profileImgId(profileImgId)
                     .build();
         }
+
+        public boolean hasProfileImgId() {
+            return profileImgId != null;
+        }
     }
 
     @Data
