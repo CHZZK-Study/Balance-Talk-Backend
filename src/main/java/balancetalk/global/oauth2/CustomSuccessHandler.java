@@ -20,9 +20,8 @@ import java.io.IOException;
 @RequiredArgsConstructor
 public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
-    @Value("${spring.profiles.active}")
-    private String profile;
-
+    @Value("${urls.redirect}")
+    private String redirectUrl;
 
     private final JwtTokenProvider jwtTokenProvider;
     private final MemberRepository memberRepository;
@@ -43,11 +42,6 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
         response.addCookie(JwtTokenProvider.createCookie(refreshToken));
         response.addCookie(JwtTokenProvider.createAccessCookie(accessToken));
-
-        if (profile.equals("local")) {
-            response.sendRedirect("http://localhost:3000");
-            return;
-        }
-        response.sendRedirect("https://pick0.com");
+        response.sendRedirect(redirectUrl);
     }
 }
