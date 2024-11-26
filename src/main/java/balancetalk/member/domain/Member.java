@@ -214,4 +214,8 @@ public class Member extends BaseTimeEntity {
     public boolean isRoleUser() {
         return role == USER;
     }
+
+    public boolean hasProfileImgId() {
+        return profileImgId != null;
+    }
 }
