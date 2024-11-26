@@ -159,7 +159,9 @@ public class MemberService {
 
         if (memberUpdateRequest.getProfileImgId() != null) {
             if (member.hasProfileImgId()) {
-                fileRepository.deleteById(member.getProfileImgId());
+                File file = fileRepository.findById(member.getProfileImgId())
+                        .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_FILE));
+                fileHandler.deleteFile(file);
             }
             member.updateImageId(memberUpdateRequest.getProfileImgId());
             File file = fileRepository.findById(member.getProfileImgId())
