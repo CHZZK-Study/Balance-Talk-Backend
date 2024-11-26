@@ -5,7 +5,6 @@ import balancetalk.comment.domain.CommentRepository;
 import balancetalk.comment.dto.CommentDto;
 import balancetalk.comment.dto.CommentDto.BestCommentResponse;
 import balancetalk.comment.dto.CommentDto.LatestCommentResponse;
-import balancetalk.file.domain.File;
 import balancetalk.file.domain.repository.FileRepository;
 import balancetalk.global.exception.BalanceTalkException;
 import balancetalk.global.exception.ErrorCode;
@@ -123,9 +122,15 @@ public class CommentService {
             Member member = comment.getMember();
             VoteOption option = member.getVoteOnTalkPick(talkPick)
                     .isPresent() ? member.getVoteOnTalkPick(talkPick).get().getVoteOption() : null;
+
+            if (member.getProfileImgId() == null) {
+                return LatestCommentResponse.fromEntity(comment, option, null, likesCount, myLike);
+            }
+
             String imgUrl = fileRepository.findById(member.getProfileImgId())
-                    .map(File::getImgUrl)
-                    .orElse(null);
+                    .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_FILE))
+                    .getImgUrl();
+
             return LatestCommentResponse.fromEntity(comment, option, imgUrl, likesCount, myLike);
         });
     }
@@ -147,12 +152,17 @@ public class CommentService {
         return replies.stream().map(reply -> {
             int likesCount = likeRepository.countByResourceIdAndLikeType(reply.getId(), LikeType.COMMENT);
             boolean myLike = isCommentMyLiked(reply.getId(), guestOrApiMember);
-                    Member member = reply.getMember();
-                    VoteOption option = member.getVoteOnTalkPick(talkPick)
-                            .isPresent() ? member.getVoteOnTalkPick(talkPick).get().getVoteOption() : null;
-                    String imgUrl = fileRepository.findById(member.getProfileImgId())
-                            .map(File::getImgUrl)
-                            .orElse(null);
+            Member member = reply.getMember();
+            VoteOption option = member.getVoteOnTalkPick(talkPick)
+                    .isPresent() ? member.getVoteOnTalkPick(talkPick).get().getVoteOption() : null;
+            if (member.getProfileImgId() == null) {
+                return LatestCommentResponse.fromEntity(reply, option, null, likesCount, myLike);
+            }
+
+            String imgUrl = fileRepository.findById(member.getProfileImgId())
+                    .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_FILE))
+                    .getImgUrl();
+
             return LatestCommentResponse.fromEntity(reply, option, imgUrl, likesCount, myLike);})
                 .toList();
     }
@@ -184,11 +194,8 @@ public class CommentService {
                 Member member = comment.getMember();
                 VoteOption option = member.getVoteOnTalkPick(talkPick)
                         .isPresent() ? member.getVoteOnTalkPick(talkPick).get().getVoteOption() : null;
-                String imgUrl = fileRepository.findById(member.getProfileImgId())
-                        .map(File::getImgUrl)
-                        .orElse(null);
                 comment.setIsBest(likeCount >= MIN_COUNT_FOR_BEST_COMMENT);
-                BestCommentResponse response = BestCommentResponse.fromEntity(comment, option, imgUrl, likeCount, myLike);
+                BestCommentResponse response = validateImgUrl(member, comment, option, likeCount, myLike);
 
                 if (comment.getIsBest()) {
                     bestComments.add(response);
@@ -203,12 +210,9 @@ public class CommentService {
                 Member member = comment.getMember();
                 VoteOption option = member.getVoteOnTalkPick(talkPick)
                         .isPresent() ? member.getVoteOnTalkPick(talkPick).get().getVoteOption() : null;
-                String imgUrl = fileRepository.findById(member.getProfileImgId())
-                        .map(File::getImgUrl)
-                        .orElse(null);
-
                 comment.setIsBest(likeCount == maxLikes);
-                BestCommentResponse response = BestCommentResponse.fromEntity(comment, option, imgUrl, likeCount, myLike);
+
+                BestCommentResponse response = validateImgUrl(member, comment, option, likeCount, myLike);
 
                 if (comment.getIsBest()) {
                     bestComments.add(response);
@@ -229,6 +233,18 @@ public class CommentService {
         int end = Math.min((start + pageable.getPageSize()), result.size());
 
         return new PageImpl<>(result.subList(start, end), pageable, result.size());
+    }
+
+    private BestCommentResponse validateImgUrl(Member member, Comment comment, VoteOption option,
+                                               int likeCount, boolean myLike) {
+        if (member.getProfileImgId() != null) {
+            String imgUrl = fileRepository.findById(member.getProfileImgId())
+                    .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_FILE))
+                    .getImgUrl();
+
+            return BestCommentResponse.fromEntity(comment, option, imgUrl, likeCount, myLike);
+        }
+            return BestCommentResponse.fromEntity(comment, option, null, likeCount, myLike);
     }
 
     public void updateComment(Long commentId, Long talkPickId, String content, ApiMember apiMember) {

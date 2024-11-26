@@ -94,10 +94,15 @@ public class MemberService {
     public MemberResponse findById(Long memberId) {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_MEMBER));
-        String profileImgUrl = fileRepository.findById(member.getProfileImgId())
-                .map(File::getImgUrl)
-                .orElse(null);
-        return MemberResponse.fromEntity(member, profileImgUrl);
+
+        if (member.getProfileImgId() == null) {
+            return MemberResponse.fromEntity(member, null);
+        }
+
+        String imgUrl = fileRepository.findById(member.getProfileImgId())
+                .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_FILE))
+                .getImgUrl();
+        return MemberResponse.fromEntity(member, imgUrl);
     }
 
     @Transactional(readOnly = true)
@@ -105,10 +110,14 @@ public class MemberService {
         List<Member> members = memberRepository.findAll();
         return members.stream()
                 .map(member -> {
-                    String profileImgUrl = fileRepository.findById(member.getProfileImgId())
-                            .map(File::getImgUrl)
-                            .orElse(null);
-                    return MemberResponse.fromEntity(member, profileImgUrl);
+                    if (member.getProfileImgId() == null) {
+                        return MemberResponse.fromEntity(member, null);
+                    }
+
+                    String imgUrl = fileRepository.findById(member.getProfileImgId())
+                            .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_FILE))
+                            .getImgUrl();
+                    return MemberResponse.fromEntity(member, imgUrl);
                 })
                 .toList();
     }
