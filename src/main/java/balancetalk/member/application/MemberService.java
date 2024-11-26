@@ -52,7 +52,7 @@ public class MemberService {
     private final FileHandler fileHandler;
     private final CacheManager cacheManager;
 
-    public Long join(final JoinRequest joinRequest) {
+    public void join(final JoinRequest joinRequest) {
         if (memberRepository.existsByEmail(joinRequest.getEmail())) {
             throw new BalanceTalkException(ALREADY_REGISTERED_EMAIL);
         }
@@ -63,8 +63,7 @@ public class MemberService {
             throw new BalanceTalkException(PASSWORD_MISMATCH);
         }
         joinRequest.setPassword(passwordEncoder.encode(joinRequest.getPassword()));
-        Member member = joinRequest.toEntity();
-        return memberRepository.save(member).getId();
+        memberRepository.save(joinRequest.toEntity());
     }
 
     public String login(final LoginRequest loginRequest, HttpServletResponse response) {
