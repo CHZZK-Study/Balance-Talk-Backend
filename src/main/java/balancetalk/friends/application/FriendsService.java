@@ -1,5 +1,7 @@
 package balancetalk.friends.application;
 
+import static balancetalk.friends.dto.FriendsDto.FriendsImageResponse;
+
 import balancetalk.file.domain.File;
 import balancetalk.file.domain.FileHandler;
 import balancetalk.file.domain.FileType;
@@ -12,6 +14,7 @@ import balancetalk.global.exception.ErrorCode;
 import balancetalk.member.domain.Member;
 import balancetalk.member.domain.MemberRepository;
 import balancetalk.member.dto.ApiMember;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -36,5 +39,19 @@ public class FriendsService {
         File file = fileRepository.findById(request.getImgId())
                 .orElseThrow(() -> new BalanceTalkException(ErrorCode.NOT_FOUND_FILE));
         fileHandler.relocateFile(file, savedFriends.getId(), FileType.FRIENDS);
+    }
+
+    public List<FriendsImageResponse> findAllFriendsImages() {
+        return fileRepository.findAllById(getFriendsImgIds())
+                .stream()
+                .map(FriendsImageResponse::from)
+                .toList();
+    }
+
+    private List<Long> getFriendsImgIds() {
+        return friendsRepository.findAll()
+                .stream()
+                .map(Friends::getImgId)
+                .toList();
     }
 }
