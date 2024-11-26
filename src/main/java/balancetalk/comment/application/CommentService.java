@@ -156,13 +156,13 @@ public class CommentService {
                     VoteOption option = member.getVoteOnTalkPick(talkPick)
                             .isPresent() ? member.getVoteOnTalkPick(talkPick).get().getVoteOption() : null;
 
-                    if (member.getProfileImgId() == null) {
-                        return LatestCommentResponse.fromEntity(reply, option, null, likesCount, myLike);
-                    }
+             if (member.getProfileImgId() == null) {
+                 return LatestCommentResponse.fromEntity(reply, option, null, likesCount, myLike);
+             }
 
-                    String imgUrl = fileRepository.findById(member.getProfileImgId())
-                            .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_FILE))
-                            .getImgUrl();
+             String imgUrl = fileRepository.findById(member.getProfileImgId())
+                     .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_FILE))
+                     .getImgUrl();
 
             return LatestCommentResponse.fromEntity(reply, option, imgUrl, likesCount, myLike);})
                 .toList();
@@ -236,7 +236,8 @@ public class CommentService {
         return new PageImpl<>(result.subList(start, end), pageable, result.size());
     }
 
-    private BestCommentResponse validateImgUrl(Member member, Comment comment, VoteOption option, int likeCount, boolean myLike) {
+    private BestCommentResponse validateImgUrl(Member member, Comment comment, VoteOption option,
+                                               int likeCount, boolean myLike) {
         if (member.getProfileImgId() != null) {
             String imgUrl = fileRepository.findById(member.getProfileImgId())
                     .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_FILE))
