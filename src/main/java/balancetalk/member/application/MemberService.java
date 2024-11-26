@@ -28,6 +28,7 @@ import balancetalk.member.dto.MemberDto.MemberUpdateRequest;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -37,8 +38,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import java.util.List;
-
 
 @Slf4j
 @Service
@@ -160,11 +159,8 @@ public class MemberService {
             fileHandler.relocateFile(file, member.getId(), FileType.MEMBER);
         }
 
-
         if (memberUpdateRequest.getNickname() != null) {
-
             validateSameNickname(memberUpdateRequest, member);
-
             member.updateNickname(memberUpdateRequest.getNickname());
         }
     }
