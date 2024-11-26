@@ -84,4 +84,8 @@ public class GameOption {
     public void decreaseVotesCount() {
         this.votesCount--;
     }
+
+    public boolean hasImage() {
+        return imgUrl != null && imgId != null;
+    }
 }
