@@ -245,9 +245,7 @@ public class CommentService {
 
             return BestCommentResponse.fromEntity(comment, option, imgUrl, likeCount, myLike);
         }
-        else {
             return BestCommentResponse.fromEntity(comment, option, null, likeCount, myLike);
-        }
     }
 
     public void updateComment(Long commentId, Long talkPickId, String content, ApiMember apiMember) {
