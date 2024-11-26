@@ -38,7 +38,7 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
         response.addCookie(JwtTokenProvider.createCookie(refreshToken));
         response.addCookie(JwtTokenProvider.createAccessCookie(accessToken));
-        response.sendRedirect("http://43.202.175.99:8080");
+        response.sendRedirect("https://pick0.com");
     }
 
 }
