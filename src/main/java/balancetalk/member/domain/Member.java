@@ -211,7 +211,7 @@ public class Member extends BaseTimeEntity {
         return talkPicks.contains(talkPick);
     }
 
-    public boolean isUser() {
+    public boolean isRoleUser() {
         return role == USER;
     }
 }
