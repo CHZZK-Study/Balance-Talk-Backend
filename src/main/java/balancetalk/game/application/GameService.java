@@ -53,7 +53,7 @@ public class GameService {
     private final FileHandler fileHandler;
 
     @Transactional
-    public void createBalanceGameSet(final CreateGameSetRequest request, final ApiMember apiMember) {
+    public Long createBalanceGameSet(final CreateGameSetRequest request, final ApiMember apiMember) {
         Member member = apiMember.toMember(memberRepository);
         MainTag mainTag = mainTagRepository.findByName(request.getMainTag())
                 .orElseThrow(() -> new BalanceTalkException(ErrorCode.NOT_FOUND_MAIN_TAG));
@@ -70,6 +70,7 @@ public class GameService {
         gameSet.addGames(games);
         gameSetRepository.save(gameSet);
         processFiles(request.getGames(), games);
+        return gameSet.getId();
     }
 
     @Transactional
