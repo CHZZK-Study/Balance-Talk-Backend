@@ -196,4 +196,8 @@ public class Member extends BaseTimeEntity {
     public boolean isWriterOf(TalkPick talkPick) {
         return talkPicks.contains(talkPick);
     }
+
+    public boolean hasProfileImgId() {
+        return profileImgId != null;
+    }
 }
