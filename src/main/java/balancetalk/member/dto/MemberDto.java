@@ -118,6 +118,7 @@ public class MemberDto {
                     .nickname(member.getNickname())
                     .email(member.getEmail())
                     .profileImgUrl(profileImgUrl)
+                    .createdAt(member.getCreatedAt())
                     .postsCount(member.getPostsCount())
                     .bookmarkedPostsCount(member.getBookmarkedPostsCount())
                     .build();
