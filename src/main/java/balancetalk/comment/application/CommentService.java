@@ -120,7 +120,8 @@ public class CommentService {
     }
 
     @Transactional(readOnly = true)
-    public List<LatestCommentResponse> findAllReplies(Long parentId, Long talkPickId, GuestOrApiMember guestOrApiMember) {
+    public List<LatestCommentResponse> findAllReplies(Long parentId, Long talkPickId,
+                                                      GuestOrApiMember guestOrApiMember) {
 
         // 부모 댓글이 존재하는지 확인
         validateCommentId(parentId);
@@ -137,27 +138,29 @@ public class CommentService {
     }
 
     // Page<Comment> 처리
-    private Page<LatestCommentResponse> convertToLatestCommentPagesResponse(Page<Comment> comments, TalkPick talkPick, GuestOrApiMember guestOrApiMember) {
+    private Page<LatestCommentResponse> convertToLatestCommentPagesResponse(Page<Comment> comments, TalkPick talkPick,
+                                                                            GuestOrApiMember guestOrApiMember) {
         return comments.map(comment -> mapToLatestCommentResponse(comment, talkPick, guestOrApiMember));
     }
 
     // List<Comment> 처리
-    private List<LatestCommentResponse> convertToLatestCommentResponse(List<Comment> comments, TalkPick talkPick, GuestOrApiMember guestOrApiMember) {
+    private List<LatestCommentResponse> convertToLatestCommentResponse(List<Comment> comments, TalkPick talkPick,
+                                                                       GuestOrApiMember guestOrApiMember) {
         return comments.stream()
                 .map(comment -> mapToLatestCommentResponse(comment, talkPick, guestOrApiMember))
                 .toList();
     }
 
     // 공통 변환 로직
-    private LatestCommentResponse mapToLatestCommentResponse(Comment comment, TalkPick talkPick, GuestOrApiMember guestOrApiMember) {
+    private LatestCommentResponse mapToLatestCommentResponse(Comment comment, TalkPick talkPick,
+                                                             GuestOrApiMember guestOrApiMember) {
         int likesCount = likeRepository.countByResourceIdAndLikeType(comment.getId(), LikeType.COMMENT);
         boolean myLike = isCommentMyLiked(comment.getId(), guestOrApiMember);
         Member member = comment.getMember();
         VoteOption option = member.getVoteOnTalkPick(talkPick)
                 .isPresent() ? member.getVoteOnTalkPick(talkPick).get().getVoteOption() : null;
 
-        String imgUrl = (member.getProfileImgId() != null) ?
-                fileRepository.findById(member.getProfileImgId())
+        String imgUrl = (member.getProfileImgId() != null) ? fileRepository.findById(member.getProfileImgId())
                         .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_FILE))
                         .getImgUrl() : null;
 
@@ -208,7 +211,8 @@ public class CommentService {
     }
 
 
-    private BestCommentResponse processFindBestComments(Comment comment, TalkPick talkPick, GuestOrApiMember guestOrApiMember, int maxLikes) {
+    private BestCommentResponse processFindBestComments(Comment comment, TalkPick talkPick,
+                                                        GuestOrApiMember guestOrApiMember, int maxLikes) {
         boolean myLike = isCommentMyLiked(comment.getId(), guestOrApiMember);
         int likeCount = likeRepository.countByResourceIdAndLikeType(comment.getId(), LikeType.COMMENT);
         Member member = comment.getMember();
@@ -223,7 +227,8 @@ public class CommentService {
     }
 
 
-    private BestCommentResponse createBestCommentResponse(Member member, Comment comment, VoteOption option, int likeCount, boolean myLike) {
+    private BestCommentResponse createBestCommentResponse(Member member, Comment comment,
+                                                          VoteOption option, int likeCount, boolean myLike) {
         // 프로필 이미지 URL 조회
         String imgUrl = fetchProfileImgUrl(member);
 
@@ -330,7 +335,7 @@ public class CommentService {
 
         // 첫 답글 알림
         if ((isFirstReplyFromOther && !parentComment.getIsNotifiedForFirstReply()) && !notificationHistory.getOrDefault(firstReplyKey, false)) {
-            notificationService.sendTalkPickNotification(parentCommentAuthor,talkPick,
+            notificationService.sendTalkPickNotification(parentCommentAuthor, talkPick,
                     category, FIRST_COMMENT_REPLY.getMessage());
             parentComment.setIsNotifiedForFirstReplyTrue();
             // 50, 100개 답글 알림
