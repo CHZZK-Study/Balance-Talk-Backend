@@ -167,7 +167,7 @@ public class CommentService {
         return LatestCommentResponse.fromEntity(comment, option, imgUrl, likesCount, myLike);
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     public Page<BestCommentResponse> findAllBestComments(Long talkPickId, Pageable pageable,
                                                          GuestOrApiMember guestOrApiMember) {
         validateTalkPickId(talkPickId);
