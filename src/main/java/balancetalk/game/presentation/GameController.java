@@ -29,9 +29,9 @@ public class GameController {
 
     @PostMapping
     @Operation(summary = "밸런스 게임 세트 생성", description = "10개 단위의 밸런스 게임을 가지고 있는 게임 세트를 생성합니다.")
-    public void createGameSetRequest(@RequestBody final CreateGameSetRequest request,
+    public Long createGameSetRequest(@RequestBody final CreateGameSetRequest request,
                               @Parameter(hidden = true) @AuthPrincipal final ApiMember apiMember) {
-        gameService.createBalanceGameSet(request, apiMember);
+        return gameService.createBalanceGameSet(request, apiMember);
     }
 
     @PutMapping("/{gameSetId}")

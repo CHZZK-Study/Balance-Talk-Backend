@@ -28,6 +28,7 @@ import balancetalk.member.dto.MemberDto.MemberUpdateRequest;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -37,8 +38,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import java.util.List;
-
 
 @Slf4j
 @Service
@@ -53,7 +52,7 @@ public class MemberService {
     private final FileHandler fileHandler;
     private final CacheManager cacheManager;
 
-    public Long join(final JoinRequest joinRequest) {
+    public void join(final JoinRequest joinRequest) {
         if (memberRepository.existsByEmail(joinRequest.getEmail())) {
             throw new BalanceTalkException(ALREADY_REGISTERED_EMAIL);
         }
@@ -64,8 +63,13 @@ public class MemberService {
             throw new BalanceTalkException(PASSWORD_MISMATCH);
         }
         joinRequest.setPassword(passwordEncoder.encode(joinRequest.getPassword()));
-        Member member = joinRequest.toEntity();
-        return memberRepository.save(member).getId();
+        Member savedMember = memberRepository.save(joinRequest.toEntity());
+
+        if (joinRequest.hasProfileImgId()) {
+            File newProfileImgFile = fileRepository.findById(joinRequest.getProfileImgId())
+                    .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_FILE));
+            fileHandler.relocateFile(newProfileImgFile, savedMember.getId(), FileType.MEMBER);
+        }
     }
 
     public String login(final LoginRequest loginRequest, HttpServletResponse response) {
@@ -94,10 +98,15 @@ public class MemberService {
     public MemberResponse findById(Long memberId) {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_MEMBER));
-        String profileImgUrl = fileRepository.findById(member.getProfileImgId())
-                .map(File::getImgUrl)
-                .orElse(null);
-        return MemberResponse.fromEntity(member, profileImgUrl);
+
+        if (member.getProfileImgId() == null) {
+            return MemberResponse.fromEntity(member, null);
+        }
+
+        String imgUrl = fileRepository.findById(member.getProfileImgId())
+                .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_FILE))
+                .getImgUrl();
+        return MemberResponse.fromEntity(member, imgUrl);
     }
 
     @Transactional(readOnly = true)
@@ -105,10 +114,14 @@ public class MemberService {
         List<Member> members = memberRepository.findAll();
         return members.stream()
                 .map(member -> {
-                    String profileImgUrl = fileRepository.findById(member.getProfileImgId())
-                            .map(File::getImgUrl)
-                            .orElse(null);
-                    return MemberResponse.fromEntity(member, profileImgUrl);
+                    if (member.getProfileImgId() == null) {
+                        return MemberResponse.fromEntity(member, null);
+                    }
+
+                    String imgUrl = fileRepository.findById(member.getProfileImgId())
+                            .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_FILE))
+                            .getImgUrl();
+                    return MemberResponse.fromEntity(member, imgUrl);
                 })
                 .toList();
     }
@@ -154,17 +167,19 @@ public class MemberService {
         Member member = apiMember.toMember(memberRepository);
 
         if (memberUpdateRequest.getProfileImgId() != null) {
+            if (member.hasProfileImgId()) {
+                File file = fileRepository.findById(member.getProfileImgId())
+                        .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_FILE));
+                fileHandler.deleteFile(file);
+            }
             member.updateImageId(memberUpdateRequest.getProfileImgId());
             File file = fileRepository.findById(member.getProfileImgId())
                     .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_FILE));
             fileHandler.relocateFile(file, member.getId(), FileType.MEMBER);
         }
 
-
         if (memberUpdateRequest.getNickname() != null) {
-
             validateSameNickname(memberUpdateRequest, member);
-
             member.updateNickname(memberUpdateRequest.getNickname());
         }
     }

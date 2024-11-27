@@ -59,9 +59,13 @@ public class MemberDto {
                     .nickname(nickname)
                     .email(email)
                     .password(password)
-                    .role(Role.USER)
+                    .role(role)
                     .profileImgId(profileImgId)
                     .build();
+        }
+
+        public boolean hasProfileImgId() {
+            return profileImgId != null;
         }
     }
 
@@ -118,6 +122,7 @@ public class MemberDto {
                     .nickname(member.getNickname())
                     .email(member.getEmail())
                     .profileImgUrl(profileImgUrl)
+                    .createdAt(member.getCreatedAt())
                     .postsCount(member.getPostsCount())
                     .bookmarkedPostsCount(member.getBookmarkedPostsCount())
                     .build();

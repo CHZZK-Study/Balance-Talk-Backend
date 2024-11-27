@@ -10,6 +10,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
@@ -18,6 +19,9 @@ import java.io.IOException;
 @Component
 @RequiredArgsConstructor
 public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
+
+    @Value("${urls.redirect}")
+    private String redirectUrl;
 
     private final JwtTokenProvider jwtTokenProvider;
     private final MemberRepository memberRepository;
@@ -38,7 +42,6 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
         response.addCookie(JwtTokenProvider.createCookie(refreshToken));
         response.addCookie(JwtTokenProvider.createAccessCookie(accessToken));
-        response.sendRedirect("http://43.202.175.99:8080");
+        response.sendRedirect(redirectUrl);
     }
-
 }
