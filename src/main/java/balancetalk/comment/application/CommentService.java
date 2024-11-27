@@ -116,23 +116,7 @@ public class CommentService {
 
         Page<Comment> comments = commentRepository.findAllByTalkPickIdAndParentIsNull(talkPickId, pageable);
 
-        return comments.map(comment -> { //TODO : Duplicates 메서드 분리
-            int likesCount = likeRepository.countByResourceIdAndLikeType(comment.getId(), LikeType.COMMENT);
-            boolean myLike = isCommentMyLiked(comment.getId(), guestOrApiMember);
-            Member member = comment.getMember();
-            VoteOption option = member.getVoteOnTalkPick(talkPick)
-                    .isPresent() ? member.getVoteOnTalkPick(talkPick).get().getVoteOption() : null;
-
-            if (member.getProfileImgId() == null) {
-                return LatestCommentResponse.fromEntity(comment, option, null, likesCount, myLike);
-            }
-
-            String imgUrl = fileRepository.findById(member.getProfileImgId())
-                    .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_FILE))
-                    .getImgUrl();
-
-            return LatestCommentResponse.fromEntity(comment, option, imgUrl, likesCount, myLike);
-        });
+        return convertToLatestCommentPagesResponse(comments, talkPick, guestOrApiMember);
     }
 
     @Transactional(readOnly = true)
@@ -149,24 +133,36 @@ public class CommentService {
         // 해당 부모 댓글의 답글 조회
         List<Comment> replies = commentRepository.findAllRepliesByParentIdOrderByMemberAndCreatedAt(parentId, memberId);
 
-        return replies.stream().map(reply -> {
-            int likesCount = likeRepository.countByResourceIdAndLikeType(reply.getId(), LikeType.COMMENT);
-            boolean myLike = isCommentMyLiked(reply.getId(), guestOrApiMember);
-            Member member = reply.getMember();
-            VoteOption option = member.getVoteOnTalkPick(talkPick)
-                    .isPresent() ? member.getVoteOnTalkPick(talkPick).get().getVoteOption() : null;
-            if (member.getProfileImgId() == null) {
-                return LatestCommentResponse.fromEntity(reply, option, null, likesCount, myLike);
-            }
+        return convertToLatestCommentResponse(replies, talkPick, guestOrApiMember);
+    }
 
-            String imgUrl = fileRepository.findById(member.getProfileImgId())
-                    .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_FILE))
-                    .getImgUrl();
+    // Page<Comment> 처리
+    private Page<LatestCommentResponse> convertToLatestCommentPagesResponse(Page<Comment> comments, TalkPick talkPick, GuestOrApiMember guestOrApiMember) {
+        return comments.map(comment -> mapToLatestCommentResponse(comment, talkPick, guestOrApiMember));
+    }
 
-            return LatestCommentResponse.fromEntity(reply, option, imgUrl, likesCount, myLike);})
+    // List<Comment> 처리
+    private List<LatestCommentResponse> convertToLatestCommentResponse(List<Comment> comments, TalkPick talkPick, GuestOrApiMember guestOrApiMember) {
+        return comments.stream()
+                .map(comment -> mapToLatestCommentResponse(comment, talkPick, guestOrApiMember))
                 .toList();
     }
 
+    // 공통 변환 로직
+    private LatestCommentResponse mapToLatestCommentResponse(Comment comment, TalkPick talkPick, GuestOrApiMember guestOrApiMember) {
+        int likesCount = likeRepository.countByResourceIdAndLikeType(comment.getId(), LikeType.COMMENT);
+        boolean myLike = isCommentMyLiked(comment.getId(), guestOrApiMember);
+        Member member = comment.getMember();
+        VoteOption option = member.getVoteOnTalkPick(talkPick)
+                .isPresent() ? member.getVoteOnTalkPick(talkPick).get().getVoteOption() : null;
+
+        String imgUrl = (member.getProfileImgId() != null) ?
+                fileRepository.findById(member.getProfileImgId())
+                        .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_FILE))
+                        .getImgUrl() : null;
+
+        return LatestCommentResponse.fromEntity(comment, option, imgUrl, likesCount, myLike);
+    }
 
     @Transactional(readOnly = true)
     public Page<BestCommentResponse> findAllBestComments(Long talkPickId, Pageable pageable,
