@@ -219,20 +219,26 @@ public class CommentService {
         comment.setIsBest(likeCount >= MIN_COUNT_FOR_BEST_COMMENT || likeCount == maxLikes);
 
         // BestCommentResponse 생성
-        return convertBestCommentResponse(member, comment, option, likeCount, myLike);
+        return createBestCommentResponse(member, comment, option, likeCount, myLike);
     }
 
 
-    private BestCommentResponse convertBestCommentResponse(Member member, Comment comment, VoteOption option,
-                                                           int likeCount, boolean myLike) {
-        if (member.getProfileImgId() != null) {
-            String imgUrl = fileRepository.findById(member.getProfileImgId())
-                    .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_FILE))
-                    .getImgUrl();
+    private BestCommentResponse createBestCommentResponse(Member member, Comment comment, VoteOption option, int likeCount, boolean myLike) {
+        // 프로필 이미지 URL 조회
+        String imgUrl = fetchProfileImgUrl(member);
 
-            return BestCommentResponse.fromEntity(comment, option, imgUrl, likeCount, myLike);
+        // BestCommentResponse 생성
+        return BestCommentResponse.fromEntity(comment, option, imgUrl, likeCount, myLike);
+    }
+
+    // 프로필 이미지 URL 조회
+    private String fetchProfileImgUrl(Member member) {
+        if (member.getProfileImgId() == null) {
+            return null;
         }
-            return BestCommentResponse.fromEntity(comment, option, null, likeCount, myLike);
+        return fileRepository.findById(member.getProfileImgId())
+                .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_FILE))
+                .getImgUrl();
     }
 
     public void updateComment(Long commentId, Long talkPickId, String content, ApiMember apiMember) {
