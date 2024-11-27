@@ -171,68 +171,60 @@ public class CommentService {
         TalkPick talkPick = talkPickRepository.findById(talkPickId)
                 .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_TALK_PICK));
 
-        List<Comment> allComments = commentRepository.findByTalkPickIdAndParentIsNullOrderByLikesCountDescCreatedAtAsc(talkPickId,
-                LikeType.COMMENT);
-        List<BestCommentResponse> bestComments = new ArrayList<>();
-        List<BestCommentResponse> otherComments = new ArrayList<>();
+        List<Comment> allComments = commentRepository.findByTalkPickIdAndParentIsNullOrderByLikesCountDescCreatedAtAsc(
+                talkPickId, LikeType.COMMENT);
 
-        // 최대 좋아요 수 구하기
+        // 최대 좋아요 수 계산
         int maxLikes = allComments.stream()
                 .mapToInt(comment -> likeRepository.countByResourceIdAndLikeType(comment.getId(), LikeType.COMMENT))
                 .max()
                 .orElse(0);
 
-        // 좋아요 10개 이상인 댓글이 있는 경우
-        if (maxLikes >= MIN_COUNT_FOR_BEST_COMMENT) {
-            for (Comment comment : allComments) {
-                boolean myLike = isCommentMyLiked(comment.getId(), guestOrApiMember);
-                int likeCount = likeRepository.countByResourceIdAndLikeType(comment.getId(), LikeType.COMMENT);
-                Member member = comment.getMember();
-                VoteOption option = member.getVoteOnTalkPick(talkPick)
-                        .isPresent() ? member.getVoteOnTalkPick(talkPick).get().getVoteOption() : null;
-                comment.setIsBest(likeCount >= MIN_COUNT_FOR_BEST_COMMENT);
-                BestCommentResponse response = validateImgUrl(member, comment, option, likeCount, myLike);
+        List<BestCommentResponse> bestComments = new ArrayList<>();
+        List<BestCommentResponse> otherComments = new ArrayList<>();
 
-                if (comment.getIsBest()) {
-                    bestComments.add(response);
-                } else {
-                    otherComments.add(response);
-                }
-            }
-        } else {
-            for (Comment comment : allComments) {
-                boolean myLike = isCommentMyLiked(comment.getId(), guestOrApiMember);
-                int likeCount = likeRepository.countByResourceIdAndLikeType(comment.getId(), LikeType.COMMENT);
-                Member member = comment.getMember();
-                VoteOption option = member.getVoteOnTalkPick(talkPick)
-                        .isPresent() ? member.getVoteOnTalkPick(talkPick).get().getVoteOption() : null;
-                comment.setIsBest(likeCount == maxLikes);
-
-                BestCommentResponse response = validateImgUrl(member, comment, option, likeCount, myLike);
-
-                if (comment.getIsBest()) {
-                    bestComments.add(response);
-                } else {
-                    otherComments.add(response);
-                }
+        for (Comment comment : allComments) {
+            BestCommentResponse response = processFindBestComments(comment, talkPick, guestOrApiMember, maxLikes);
+            if (comment.getIsBest()) {
+                bestComments.add(response);
+            } else {
+                otherComments.add(response);
             }
         }
 
+        // 정렬
         bestComments.sort(Comparator.comparing(BestCommentResponse::getCreatedAt).reversed());
         otherComments.sort(Comparator.comparing(BestCommentResponse::getCreatedAt).reversed());
 
+        // 결과 병합
         List<BestCommentResponse> result = new ArrayList<>();
         result.addAll(bestComments);
         result.addAll(otherComments);
 
+        // 페이징 처리
         int start = (int) pageable.getOffset();
         int end = Math.min((start + pageable.getPageSize()), result.size());
-
         return new PageImpl<>(result.subList(start, end), pageable, result.size());
     }
 
-    private BestCommentResponse validateImgUrl(Member member, Comment comment, VoteOption option,
-                                               int likeCount, boolean myLike) {
+
+    private BestCommentResponse processFindBestComments(Comment comment, TalkPick talkPick, GuestOrApiMember guestOrApiMember, int maxLikes) {
+        boolean myLike = isCommentMyLiked(comment.getId(), guestOrApiMember);
+        int likeCount = likeRepository.countByResourceIdAndLikeType(comment.getId(), LikeType.COMMENT);
+        Member member = comment.getMember();
+        VoteOption option = member.getVoteOnTalkPick(talkPick)
+                .isPresent() ? member.getVoteOnTalkPick(talkPick).get().getVoteOption() : null;
+
+        // isBest 여부 설정
+        comment.setIsBest(likeCount >= MIN_COUNT_FOR_BEST_COMMENT || likeCount == maxLikes);
+
+        // BestCommentResponse 생성
+        return convertBestCommentResponse(member, comment, option, likeCount, myLike);
+    }
+
+
+    private BestCommentResponse convertBestCommentResponse(Member member, Comment comment, VoteOption option,
+                                                           int likeCount, boolean myLike) {
         if (member.getProfileImgId() != null) {
             String imgUrl = fileRepository.findById(member.getProfileImgId())
                     .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_FILE))
