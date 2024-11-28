@@ -221,15 +221,6 @@ public class CommentService {
 
         // isBest 여부 설정
         comment.setIsBest(likeCount >= MIN_COUNT_FOR_BEST_COMMENT || likeCount == maxLikes);
-
-        // BestCommentResponse 생성
-        return createBestCommentResponse(member, comment, option, likeCount, myLike);
-    }
-
-
-    private BestCommentResponse createBestCommentResponse(Member member, Comment comment,
-                                                          VoteOption option, int likeCount, boolean myLike) {
-        // 프로필 이미지 URL 조회
         String imgUrl = fetchProfileImgUrl(member);
 
         // BestCommentResponse 생성
