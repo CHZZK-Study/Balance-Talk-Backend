@@ -56,6 +56,7 @@ public class GameOptionDto {
         }
         return GameOption.builder()
                 .name(name)
+                .imgId(fileId)
                 .imgUrl(newImgUrl)
                 .description(description)
                 .optionType(optionType)

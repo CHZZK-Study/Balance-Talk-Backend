@@ -1,5 +1,7 @@
 package balancetalk.file.domain;
 
+import static balancetalk.file.domain.FileType.FRIENDS;
+
 import balancetalk.global.common.BaseTimeEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -70,5 +72,9 @@ public class File extends BaseTimeEntity {
 
     public boolean isUnmapped() {
         return directoryPath.endsWith("temp/") && resourceId == null;
+    }
+
+    public boolean isUploadedByMember() {
+        return fileType != FRIENDS;
     }
 }
