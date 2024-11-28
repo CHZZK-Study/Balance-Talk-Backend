@@ -50,7 +50,7 @@ public class TempGameService {
 
         if (member.hasTempGameSet()) { // 기존 임시저장이 존재하는 경우
             TempGameSet existGame = member.getTempGameSet();
-            existGame.updateTempGameSet(request.getTitle(), newTempGames);
+            existGame.updateTempGameSet(request.getTitle(), request.getSubTag(), mainTag, newTempGames);
             processTempGameFiles(tempGames, existGame.getTempGames());
             return;
         }
