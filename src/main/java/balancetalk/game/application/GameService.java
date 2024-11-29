@@ -103,12 +103,22 @@ public class GameService {
             for (int j = 0; j < 2; j++) {
                 GameOption oldGameOption = oldGameGameOptions.get(j);
                 GameOption newGameOption = newGameGameOptions.get(j);
-                if (newGameOption.hasImage()) {
-                    if (oldGameOption.hasImage()) {
-                        File oldFile = fileRepository.findById(oldGameOption.getImgId())
-                                .orElseThrow(() -> new BalanceTalkException(ErrorCode.NOT_FOUND_FILE));
-                        fileHandler.deleteFile(oldFile);
+                log.info("optionId = {}", oldGameOption.getId());
+
+                if (oldGameOption.hasImage()) {
+                    if (newGameOption.hasImage()) {
+                        if (newGameOption.getImgId().equals(oldGameOption.getImgId())) {
+                            // 기존 파일 유지
+                            continue;
+                        }
                     }
+                    // 기존 파일 제거
+                    File oldFile = fileRepository.findById(oldGameOption.getImgId())
+                            .orElseThrow(() -> new BalanceTalkException(ErrorCode.NOT_FOUND_FILE));
+                    fileHandler.deleteFile(oldFile);
+                }
+                if (newGameOption.hasImage()) {
+                    // 새로운 파일로 변경
                     File newFile = fileRepository.findById(newGameOption.getImgId())
                             .orElseThrow(() -> new BalanceTalkException(ErrorCode.NOT_FOUND_FILE));
                     fileHandler.relocateFile(newFile, oldGameOption.getId(), GAME_OPTION);
