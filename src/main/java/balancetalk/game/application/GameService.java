@@ -194,7 +194,10 @@ public class GameService {
     }
 
     @Transactional(readOnly = true)
-    public List<GameSetResponse> findPopularGamesWithoutTag(final Pageable pageable, final GuestOrApiMember guestOrApiMember) {
+    public List<GameSetResponse> findPopularGamesWithoutTag(
+            final Pageable pageable,
+            final GuestOrApiMember guestOrApiMember
+    ) {
         List<GameSet> popularGames = gameSetRepository.findPopularGames(pageable);
         return gameSetResponses(guestOrApiMember, popularGames);
     }
