@@ -177,14 +177,14 @@ public class GameService {
     }
 
     @Transactional(readOnly = true)
-    public List<GameSetResponse> findBestGames(final String tagName, final Pageable pageable,
+    public List<GameSetResponse> findPopularGamesWithTag(final String tagName, final Pageable pageable,
                                                final GuestOrApiMember guestOrApiMember) {
         List<GameSet> gameSets = gameSetRepository.findGamesByViews(tagName, pageable);
         return gameSetResponses(guestOrApiMember, gameSets);
     }
 
     @Transactional(readOnly = true)
-    public List<GameSetResponse> findPopularGames(final Pageable pageable, final GuestOrApiMember guestOrApiMember) {
+    public List<GameSetResponse> findPopularGamesWithoutTag(final Pageable pageable, final GuestOrApiMember guestOrApiMember) {
         List<GameSet> popularGames = gameSetRepository.findPopularGames(pageable);
         return gameSetResponses(guestOrApiMember, popularGames);
     }
