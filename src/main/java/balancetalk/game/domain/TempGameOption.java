@@ -41,6 +41,8 @@ public class TempGameOption {
     @Enumerated(value = EnumType.STRING)
     private VoteOption optionType;
 
+    private Long imgId;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "temp_game_id")
     private TempGame tempGame;
@@ -52,5 +54,6 @@ public class TempGameOption {
     public void updateTempGameOption(TempGameOption newTempGameOption) {
         this.name = newTempGameOption.getName();
         this.description = newTempGameOption.getDescription();
+        this.imgId = newTempGameOption.getImgId();
     }
 }

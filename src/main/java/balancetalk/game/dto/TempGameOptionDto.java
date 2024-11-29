@@ -1,6 +1,5 @@
 package balancetalk.game.dto;
 
-import balancetalk.file.domain.File;
 import balancetalk.file.domain.repository.FileRepository;
 import balancetalk.game.domain.TempGameOption;
 import balancetalk.global.exception.BalanceTalkException;
@@ -37,6 +36,7 @@ public class TempGameOptionDto {
 
         return TempGameOption.builder()
                 .name(name)
+                .imgId(fileId)
                 .description(description)
                 .optionType(optionType)
                 .build();

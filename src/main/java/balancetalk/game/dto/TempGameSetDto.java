@@ -9,8 +9,10 @@ import balancetalk.global.exception.BalanceTalkException;
 import balancetalk.global.exception.ErrorCode;
 import balancetalk.member.domain.Member;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import java.util.List;
+import java.util.Objects;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -33,6 +35,10 @@ public class TempGameSetDto {
         @Size(max = 10, message = "서브 태그는 최대 10자까지 입력 가능합니다")
         private String subTag;
 
+        @Schema(description = "최근 임시저장된 밸런스 게임 불러오기 여부", example = "true")
+        @NotNull(message = "isLoaded 필드는 NULL을 허용하지 않습니다.")
+        private Boolean isLoaded;
+
         private List<CreateTempGameRequest> tempGames;
 
         public TempGameSet toEntity(MainTag mainTag, Member member) {
@@ -45,6 +51,18 @@ public class TempGameSetDto {
                     .subTag(subTag)
                     .member(member)
                     .build();
+        }
+
+        public List<Long> getAllFileIds() {
+            return tempGames.stream()
+                    .flatMap(game -> game.getTempGameOptions().stream())
+                    .map(TempGameOptionDto::getFileId)
+                    .filter(Objects::nonNull)
+                    .toList();
+        }
+
+        public boolean isNewRequest() {
+            return !isLoaded;
         }
     }
 

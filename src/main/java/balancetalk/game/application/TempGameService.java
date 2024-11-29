@@ -3,6 +3,7 @@ package balancetalk.game.application;
 import static balancetalk.file.domain.FileType.TEMP_GAME_OPTION;
 import static balancetalk.game.dto.TempGameDto.CreateTempGameRequest;
 
+import balancetalk.file.domain.File;
 import balancetalk.file.domain.FileHandler;
 import balancetalk.file.domain.repository.FileRepository;
 import balancetalk.game.domain.MainTag;
@@ -22,6 +23,7 @@ import balancetalk.member.dto.ApiMember;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -44,14 +46,21 @@ public class TempGameService {
 
         List<CreateTempGameRequest> tempGames = request.getTempGames();
 
-        List<TempGame> newTempGames = tempGames.stream()
-                .map(game -> game.toEntity(fileRepository))
-                .toList();
+        List<TempGame> newTempGames = request.getTempGames().stream()
+        .map(game -> game.toEntity(fileRepository))
+        .toList();
 
         if (member.hasTempGameSet()) { // 기존 임시저장이 존재하는 경우
             TempGameSet existGame = member.getTempGameSet();
+
+            if (request.isNewRequest()) { // 새롭게 임시저장 하는 경우, 파일 모두 삭제
+                List<Long> oldFileIds = existGame.getAllFileIds();
+                fileRepository.deleteByResourceIdInAndFileType(oldFileIds, TEMP_GAME_OPTION);
+            }
+
+            // 새롭게 불러온 경우, 파일만 재배치 (isLoaded: true)
+            relocateFiles(request, existGame);
             existGame.updateTempGameSet(request.getTitle(), newTempGames);
-            processTempGameFiles(tempGames, existGame.getTempGames());
             return;
         }
 
@@ -65,6 +74,57 @@ public class TempGameService {
         tempGameSet.addGames(games);
         tempGameSetRepository.save(tempGameSet);
         processTempGameFiles(tempGames, tempGameSet.getTempGames());
+    }
+
+    private void relocateFiles(CreateTempGameSetRequest request, TempGameSet tempGameSet) {
+        if (request.getAllFileIds().isEmpty()) {
+            return;
+        }
+
+        List<Long> deletedFileIds = deleteFiles(request, tempGameSet);
+
+        List<Long> newFileIds = getNewNonDuplicateFileIds(request, deletedFileIds, tempGameSet);
+
+        relocateFiles(request, newFileIds, tempGameSet);
+    }
+
+    private void relocateFiles(CreateTempGameSetRequest request, List<Long> newFileIds, TempGameSet tempGameSet) {
+        if (!newFileIds.isEmpty()) {
+            Map<Long, Long> fileToOptionMap = tempGameSet.getFileToOptionMap(request, newFileIds);
+
+            for (Map.Entry<Long, Long> entry : fileToOptionMap.entrySet()) {
+                Long fileId = entry.getKey();
+                Long tempGameOptionId = entry.getValue();
+
+                File file = fileRepository.findById(fileId)
+                        .orElseThrow(() -> new BalanceTalkException(ErrorCode.NOT_FOUND_FILE));
+                fileHandler.relocateFile(file, tempGameOptionId, TEMP_GAME_OPTION);
+            }
+        }
+    }
+
+    private List<Long> getNewNonDuplicateFileIds(CreateTempGameSetRequest request,  List<Long> deletedFileIds, TempGameSet tempGameSet) {
+        List<Long> existingFileIds = tempGameSet.getAllFileIds();
+        return request.getAllFileIds().stream()
+                .filter(fileId -> !deletedFileIds.contains(fileId))
+                .filter(fileId -> !existingFileIds.contains(fileId))
+                .toList();
+    }
+
+    private List<Long> deleteFiles(CreateTempGameSetRequest request, TempGameSet tempGameSet) {
+        List<Long> existingFileIds = tempGameSet.getAllFileIds();
+
+        List<Long> newFileIds = request.getAllFileIds();
+
+        List<Long> filesIdsToDelete = existingFileIds.stream()
+                .filter(existingFileId -> !newFileIds.contains(existingFileId))
+                .toList();
+
+        if (!filesIdsToDelete.isEmpty()) {
+            List<File> filesToDelete = fileRepository.findAllById(filesIdsToDelete);
+            fileHandler.deleteFiles(filesToDelete);
+        }
+        return filesIdsToDelete;
     }
 
     private void processTempGameFiles(List<CreateTempGameRequest> requests, List<TempGame> tempGames) {
