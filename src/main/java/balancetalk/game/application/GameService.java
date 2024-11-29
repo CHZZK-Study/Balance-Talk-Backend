@@ -15,7 +15,6 @@ import balancetalk.game.domain.repository.MainTagRepository;
 import balancetalk.game.dto.GameDto.CreateGameMainTagRequest;
 import balancetalk.game.dto.GameDto.CreateOrUpdateGame;
 import balancetalk.game.dto.GameDto.GameDetailResponse;
-import balancetalk.game.dto.GameOptionDto;
 import balancetalk.game.dto.GameSetDto.CreateGameSetRequest;
 import balancetalk.game.dto.GameSetDto.GameSetDetailResponse;
 import balancetalk.game.dto.GameSetDto.GameSetResponse;
@@ -29,7 +28,6 @@ import balancetalk.member.dto.GuestOrApiMember;
 import balancetalk.vote.domain.GameVote;
 import balancetalk.vote.domain.VoteOption;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -67,9 +65,22 @@ public class GameService {
         }
 
         gameSet.addGames(games);
-        gameSetRepository.save(gameSet);
-        processFiles(request.getGames(), games);
-        return gameSet.getId();
+        GameSet savedGameSet = gameSetRepository.save(gameSet);
+
+        for (Game game : savedGameSet.getGames()) {
+            for (GameOption gameOption : game.getGameOptions()) {
+                relocateFileIfHasImage(gameOption);
+            }
+        }
+
+        return savedGameSet.getId();
+    }
+
+    private void relocateFileIfHasImage(GameOption gameOption) {
+        if (gameOption.hasImage()) {
+            fileRepository.findById(gameOption.getImgId())
+                    .ifPresent(file -> fileHandler.relocateFile(file, gameOption.getId(), GAME_OPTION));
+        }
     }
 
     @Transactional
@@ -83,30 +94,29 @@ public class GameService {
                 .map(gameRequest -> gameRequest.toEntity(fileRepository))
                 .toList();
 
-        gameSet.updateGameSetRequest(request.getTitle(), mainTag, request.getSubTag(), newGames);
-        processFiles(request.getGames(), gameSet.getGames());
-    }
-
-    private void processFiles(List<CreateOrUpdateGame> gameRequests, List<Game> games) {
-        for (int i = 0; i < gameRequests.size(); i++) {
-            CreateOrUpdateGame gameRequest = gameRequests.get(i);
-            Game game = games.get(i);
-
-            for (int j = 0; j < gameRequest.getGameOptions().size(); j++) {
-                GameOptionDto gameOptionDto = gameRequest.getGameOptions().get(j);
-                GameOption gameOption = game.getGameOptions().get(j);
-
-                if (gameOptionDto.getFileId() == null) {
-                    continue;
+        List<Game> oldGames = gameSet.getGames();
+        for (int i = 0; i < 10; i++) {
+            Game oldGame = oldGames.get(i);
+            Game newGame = newGames.get(i);
+            List<GameOption> oldGameGameOptions = oldGame.getGameOptions();
+            List<GameOption> newGameGameOptions = newGame.getGameOptions();
+            for (int j = 0; j < 2; j++) {
+                GameOption oldGameOption = oldGameGameOptions.get(j);
+                GameOption newGameOption = newGameGameOptions.get(j);
+                if (newGameOption.hasImage()) {
+                    if (oldGameOption.hasImage()) {
+                        File oldFile = fileRepository.findById(oldGameOption.getImgId())
+                                .orElseThrow(() -> new BalanceTalkException(ErrorCode.NOT_FOUND_FILE));
+                        fileHandler.deleteFile(oldFile);
+                    }
+                    File newFile = fileRepository.findById(newGameOption.getImgId())
+                            .orElseThrow(() -> new BalanceTalkException(ErrorCode.NOT_FOUND_FILE));
+                    fileHandler.relocateFile(newFile, oldGameOption.getId(), GAME_OPTION);
                 }
-
-                fileRepository.findById(gameOptionDto.getFileId())
-                        .ifPresent(
-                                file -> fileHandler.relocateFiles(Collections.singletonList(file), gameOption.getId(),
-                                        GAME_OPTION));
-
             }
         }
+
+        gameSet.updateGameSetRequest(request.getTitle(), mainTag, request.getSubTag(), newGames);
     }
 
     @Transactional(readOnly = true)

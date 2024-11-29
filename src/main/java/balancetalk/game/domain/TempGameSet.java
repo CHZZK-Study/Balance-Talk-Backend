@@ -62,8 +62,10 @@ public class TempGameSet extends BaseTimeEntity {
         });
     }
 
-    public void updateTempGameSet(String title, List<TempGame> newTempGames) {
+    public void updateTempGameSet(String title, String subTag, MainTag mainTag, List<TempGame> newTempGames) {
         this.title = title;
+        this.subTag = subTag;
+        this.mainTag = mainTag;
         IntStream.range(0, this.tempGames.size()).forEach(i -> {
             TempGame existingGame = this.tempGames.get(i);
             TempGame newGame = newTempGames.get(i);
