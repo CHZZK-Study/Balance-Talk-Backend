@@ -114,7 +114,7 @@ public class GameService {
                     fileHandler.deleteFile(oldFile);
                 }
                 if (newGameOption.hasImage()) {
-                    // 새로운 파일로 변경
+                    // 새로운 파일 매핑
                     File newFile = fileRepository.findById(newGameOption.getImgId())
                             .orElseThrow(() -> new BalanceTalkException(ErrorCode.NOT_FOUND_FILE));
                     fileHandler.relocateFile(newFile, oldGameOption.getId(), GAME_OPTION);
