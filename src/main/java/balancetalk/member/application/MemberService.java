@@ -68,7 +68,9 @@ public class MemberService {
         if (joinRequest.hasProfileImgId()) {
             File newProfileImgFile = fileRepository.findById(joinRequest.getProfileImgId())
                     .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_FILE));
-            fileHandler.relocateFile(newProfileImgFile, savedMember.getId(), FileType.MEMBER);
+            if (newProfileImgFile.isUploadedByMember()) {
+                fileHandler.relocateFile(newProfileImgFile, savedMember.getId(), FileType.MEMBER);
+            }
         }
     }
 
@@ -168,14 +170,18 @@ public class MemberService {
 
         if (memberUpdateRequest.getProfileImgId() != null) {
             if (member.hasProfileImgId()) {
-                File file = fileRepository.findById(member.getProfileImgId())
+                File oldProfileImgFile = fileRepository.findById(member.getProfileImgId())
                         .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_FILE));
-                fileHandler.deleteFile(file);
+                if (oldProfileImgFile.isUploadedByMember()) {
+                    fileHandler.deleteFile(oldProfileImgFile);
+                }
             }
-            member.updateImageId(memberUpdateRequest.getProfileImgId());
-            File file = fileRepository.findById(member.getProfileImgId())
+            File newProfileImgFile = fileRepository.findById(memberUpdateRequest.getProfileImgId())
                     .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_FILE));
-            fileHandler.relocateFile(file, member.getId(), FileType.MEMBER);
+            member.updateImageId(newProfileImgFile.getId());
+            if (newProfileImgFile.isUploadedByMember()) {
+                fileHandler.relocateFile(newProfileImgFile, member.getId(), FileType.MEMBER);
+            }
         }
 
         if (memberUpdateRequest.getNickname() != null) {
@@ -190,8 +196,11 @@ public class MemberService {
         }
     }
 
-    public boolean verifyPassword(String password, ApiMember apiMember) {
+    public void verifyPassword(String password, ApiMember apiMember) {
         Member member = apiMember.toMember(memberRepository);
-        return passwordEncoder.matches(password, member.getPassword());
+
+        if (!passwordEncoder.matches(password, member.getPassword())) {
+            throw new BalanceTalkException(PASSWORD_MISMATCH);
+        }
     }
 }
