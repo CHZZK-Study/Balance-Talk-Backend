@@ -33,12 +33,10 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-@Slf4j
 @Service
 @RequiredArgsConstructor
 public class GameService {
@@ -103,8 +101,6 @@ public class GameService {
             for (int j = 0; j < 2; j++) {
                 GameOption oldGameOption = oldGameGameOptions.get(j);
                 GameOption newGameOption = newGameGameOptions.get(j);
-                log.info("optionId = {}", oldGameOption.getId());
-
                 if (oldGameOption.hasImage()) {
                     if (newGameOption.hasImage()) {
                         if (newGameOption.getImgId().equals(oldGameOption.getImgId())) {
