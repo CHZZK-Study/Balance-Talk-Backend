@@ -2,6 +2,7 @@ package balancetalk.talkpick.dto;
 
 import balancetalk.member.domain.Member;
 import balancetalk.talkpick.domain.TempTalkPick;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -41,6 +42,7 @@ public class TempTalkPickDto {
                     .build();
         }
 
+        @JsonIgnore
         public boolean isNewRequest() {
             return !isLoaded;
         }
