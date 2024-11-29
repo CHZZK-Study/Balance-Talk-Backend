@@ -60,7 +60,7 @@ public class TempGameService {
 
             // 새롭게 불러온 경우, 파일만 재배치 (isLoaded: true)
             relocateFiles(request, existGame);
-            existGame.updateTempGameSet(request.getTitle(), newTempGames);
+            existGame.updateTempGameSet(request.getTitle(), request.getSubTag(), mainTag, newTempGames);
             return;
         }
 
