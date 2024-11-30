@@ -22,15 +22,14 @@ import balancetalk.member.domain.MemberRepository;
 import balancetalk.member.dto.ApiMember;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-@Log4j2
 @Service
 @RequiredArgsConstructor
 public class TempGameService {
@@ -50,8 +49,8 @@ public class TempGameService {
         List<CreateTempGameRequest> tempGames = request.getTempGames();
 
         List<TempGame> newTempGames = request.getTempGames().stream()
-        .map(game -> game.toEntity(fileRepository))
-        .toList();
+            .map(game -> game.toEntity(fileRepository))
+            .toList();
 
         if (member.hasTempGameSet()) { // 기존 임시저장이 존재하는 경우
             TempGameSet existGame = member.getTempGameSet();
@@ -90,12 +89,13 @@ public class TempGameService {
 
         List<Long> newFileIds = getNewNonDuplicateFileIds(request, deletedFileIds, tempGameSet);
 
-        relocateFiles(request, newFileIds, tempGameSet);
+        relocateFilesToGameOption(request, newFileIds, tempGameSet);
     }
 
-    private void relocateFiles(CreateTempGameSetRequest request, List<Long> newFileIds, TempGameSet tempGameSet) {
+    private void relocateFilesToGameOption(CreateTempGameSetRequest request, List<Long> newFileIds, TempGameSet tempGameSet) {
         if (!newFileIds.isEmpty()) {
-            Map<Long, Long> fileToOptionMap = tempGameSet.getFileToOptionMap(request, newFileIds);
+            List<TempGame> tempGames = tempGameSet.getTempGames();
+            Map<Long, Long> fileToOptionMap = getFileToOptionMap(tempGames, request, newFileIds);
 
             List<File> files = fileRepository.findAllById(newFileIds);
             Map<Long, File> fileMap = files.stream()
@@ -114,7 +114,35 @@ public class TempGameService {
         }
     }
 
-    private List<Long> getNewNonDuplicateFileIds(CreateTempGameSetRequest request,  List<Long> deletedFileIds, TempGameSet tempGameSet) {
+    private Map<Long, Long> getFileToOptionMap(List<TempGame> tempGames, CreateTempGameSetRequest request, List<Long> newFileIds) {
+        Map<Long, Long> fileToOptionMap = new LinkedHashMap<>();
+        List<CreateTempGameRequest> tempGameRequests = request.getTempGames();
+
+        for (int i = 0; i < tempGameRequests.size(); i++) {
+            CreateTempGameRequest gameRequest = tempGameRequests.get(i);
+
+            List<TempGameOptionDto> tempGameOptions = gameRequest.getTempGameOptions();
+            for (TempGameOptionDto optionDto : tempGameOptions) {
+                Long fileId = optionDto.getFileId();
+
+                if (fileId != null && newFileIds.contains(fileId)) {
+                    TempGameOption tempGameOption = tempGames.get(i).getTempGameOptions()
+                            .stream()
+                            .filter(option -> option.getOptionType().equals(optionDto.getOptionType()))
+                            .findFirst()
+                            .orElseThrow(() -> new BalanceTalkException(ErrorCode.FILE_ID_GAME_OPTION_ID_MISMATCH));
+                    fileToOptionMap.put(fileId, tempGameOption.getId());
+                }
+            }
+        }
+        return fileToOptionMap;
+    }
+
+    private List<Long> getNewNonDuplicateFileIds(
+            CreateTempGameSetRequest request,
+            List<Long> deletedFileIds,
+            TempGameSet tempGameSet
+    ) {
         List<Long> existingFileIds = tempGameSet.getAllFileIds();
         return request.getAllFileIds().stream()
                 .filter(fileId -> !deletedFileIds.contains(fileId))
