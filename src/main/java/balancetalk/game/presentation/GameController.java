@@ -79,9 +79,6 @@ public class GameController {
             @Parameter(hidden = true) @AuthPrincipal final GuestOrApiMember guestOrApiMember
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        if (tagName != null) {
-            return gameService.findPopularGamesWithTag(tagName, pageable, guestOrApiMember);
-        }
-        return gameService.findPopularGamesWithoutTag(pageable, guestOrApiMember);
+        return gameService.findPopularGames(tagName, pageable, guestOrApiMember);
     }
 }
