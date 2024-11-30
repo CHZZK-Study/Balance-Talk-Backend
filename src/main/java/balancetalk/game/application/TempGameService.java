@@ -92,7 +92,11 @@ public class TempGameService {
         relocateFilesToGameOption(request, newFileIds, tempGameSet);
     }
 
-    private void relocateFilesToGameOption(CreateTempGameSetRequest request, List<Long> newFileIds, TempGameSet tempGameSet) {
+    private void relocateFilesToGameOption(
+            CreateTempGameSetRequest request,
+            List<Long> newFileIds,
+            TempGameSet tempGameSet
+    ) {
         if (!newFileIds.isEmpty()) {
             List<TempGame> tempGames = tempGameSet.getTempGames();
             Map<Long, Long> fileToOptionMap = getFileToOptionMap(tempGames, request, newFileIds);
@@ -114,7 +118,11 @@ public class TempGameService {
         }
     }
 
-    private Map<Long, Long> getFileToOptionMap(List<TempGame> tempGames, CreateTempGameSetRequest request, List<Long> newFileIds) {
+    private Map<Long, Long> getFileToOptionMap(
+            List<TempGame> tempGames,
+            CreateTempGameSetRequest request,
+            List<Long> newFileIds
+    ) {
         Map<Long, Long> fileToOptionMap = new LinkedHashMap<>();
         List<CreateTempGameRequest> tempGameRequests = request.getTempGames();
 
