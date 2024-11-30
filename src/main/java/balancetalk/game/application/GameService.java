@@ -33,12 +33,10 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-@Slf4j
 @Service
 @RequiredArgsConstructor
 public class GameService {
@@ -187,10 +185,17 @@ public class GameService {
     }
 
     @Transactional(readOnly = true)
-    public List<GameSetResponse> findBestGames(final String tagName, final Pageable pageable,
-                                               final GuestOrApiMember guestOrApiMember) {
-        List<GameSet> gameSets = gameSetRepository.findGamesByViews(tagName, pageable);
-        return gameSetResponses(guestOrApiMember, gameSets);
+    public List<GameSetResponse> findPopularGames(
+            final String tagName,
+            final Pageable pageable,
+            final GuestOrApiMember guestOrApiMember
+    ) {
+        if (tagName != null) {
+            List<GameSet> gameSets = gameSetRepository.findGamesByViews(tagName, pageable);
+            return gameSetResponses(guestOrApiMember, gameSets);
+        }
+        List<GameSet> popularGames = gameSetRepository.findPopularGames(pageable);
+        return gameSetResponses(guestOrApiMember, popularGames);
     }
 
     private List<GameSetResponse> gameSetResponses(GuestOrApiMember guestOrApiMember, List<GameSet> gameSets) {
