@@ -24,10 +24,13 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Log4j2
 @Service
 @RequiredArgsConstructor
 public class TempGameService {
@@ -55,7 +58,9 @@ public class TempGameService {
 
             if (request.isNewRequest()) { // 새롭게 임시저장 하는 경우, 파일 모두 삭제
                 List<Long> oldFileIds = existGame.getAllFileIds();
-                fileRepository.deleteByResourceIdInAndFileType(oldFileIds, TEMP_GAME_OPTION);
+                if (!oldFileIds.isEmpty()) {
+                    fileRepository.deleteByResourceIdInAndFileType(oldFileIds, TEMP_GAME_OPTION);
+                }
             }
 
             // 새롭게 불러온 경우, 파일만 재배치 (isLoaded: true)
@@ -92,12 +97,18 @@ public class TempGameService {
         if (!newFileIds.isEmpty()) {
             Map<Long, Long> fileToOptionMap = tempGameSet.getFileToOptionMap(request, newFileIds);
 
+            List<File> files = fileRepository.findAllById(newFileIds);
+            Map<Long, File> fileMap = files.stream()
+                    .collect(Collectors.toMap(File::getId, file -> file));
+
             for (Map.Entry<Long, Long> entry : fileToOptionMap.entrySet()) {
                 Long fileId = entry.getKey();
                 Long tempGameOptionId = entry.getValue();
 
-                File file = fileRepository.findById(fileId)
-                        .orElseThrow(() -> new BalanceTalkException(ErrorCode.NOT_FOUND_FILE));
+                File file = fileMap.get(fileId);
+                if (file == null) {
+                    throw new BalanceTalkException(ErrorCode.NOT_FOUND_FILE);
+                }
                 fileHandler.relocateFile(file, tempGameOptionId, TEMP_GAME_OPTION);
             }
         }
