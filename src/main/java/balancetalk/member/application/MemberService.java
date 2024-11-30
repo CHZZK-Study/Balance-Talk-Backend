@@ -196,8 +196,11 @@ public class MemberService {
         }
     }
 
-    public boolean verifyPassword(String password, ApiMember apiMember) {
+    public void verifyPassword(String password, ApiMember apiMember) {
         Member member = apiMember.toMember(memberRepository);
-        return passwordEncoder.matches(password, member.getPassword());
+
+        if (!passwordEncoder.matches(password, member.getPassword())) {
+            throw new BalanceTalkException(PASSWORD_MISMATCH);
+        }
     }
 }
