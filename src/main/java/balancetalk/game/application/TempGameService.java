@@ -48,7 +48,7 @@ public class TempGameService {
 
         List<CreateTempGameRequest> tempGames = request.getTempGames();
 
-        List<TempGame> newTempGames = request.getTempGames().stream()
+        List<TempGame> newTempGames = tempGames.stream()
             .map(game -> game.toEntity(fileRepository))
             .toList();
 
