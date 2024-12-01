@@ -6,11 +6,9 @@ import static balancetalk.game.dto.TempGameDto.CreateTempGameRequest;
 import balancetalk.file.domain.File;
 import balancetalk.file.domain.FileHandler;
 import balancetalk.file.domain.repository.FileRepository;
-import balancetalk.game.domain.MainTag;
 import balancetalk.game.domain.TempGame;
 import balancetalk.game.domain.TempGameOption;
 import balancetalk.game.domain.TempGameSet;
-import balancetalk.game.domain.repository.MainTagRepository;
 import balancetalk.game.domain.repository.TempGameSetRepository;
 import balancetalk.game.dto.TempGameOptionDto;
 import balancetalk.game.dto.TempGameSetDto.CreateTempGameSetRequest;
@@ -38,13 +36,10 @@ public class TempGameService {
     private final TempGameSetRepository tempGameSetRepository;
     private final FileRepository fileRepository;
     private final FileHandler fileHandler;
-    private final MainTagRepository mainTagRepository;
 
     @Transactional
     public void createTempGame(CreateTempGameSetRequest request, ApiMember apiMember) {
         Member member = apiMember.toMember(memberRepository);
-        MainTag mainTag = mainTagRepository.findByName(request.getMainTag())
-                .orElseThrow(() -> new BalanceTalkException(ErrorCode.NOT_FOUND_MAIN_TAG));
 
         List<CreateTempGameRequest> tempGames = request.getTempGames();
 
@@ -64,11 +59,11 @@ public class TempGameService {
 
             // 새롭게 불러온 경우, 파일만 재배치 (isLoaded: true)
             relocateFiles(request, existGame);
-            existGame.updateTempGameSet(request.getTitle(), request.getSubTag(), mainTag, newTempGames);
+            existGame.updateTempGameSet(request.getTitle(), newTempGames);
             return;
         }
 
-        TempGameSet tempGameSet = request.toEntity(mainTag, member);
+        TempGameSet tempGameSet = request.toEntity(member);
         List<TempGame> games = new ArrayList<>();
 
         for (CreateTempGameRequest tempGame : tempGames) {
