@@ -33,12 +33,10 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-@Slf4j
 @Service
 @RequiredArgsConstructor
 public class GameService {
@@ -93,30 +91,58 @@ public class GameService {
         List<Game> newGames = request.getGames().stream()
                 .map(gameRequest -> gameRequest.toEntity(fileRepository))
                 .toList();
-
         List<Game> oldGames = gameSet.getGames();
+
+        updateGameFiles(newGames, oldGames);
+
+        gameSet.updateGameSetRequest(request.getTitle(), mainTag, request.getSubTag(), newGames);
+    }
+
+    private void updateGameFiles(List<Game> newGames, List<Game> oldGames) {
         for (int i = 0; i < 10; i++) {
             Game oldGame = oldGames.get(i);
             Game newGame = newGames.get(i);
-            List<GameOption> oldGameGameOptions = oldGame.getGameOptions();
-            List<GameOption> newGameGameOptions = newGame.getGameOptions();
-            for (int j = 0; j < 2; j++) {
-                GameOption oldGameOption = oldGameGameOptions.get(j);
-                GameOption newGameOption = newGameGameOptions.get(j);
-                if (newGameOption.hasImage()) {
-                    if (oldGameOption.hasImage()) {
-                        File oldFile = fileRepository.findById(oldGameOption.getImgId())
-                                .orElseThrow(() -> new BalanceTalkException(ErrorCode.NOT_FOUND_FILE));
-                        fileHandler.deleteFile(oldFile);
-                    }
-                    File newFile = fileRepository.findById(newGameOption.getImgId())
-                            .orElseThrow(() -> new BalanceTalkException(ErrorCode.NOT_FOUND_FILE));
-                    fileHandler.relocateFile(newFile, oldGameOption.getId(), GAME_OPTION);
-                }
-            }
+            processGameFiles(oldGame, newGame);
         }
+    }
 
-        gameSet.updateGameSetRequest(request.getTitle(), mainTag, request.getSubTag(), newGames);
+    private void processGameFiles(Game oldGame, Game newGame) {
+        for (int j = 0; j < 2; j++) {
+            List<GameOption> oldGameOptions = oldGame.getGameOptions();
+            List<GameOption> newGameOptions = newGame.getGameOptions();
+            processGameOptionFiles(oldGameOptions.get(j), newGameOptions.get(j));
+        }
+    }
+
+    private void processGameOptionFiles(GameOption oldGameOption, GameOption newGameOption) {
+        if (oldGameOption.hasImage()) {
+            if (isEqualsImgId(oldGameOption, newGameOption)) {
+                // 기존 파일 유지
+                return;
+            }
+            // 기존 파일 제거
+            deleteOldFile(oldGameOption);
+        }
+        if (newGameOption.hasImage()) {
+            // 새로운 파일 매핑
+            relocateNewFile(oldGameOption, newGameOption);
+        }
+    }
+
+    private boolean isEqualsImgId(GameOption oldGameOption, GameOption newGameOption) {
+        return newGameOption.hasImage() && newGameOption.getImgId().equals(oldGameOption.getImgId());
+    }
+
+    private void deleteOldFile(GameOption oldGameOption) {
+        File oldFile = fileRepository.findById(oldGameOption.getImgId())
+                .orElseThrow(() -> new BalanceTalkException(ErrorCode.NOT_FOUND_FILE));
+        fileHandler.deleteFile(oldFile);
+    }
+
+    private void relocateNewFile(GameOption oldGameOption, GameOption newGameOption) {
+        File newFile = fileRepository.findById(newGameOption.getImgId())
+                .orElseThrow(() -> new BalanceTalkException(ErrorCode.NOT_FOUND_FILE));
+        fileHandler.relocateFile(newFile, oldGameOption.getId(), GAME_OPTION);
     }
 
     @Transactional(readOnly = true)
@@ -187,10 +213,17 @@ public class GameService {
     }
 
     @Transactional(readOnly = true)
-    public List<GameSetResponse> findBestGames(final String tagName, final Pageable pageable,
-                                               final GuestOrApiMember guestOrApiMember) {
-        List<GameSet> gameSets = gameSetRepository.findGamesByViews(tagName, pageable);
-        return gameSetResponses(guestOrApiMember, gameSets);
+    public List<GameSetResponse> findPopularGames(
+            final String tagName,
+            final Pageable pageable,
+            final GuestOrApiMember guestOrApiMember
+    ) {
+        if (tagName != null) {
+            List<GameSet> gameSets = gameSetRepository.findGamesByViews(tagName, pageable);
+            return gameSetResponses(guestOrApiMember, gameSets);
+        }
+        List<GameSet> popularGames = gameSetRepository.findPopularGames(pageable);
+        return gameSetResponses(guestOrApiMember, popularGames);
     }
 
     private List<GameSetResponse> gameSetResponses(GuestOrApiMember guestOrApiMember, List<GameSet> gameSets) {
