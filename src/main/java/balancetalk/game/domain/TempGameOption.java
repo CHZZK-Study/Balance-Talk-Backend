@@ -43,6 +43,8 @@ public class TempGameOption {
 
     private Long imgId;
 
+    private String imgUrl;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "temp_game_id")
     private TempGame tempGame;
