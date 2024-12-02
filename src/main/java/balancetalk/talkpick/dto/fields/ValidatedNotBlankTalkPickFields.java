@@ -1,4 +1,4 @@
-package balancetalk.talkpick.dto.fiedls;
+package balancetalk.talkpick.dto.fields;
 
 import jakarta.validation.constraints.NotBlank;
 

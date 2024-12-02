@@ -2,7 +2,7 @@ package balancetalk.talkpick.dto;
 
 import balancetalk.member.domain.Member;
 import balancetalk.talkpick.domain.TempTalkPick;
-import balancetalk.talkpick.dto.fiedls.BaseTalkPickFields;
+import balancetalk.talkpick.dto.fields.BaseTalkPickFields;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.Valid;
