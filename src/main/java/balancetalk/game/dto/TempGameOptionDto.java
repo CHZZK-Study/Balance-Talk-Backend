@@ -22,7 +22,7 @@ public class TempGameOptionDto {
     private String name;
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    @Schema(description = "선택지 이미지 파일 ID", example = "12")
+    @Schema(description = "선택지 이미지 파일 ID", example = "1")
     private Long fileId;
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -51,7 +51,6 @@ public class TempGameOptionDto {
     }
 
     public static TempGameOptionDto fromEntity(TempGameOption tempGameOption, Long fileId) {
-
         return TempGameOptionDto.builder()
                 .name(tempGameOption.getName())
                 .fileId(fileId)
