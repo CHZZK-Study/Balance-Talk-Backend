@@ -4,7 +4,8 @@ import jakarta.validation.constraints.NotBlank;
 
 public class ValidatedNotBlankTalkPickFields extends BaseTalkPickFields {
 
-    public ValidatedNotBlankTalkPickFields(String title, String content, String optionA, String optionB, String sourceUrl) {
+    public ValidatedNotBlankTalkPickFields(String title, String content,
+                                           String optionA, String optionB, String sourceUrl) {
         super(title, content, optionA, optionB, sourceUrl);
     }
 
