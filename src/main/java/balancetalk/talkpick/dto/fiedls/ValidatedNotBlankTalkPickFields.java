@@ -1,10 +1,10 @@
-package balancetalk.talkpick.dto;
+package balancetalk.talkpick.dto.fiedls;
 
 import jakarta.validation.constraints.NotBlank;
 
-public class BaseTempTalkPickFields extends BaseTalkPickFields {
+public class ValidatedNotBlankTalkPickFields extends BaseTalkPickFields {
 
-    public BaseTempTalkPickFields(String title, String content, String optionA, String optionB, String sourceUrl) {
+    public ValidatedNotBlankTalkPickFields(String title, String content, String optionA, String optionB, String sourceUrl) {
         super(title, content, optionA, optionB, sourceUrl);
     }
 

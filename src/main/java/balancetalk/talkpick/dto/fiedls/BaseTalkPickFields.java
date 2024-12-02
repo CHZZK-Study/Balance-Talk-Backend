@@ -1,4 +1,4 @@
-package balancetalk.talkpick.dto;
+package balancetalk.talkpick.dto.fiedls;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Size;
@@ -16,6 +16,7 @@ public class BaseTalkPickFields {
     private String title;
 
     @Schema(description = "본문 내용", example = "본문 내용")
+    @Size(max = 2000, message = "본문은 2,000자 이하여야 합니다.")
     private String content;
 
     @Schema(description = "선택지 A 이름", example = "선택지 A 이름")
