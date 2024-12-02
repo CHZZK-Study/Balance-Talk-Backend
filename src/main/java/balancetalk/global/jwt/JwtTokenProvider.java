@@ -29,8 +29,8 @@ public class JwtTokenProvider {
     @Value("${spring.jwt.token.refresh-expiration-time}")
     private long refreshExpirationTime;
 
+    private static final String MEMBER_ID = "MEMBER_ID";
     private final MyUserDetailService myUserDetailService;
-
     private final Key secretKey = Keys.secretKeyFor(SignatureAlgorithm.HS512);
 
     /**
@@ -39,7 +39,7 @@ public class JwtTokenProvider {
     public String createAccessToken(Authentication authentication, Long memberId) {
         validateAuthentication(authentication);
         Claims claims = Jwts.claims();
-        claims.put("memberId", memberId);
+        claims.put(MEMBER_ID, memberId);
         claims.setSubject(authentication.getName());
         Date now = new Date();
         Date expireDate = new Date(now.getTime() + accessExpirationTime);
@@ -58,27 +58,26 @@ public class JwtTokenProvider {
     public String createRefreshToken(Authentication authentication, Long memberId) {
         validateAuthentication(authentication);
         Claims claims = Jwts.claims();
-        claims.put("memberId", memberId);
+        claims.put(MEMBER_ID, memberId);
         claims.setSubject(authentication.getName());
         Date now = new Date();
         Date expireDate = new Date(now.getTime() + refreshExpirationTime);
 
-        String refreshToken = Jwts.builder()
+        // redis에 refresh token 저장
+        return Jwts.builder()
                 .setClaims(claims)
                 .setIssuedAt(now)
                 .setExpiration(expireDate)
                 .signWith(secretKey)
                 .compact();
-        // redis에 refresh token 저장
-//        redisService.setValues(authentication.getName(), refreshToken, Duration.ofMillis(refreshExpirationTime));
-        return refreshToken;
     }
 
     public static Cookie createCookie(String refreshToken) {
         String cookieName = "refreshToken";
         Cookie cookie = new Cookie(cookieName, refreshToken);
-        cookie.setHttpOnly(true);
-        // cookie.setSecure(true);
+        cookie.setHttpOnly(false);
+        cookie.setSecure(true);
+        cookie.setDomain("pick0.com");
         cookie.setPath("/");
         cookie.setMaxAge(60 * 60 * 24); // accessToken 유효
         return cookie;
@@ -87,8 +86,9 @@ public class JwtTokenProvider {
     public static Cookie createAccessCookie(String accessToken) {
         String cookieName = "accessToken";
         Cookie cookie = new Cookie(cookieName, accessToken);
-        cookie.setHttpOnly(true);
-        // cookie.setSecure(true);
+        cookie.setHttpOnly(false);
+        cookie.setSecure(true);
+        cookie.setDomain("pick0.com");
         cookie.setPath("/");
         cookie.setMaxAge(60 * 60 * 24);
         return cookie;
