@@ -10,13 +10,13 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.IntStream;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -47,13 +47,6 @@ public class TempGameSet extends BaseTimeEntity {
     @JoinColumn(name = "member_id")
     private Member member;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "main_tag_id")
-    private MainTag mainTag;
-
-    @Size(max = 10)
-    private String subTag;
-
     public void addGames(List<TempGame> tempGames) {
         this.tempGames = tempGames;
         tempGames.forEach(tempGame -> {
@@ -62,14 +55,20 @@ public class TempGameSet extends BaseTimeEntity {
         });
     }
 
-    public void updateTempGameSet(String title, String subTag, MainTag mainTag, List<TempGame> newTempGames) {
+    public void updateTempGameSet(String title, List<TempGame> newTempGames) {
         this.title = title;
-        this.subTag = subTag;
-        this.mainTag = mainTag;
         IntStream.range(0, this.tempGames.size()).forEach(i -> {
             TempGame existingGame = this.tempGames.get(i);
             TempGame newGame = newTempGames.get(i);
             existingGame.updateTempGame(newGame);
         });
+    }
+
+    public List<Long> getAllFileIds() {
+        return tempGames.stream()
+                .flatMap(game -> game.getTempGameOptions().stream())
+                .map(TempGameOption::getImgId)
+                .filter(Objects::nonNull)
+                .toList();
     }
 }

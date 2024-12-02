@@ -20,6 +20,7 @@ public enum ErrorCode {
     EXCEEDED_IMAGES_SIZE(BAD_REQUEST, "첨부 가능한 이미지 개수를 초과했습니다."),
     NOT_SUPPORTED_MIME_TYPE(BAD_REQUEST, "지원하지 않는 MIME 타입입니다."),
     MISSING_MIME_TYPE(BAD_REQUEST, "MIME 타입이 존재하지 않습니다."),
+    FILE_ID_GAME_OPTION_ID_MISMATCH(BAD_REQUEST, "File id에 매핑되는 GameOption Id가 없습니다."),
     REPORT_MY_COMMENT(BAD_REQUEST, "본인의 댓글을 신고할 수 없습니다"),
     INVALID_REPORT_REASON(BAD_REQUEST, "신고 사유가 올바르지 않습니다."),
     INVALID_REPORT_TYPE(BAD_REQUEST, "신고 타입이 올바르지 않습니다."),
