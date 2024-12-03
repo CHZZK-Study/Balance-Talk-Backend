@@ -44,16 +44,16 @@ public class TempGameOptionDto {
         return TempGameOption.builder()
                 .name(name)
                 .imgId(fileId)
-                .imgUrl(imgUrl)
                 .description(description)
                 .optionType(optionType)
                 .build();
     }
 
-    public static TempGameOptionDto fromEntity(TempGameOption tempGameOption, Long fileId) {
+    public static TempGameOptionDto fromEntity(TempGameOption tempGameOption, Long fileId, String imgUrl) {
         return TempGameOptionDto.builder()
                 .name(tempGameOption.getName())
                 .fileId(fileId)
+                .imgUrl(imgUrl)
                 .description(tempGameOption.getDescription())
                 .optionType(tempGameOption.getOptionType())
                 .build();

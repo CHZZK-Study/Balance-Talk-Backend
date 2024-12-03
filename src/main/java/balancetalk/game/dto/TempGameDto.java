@@ -51,7 +51,8 @@ public class TempGameDto {
                     .map(option -> {
                         Long fileId = fileRepository.findIdByResourceIdAndFileType(
                                 option.getId(), FileType.TEMP_GAME_OPTION);
-                        return TempGameOptionDto.fromEntity(option, fileId);
+                        String imgUrl = fileRepository.findImgUrlById(fileId);
+                        return TempGameOptionDto.fromEntity(option, fileId, imgUrl);
                     })
                     .toList();
 
