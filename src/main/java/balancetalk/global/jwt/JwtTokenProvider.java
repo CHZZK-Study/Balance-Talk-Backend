@@ -29,7 +29,7 @@ public class JwtTokenProvider {
     @Value("${spring.jwt.token.refresh-expiration-time}")
     private long refreshExpirationTime;
 
-    private static final String MEMBER_ID = "MEMBER_ID";
+    private static final String MEMBER_ID = "memberId";
     private final MyUserDetailService myUserDetailService;
     private final Key secretKey = Keys.secretKeyFor(SignatureAlgorithm.HS512);
 
@@ -152,6 +152,6 @@ public class JwtTokenProvider {
 
     public Long getMemberId(String token) {
         Claims claims = Jwts.parserBuilder().setSigningKey(secretKey).build().parseClaimsJws(token).getBody();
-        return claims.get("memberId", Long.class);
+        return claims.get(MEMBER_ID, Long.class);
     }
 }
