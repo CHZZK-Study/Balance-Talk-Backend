@@ -1,7 +1,6 @@
 package balancetalk.game.dto;
 
 import balancetalk.bookmark.domain.GameBookmark;
-import balancetalk.game.domain.Game;
 import balancetalk.game.domain.GameSet;
 import balancetalk.game.domain.MainTag;
 import balancetalk.game.dto.GameDto.CreateOrUpdateGame;
@@ -12,8 +11,6 @@ import balancetalk.member.domain.Member;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -91,13 +88,7 @@ public class GameSetDto {
 
         private boolean isBookmarked;
 
-        public static GameSetResponse fromEntity(GameSet gameSet, Member member) {
-            Game game = gameSet.getGames().get(0);
-            List<String> images = new ArrayList<>();
-            images.addAll(Arrays.asList(
-                    game.getGameOptions().get(0).getImgUrl(),
-                    game.getGameOptions().get(1).getImgUrl()
-            ));
+        public static GameSetResponse fromEntity(GameSet gameSet, Member member, List<String> images) {
             return GameSetResponse.builder()
                     .id(gameSet.getId())
                     .title(gameSet.getTitle())

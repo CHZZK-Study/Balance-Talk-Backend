@@ -155,7 +155,7 @@ public class GameService {
             // 게스트인 경우 북마크, 선택 옵션 없음
             return GameSetDetailResponse.fromEntity(gameSet, null, false,
                     gameSet.getGames().stream()
-                            .map(game -> GameDetailResponse.fromEntity(game, false, null))
+                            .map(game -> GameDetailResponse.fromEntity(game, false, null, fileRepository))
                             .toList());
         }
 
@@ -178,7 +178,7 @@ public class GameService {
         return GameSetDetailResponse.fromEntity(gameSet, gameBookmark, isEndGameSet,
                 gameSet.getGames().stream()
                         .map(game -> GameDetailResponse.fromEntity(
-                                game, isBookmarkedActiveForGame(gameBookmark, game), voteOptionMap.get(game.getId())))
+                                game, isBookmarkedActiveForGame(gameBookmark, game), voteOptionMap.get(game.getId()), fileRepository))
                         .toList());
     }
 
@@ -229,12 +229,33 @@ public class GameService {
     private List<GameSetResponse> gameSetResponses(GuestOrApiMember guestOrApiMember, List<GameSet> gameSets) {
         if (guestOrApiMember.isGuest()) {
             return gameSets.stream()
-                    .map(gameSet -> GameSetResponse.fromEntity(gameSet, null))
+                    .map(gameSet -> GameSetResponse.fromEntity(gameSet, null, getFirstGameImages(gameSet)))
                     .toList();
         }
         Member member = guestOrApiMember.toMember(memberRepository);
+
         return gameSets.stream()
-                .map(gameSet -> GameSetResponse.fromEntity(gameSet, member))
+                .map(gameSet -> GameSetResponse.fromEntity(gameSet, member, getFirstGameImages(gameSet)))
+                .toList();
+    }
+
+    private List<String> getFirstGameImages(GameSet gameSet) {
+        Game firstGame = gameSet.getGames().get(0);
+        List<Long> resourceIds = new ArrayList<>();
+        List<GameOption> gameOptions = firstGame.getGameOptions();
+        for (GameOption gameOption : gameOptions) {
+            if (gameOption.hasImage()) {
+                resourceIds.add(gameOption.getId());
+            }
+        }
+
+        if (resourceIds.isEmpty()) {
+            return new ArrayList<>();
+        }
+
+        List<File> files = fileRepository.findAllByResourceIdsAndFileType(resourceIds, GAME_OPTION);
+        return files.stream()
+                .map(File::getImgUrl)
                 .toList();
     }
 
