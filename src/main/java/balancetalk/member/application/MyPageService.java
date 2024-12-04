@@ -6,7 +6,11 @@ import balancetalk.bookmark.domain.GameBookmarkRepository;
 import balancetalk.bookmark.domain.TalkPickBookmarkRepository;
 import balancetalk.comment.domain.Comment;
 import balancetalk.comment.domain.CommentRepository;
+import balancetalk.file.domain.File;
+import balancetalk.file.domain.FileType;
+import balancetalk.file.domain.repository.FileRepository;
 import balancetalk.game.domain.Game;
+import balancetalk.game.domain.GameOption;
 import balancetalk.game.domain.GameSet;
 import balancetalk.game.domain.repository.GameRepository;
 import balancetalk.game.domain.repository.GameSetRepository;
@@ -45,6 +49,7 @@ public class MyPageService {
     private final CommentRepository commentRepository;
     private final GameRepository gameRepository;
     private final GameSetRepository gameSetRepository;
+    private final FileRepository fileRepository;
 
     public Page<TalkPickMyPageResponse> findAllBookmarkedTalkPicks(ApiMember apiMember, Pageable pageable) {
         Member member = apiMember.toMember(memberRepository);
@@ -101,35 +106,49 @@ public class MyPageService {
                 .map(bookmark -> {
                     Game game = gameRepository.findById(bookmark.getGameId()) // 사용자가 북마크한 위치의 밸런스게임을 찾음
                             .orElseThrow(() -> new BalanceTalkException(ErrorCode.NOT_FOUND_BALANCE_GAME));
-                    return GameMyPageResponse.from(game, bookmark);
+
+                    List<Long> resourceIds = getResourceIds(game);
+                    List<File> files = fileRepository.findAllByResourceIdsAndFileType(resourceIds, FileType.GAME_OPTION);
+                    String imgA = game.getImgA(files);
+                    String imgB = game.getImgB(files);
+
+                    return GameMyPageResponse.from(game, bookmark, imgA, imgB);
                 })
                 .toList();
 
         return new PageImpl<>(responses, pageable, bookmarks.getTotalElements());
     }
 
-    public Page<GameMyPageResponse> findAllVotedGames(ApiMember apiMember, Pageable pageable) {
-        Member member = apiMember.toMember(memberRepository);
-
-        Page<GameVote> votes = voteRepository.findAllByMemberIdAndGameDesc(member.getId(), pageable);
-
-        List<GameMyPageResponse> responses = votes.stream()
-                .map(vote -> GameMyPageResponse.from(vote.getGameOption().getGame(), vote))
+    private List<Long> getResourceIds(Game game) {
+        return game.getGameOptions().stream()
+                .filter(option -> option.getImgId() != null)
+                .map(GameOption::getImgId)
                 .toList();
-
-        return new PageImpl<>(responses, pageable, votes.getTotalElements());
     }
 
-    public Page<GameMyPageResponse> findAllGamesByMember(ApiMember apiMember, Pageable pageable) {
-        Member member = apiMember.toMember(memberRepository);
-        Page<GameSet> gameSets = gameSetRepository.findAllByMemberIdOrderByEditedAtDesc(member.getId(), pageable);
 
-        List<GameMyPageResponse> responses = gameSets.stream()
-                .map(GameMyPageResponse::from)
-                .toList();
+//    public Page<GameMyPageResponse> findAllVotedGames(ApiMember apiMember, Pageable pageable) {
+//        Member member = apiMember.toMember(memberRepository);
+//
+//        Page<GameVote> votes = voteRepository.findAllByMemberIdAndGameDesc(member.getId(), pageable);
+//
+//        List<GameMyPageResponse> responses = votes.stream()
+//                .map(vote -> GameMyPageResponse.from(vote.getGameOption().getGame(), vote))
+//                .toList();
+//
+//        return new PageImpl<>(responses, pageable, votes.getTotalElements());
+//    }
 
-        return new PageImpl<>(responses, pageable, gameSets.getTotalElements());
-    }
+//    public Page<GameMyPageResponse> findAllGamesByMember(ApiMember apiMember, Pageable pageable) {
+//        Member member = apiMember.toMember(memberRepository);
+//        Page<GameSet> gameSets = gameSetRepository.findAllByMemberIdOrderByEditedAtDesc(member.getId(), pageable);
+//
+//        List<GameMyPageResponse> responses = gameSets.stream()
+//                .map(GameMyPageResponse::from)
+//                .toList();
+//
+//        return new PageImpl<>(responses, pageable, gameSets.getTotalElements());
+//    }
 
     public MemberActivityResponse getMemberActivity(ApiMember apiMember) {
         Member member = apiMember.toMember(memberRepository);

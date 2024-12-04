@@ -40,8 +40,8 @@ public class SearchGameResponse {
                 .gameSetId(game.getGameSet().getId())
                 .id(game.getId())
                 .title(game.getGameSet().getTitle())
-                .optionAImg(game.getGameOptions().get(0).getImgUrl())
-                .optionBImg(game.getGameOptions().get(1).getImgUrl())
+//                .optionAImg(game.getGameOptions().get(0).getImgUrl())
+//                .optionBImg(game.getGameOptions().get(1).getImgUrl())
                 .subTag(game.getGameSet().getSubTag())
                 .mainTag(game.getGameSet().getMainTag().getName())
                 .build();
