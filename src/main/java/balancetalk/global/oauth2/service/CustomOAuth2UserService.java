@@ -45,7 +45,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
         String email = getEmail(oauth2Response);
         String provider = getProvider(oauth2Response);
-        Member findMember = memberRepository.findByEmail(email).orElse(null);
+        Member findMember = memberRepository.findByEmail(provider + "_" + email).orElse(null);
 
         if (findMember == null) {
             String encodedPassword = passwordEncoder().encode(oauth2Password);

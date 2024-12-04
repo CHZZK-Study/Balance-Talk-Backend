@@ -7,6 +7,7 @@ import balancetalk.game.dto.TempGameDto.TempGameResponse;
 import balancetalk.global.exception.BalanceTalkException;
 import balancetalk.global.exception.ErrorCode;
 import balancetalk.member.domain.Member;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -27,7 +28,7 @@ public class TempGameSetDto {
         @Size(max = 50, message = "제목은 최대 50자까지 입력 가능합니다")
         private String title;
 
-        @Schema(description = "최근 임시저장된 밸런스 게임 불러오기 여부", example = "true")
+        @Schema(description = "최근 임시저장된 밸런스 게임 불러오기 여부", example = "false")
         @NotNull(message = "isLoaded 필드는 NULL을 허용하지 않습니다.")
         private Boolean isLoaded;
 
@@ -43,6 +44,7 @@ public class TempGameSetDto {
                     .build();
         }
 
+        @JsonIgnore
         public List<Long> getAllFileIds() {
             return tempGames.stream()
                     .flatMap(game -> game.getTempGameOptions().stream())
@@ -51,6 +53,7 @@ public class TempGameSetDto {
                     .toList();
         }
 
+        @JsonIgnore
         public boolean isNewRequest() {
             return !isLoaded;
         }
