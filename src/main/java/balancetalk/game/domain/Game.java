@@ -1,5 +1,6 @@
 package balancetalk.game.domain;
 
+import balancetalk.file.domain.File;
 import balancetalk.global.common.BaseTimeEntity;
 import balancetalk.global.exception.BalanceTalkException;
 import balancetalk.global.exception.ErrorCode;
@@ -75,5 +76,21 @@ public class Game extends BaseTimeEntity {
 
     public List<Long> getGameOptionIds() {
         return gameOptions.stream().map(GameOption::getId).toList();
+    }
+
+    public String getImgA(List<File> files) {
+        return files.stream()
+                .filter(file -> file.getResourceId().equals(getGameOptions().get(0).getId()))
+                .map(File::getImgUrl)
+                .findFirst()
+                .orElseThrow(() -> new BalanceTalkException(ErrorCode.NOT_FOUND_FILE));
+    }
+
+    public String getImgB(List<File> files) {
+        return files.stream()
+                .filter(file -> file.getResourceId().equals(getGameOptions().get(1).getId()))
+                .map(File::getImgUrl)
+                .findFirst()
+                .orElseThrow(() -> new BalanceTalkException(ErrorCode.NOT_FOUND_FILE));
     }
 }

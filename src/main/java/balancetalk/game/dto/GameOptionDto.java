@@ -37,27 +37,24 @@ public class GameOptionDto {
     @Schema(description = "선택지", example = "A")
     private VoteOption optionType;
 
-    public static GameOptionDto fromEntity(GameOption gameOption) {
+    public static GameOptionDto fromEntity(GameOption gameOption, String imgUrl) {
         return GameOptionDto.builder()
                 .id(gameOption.getId())
                 .name(gameOption.getName())
-                .imgUrl(gameOption.getImgUrl())
+                .imgUrl(imgUrl)
                 .description(gameOption.getDescription())
                 .optionType(gameOption.getOptionType())
                 .build();
     }
 
     public GameOption toEntity(FileRepository fileRepository) {
-        String newImgUrl = null;
         if (fileId != null) {
             File file = fileRepository.findById(fileId)
                     .orElseThrow(() -> new BalanceTalkException(ErrorCode.NOT_FOUND_FILE));
-            newImgUrl = file.getImgUrl();
         }
         return GameOption.builder()
                 .name(name)
                 .imgId(fileId)
-                .imgUrl(newImgUrl)
                 .description(description)
                 .optionType(optionType)
                 .build();
