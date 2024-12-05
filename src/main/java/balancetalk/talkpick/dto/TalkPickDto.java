@@ -8,12 +8,15 @@ import balancetalk.bookmark.domain.TalkPickBookmark;
 import balancetalk.comment.domain.Comment;
 import balancetalk.member.domain.Member;
 import balancetalk.talkpick.domain.TalkPick;
+import balancetalk.talkpick.dto.fields.BaseTalkPickFields;
+import balancetalk.talkpick.dto.fields.ValidatedNotBlankTalkPickFields;
 import balancetalk.vote.domain.TalkPickVote;
 import balancetalk.vote.domain.VoteOption;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.querydsl.core.annotations.QueryProjection;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.Size;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -29,7 +32,8 @@ public class TalkPickDto {
     @AllArgsConstructor
     public static class CreateTalkPickRequest {
 
-        private BaseTalkPickFields baseFields;
+        @Valid
+        private ValidatedNotBlankTalkPickFields baseFields;
 
         @Schema(description = "첨부한 이미지 파일 ID 목록", example = "[12, 41]")
         @Size(max = 10, message = "톡픽 생성 시 업로드할 수 있는 파일 개수는 최대 10개입니다.")
@@ -60,7 +64,8 @@ public class TalkPickDto {
     @AllArgsConstructor
     public static class UpdateTalkPickRequest {
 
-        private BaseTalkPickFields baseFields;
+        @Valid
+        private ValidatedNotBlankTalkPickFields baseFields;
 
         @Schema(description = "새로 첨부한 이미지 파일 ID 목록", example = "[12, 41]")
         @Size(max = 10, message = "톡픽 생성 시 업로드할 수 있는 파일 개수는 최대 10개입니다.")

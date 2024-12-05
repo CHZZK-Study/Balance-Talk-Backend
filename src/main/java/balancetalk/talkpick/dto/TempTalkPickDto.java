@@ -2,8 +2,10 @@ package balancetalk.talkpick.dto;
 
 import balancetalk.member.domain.Member;
 import balancetalk.talkpick.domain.TempTalkPick;
+import balancetalk.talkpick.dto.fields.BaseTalkPickFields;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import java.util.List;
@@ -18,7 +20,8 @@ public class TempTalkPickDto {
     @AllArgsConstructor
     public static class SaveTempTalkPickRequest {
 
-        private BaseTempTalkPickFields baseFields;
+        @Valid
+        private BaseTalkPickFields baseFields;
 
         @Schema(description = "새로 첨부한 이미지 파일 ID 목록", example = "[12, 41]")
         @Size(max = 10, message = "톡픽 생성 시 업로드할 수 있는 파일 개수는 최대 10개입니다.")
