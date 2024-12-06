@@ -159,8 +159,8 @@ public class MyPageService {
     private GameMyPageResponse createGameMyPageResponse(Game game, Object source) {
         List<Long> resourceIds = getResourceIds(game);
         List<File> files = fileRepository.findAllByResourceIdsAndFileType(resourceIds, FileType.GAME_OPTION);
-        String imgA = game.getImgA(files);
-        String imgB = game.getImgB(files);
+        String imgA = files.isEmpty() ? null : game.getImgA(files);
+        String imgB = files.isEmpty() ? null : game.getImgB(files);
 
         return Stream.of(
                 new SourceHandler<>(GameBookmark.class, bookmark -> GameMyPageResponse.from(game, bookmark, imgA, imgB)),
