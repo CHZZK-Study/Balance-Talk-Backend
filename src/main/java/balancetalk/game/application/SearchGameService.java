@@ -91,7 +91,8 @@ public class SearchGameService {
         return games.stream()
                 .map(game -> {
                     List<Long> resourceIds = getResourceIds(game);
-                    List<File> files = fileRepository.findAllByResourceIdsAndFileType(resourceIds, FileType.GAME_OPTION);
+                    List<File> files =
+                            fileRepository.findAllByResourceIdsAndFileType(resourceIds, FileType.GAME_OPTION);
                     String imgA = files.isEmpty() ? null : game.getImgA(files);
                     String imgB = files.isEmpty() ? null : game.getImgB(files);
                     return SearchGameResponse.from(game, imgA, imgB);

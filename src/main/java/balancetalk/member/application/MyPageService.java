@@ -57,7 +57,8 @@ public class MyPageService {
 
     public Page<TalkPickMyPageResponse> findAllBookmarkedTalkPicks(ApiMember apiMember, Pageable pageable) {
         Member member = apiMember.toMember(memberRepository);
-        Page<TalkPickBookmark> bookmarks = talkPickBookmarkRepository.findActivatedByMemberOrderByDesc(member, pageable);
+        Page<TalkPickBookmark> bookmarks =
+                talkPickBookmarkRepository.findActivatedByMemberOrderByDesc(member, pageable);
 
         List<TalkPickMyPageResponse> responses = bookmarks.stream()
                 .map(bookmark -> {
@@ -82,7 +83,8 @@ public class MyPageService {
 
     public Page<TalkPickMyPageResponse> findAllCommentedTalkPicks(ApiMember apiMember, Pageable pageable) {
         Member member = apiMember.toMember(memberRepository);
-        Page<Comment> comments = commentRepository.findAllLatestCommentsByMemberIdAndOrderByDesc(member.getId(), pageable);
+        Page<Comment> comments =
+                commentRepository.findAllLatestCommentsByMemberIdAndOrderByDesc(member.getId(), pageable);
 
         List<TalkPickMyPageResponse> responses = comments.stream()
                 .map(comment -> TalkPickMyPageResponse.from(comment.getTalkPick(), comment))
@@ -163,7 +165,8 @@ public class MyPageService {
         String imgB = files.isEmpty() ? null : game.getImgB(files);
 
         return Stream.of(
-                new SourceHandler<>(GameBookmark.class, bookmark -> GameMyPageResponse.from(game, bookmark, imgA, imgB)),
+                new SourceHandler<>(GameBookmark.class, bookmark
+                        -> GameMyPageResponse.from(game, bookmark, imgA, imgB)),
                 new SourceHandler<>(GameVote.class, vote -> GameMyPageResponse.from(game, vote, imgA, imgB)),
                 new SourceHandler<>(Game.class, myGame -> GameMyPageResponse.from(myGame.getGameSet(), imgA, imgB))
         )
