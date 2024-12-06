@@ -173,7 +173,7 @@ public class MyPageService {
                 .filter(handler -> handler.getType().isInstance(source))
                 .findFirst()
                 .map(handler -> handler.handle(source))
-                .orElseThrow(() -> new BalanceTalkException(ErrorCode.NOT_FOUND_BALANCE_GAME));
+                .orElseThrow(() -> new BalanceTalkException(ErrorCode.INVALID_SOURCE_TYPE));
     }
 
     public MemberActivityResponse getMemberActivity(ApiMember apiMember) {
