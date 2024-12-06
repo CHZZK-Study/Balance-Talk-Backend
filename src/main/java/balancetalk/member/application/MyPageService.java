@@ -28,6 +28,10 @@ import balancetalk.vote.domain.TalkPickVote;
 import balancetalk.vote.domain.TalkPickVoteRepository;
 import balancetalk.vote.domain.GameVote;
 import balancetalk.vote.domain.VoteRepository;
+import java.util.function.Function;
+import java.util.stream.Stream;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -107,12 +111,7 @@ public class MyPageService {
                     Game game = gameRepository.findById(bookmark.getGameId()) // 사용자가 북마크한 위치의 밸런스게임을 찾음
                             .orElseThrow(() -> new BalanceTalkException(ErrorCode.NOT_FOUND_BALANCE_GAME));
 
-                    List<Long> resourceIds = getResourceIds(game);
-                    List<File> files = fileRepository.findAllByResourceIdsAndFileType(resourceIds, FileType.GAME_OPTION);
-                    String imgA = game.getImgA(files);
-                    String imgB = game.getImgB(files);
-
-                    return GameMyPageResponse.from(game, bookmark, imgA, imgB);
+                    return createGameMyPageResponse(game, bookmark);
                 })
                 .toList();
 
@@ -127,31 +126,66 @@ public class MyPageService {
     }
 
 
-//    public Page<GameMyPageResponse> findAllVotedGames(ApiMember apiMember, Pageable pageable) {
-//        Member member = apiMember.toMember(memberRepository);
-//
-//        Page<GameVote> votes = voteRepository.findAllByMemberIdAndGameDesc(member.getId(), pageable);
-//
-//        List<GameMyPageResponse> responses = votes.stream()
-//                .map(vote -> GameMyPageResponse.from(vote.getGameOption().getGame(), vote))
-//                .toList();
-//
-//        return new PageImpl<>(responses, pageable, votes.getTotalElements());
-//    }
+    public Page<GameMyPageResponse> findAllVotedGames(ApiMember apiMember, Pageable pageable) {
+        Member member = apiMember.toMember(memberRepository);
 
-//    public Page<GameMyPageResponse> findAllGamesByMember(ApiMember apiMember, Pageable pageable) {
-//        Member member = apiMember.toMember(memberRepository);
-//        Page<GameSet> gameSets = gameSetRepository.findAllByMemberIdOrderByEditedAtDesc(member.getId(), pageable);
-//
-//        List<GameMyPageResponse> responses = gameSets.stream()
-//                .map(GameMyPageResponse::from)
-//                .toList();
-//
-//        return new PageImpl<>(responses, pageable, gameSets.getTotalElements());
-//    }
+        Page<GameVote> votes = voteRepository.findAllByMemberIdAndGameDesc(member.getId(), pageable);
+
+        List<GameMyPageResponse> responses = votes.stream()
+                .map(vote -> {
+                    Game game = gameRepository.findById(vote.getGameOption().getGame().getId())
+                            .orElseThrow(() -> new BalanceTalkException(ErrorCode.NOT_FOUND_BALANCE_GAME));
+                    return createGameMyPageResponse(game, vote);
+                })
+                .toList();
+
+        return new PageImpl<>(responses, pageable, votes.getTotalElements());
+    }
+
+    public Page<GameMyPageResponse> findAllGamesByMember(ApiMember apiMember, Pageable pageable) {
+        Member member = apiMember.toMember(memberRepository);
+        Page<GameSet> gameSets = gameSetRepository.findAllByMemberIdOrderByEditedAtDesc(member.getId(), pageable);
+
+        List<GameMyPageResponse> responses = gameSets.stream()
+                .map(gameSet -> {
+                    Game game = gameSet.getGames().get(0);
+                    return createGameMyPageResponse(game, game);
+                })
+                .toList();
+
+        return new PageImpl<>(responses, pageable, gameSets.getTotalElements());
+    }
+
+    private GameMyPageResponse createGameMyPageResponse(Game game, Object source) {
+        List<Long> resourceIds = getResourceIds(game);
+        List<File> files = fileRepository.findAllByResourceIdsAndFileType(resourceIds, FileType.GAME_OPTION);
+        String imgA = game.getImgA(files);
+        String imgB = game.getImgB(files);
+
+        return Stream.of(
+                new SourceHandler<>(GameBookmark.class, bookmark -> GameMyPageResponse.from(game, bookmark, imgA, imgB)),
+                new SourceHandler<>(GameVote.class, vote -> GameMyPageResponse.from(game, vote, imgA, imgB)),
+                new SourceHandler<>(Game.class, myGame -> GameMyPageResponse.from(myGame.getGameSet(), imgA, imgB))
+        )
+                .filter(handler -> handler.getType().isInstance(source))
+                .findFirst()
+                .map(handler -> handler.handle(source))
+                .orElseThrow(() -> new BalanceTalkException(ErrorCode.NOT_FOUND_BALANCE_GAME));
+    }
 
     public MemberActivityResponse getMemberActivity(ApiMember apiMember) {
         Member member = apiMember.toMember(memberRepository);
         return MemberActivityResponse.fromEntity(member);
+    }
+
+    @Getter
+    @AllArgsConstructor
+    private static class SourceHandler<T> {
+        private final Class<T> type;
+        private final Function<T, GameMyPageResponse> handler;
+
+        public GameMyPageResponse handle(Object source) {
+            return handler.apply(type.cast(source));
+        }
     }
 }
