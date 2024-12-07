@@ -38,9 +38,9 @@ public class GameDto {
 
         private List<GameOptionDto> gameOptions;
 
-        public Game toEntity(FileRepository fileRepository) {
+        public Game toEntity() {
             List<GameOption> options = gameOptions.stream()
-                    .map(option -> option.toEntity(fileRepository))
+                    .map(GameOptionDto::toEntity)
                     .toList();
 
             return Game.builder()
@@ -68,7 +68,10 @@ public class GameDto {
         @Schema(description = "북마크 여부", example = "false")
         private Boolean myBookmark;
 
-        public static GameResponse fromEntity(Game game, boolean isBookmarked, FileRepository fileRepository) {
+        public static GameResponse fromEntity(Game game,
+                                              boolean isBookmarked,
+                                              FileRepository fileRepository
+        ) {
 
             List<GameOptionDto> gameOptionDtos = createGameOptionDtos(game, fileRepository);
 
@@ -107,7 +110,12 @@ public class GameDto {
         @Schema(description = "투표한 선택지", example = "A")
         private VoteOption votedOption;
 
-        public static GameDetailResponse fromEntity(Game game, boolean myBookmark, VoteOption votedOption, FileRepository fileRepository) {
+        public static GameDetailResponse fromEntity(
+                Game game,
+                boolean myBookmark,
+                VoteOption votedOption,
+                FileRepository fileRepository
+        ) {
             List<GameOptionDto> gameOptionDtos = createGameOptionDtos(game, fileRepository);
 
             return GameDetailResponse.builder()

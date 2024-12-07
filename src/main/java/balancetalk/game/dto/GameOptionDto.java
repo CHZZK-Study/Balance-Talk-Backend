@@ -1,10 +1,6 @@
 package balancetalk.game.dto;
 
-import balancetalk.file.domain.File;
-import balancetalk.file.domain.repository.FileRepository;
 import balancetalk.game.domain.GameOption;
-import balancetalk.global.exception.BalanceTalkException;
-import balancetalk.global.exception.ErrorCode;
 import balancetalk.vote.domain.VoteOption;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -47,11 +43,7 @@ public class GameOptionDto {
                 .build();
     }
 
-    public GameOption toEntity(FileRepository fileRepository) {
-        if (fileId != null) {
-            File file = fileRepository.findById(fileId)
-                    .orElseThrow(() -> new BalanceTalkException(ErrorCode.NOT_FOUND_FILE));
-        }
+    public GameOption toEntity() {
         return GameOption.builder()
                 .name(name)
                 .imgId(fileId)

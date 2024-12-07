@@ -58,7 +58,7 @@ public class GameService {
         List<Game> games = new ArrayList<>();
 
         for (CreateOrUpdateGame gameRequest : gameRequests) {
-            Game game = gameRequest.toEntity(fileRepository);
+            Game game = gameRequest.toEntity();
             games.add(game);
         }
 
@@ -77,7 +77,12 @@ public class GameService {
     private void relocateFileIfHasImage(GameOption gameOption) {
         if (gameOption.hasImage()) {
             fileRepository.findById(gameOption.getImgId())
-                    .ifPresent(file -> fileHandler.relocateFile(file, gameOption.getId(), GAME_OPTION));
+                    .ifPresentOrElse(
+                            file -> fileHandler.relocateFile(file, gameOption.getId(), GAME_OPTION),
+                            () -> {
+                                throw new BalanceTalkException(ErrorCode.NOT_FOUND_FILE);
+                            }
+                    );
         }
     }
 
@@ -89,7 +94,7 @@ public class GameService {
         GameSet gameSet = member.getGameSetById(gameSetId);
 
         List<Game> newGames = request.getGames().stream()
-                .map(gameRequest -> gameRequest.toEntity(fileRepository))
+                .map(CreateOrUpdateGame::toEntity)
                 .toList();
         List<Game> oldGames = gameSet.getGames();
 
@@ -178,7 +183,9 @@ public class GameService {
         return GameSetDetailResponse.fromEntity(gameSet, gameBookmark, isEndGameSet,
                 gameSet.getGames().stream()
                         .map(game -> GameDetailResponse.fromEntity(
-                                game, isBookmarkedActiveForGame(gameBookmark, game), voteOptionMap.get(game.getId()), fileRepository))
+                                game,
+                                isBookmarkedActiveForGame(gameBookmark, game),
+                                voteOptionMap.get(game.getId()), fileRepository))
                         .toList());
     }
 
