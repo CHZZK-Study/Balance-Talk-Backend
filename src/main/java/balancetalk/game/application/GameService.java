@@ -82,7 +82,7 @@ public class GameService {
                             () -> {
                                 throw new BalanceTalkException(ErrorCode.NOT_FOUND_FILE);
                             }
-                    );
+                );
         }
     }
 
