@@ -196,7 +196,7 @@ public class GameService {
         return gameSet.getGames().stream()
                 .flatMap(game -> game.getGameOptions().stream())
                 .filter(option -> option.getImgId() != null)
-                .map(GameOption::getImgId)
+                .map(GameOption::getId)
                 .toList();
     }
 
