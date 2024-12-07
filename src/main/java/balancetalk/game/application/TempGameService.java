@@ -10,6 +10,7 @@ import balancetalk.game.domain.TempGame;
 import balancetalk.game.domain.TempGameOption;
 import balancetalk.game.domain.TempGameSet;
 import balancetalk.game.domain.repository.TempGameSetRepository;
+import balancetalk.game.dto.TempGameDto.TempGameResponse;
 import balancetalk.game.dto.TempGameOptionDto;
 import balancetalk.game.dto.TempGameSetDto.CreateTempGameSetRequest;
 import balancetalk.game.dto.TempGameSetDto.TempGameSetResponse;
@@ -42,14 +43,14 @@ public class TempGameService {
         Member member = apiMember.toMember(memberRepository);
 
         List<CreateTempGameRequest> tempGames = request.getTempGames();
+        validateFileIds(tempGames); // 파일이 DB에 존재하는지 검사
 
         List<TempGame> newTempGames = tempGames.stream()
-            .map(game -> game.toEntity(fileRepository))
+            .map(game -> game.toEntity())
             .toList();
 
         if (member.hasTempGameSet()) { // 기존 임시저장이 존재하는 경우
             TempGameSet existGame = member.getTempGameSet();
-
             if (request.isNewRequest()) { // 새롭게 임시저장 하는 경우, 파일 모두 삭제
                 List<Long> oldFileIds = existGame.getAllFileIds();
                 if (!oldFileIds.isEmpty()) {
@@ -67,12 +68,44 @@ public class TempGameService {
         List<TempGame> games = new ArrayList<>();
 
         for (CreateTempGameRequest tempGame : tempGames) {
-            TempGame game = tempGame.toEntity(fileRepository);
+            TempGame game = tempGame.toEntity();
             games.add(game);
         }
         tempGameSet.addGames(games);
         tempGameSetRepository.save(tempGameSet);
         processTempGameFiles(tempGames, tempGameSet.getTempGames());
+    }
+
+    private void validateFileIds(List<CreateTempGameRequest> tempGames) {
+        tempGames.stream()
+                .flatMap(tempGame -> tempGame.getTempGameOptions().stream())
+                .forEach(tempGameOption -> {
+                    if (tempGameOption.getFileId() != null) {
+                        boolean fileExists = fileRepository.existsById(tempGameOption.getFileId());
+                        if (!fileExists) {
+                            throw new BalanceTalkException(ErrorCode.NOT_FOUND_FILE);
+                        }
+                    }
+                });
+    }
+
+    private List<Long> getResourceIds(TempGameSet tempGameSet) {
+        return tempGameSet.getTempGames().stream()
+                .flatMap(game -> game.getTempGameOptions().stream())
+                .filter(option -> option.getImgId() != null)
+                .map(TempGameOption::getId)
+                .toList();
+    }
+
+    private List<File> getFilesByResourceIds(TempGameSet tempGameSet) {
+        List<Long> resourceIds = getResourceIds(tempGameSet);
+        return fileRepository.findAllByResourceIdsAndFileType(resourceIds, TEMP_GAME_OPTION);
+    }
+
+    private Map<Long, String> getTempGameOptionImgUrls(TempGameSet tempGameSet) {
+        List<File> files = getFilesByResourceIds(tempGameSet);
+        return files.stream()
+                .collect(Collectors.toMap(File::getResourceId, File::getImgUrl));
     }
 
     private void relocateFiles(CreateTempGameSetRequest request, TempGameSet tempGameSet) {
@@ -198,6 +231,12 @@ public class TempGameService {
         Member member = apiMember.toMember(memberRepository);
         TempGameSet tempGameSet = tempGameSetRepository.findByMember(member)
                 .orElseThrow(() -> new BalanceTalkException(ErrorCode.NOT_FOUND_BALANCE_GAME_SET));
-        return TempGameSetResponse.fromEntity(tempGameSet, fileRepository);
+
+        Map<Long, String> tempGameOptionImgUrls = getTempGameOptionImgUrls(tempGameSet);
+        return TempGameSetResponse.fromEntity(tempGameSet,
+                tempGameSet.getTempGames().stream()
+                        .map(tempGame -> TempGameResponse.fromEntity(tempGame, tempGameOptionImgUrls))
+                        .toList()
+        );
     }
 }
