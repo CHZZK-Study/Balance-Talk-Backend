@@ -4,9 +4,6 @@ import static balancetalk.vote.domain.VoteOption.A;
 import static balancetalk.vote.domain.VoteOption.B;
 
 import balancetalk.bookmark.domain.GameBookmark;
-import balancetalk.file.domain.File;
-import balancetalk.file.domain.FileType;
-import balancetalk.file.domain.repository.FileRepository;
 import balancetalk.game.domain.Game;
 import balancetalk.game.domain.GameOption;
 import balancetalk.game.domain.GameSet;
@@ -19,7 +16,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -70,15 +66,13 @@ public class GameDto {
 
         public static GameResponse fromEntity(Game game,
                                               boolean isBookmarked,
-                                              FileRepository fileRepository
+                                              Map<Long, String> gameOptionImgUrls
         ) {
-
-            List<GameOptionDto> gameOptionDtos = createGameOptionDtos(game, fileRepository);
 
             return GameResponse.builder()
                     .id(game.getId())
                     .description(game.getDescription())
-                    .gameOptions(gameOptionDtos)
+                    .gameOptions(getGameOptionDtos(game, gameOptionImgUrls))
                     .myBookmark(isBookmarked)
                     .build();
         }
@@ -114,14 +108,13 @@ public class GameDto {
                 Game game,
                 boolean myBookmark,
                 VoteOption votedOption,
-                FileRepository fileRepository
+                Map<Long, String> gameOptionImgUrls
         ) {
-            List<GameOptionDto> gameOptionDtos = createGameOptionDtos(game, fileRepository);
 
             return GameDetailResponse.builder()
                     .id(game.getId())
                     .description(game.getDescription())
-                    .gameOptions(gameOptionDtos)
+                    .gameOptions(getGameOptionDtos(game, gameOptionImgUrls))
                     .votesCountOfOptionA(game.getVoteCount(A))
                     .votesCountOfOptionB(game.getVoteCount(B))
                     .myBookmark(myBookmark)
@@ -225,23 +218,11 @@ public class GameDto {
         }
     }
 
-    public static List<GameOptionDto> createGameOptionDtos(Game game, FileRepository fileRepository) {
-        List<Long> resourceIds = game.getGameOptions().stream()
-                .filter(option -> option.getImgId() != null)
-                .map(GameOption::getImgId)
-                .toList();
-
-        List<File> files = fileRepository.findAllByResourceIdsAndFileType(resourceIds, FileType.GAME_OPTION);
-
-        Map<Long, File> fileMap = files.stream()
-                .collect(Collectors.toMap(File::getResourceId, file -> file));
+    public static List<GameOptionDto> getGameOptionDtos(Game game, Map<Long, String> gameOptionImgUrls) {
         return game.getGameOptions().stream()
                 .map(option -> {
-                    File file = fileMap.get(option.getId());
-                    if (file == null) {
-                        return GameOptionDto.fromEntity(option, null);
-                    }
-                    return GameOptionDto.fromEntity(option, file.getImgUrl());
+                    String imgUrl = gameOptionImgUrls.get(option.getId());
+                    return GameOptionDto.fromEntity(option, imgUrl);
                 })
                 .toList();
     }

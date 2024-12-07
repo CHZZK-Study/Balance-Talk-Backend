@@ -32,6 +32,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -156,11 +157,13 @@ public class GameService {
                 .orElseThrow(() -> new BalanceTalkException(ErrorCode.NOT_FOUND_BALANCE_GAME_SET));
         gameSet.increaseViews();
 
+        Map<Long, String> gameOptionImgUrls = getGameOptionImgUrls(gameSet); // 게임 id, 이미지 url을 가진 맵을 생성
+
         if (guestOrApiMember.isGuest()) { // 비회원인 경우
             // 게스트인 경우 북마크, 선택 옵션 없음
             return GameSetDetailResponse.fromEntity(gameSet, null, false,
                     gameSet.getGames().stream()
-                            .map(game -> GameDetailResponse.fromEntity(game, false, null, fileRepository))
+                            .map(game -> GameDetailResponse.fromEntity(game, false, null, gameOptionImgUrls))
                             .toList());
         }
 
@@ -185,8 +188,27 @@ public class GameService {
                         .map(game -> GameDetailResponse.fromEntity(
                                 game,
                                 isBookmarkedActiveForGame(gameBookmark, game),
-                                voteOptionMap.get(game.getId()), fileRepository))
+                                voteOptionMap.get(game.getId()), gameOptionImgUrls))
                         .toList());
+    }
+
+    private List<Long> getResourceIds(GameSet gameSet) {
+        return gameSet.getGames().stream()
+                .flatMap(game -> game.getGameOptions().stream())
+                .filter(option -> option.getImgId() != null)
+                .map(GameOption::getImgId)
+                .toList();
+    }
+
+    private List<File> getFilesByResourceIds(GameSet gameSet) {
+        List<Long> resourceIds = getResourceIds(gameSet);
+        return fileRepository.findAllByResourceIdsAndFileType(resourceIds, GAME_OPTION);
+    }
+
+    private Map<Long, String> getGameOptionImgUrls(GameSet gameSet) {
+        List<File> files = getFilesByResourceIds(gameSet);
+        return files.stream()
+                .collect(Collectors.toMap(File::getResourceId, File::getImgUrl));
     }
 
     public boolean isBookmarkedActiveForGame(GameBookmark gameBookmark, Game game) {
