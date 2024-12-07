@@ -79,16 +79,20 @@ public class Game extends BaseTimeEntity {
     }
 
     public String getImgA(List<File> files) {
-        return files.stream()
-                .filter(file -> file.getResourceId().equals(getGameOptions().get(0).getId()))
-                .map(File::getImgUrl)
-                .findFirst()
-                .orElseThrow(() -> new BalanceTalkException(ErrorCode.NOT_FOUND_FILE));
+        return getImgUrlByIndex(files, 0);
     }
 
     public String getImgB(List<File> files) {
+        return getImgUrlByIndex(files, 1);
+    }
+
+    private String getImgUrlByIndex(List<File> files, int index) {
+        if (gameOptions.size() <= index) {
+            throw new BalanceTalkException(ErrorCode.NOT_FOUND_GAME_OPTION);
+        }
+
         return files.stream()
-                .filter(file -> file.getResourceId().equals(getGameOptions().get(1).getId()))
+                .filter(file -> file.getResourceId().equals(gameOptions.get(index).getId()))
                 .map(File::getImgUrl)
                 .findFirst()
                 .orElseThrow(() -> new BalanceTalkException(ErrorCode.NOT_FOUND_FILE));
