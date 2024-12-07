@@ -53,7 +53,10 @@ public class TempGameDto {
         }
     }
 
-    public static List<TempGameOptionDto> getTempGameOptionDtos(TempGame tempGame, Map<Long, String> tempGameOptionImgUrls) {
+    public static List<TempGameOptionDto> getTempGameOptionDtos(
+            TempGame tempGame,
+            Map<Long, String> tempGameOptionImgUrls
+    ) {
         return tempGame.getTempGameOptions().stream()
                 .map(option -> {
                     String imgUrl = tempGameOptionImgUrls.get(option.getId());
