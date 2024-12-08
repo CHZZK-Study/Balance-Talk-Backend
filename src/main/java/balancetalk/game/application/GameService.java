@@ -32,6 +32,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -58,7 +59,7 @@ public class GameService {
         List<Game> games = new ArrayList<>();
 
         for (CreateOrUpdateGame gameRequest : gameRequests) {
-            Game game = gameRequest.toEntity(fileRepository);
+            Game game = gameRequest.toEntity();
             games.add(game);
         }
 
@@ -77,7 +78,12 @@ public class GameService {
     private void relocateFileIfHasImage(GameOption gameOption) {
         if (gameOption.hasImage()) {
             fileRepository.findById(gameOption.getImgId())
-                    .ifPresent(file -> fileHandler.relocateFile(file, gameOption.getId(), GAME_OPTION));
+                    .ifPresentOrElse(
+                            file -> fileHandler.relocateFile(file, gameOption.getId(), GAME_OPTION),
+                            () -> {
+                                throw new BalanceTalkException(ErrorCode.NOT_FOUND_FILE);
+                            }
+                );
         }
     }
 
@@ -89,7 +95,7 @@ public class GameService {
         GameSet gameSet = member.getGameSetById(gameSetId);
 
         List<Game> newGames = request.getGames().stream()
-                .map(gameRequest -> gameRequest.toEntity(fileRepository))
+                .map(CreateOrUpdateGame::toEntity)
                 .toList();
         List<Game> oldGames = gameSet.getGames();
 
@@ -151,11 +157,13 @@ public class GameService {
                 .orElseThrow(() -> new BalanceTalkException(ErrorCode.NOT_FOUND_BALANCE_GAME_SET));
         gameSet.increaseViews();
 
+        Map<Long, String> gameOptionImgUrls = getGameOptionImgUrls(gameSet); // 게임 id, 이미지 url을 가진 맵을 생성
+
         if (guestOrApiMember.isGuest()) { // 비회원인 경우
             // 게스트인 경우 북마크, 선택 옵션 없음
             return GameSetDetailResponse.fromEntity(gameSet, null, false,
                     gameSet.getGames().stream()
-                            .map(game -> GameDetailResponse.fromEntity(game, false, null))
+                            .map(game -> GameDetailResponse.fromEntity(game, false, null, gameOptionImgUrls))
                             .toList());
         }
 
@@ -178,8 +186,29 @@ public class GameService {
         return GameSetDetailResponse.fromEntity(gameSet, gameBookmark, isEndGameSet,
                 gameSet.getGames().stream()
                         .map(game -> GameDetailResponse.fromEntity(
-                                game, isBookmarkedActiveForGame(gameBookmark, game), voteOptionMap.get(game.getId())))
+                                game,
+                                isBookmarkedActiveForGame(gameBookmark, game),
+                                voteOptionMap.get(game.getId()), gameOptionImgUrls))
                         .toList());
+    }
+
+    private List<Long> getResourceIds(GameSet gameSet) {
+        return gameSet.getGames().stream()
+                .flatMap(game -> game.getGameOptions().stream())
+                .filter(option -> option.getImgId() != null)
+                .map(GameOption::getId)
+                .toList();
+    }
+
+    private List<File> getFilesByResourceIds(GameSet gameSet) {
+        List<Long> resourceIds = getResourceIds(gameSet);
+        return fileRepository.findAllByResourceIdsAndFileType(resourceIds, GAME_OPTION);
+    }
+
+    private Map<Long, String> getGameOptionImgUrls(GameSet gameSet) {
+        List<File> files = getFilesByResourceIds(gameSet);
+        return files.stream()
+                .collect(Collectors.toMap(File::getResourceId, File::getImgUrl));
     }
 
     public boolean isBookmarkedActiveForGame(GameBookmark gameBookmark, Game game) {
@@ -229,12 +258,33 @@ public class GameService {
     private List<GameSetResponse> gameSetResponses(GuestOrApiMember guestOrApiMember, List<GameSet> gameSets) {
         if (guestOrApiMember.isGuest()) {
             return gameSets.stream()
-                    .map(gameSet -> GameSetResponse.fromEntity(gameSet, null))
+                    .map(gameSet -> GameSetResponse.fromEntity(gameSet, null, getFirstGameImages(gameSet)))
                     .toList();
         }
         Member member = guestOrApiMember.toMember(memberRepository);
+
         return gameSets.stream()
-                .map(gameSet -> GameSetResponse.fromEntity(gameSet, member))
+                .map(gameSet -> GameSetResponse.fromEntity(gameSet, member, getFirstGameImages(gameSet)))
+                .toList();
+    }
+
+    private List<String> getFirstGameImages(GameSet gameSet) {
+        Game firstGame = gameSet.getGames().get(0);
+        List<Long> resourceIds = new ArrayList<>();
+        List<GameOption> gameOptions = firstGame.getGameOptions();
+        for (GameOption gameOption : gameOptions) {
+            if (gameOption.hasImage()) {
+                resourceIds.add(gameOption.getId());
+            }
+        }
+
+        if (resourceIds.isEmpty()) {
+            return new ArrayList<>();
+        }
+
+        List<File> files = fileRepository.findAllByResourceIdsAndFileType(resourceIds, GAME_OPTION);
+        return files.stream()
+                .map(File::getImgUrl)
                 .toList();
     }
 

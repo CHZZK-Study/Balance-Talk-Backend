@@ -43,8 +43,6 @@ public class GameOption {
 
     private Long imgId;
 
-    private String imgUrl;
-
     @Size(max = 50)
     private String description;
 
@@ -68,7 +66,6 @@ public class GameOption {
 
     public void updateGameOption(GameOption newGameOption) {
         this.imgId = newGameOption.getImgId();
-        this.imgUrl = newGameOption.getImgUrl();
         this.name = newGameOption.getName();
         this.description = newGameOption.getDescription();
     }
@@ -86,6 +83,6 @@ public class GameOption {
     }
 
     public boolean hasImage() {
-        return imgUrl != null && imgId != null;
+        return imgId != null;
     }
 }

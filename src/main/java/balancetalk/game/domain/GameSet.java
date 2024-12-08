@@ -129,14 +129,6 @@ public class GameSet extends BaseTimeEntity {
         });
     }
 
-    public String getFirstGameOptionImgA() {
-        return games.get(0).getGameOptions().get(0).getImgUrl();
-    }
-
-    public String getFirstGameOptionImgB() {
-        return games.get(0).getGameOptions().get(1).getImgUrl();
-    }
-
     public List<Long> getGameOptionIds() {
         return games.stream().flatMap(game -> game.getGameOptionIds().stream()).toList();
     }

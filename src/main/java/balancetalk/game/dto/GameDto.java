@@ -4,7 +4,6 @@ import static balancetalk.vote.domain.VoteOption.A;
 import static balancetalk.vote.domain.VoteOption.B;
 
 import balancetalk.bookmark.domain.GameBookmark;
-import balancetalk.file.domain.repository.FileRepository;
 import balancetalk.game.domain.Game;
 import balancetalk.game.domain.GameOption;
 import balancetalk.game.domain.GameSet;
@@ -16,6 +15,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -34,9 +34,9 @@ public class GameDto {
 
         private List<GameOptionDto> gameOptions;
 
-        public Game toEntity(FileRepository fileRepository) {
+        public Game toEntity() {
             List<GameOption> options = gameOptions.stream()
-                    .map(option -> option.toEntity(fileRepository))
+                    .map(GameOptionDto::toEntity)
                     .toList();
 
             return Game.builder()
@@ -64,11 +64,15 @@ public class GameDto {
         @Schema(description = "북마크 여부", example = "false")
         private Boolean myBookmark;
 
-        public static GameResponse fromEntity(Game game, boolean isBookmarked) {
+        public static GameResponse fromEntity(Game game,
+                                              boolean isBookmarked,
+                                              Map<Long, String> gameOptionImgUrls
+        ) {
+
             return GameResponse.builder()
                     .id(game.getId())
                     .description(game.getDescription())
-                    .gameOptions(game.getGameOptions().stream().map(GameOptionDto::fromEntity).toList())
+                    .gameOptions(getGameOptionDtos(game, gameOptionImgUrls))
                     .myBookmark(isBookmarked)
                     .build();
         }
@@ -100,11 +104,17 @@ public class GameDto {
         @Schema(description = "투표한 선택지", example = "A")
         private VoteOption votedOption;
 
-        public static GameDetailResponse fromEntity(Game game, boolean myBookmark, VoteOption votedOption) {
+        public static GameDetailResponse fromEntity(
+                Game game,
+                boolean myBookmark,
+                VoteOption votedOption,
+                Map<Long, String> gameOptionImgUrls
+        ) {
+
             return GameDetailResponse.builder()
                     .id(game.getId())
                     .description(game.getDescription())
-                    .gameOptions(game.getGameOptions().stream().map(GameOptionDto::fromEntity).toList())
+                    .gameOptions(getGameOptionDtos(game, gameOptionImgUrls))
                     .votesCountOfOptionA(game.getVoteCount(A))
                     .votesCountOfOptionB(game.getVoteCount(B))
                     .myBookmark(myBookmark)
@@ -168,25 +178,25 @@ public class GameDto {
         @Schema(description = "밸런스 게임 메인 태그 이름", example = "인기")
         private String mainTagName;
 
-        public static GameMyPageResponse from(GameSet gameSet) {
+        public static GameMyPageResponse from(GameSet gameSet, String imgA, String imgB) {
             return GameMyPageResponse.builder()
                     .gameSetId(gameSet.getId())
                     .title(gameSet.getTitle())
-                    .optionAImg(gameSet.getFirstGameOptionImgA())
-                    .optionBImg(gameSet.getFirstGameOptionImgB())
+                    .optionAImg(imgA)
+                    .optionBImg(imgB)
                     .subTag(gameSet.getSubTag())
                     .mainTagName(gameSet.getMainTag().getName())
                     .editedAt(gameSet.getEditedAt())
                     .build();
         }
 
-        public static GameMyPageResponse from(Game game, GameBookmark bookmark) {
+        public static GameMyPageResponse from(Game game, GameBookmark bookmark, String imgA, String imgB) {
             return GameMyPageResponse.builder()
                     .gameSetId(game.getGameSet().getId())
                     .gameId(game.getId())
                     .title(game.getGameSet().getTitle())
-                    .optionAImg(game.getGameSet().getFirstGameOptionImgA())
-                    .optionBImg(game.getGameSet().getFirstGameOptionImgB())
+                    .optionAImg(imgA)
+                    .optionBImg(imgB)
                     .isBookmarked(bookmark.isActive())
                     .subTag(game.getGameSet().getSubTag())
                     .mainTagName(game.getGameSet().getMainTag().getName())
@@ -194,17 +204,26 @@ public class GameDto {
                     .build();
         }
 
-        public static GameMyPageResponse from(Game game, GameVote vote) {
+        public static GameMyPageResponse from(Game game, GameVote vote, String imgA, String imgB) {
             return GameMyPageResponse.builder()
                     .gameId(game.getId())
                     .title(game.getGameSet().getTitle())
-                    .optionAImg(game.getGameSet().getFirstGameOptionImgA())
-                    .optionBImg(game.getGameSet().getFirstGameOptionImgB())
+                    .optionAImg(imgA)
+                    .optionBImg(imgB)
                     .voteOption(vote.getVoteOption())
                     .subTag(game.getGameSet().getSubTag())
                     .mainTagName(game.getGameSet().getMainTag().getName())
                     .editedAt(game.getEditedAt())
                     .build();
         }
+    }
+
+    public static List<GameOptionDto> getGameOptionDtos(Game game, Map<Long, String> gameOptionImgUrls) {
+        return game.getGameOptions().stream()
+                .map(option -> {
+                    String imgUrl = gameOptionImgUrls.get(option.getId());
+                    return GameOptionDto.fromEntity(option, imgUrl);
+                })
+                .toList();
     }
 }

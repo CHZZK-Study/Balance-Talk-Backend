@@ -35,13 +35,13 @@ public class SearchGameResponse {
     @Schema(description = "밸런스 게임 메인 태그", example = "인기")
     private String mainTag;
 
-    public static SearchGameResponse from(Game game) {
+    public static SearchGameResponse from(Game game, String imgA, String imgB) {
         return SearchGameResponse.builder()
                 .gameSetId(game.getGameSet().getId())
                 .id(game.getId())
                 .title(game.getGameSet().getTitle())
-                .optionAImg(game.getGameOptions().get(0).getImgUrl())
-                .optionBImg(game.getGameOptions().get(1).getImgUrl())
+                .optionAImg(imgA)
+                .optionBImg(imgB)
                 .subTag(game.getGameSet().getSubTag())
                 .mainTag(game.getGameSet().getMainTag().getName())
                 .build();

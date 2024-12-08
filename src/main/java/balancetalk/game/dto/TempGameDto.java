@@ -1,11 +1,10 @@
 package balancetalk.game.dto;
 
-import balancetalk.file.domain.FileType;
-import balancetalk.file.domain.repository.FileRepository;
 import balancetalk.game.domain.TempGame;
 import balancetalk.game.domain.TempGameOption;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.List;
+import java.util.Map;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -23,9 +22,9 @@ public class TempGameDto {
 
         private List<TempGameOptionDto> tempGameOptions;
 
-        public TempGame toEntity(FileRepository fileRepository) {
+        public TempGame toEntity() {
             List<TempGameOption> options = tempGameOptions.stream()
-                    .map(option -> option.toEntity(fileRepository))
+                    .map(TempGameOptionDto::toEntity)
                     .toList();
 
             return TempGame.builder()
@@ -46,19 +45,23 @@ public class TempGameDto {
 
         private List<TempGameOptionDto> tempGameOptions;
 
-        public static TempGameResponse fromEntity(TempGame tempGame, FileRepository fileRepository) {
-            List<TempGameOptionDto> tempGameOptions = tempGame.getTempGameOptions().stream()
-                    .map(option -> {
-                        Long fileId = fileRepository.findIdByResourceIdAndFileType(
-                                option.getId(), FileType.TEMP_GAME_OPTION);
-                        return TempGameOptionDto.fromEntity(option, fileId);
-                    })
-                    .toList();
-
+        public static TempGameResponse fromEntity(TempGame tempGame, Map<Long, String> tempGameOptionImgUrls) {
             return TempGameResponse.builder()
                     .description(tempGame.getDescription())
-                    .tempGameOptions(tempGameOptions)
+                    .tempGameOptions(getTempGameOptionDtos(tempGame, tempGameOptionImgUrls))
                     .build();
         }
+    }
+
+    public static List<TempGameOptionDto> getTempGameOptionDtos(
+            TempGame tempGame,
+            Map<Long, String> tempGameOptionImgUrls
+    ) {
+        return tempGame.getTempGameOptions().stream()
+                .map(option -> {
+                    String imgUrl = tempGameOptionImgUrls.get(option.getId());
+                    return TempGameOptionDto.fromEntity(option, option.getImgId(), imgUrl);
+                })
+                .toList();
     }
 }
