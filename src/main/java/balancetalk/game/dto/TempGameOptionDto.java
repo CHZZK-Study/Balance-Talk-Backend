@@ -24,7 +24,8 @@ public class TempGameOptionDto {
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
     @Schema(description = "선택지 이미지",
-            example = "https://pikko-image.s3.ap-northeast-2.amazonaws.com/balance-game/4839036ee7cd_unnamed.png")
+            example = "https://pikko-image.s3.ap-northeast-2.amazonaws.com/balance-game/4839036ee7cd_unnamed.png",
+            accessMode = Schema.AccessMode.READ_ONLY)
     private String imgUrl;
 
     @Schema(description = "선택지 추가설명", example = "선택지 추가 설명")

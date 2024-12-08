@@ -19,13 +19,15 @@ public class GameOptionDto {
     @Schema(description = "선택지 이름", example = "선택지 이름")
     private String name;
 
-    @Schema(description = "선택지 이미지",
-            example = "https://pikko-image.s3.ap-northeast-2.amazonaws.com/balance-game/4839036ee7cd_unnamed.png")
-    private String imgUrl;
-
     @JsonInclude(JsonInclude.Include.NON_NULL)
     @Schema(description = "선택지 이미지 파일 ID", example = "12")
     private Long fileId;
+
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    @Schema(description = "선택지 이미지",
+            example = "https://pikko-image.s3.ap-northeast-2.amazonaws.com/balance-game/4839036ee7cd_unnamed.png",
+            accessMode = Schema.AccessMode.READ_ONLY)
+    private String imgUrl;
 
     @Schema(description = "선택지 추가설명", example = "선택지 추가 설명")
     private String description;
