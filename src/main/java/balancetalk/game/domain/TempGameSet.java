@@ -12,7 +12,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import java.util.ArrayList;
 import java.util.List;
@@ -39,7 +38,6 @@ public class TempGameSet extends BaseTimeEntity {
     @OneToMany(mappedBy = "tempGameSet", cascade = CascadeType.ALL)
     private List<TempGame> tempGames = new ArrayList<>();
 
-    @NotBlank
     @Size(max = 50)
     private String title;
 
