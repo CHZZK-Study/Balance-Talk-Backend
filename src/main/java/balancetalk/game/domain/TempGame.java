@@ -39,7 +39,6 @@ public class TempGame extends BaseTimeEntity {
     @OneToMany(mappedBy = "tempGame", cascade = CascadeType.ALL)
     private List<TempGameOption> tempGameOptions = new ArrayList<>();
 
-    @NotBlank
     @Size(max = 100)
     private String description;
 
@@ -47,16 +46,22 @@ public class TempGame extends BaseTimeEntity {
         this.tempGameSet = tempGameSet;
     }
 
+    public void addTempGameOption(TempGameOption tempGameOption) {
+        tempGameOption.assignTempGame(this);
+        tempGameOptions.add(tempGameOption);
+    }
+
     public void updateTempGame(TempGame newTempGame) {
         this.description = newTempGame.getDescription();
         IntStream.range(0, newTempGame.getTempGameOptions().size()).forEach(i -> {
-            TempGameOption currentOption = this.tempGameOptions.get(i);
-            TempGameOption newOption = newTempGame.getTempGameOptions().get(i);
-            currentOption.updateTempGameOption(newOption);
+            if (i < this.tempGameOptions.size()) {
+                TempGameOption currentOption = this.tempGameOptions.get(i);
+                TempGameOption newOption = newTempGame.getTempGameOptions().get(i);
+                currentOption.updateTempGameOption(newOption);
+            } else {
+                TempGameOption newOption = newTempGame.getTempGameOptions().get(i);
+                this.addTempGameOption(newOption);
+            }
         });
-    }
-
-    public List<Long> getGameOptionIds() {
-        return tempGameOptions.stream().map(TempGameOption::getId).toList();
     }
 }
