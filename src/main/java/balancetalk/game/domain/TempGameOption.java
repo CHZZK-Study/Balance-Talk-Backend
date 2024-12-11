@@ -11,7 +11,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -31,7 +30,6 @@ public class TempGameOption {
     @Column(name = "id")
     private Long id;
 
-    @NotBlank
     @Size(max = 30)
     private String name;
 

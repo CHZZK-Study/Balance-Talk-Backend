@@ -43,6 +43,12 @@ public class TempGameService {
         Member member = apiMember.toMember(memberRepository);
 
         List<CreateTempGameRequest> tempGames = request.getTempGames();
+
+        if (request.getTempGames() == null || request.getTempGames().isEmpty()) {
+            TempGameSet tempGameSet = request.toEntity(member);
+            tempGameSetRepository.save(tempGameSet);
+            return;
+        }
         validateFileIds(tempGames); // 파일이 DB에 존재하는지 검사
 
         List<TempGame> newTempGames = tempGames.stream()
