@@ -1,8 +1,8 @@
 package balancetalk.global.oauth2.service;
 
-import static balancetalk.global.config.SecurityConfig.*;
-import static balancetalk.member.domain.Role.*;
-import static balancetalk.member.domain.SignupType.*;
+import static balancetalk.global.config.SecurityConfig.passwordEncoder;
+import static balancetalk.member.domain.Role.USER;
+import static balancetalk.member.domain.SignupType.STANDARD;
 
 import balancetalk.global.oauth2.dto.CustomOAuth2User;
 import balancetalk.global.oauth2.dto.GoogleResponse;

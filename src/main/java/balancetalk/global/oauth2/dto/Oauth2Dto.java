@@ -1,7 +1,9 @@
 package balancetalk.global.oauth2.dto;
 
-import static balancetalk.member.domain.Role.*;
-import static balancetalk.member.domain.SignupType.*;
+
+
+import static balancetalk.member.domain.Role.USER;
+import static balancetalk.member.domain.SignupType.SOCIAL;
 
 import balancetalk.member.domain.Member;
 import balancetalk.member.domain.Role;

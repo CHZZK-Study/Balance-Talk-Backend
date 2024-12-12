@@ -1,6 +1,7 @@
 package balancetalk.member.dto;
 
-import static balancetalk.member.domain.SignupType.*;
+
+import static balancetalk.member.domain.SignupType.STANDARD;
 
 import balancetalk.member.domain.Member;
 import balancetalk.member.domain.Role;
