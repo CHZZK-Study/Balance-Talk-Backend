@@ -124,6 +124,9 @@ public class MemberDto {
         @Schema(description = "저장한 게시글 수", example = "21")
         private int bookmarkedPostsCount;
 
+        @Schema(description = "회원 가입 경로", example = "STANDARD")
+        private SignupType signupType;
+
         public static MemberResponse fromEntity(Member member, String profileImgUrl) {
             return MemberResponse.builder()
                     .id(member.getId())
@@ -133,6 +136,7 @@ public class MemberDto {
                     .createdAt(member.getCreatedAt())
                     .postsCount(member.getPostsCount())
                     .bookmarkedPostsCount(member.getBookmarkedPostsCount())
+                    .signupType(member.getSignupType())
                     .build();
         }
     }
