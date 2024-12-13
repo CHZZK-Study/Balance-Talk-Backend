@@ -28,11 +28,11 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
     @Value("${spring.security.security.oauth2-password}")
     private String oauth2Password;
 
-    @Value("${urls.firstLoggedIn}")
-    private String firstLoggedInUrl;
+    @Value("${urls.firstRegister}")
+    private String firstRegisterUrl;
 
-    @Value("${urls.alreadyLoggedIn}")
-    private String alreadyLoggedInUrl;
+    @Value("${urls.alreadyRegistered}")
+    private String alreadyRegisteredUrl;
 
     private final MemberRepository memberRepository;
 
@@ -64,7 +64,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
             Member newMember = oauth2Dto.toEntity();
             memberRepository.save(newMember);
-            return new CustomOAuth2User(oauth2Dto, firstLoggedInUrl);
+            return new CustomOAuth2User(oauth2Dto, firstRegisterUrl);
         }
 
         else { // 회원이 존재할 떄
@@ -73,7 +73,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                     .email(findMember.getEmail())
                     .role(findMember.getRole())
                     .build();
-            return new CustomOAuth2User(oauth2Dto, alreadyLoggedInUrl);
+            return new CustomOAuth2User(oauth2Dto, alreadyRegisteredUrl);
         }
     }
 
