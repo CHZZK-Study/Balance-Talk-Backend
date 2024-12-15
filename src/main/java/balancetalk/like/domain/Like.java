@@ -2,9 +2,22 @@ package balancetalk.like.domain;
 
 import balancetalk.global.common.BaseTimeEntity;
 import balancetalk.member.domain.Member;
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Builder
@@ -19,6 +32,7 @@ public class Like extends BaseTimeEntity {
     private Long id;
 
     @Enumerated(value = EnumType.STRING)
+    @NotNull
     private LikeType likeType;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -28,6 +42,7 @@ public class Like extends BaseTimeEntity {
     @NotNull
     private Long resourceId;
 
+    @NotNull
     private Boolean active = true;
 
     public void activate() {

@@ -1,5 +1,6 @@
 package balancetalk.game.domain;
 
+import balancetalk.global.common.BaseTimeEntity;
 import balancetalk.vote.domain.GameVote;
 import balancetalk.vote.domain.VoteOption;
 import jakarta.persistence.Column;
@@ -30,7 +31,7 @@ import org.hibernate.annotations.ColumnDefault;
 @Builder
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class GameOption {
+public class GameOption extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

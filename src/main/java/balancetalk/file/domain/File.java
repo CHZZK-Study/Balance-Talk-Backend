@@ -12,6 +12,7 @@ import jakarta.persistence.Id;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.Size;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -32,12 +33,15 @@ public class File extends BaseTimeEntity {
     private Long resourceId;
 
     @Enumerated(value = EnumType.STRING)
+    @NotNull
     private FileType fileType;
 
     @NotBlank
+    @Size(max = 50)
     private String uploadName;
 
     @NotBlank
+    @Size(max = 100)
     private String storedName;
 
     @NotBlank
