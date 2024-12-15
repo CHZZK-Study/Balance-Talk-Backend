@@ -63,6 +63,9 @@ public class Member extends BaseTimeEntity {
     @Enumerated(value = EnumType.STRING)
     private Role role;
 
+    @Enumerated(value = EnumType.STRING)
+    private SignupType signupType;
+
     private Long profileImgId;
 
     @OneToMany(mappedBy = "member")

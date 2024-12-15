@@ -1,7 +1,11 @@
 package balancetalk.member.dto;
 
+
+import static balancetalk.member.domain.SignupType.STANDARD;
+
 import balancetalk.member.domain.Member;
 import balancetalk.member.domain.Role;
+import balancetalk.member.domain.SignupType;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -54,12 +58,16 @@ public class MemberDto {
         @Schema(description = "회원 권한", example = "USER")
         private Role role;
 
+        @Schema(description = "회원 가입 경로", example = "STANDARD")
+        private SignupType signupType;
+
         public Member toEntity() {
             return Member.builder()
                     .nickname(nickname)
                     .email(email)
                     .password(password)
                     .role(role)
+                    .signupType(STANDARD)
                     .profileImgId(profileImgId)
                     .build();
         }
@@ -116,6 +124,9 @@ public class MemberDto {
         @Schema(description = "저장한 게시글 수", example = "21")
         private int bookmarkedPostsCount;
 
+        @Schema(description = "회원 가입 경로", example = "STANDARD")
+        private SignupType signupType;
+
         public static MemberResponse fromEntity(Member member, String profileImgUrl) {
             return MemberResponse.builder()
                     .id(member.getId())
@@ -125,6 +136,7 @@ public class MemberDto {
                     .createdAt(member.getCreatedAt())
                     .postsCount(member.getPostsCount())
                     .bookmarkedPostsCount(member.getBookmarkedPostsCount())
+                    .signupType(member.getSignupType())
                     .build();
         }
     }
