@@ -11,10 +11,15 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 public class CustomOAuth2User implements OAuth2User {
 
     private final Oauth2Dto oauth2Dto;
+    private final String redirectUrl;
 
     @Override
     public Map<String, Object> getAttributes() {
         return Map.of();
+    }
+
+    public String getRedirectUrl() {
+        return redirectUrl;
     }
 
     @Override

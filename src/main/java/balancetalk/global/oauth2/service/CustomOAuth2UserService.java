@@ -1,6 +1,9 @@
 package balancetalk.global.oauth2.service;
 
-import static balancetalk.global.config.SecurityConfig.*;
+import static balancetalk.global.config.SecurityConfig.passwordEncoder;
+import static balancetalk.member.domain.Role.USER;
+import static balancetalk.member.domain.SignupType.STANDARD;
+
 import balancetalk.global.oauth2.dto.CustomOAuth2User;
 import balancetalk.global.oauth2.dto.GoogleResponse;
 import balancetalk.global.oauth2.dto.KakaoResponse;
@@ -9,10 +12,8 @@ import balancetalk.global.oauth2.dto.Oauth2Dto;
 import balancetalk.global.oauth2.dto.Oauth2Response;
 import balancetalk.member.domain.Member;
 import balancetalk.member.domain.MemberRepository;
-import balancetalk.member.domain.Role;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
@@ -20,13 +21,18 @@ import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 
-@Slf4j
 @Service
 @RequiredArgsConstructor
 public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
     @Value("${spring.security.security.oauth2-password}")
     private String oauth2Password;
+
+    @Value("${urls.firstRegister}")
+    private String firstRegisterUrl;
+
+    @Value("${urls.alreadyRegistered}")
+    private String alreadyRegisteredUrl;
 
     private final MemberRepository memberRepository;
 
@@ -44,21 +50,21 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         };
 
         String email = getEmail(oauth2Response);
-        String provider = getProvider(oauth2Response);
-        Member findMember = memberRepository.findByEmail(provider + "_" + email).orElse(null);
+        Member findMember = memberRepository.findByEmail(email).orElse(null);
 
         if (findMember == null) {
             String encodedPassword = passwordEncoder().encode(oauth2Password);
             Oauth2Dto oauth2Dto = Oauth2Dto.builder()
                     .name(hideNickname(email))
-                    .email(provider + "_" + email)
-                    .role(Role.USER)
+                    .email(email)
+                    .role(USER)
+                    .signupType(STANDARD)
                     .password(encodedPassword)
                     .build();
 
             Member newMember = oauth2Dto.toEntity();
             memberRepository.save(newMember);
-            return new CustomOAuth2User(oauth2Dto);
+            return new CustomOAuth2User(oauth2Dto, firstRegisterUrl);
         }
 
         else { // 회원이 존재할 떄
@@ -67,7 +73,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                     .email(findMember.getEmail())
                     .role(findMember.getRole())
                     .build();
-            return new CustomOAuth2User(oauth2Dto);
+            return new CustomOAuth2User(oauth2Dto, alreadyRegisteredUrl);
         }
     }
 
@@ -85,12 +91,6 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
     private String getEmail(Oauth2Response oauth2Response) {
         return Optional.ofNullable(oauth2Response)
                 .map(Oauth2Response::getEmail)
-                .orElse("null");
-    }
-
-    private String getProvider(Oauth2Response oauth2Response) {
-        return Optional.ofNullable(oauth2Response)
-                .map(Oauth2Response::getProvider)
                 .orElse("null");
     }
 }
