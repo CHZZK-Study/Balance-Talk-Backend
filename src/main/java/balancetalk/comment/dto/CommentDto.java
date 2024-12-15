@@ -7,12 +7,11 @@ import balancetalk.talkpick.domain.ViewStatus;
 import balancetalk.vote.domain.VoteOption;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
+import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.time.LocalDateTime;
 
 public class CommentDto {
     @Data
@@ -32,7 +31,6 @@ public class CommentDto {
                     .talkPick(talkPick)
                     .isBest(false)
                     .viewStatus(ViewStatus.NORMAL)
-                    .reportedCount(0)
                     .isNotifiedForFirstReply(false)
                     .editedAt(LocalDateTime.now())
                     .isEdited(false)
@@ -46,7 +44,6 @@ public class CommentDto {
                     .talkPick(talkPick)
                     .isBest(false)
                     .viewStatus(ViewStatus.NORMAL)
-                    .reportedCount(0)
                     .parent(parent)
                     .isEdited(false)
                     .build();
@@ -128,7 +125,6 @@ public class CommentDto {
                     .likesCount(likesCount)
                     .myLike(myLike)
                     .replyCount(comment.getReplies() == null ? 0 : comment.getReplies().size())
-                    .reportedCount(comment.getReportedCount())
                     .isEdited(comment.isEdited())
                     .createdAt(comment.getCreatedAt())
                     .lastModifiedAt(comment.getLastModifiedAt())
@@ -202,7 +198,6 @@ public class CommentDto {
                     .likesCount(likesCount)
                     .myLike(myLike)
                     .replyCount(comment.getReplies() == null ? 0 : comment.getReplies().size())
-                    .reportedCount(comment.getReportedCount())
                     .isBest(comment.getIsBest())
                     .isEdited(comment.isEdited())
                     .createdAt(comment.getCreatedAt())
@@ -278,7 +273,6 @@ public class CommentDto {
                     .myLike(myLike)
                     .parentId(comment.getParent() == null ? null : comment.getParent().getId())
                     .replyCount(comment.getReplies() == null ? 0 : comment.getReplies().size())
-                    .reportedCount(comment.getReportedCount())
                     .isEdited(comment.isEdited())
                     .createdAt(comment.getCreatedAt())
                     .lastModifiedAt(comment.getLastModifiedAt())
