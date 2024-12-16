@@ -1,5 +1,10 @@
 package balancetalk.report.application;
 
+import static balancetalk.global.exception.ErrorCode.ALREADY_REPORTED_COMMENT;
+import static balancetalk.global.exception.ErrorCode.NOT_FOUND_COMMENT;
+import static balancetalk.global.exception.ErrorCode.NOT_FOUND_COMMENT_AT_THAT_TALK_PICK;
+import static balancetalk.global.exception.ErrorCode.REPORT_MY_COMMENT;
+
 import balancetalk.comment.domain.Comment;
 import balancetalk.comment.domain.CommentRepository;
 import balancetalk.global.exception.BalanceTalkException;
@@ -13,8 +18,6 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import static balancetalk.global.exception.ErrorCode.*;
 
 @Service
 @Transactional
@@ -48,7 +51,6 @@ public class ReportCommentService {
         Report report = createReportRequest.toEntity(reporter, reported, resourceId, comment.getContent());
 
         reportRepository.save(report);
-        comment.incrementReportCount();
     }
 
     private Comment validateCommentOnTalkPick(Long resourceId, Long talkPickId) {
