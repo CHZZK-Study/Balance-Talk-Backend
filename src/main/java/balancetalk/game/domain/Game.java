@@ -44,7 +44,6 @@ public class Game extends BaseTimeEntity {
     @OneToMany(mappedBy = "game", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<GameOption> gameOptions = new ArrayList<>();
 
-    @NotBlank
     @Size(max = 100)
     private String description;
 
