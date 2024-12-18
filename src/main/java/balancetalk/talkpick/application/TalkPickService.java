@@ -7,8 +7,6 @@ import static balancetalk.talkpick.dto.TalkPickDto.TalkPickDetailResponse;
 import static balancetalk.talkpick.dto.TalkPickDto.TalkPickResponse;
 import static balancetalk.talkpick.dto.TalkPickDto.UpdateTalkPickRequest;
 
-import balancetalk.file.domain.File;
-import balancetalk.file.domain.FileHandler;
 import balancetalk.file.domain.repository.FileRepository;
 import balancetalk.global.exception.BalanceTalkException;
 import balancetalk.member.domain.Member;
@@ -16,6 +14,7 @@ import balancetalk.member.domain.MemberRepository;
 import balancetalk.member.dto.ApiMember;
 import balancetalk.member.dto.GuestOrApiMember;
 import balancetalk.talkpick.domain.TalkPick;
+import balancetalk.talkpick.domain.TalkPickFileHandler;
 import balancetalk.talkpick.domain.repository.TalkPickRepository;
 import balancetalk.vote.domain.TalkPickVote;
 import java.util.List;
@@ -33,7 +32,7 @@ public class TalkPickService {
     private final MemberRepository memberRepository;
     private final TalkPickRepository talkPickRepository;
     private final FileRepository fileRepository;
-    private final FileHandler fileHandler;
+    private final TalkPickFileHandler talkPickFileHandler;
 
     @Transactional
     public Long createTalkPick(CreateTalkPickRequest request, ApiMember apiMember) {
@@ -41,14 +40,9 @@ public class TalkPickService {
         TalkPick savedTalkPick = talkPickRepository.save(request.toEntity(member));
         Long savedTalkPickId = savedTalkPick.getId();
         if (request.containsFileIds()) {
-            relocateFiles(request.getFileIds(), savedTalkPickId);
+            talkPickFileHandler.handleFilesOnTalkPickCreate(request.getFileIds(), savedTalkPickId);
         }
         return savedTalkPickId;
-    }
-
-    private void relocateFiles(List<Long> fileIds, Long talkPickId) {
-        List<File> files = fileRepository.findAllById(fileIds);
-        fileHandler.relocateFiles(files, talkPickId, TALK_PICK);
     }
 
     @Transactional
@@ -88,29 +82,8 @@ public class TalkPickService {
         Member member = apiMember.toMember(memberRepository);
         TalkPick talkPick = member.getTalkPickById(talkPickId);
         talkPick.update(request.toEntity(member));
-
-        if (request.notContainsAnyFileIds()) {
-            return;
-        }
-
-        List<Long> deletedFileIds = deleteRequestedFiles(request);
-
-        if (request.containsNewFileIds()) {
-            List<Long> newFileIds = request.getNewFileIds();
-            newFileIds.removeIf((deletedFileIds::contains));
-            relocateFiles(newFileIds, talkPickId);
-        }
-    }
-
-    private List<Long> deleteRequestedFiles(UpdateTalkPickRequest request) {
-        if (request.containsDeleteFileIds()) {
-            List<Long> deleteFileIds = request.getDeleteFileIds();
-            List<File> files = fileRepository.findAllById(deleteFileIds);
-            fileHandler.deleteFiles(files);
-            return deleteFileIds;
-        } else {
-            return List.of();
-        }
+        talkPickFileHandler
+                .handleFilesOnTalkPickUpdate(request.getNewFileIds(), request.getDeleteFileIds(), talkPickId);
     }
 
     @Transactional
@@ -118,14 +91,6 @@ public class TalkPickService {
         Member member = apiMember.toMember(memberRepository);
         TalkPick talkPick = member.getTalkPickById(talkPickId);
         talkPickRepository.delete(talkPick);
-        deleteAllAssociatedFiles(talkPickId);
-    }
-
-    private void deleteAllAssociatedFiles(Long talkPickId) {
-        List<File> files = fileRepository.findAllByResourceIdAndFileType(talkPickId, TALK_PICK);
-        if (files.isEmpty()) {
-            return;
-        }
-        fileHandler.deleteFiles(files);
+        talkPickFileHandler.handleFilesOnTalkPickDelete(talkPickId);
     }
 }

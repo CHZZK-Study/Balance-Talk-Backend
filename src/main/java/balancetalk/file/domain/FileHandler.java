@@ -6,9 +6,6 @@ import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.retry.annotation.Backoff;
-import org.springframework.retry.annotation.Retryable;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.CopyObjectRequest;
@@ -27,15 +24,11 @@ public class FileHandler {
     @Value("${picko.aws.s3.endpoint}")
     private String s3EndPoint;
 
-    @Async
-    @Retryable(backoff = @Backoff(delay = 1000))
     public void relocateFile(File file, Long resourceId, FileType fileType) {
         String newDirectoryPath = relocateWithinS3(file, resourceId, fileType);
         saveOrMapToResource(file, newDirectoryPath, resourceId, fileType);
     }
 
-    @Async
-    @Retryable(backoff = @Backoff(delay = 1000))
     public void relocateFiles(List<File> files, Long resourceId, FileType fileType) {
         for (File file : files) {
             String newDirectoryPath = relocateWithinS3(file, resourceId, fileType);
@@ -94,8 +87,6 @@ public class FileHandler {
         return String.format("%s%s%s", s3EndPoint, directoryPath, file.getStoredName());
     }
 
-    @Async
-    @Retryable(backoff = @Backoff(delay = 1000))
     public void deleteFiles(List<File> files) {
         for (File file : files) {
             s3Operations.deleteObject(bucket, file.getS3Key());
@@ -103,8 +94,6 @@ public class FileHandler {
         fileRepository.deleteAll(files);
     }
 
-    @Async
-    @Retryable(backoff = @Backoff(delay = 1000))
     public void deleteFile(File file) {
         s3Operations.deleteObject(bucket, file.getS3Key());
         fileRepository.delete(file);
