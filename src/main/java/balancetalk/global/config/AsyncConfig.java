@@ -13,14 +13,10 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 @Configuration
 public class AsyncConfig implements AsyncConfigurer {
 
-    @Value("${async.core-pool-size}")
-    private int corePoolSize;
-
     @Override
     public Executor getAsyncExecutor() {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-        executor.setCorePoolSize(corePoolSize);
-        executor.setThreadNamePrefix("Async-");
+        executor.setThreadNamePrefix("Async task - ");
         executor.initialize();
         return executor;
     }
