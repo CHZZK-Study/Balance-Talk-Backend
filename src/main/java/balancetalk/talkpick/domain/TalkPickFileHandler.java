@@ -15,7 +15,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Component
 @RequiredArgsConstructor
-@Transactional
 public class TalkPickFileHandler {
 
     private final FileRepository fileRepository;
@@ -23,6 +22,7 @@ public class TalkPickFileHandler {
 
     @Async
     @Retryable(backoff = @Backoff(delay = 1000))
+    @Transactional
     public void handleFilesOnTalkPickCreate(List<Long> fileIds, Long talkPickId) {
         relocateFiles(fileIds, talkPickId);
     }
@@ -32,8 +32,17 @@ public class TalkPickFileHandler {
         fileHandler.relocateFiles(files, talkPickId, TALK_PICK);
     }
 
+    public List<String> findImgUrlsBy(Long talkPickId) {
+        return fileRepository.findImgUrlsByResourceIdAndFileType(talkPickId, TALK_PICK);
+    }
+
+    public List<Long> findFileIdsBy(Long talkPickId) {
+        return fileRepository.findIdsByResourceIdAndFileType(talkPickId, TALK_PICK);
+    }
+
     @Async
     @Retryable(backoff = @Backoff(delay = 1000))
+    @Transactional
     public void handleFilesOnTalkPickUpdate(List<Long> newFileIds, List<Long> deleteFileIds, Long talkPickId) {
         deleteFiles(deleteFileIds);
         newFileIds.removeIf((deleteFileIds::contains));
@@ -50,6 +59,7 @@ public class TalkPickFileHandler {
 
     @Async
     @Retryable(backoff = @Backoff(delay = 1000))
+    @Transactional
     public void handleFilesOnTalkPickDelete(Long talkPickId) {
         if (notExistsFilesBy(talkPickId)) {
             return;

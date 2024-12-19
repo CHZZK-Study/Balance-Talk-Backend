@@ -1,13 +1,11 @@
 package balancetalk.talkpick.application;
 
-import static balancetalk.file.domain.FileType.TALK_PICK;
 import static balancetalk.global.exception.ErrorCode.NOT_FOUND_TALK_PICK;
 import static balancetalk.talkpick.dto.TalkPickDto.CreateTalkPickRequest;
 import static balancetalk.talkpick.dto.TalkPickDto.TalkPickDetailResponse;
 import static balancetalk.talkpick.dto.TalkPickDto.TalkPickResponse;
 import static balancetalk.talkpick.dto.TalkPickDto.UpdateTalkPickRequest;
 
-import balancetalk.file.domain.repository.FileRepository;
 import balancetalk.global.exception.BalanceTalkException;
 import balancetalk.member.domain.Member;
 import balancetalk.member.domain.MemberRepository;
@@ -31,7 +29,6 @@ public class TalkPickService {
 
     private final MemberRepository memberRepository;
     private final TalkPickRepository talkPickRepository;
-    private final FileRepository fileRepository;
     private final TalkPickFileHandler talkPickFileHandler;
 
     @Transactional
@@ -51,8 +48,8 @@ public class TalkPickService {
                 .orElseThrow(() -> new BalanceTalkException(NOT_FOUND_TALK_PICK));
         talkPick.increaseViews();
 
-        List<String> imgUrls = fileRepository.findImgUrlsByResourceIdAndFileType(talkPickId, TALK_PICK);
-        List<Long> fileIds = fileRepository.findIdsByResourceIdAndFileType(talkPickId, TALK_PICK);
+        List<String> imgUrls = talkPickFileHandler.findImgUrlsBy(talkPickId);
+        List<Long> fileIds = talkPickFileHandler.findFileIdsBy(talkPickId);
 
         if (guestOrApiMember.isGuest()) {
             return TalkPickDetailResponse.from(talkPick, imgUrls, fileIds, false, null);
