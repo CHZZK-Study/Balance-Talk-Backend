@@ -14,5 +14,6 @@ public class CustomAsyncUncaughtExceptionHandler implements AsyncUncaughtExcepti
         for (Object param : params) {
             log.error("param value - {}", param);
         }
+        ex.printStackTrace();
     }
 }
