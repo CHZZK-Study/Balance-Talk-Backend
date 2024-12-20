@@ -33,7 +33,7 @@ Configuration:
       AppenderRef:
         ref: RollingFile_Appender
     Logger:
-      name: balancetalk-prod
+      name: picko-prod
       additivity: false
       level: info
       includeLocation: false
